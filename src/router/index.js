@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'homePage',
-    component:  () => import(/* webpackChunkName: "about" */ '@/views/homePage.vue')
+    name: 'modelPage',
+    component:  () => import(/* webpackChunkName: "about" */ '@/views/modelPage.vue')
   }
 ]
 
