@@ -5,17 +5,22 @@
       <div class="lf">基于three.js的3d模型编辑系统</div>
       <div class="title">当前模型:{{ modelName }}</div>
       <div class="lr">
-        <a-space>
+        <el-space>
           <div class="label">
-            <a-button type="primary" @click="onChangeModel">选择模型</a-button>
+            <el-button type="primary" @click="onChangeModel">选择模型</el-button>
           </div>
           <div class="label">
-            <a-button type="primary">导出模型</a-button>
+            <el-button type="primary">导出模型</el-button>
           </div>
-        </a-space>
+        </el-space>
       </div>
     </header>
-    <div id="model"></div>
+    <div class="model-container">
+      <div id="model" v-loading="loading"></div>
+      <div class="model-panel">
+        <model-edit-panel></model-edit-panel>
+      </div>
+    </div>
     <!-- 模型选择弹框 -->
     <model-select-dialog
       ref="select"
@@ -36,23 +41,38 @@ const state = reactive({
   }),
 });
 const select = ref(null);
-const modelName = ref('默认模型');
+const loading = ref(false);
+const modelName = ref("默认模型");
 const onChangeModel = () => {
-  select.value.showModal();
+  select.value.showDialog();
 };
 //选择模型成功
-const onChangeSuccess = (model) => {
+const onChangeSuccess = async (model) => {
   modelName.value = model.name;
-  state.modelApi.onSwitchModel(model);
+  loading.value = true;
+  try {
+    const success = await state.modelApi.onSwitchModel(model);
+    if (success) {
+      loading.value = false;
+    }
+  } catch (err) {
+    loading.value = false;
+  }
 };
-onMounted(() => {
-  store.commit("SET_MODEL_API", new renderModel("#model"));
+onMounted(async () => {
+  loading.value = true;
+  const modelApi = new renderModel("#model");
+  store.commit("SET_MODEL_API", modelApi);
+  const load = await modelApi.init();
+  if (load) {
+    loading.value = false;
+  }
 });
 </script>
 
 <style lang="less" scoped>
 .model-page {
-  width: 100%;
+   width: 100%;
   .model-header {
     height: 45px;
     width: 100%;
@@ -67,8 +87,11 @@ onMounted(() => {
       display: flex;
     }
   }
+  .model-container {
+    display: flex;
+  }
   #model {
-    width: 100%;
+    width:calc(100% - 350px);
     height: calc(100vh - 45px);
   }
 }

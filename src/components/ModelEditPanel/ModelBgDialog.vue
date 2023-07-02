@@ -4,22 +4,19 @@
     destroy-on-close
     draggable
     width="750px"
-    title="请选择模型"
+    title="请选择图片"
     @close="onCancelDialog"
   >
     <ul class="model-list">
       <li
-        v-for="model in modelList"
-        :class="model.id == activeId ? 'active' : ''"
-        :key="model.id"
-        @click="activeId = model.id"
+        v-for="image in imageList"
+        :class="image.id == activeId ? 'active' : ''"
+        :key="image.id"
+        @click="activeId = image.id"
       >
         <div class="model-icon">
-          <el-image :style="{ width: '100px', height: '100px' }" :src="model.icon">
+          <el-image :style="{ width: '100px', height: '100px' }" :src="image.url">
           </el-image>
-        </div>
-        <div class="model-name">
-          <span>{{ model.name }}</span>
         </div>
       </li>
     </ul>
@@ -32,18 +29,23 @@
   </el-dialog>
 </template>
 <script setup>
-import { modelList } from "@/config/model.js";
+import { backgrundList, viewImageList } from "@/config/model.js";
 import { IMAGE_ERROR } from "@/config/constant.js";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { message } from "ant-design-vue";
 const emit = defineEmits(["onChangeSuccess"]);
 const visible = ref(false);
 const activeId = ref(null);
-const showDialog = () => {
+const type = ref(null);
+const imageList = computed(() => {
+  return type.value == "bg-img" ? backgrundList : viewImageList;
+});
+const showDialog = (typeStr) => {
+  type.value = typeStr;
   visible.value = true;
 };
 const onSubmit = () => {
-  const model = modelList.find((v) => v.id == activeId.value);
+  const model = imageList.value.find((v) => v.id == activeId.value);
   if (!model) {
     return message.warning("请选择模型");
   }
@@ -55,7 +57,7 @@ const onCancelDialog = () => {
 };
 
 defineExpose({
-	showDialog,
+  showDialog,
 });
 </script>
 

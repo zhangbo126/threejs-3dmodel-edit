@@ -53,4 +53,56 @@ const modelList = [
 
 ]
 
-export default modelList
+const backgrundList = [
+	{
+		id: 1,
+		url: require('@/assets/image/model-bg-1.jpg')
+	},
+	{
+		id: 2,
+		url: require('@/assets/image/model-bg-2.jpeg')
+	},
+	{
+		id: 3,
+		url: require('@/assets/image/model-bg-3.jpg')
+	},
+	{
+		id: 4,
+		url: require('@/assets/image/model-bg-4.jpg')
+	},
+	{
+		id: 5,
+		url: require('@/assets/image/model-bg-5.jpg')
+	},
+	{
+		id: 6,
+		url: require('@/assets/image/model-bg-6.jpg')
+	},
+	{
+		id: 7,
+		url: require('@/assets/image/model-bg-7.jpg')
+	},
+	{
+		id: 8,
+		url: require('@/assets/image/model-bg-8.jpg')
+	},
+	{
+		id: 9,
+		url: require('@/assets/image/model-bg-9.jpg')
+	},
+	{
+		id: 10,
+		url: require('@/assets/image/model-bg-10.jpg')
+	},
+]
+
+let viewImageList = []
+for (let i = 0; i <= 10; i++) {
+	const image = {
+		id: i,
+		url: require(`@/assets/image/view-${i + 1}.png`)
+	}
+	viewImageList.push(image)
+}
+
+export { modelList, backgrundList, viewImageList }
