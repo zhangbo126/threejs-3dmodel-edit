@@ -1,15 +1,22 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import './registerServiceWorker'
 import router from './router'
 import store from './store'
-import Antd from 'ant-design-vue';
-import GlobalProperties from "@/utils/globalProperties.js";  //自定义封装全局方法
+import ElementPlus from 'element-plus'
+// 自定义封装全局方法
+import GlobalProperties from "@/utils/globalProperties.js";
+// 全局组件
+import GlobalComponent from '@/utils/globalComponent'
+// 自定义全局指令
+import Directive from "@/utils/directive.js";
 import "ant-design-vue/dist/antd.css";
+import 'element-plus/theme-chalk/src/index.scss'
 import '@/style/index.less'
 const app = createApp(App)
-app.use(Antd)
+app.use(ElementPlus, { size: 'small', zIndex: 3000 })
 app.use(GlobalProperties)
+app.use(GlobalComponent)
+app.use(Directive)
 app.use(store)
 app.use(router)
 app.mount('#app')
