@@ -2,7 +2,7 @@
   <div class="model-page">
     <!-- 头部操作栏 -->
     <header class="model-header">
-      <div class="lf">基于three.js的3d模型编辑系统</div>
+      <div class="lf">基于three.js的3d模型可视化编辑系统</div>
       <div class="title">当前模型:{{ modelName }}</div>
       <div class="lr">
         <el-space>

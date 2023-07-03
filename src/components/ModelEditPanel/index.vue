@@ -44,7 +44,7 @@ const panelTabs = [
     icon: "Picture",
   },
   {
-    name: "动画",
+    name: "模型动画",
     key: "EditAnimation",
     icon: "VideoCameraFilled",
   },
