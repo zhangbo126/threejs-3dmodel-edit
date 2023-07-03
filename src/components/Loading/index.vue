@@ -1,5 +1,5 @@
 <template>
-  <div class="loading-mark">
+  <div id="loading-mark">
     <div class="loading-box">
       <div class="loading">
         <img :src="require('@/assets/image/loading.svg')" />
@@ -10,7 +10,7 @@
 </template>
 <script setup></script>
 <style scoped lang="less">
-.loading-mark {
+#loading-mark {
   position: absolute;
   width: 100%;
   height: 100%;

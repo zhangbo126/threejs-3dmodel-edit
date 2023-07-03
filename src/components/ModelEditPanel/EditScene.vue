@@ -1,5 +1,7 @@
 <template>
-  <div class="edit-scene"></div>
+  <div class="edit-box">
+	
+  </div>
 </template>
 <script setup></script>
 <style></style>
