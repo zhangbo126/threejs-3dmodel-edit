@@ -21,6 +21,10 @@
       <div v-show="activeTab == 'EditBackground'">
         <edit-background></edit-background>
       </div>
+      <!-- 动画 -->
+      <div v-show="activeTab == 'EditAnimation'">
+        <edit-animation></edit-animation>
+      </div>
       <!-- 场景 -->
       <div v-show="activeTab == 'EditScene'">
         <edit-scene></edit-scene>
@@ -32,6 +36,7 @@
 import { ref } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditScene from "./EditScene.vue";
+import EditAnimation from "./EditAnimation.vue";
 const panelTabs = [
   {
     name: "背景",
@@ -39,14 +44,19 @@ const panelTabs = [
     icon: "Picture",
   },
   {
+    name: "动画",
+    key: "EditAnimation",
+    icon: "VideoCameraFilled",
+  },
+  {
     name: "场景",
     key: "EditScene",
     icon: "DataAnalysis",
   },
 ];
-const activeTab = ref("EditBackground");
+const activeTab = ref("EditAnimation");
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .model-panel {
   background-color: #1b1c23;
   min-width: 350px;
@@ -71,7 +81,7 @@ const activeTab = ref("EditBackground");
 }
 </style>
 
-<style lang="less">
+<style lang="scss">
 .edit-box {
   height: calc(100vh - 89px);
   .header {
@@ -83,12 +93,20 @@ const activeTab = ref("EditBackground");
     background-color: #33343f;
     color: #ccc;
     padding: 0px 20px;
+    border-bottom: 1px solid #1b1c23;
+    border-top: 1px solid #1b1c23;
+  }
+  .disabled {
+    opacity: 0.3;
+    pointer-events: none;
   }
   .options {
     background-color: #1b1c23;
-    padding: 0px 10px;
-
+    .option-active {
+      background-color: #33343f;
+    }
     .option {
+      padding: 0px 14px;
       cursor: pointer;
       color: #fff;
       display: flex;
@@ -101,5 +119,9 @@ const activeTab = ref("EditBackground");
     }
    
   }
+}
+
+.el-slider{
+  width: 96% !important;
 }
 </style>

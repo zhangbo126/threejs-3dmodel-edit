@@ -15,10 +15,10 @@
         </el-space>
       </div>
     </header>
-    <div class="model-container">
-      <div id="model" v-loading="loading"></div>
+    <div class="model-container"  v-loading="loading">
+      <div id="model"></div>
       <div class="model-panel">
-        <model-edit-panel></model-edit-panel>
+        <model-edit-panel v-if="!loading"></model-edit-panel>
       </div>
     </div>
     <!-- 模型选择弹框 -->
