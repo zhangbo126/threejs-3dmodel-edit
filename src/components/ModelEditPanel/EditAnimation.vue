@@ -1,7 +1,7 @@
 <template>
   <div class="edit-box">
     <div class="header">
-      <span>动画</span>
+      <span>模型动画</span>
       <el-switch v-model="config.visible" @change="onChangeAnimationSwitch" />
     </div>
     <!-- 动画列表 -->
