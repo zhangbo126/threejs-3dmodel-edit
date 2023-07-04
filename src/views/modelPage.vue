@@ -2,7 +2,7 @@
   <div class="model-page">
     <!-- 头部操作栏 -->
     <header class="model-header">
-      <div class="lf">基于three.js的3d模型编辑系统</div>
+      <div class="lf">基于three.js的3d模型可视化编辑系统</div>
       <div class="title">当前模型:{{ modelName }}</div>
       <div class="lr">
         <el-space>
@@ -15,10 +15,10 @@
         </el-space>
       </div>
     </header>
-    <div class="model-container">
-      <div id="model" v-loading="loading"></div>
+    <div class="model-container"  v-loading="loading">
+      <div id="model"></div>
       <div class="model-panel">
-        <model-edit-panel></model-edit-panel>
+        <model-edit-panel v-if="!loading"></model-edit-panel>
       </div>
     </div>
     <!-- 模型选择弹框 -->

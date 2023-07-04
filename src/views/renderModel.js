@@ -1,5 +1,4 @@
 import * as THREE from 'three' //导入整个 three.js核心库
-import { EquirectangularReflectionMapping } from 'three' //导入纹理映射模块
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader' //导入RGB加载器
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
@@ -14,7 +13,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import { message } from 'ant-design-vue';
+import { ElMessage  } from 'element-plus';
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -40,8 +39,24 @@ class renderModel {
 			'obj': new OBJLoader(),
 		}
 		// 全景图材质
-		this.viewMesh 
-
+		this.viewMesh
+		//模型动画列表
+		this.modelAnimation
+		//模型动画对象
+		this.animationMixer
+		this.animationColock = new THREE.Clock()
+		//动画帧
+		this.animationFrame
+		// 动画构造器
+		this.animateClipAction = null
+		// 动画循环方式枚举
+		this.loopMap = {
+			LoopOnce: THREE.LoopOnce,
+			LoopRepeat: THREE.LoopRepeat,
+			LoopPingPong: THREE.LoopPingPong
+		}
+		// 模型骨架
+		this.skeletonHelper
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -62,13 +77,12 @@ class renderModel {
 			//监听场景大小改变，跳转渲染尺寸
 			window.addEventListener("resize", this.onWindowResize.bind(this))
 			this.animate()
-			console.log(load)
 			reslove(load)
 		})
 	}
 	initScene() {
 		this.scene = new THREE.Scene()
-		this.scene.background = new THREE.Color('rgba(185, 250, 255)');
+		this.scene.background = new THREE.Color('rgba(212, 223, 224)');
 	}
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
@@ -104,13 +118,6 @@ class renderModel {
 	createDirectionalLightHelper() {
 
 	}
-	setEnvMap(hdr) { //设置环境背景
-		new RGBELoader().setPath('./files/hdr/').load(hdr + '.hdr', (texture) => {
-			texture.mapping = EquirectangularReflectionMapping  //圆柱形形纹理映射
-			this.scene.background = texture
-			this.scene.environment = texture
-		})
-	}
 	render() {
 		this.renderer.render(this.scene, this.camera)
 	}
@@ -129,6 +136,8 @@ class renderModel {
 				switch (type) {
 					case 'glb':
 						this.model = result.scene
+						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+						this.modelAnimation = result.animations
 						break;
 					case 'fbx':
 						result.scale.set(.006, .006, .006)
@@ -153,13 +162,15 @@ class renderModel {
 				this.camera.lookAt(0, 0, 0)
 				// 设置模型位置 
 				// this.model.position.set(0, -.5, 0)
+				this.skeletonHelper.visible = false
+				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
 				resolve(true)
 			}, () => {
 
 			}, (err) => {
 				console.log(err)
-				message.error('模型加载失败', err)
+				ElMessage.error('模型加载失败', err)
 				reject()
 			})
 		})
@@ -175,6 +186,8 @@ class renderModel {
 						v.material.dispose();
 					}
 				})
+				this.skeletonHelper.visible=false
+				this.onClearSceneBg()
 				this.scene.remove(this.model)
 				// 加载模型
 				const load = await this.setModel(model)
@@ -195,8 +208,7 @@ class renderModel {
 	}
 	//设置场景颜色
 	onSetSceneColor(color) {
-		this.onClearSceneBg()
-		this.scene.remove(this.viewMesh)
+		this.scene.background = null
 		if (color) {
 			this.renderer.setClearColor(color)
 		}
@@ -204,29 +216,63 @@ class renderModel {
 	//设置场景图片
 	onSetSceneImage(url) {
 		this.onClearSceneBg()
-		this.scene.remove(this.viewMesh)
 		this.scene.background = new THREE.TextureLoader().load(url);
 	}
 	// 设置全景图
 	onSetSceneViewImage(url) {
 		this.onClearSceneBg()
-		const geometry = new THREE.SphereBufferGeometry(60, 60, 60);
-		geometry.scale(-1, 1, 1);
+		const sphereBufferGeometry = new THREE.SphereBufferGeometry(60, 0, 0);
+		sphereBufferGeometry.scale(-2, 1, 1);
 		const material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(url)
 		});
-		this.viewMesh = new THREE.Mesh(geometry, material);
-		this.scene.background = new THREE.Color( 0xf0f0f0 );
-        this.scene.add(this.viewMesh);
+		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
+		// this.scene.background = new THREE.Color( 0xf0f0f0 );
+		this.scene.add(this.viewMesh);
 
 	}
 	// 清除场景背景
-	onClearSceneBg(){
-		this.scene.background=null
-		if(!this.viewMesh) return false
+	onClearSceneBg() {
+		this.scene.background = new THREE.Color('rgba(212, 223, 224)')
+		if (!this.viewMesh) return false
 		this.viewMesh.material.dispose()
 		this.viewMesh.geometry.dispose()
 		this.scene.remove(this.viewMesh)
+	}
+	// 开始执行动画
+	onStartModelAnimaion(config) {
+		this.onSetModelAnimaion(config)
+		cancelAnimationFrame(this.animationFram)
+		this.animationFrameFun()
+	}
+	// 设置模型动画
+	onSetModelAnimaion({ animations, animationName, loop, timeScale, weight }) {
+		this.animationMixer = new THREE.AnimationMixer(this.model)
+		const clip = THREE.AnimationClip.findByName(animations, animationName)
+		if (clip) {
+			this.animateClipAction = this.animationMixer.clipAction(clip)
+			this.animateClipAction.setEffectiveTimeScale(timeScale)
+			this.animateClipAction.setEffectiveWeight(weight)
+			this.animateClipAction.setLoop(this.loopMap[loop])
+			this.animateClipAction.play()
+		}
+	}
+	// 动画帧
+	animationFrameFun() {
+		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
+		if (this.animationMixer) {
+			this.animationMixer.update(this.animationColock.getDelta())
+		}
+	}
+	// 设置模型骨架
+	onSetModelHelper(visible) {
+		this.skeletonHelper.visible = visible
+	}
+	// 清除动画
+	onClearAnimation() {
+		if (!this.animateClipAction) return
+		this.animationMixer.stopAllAction();
+		this.animationMixer.update(0);
 	}
 }
 export default renderModel

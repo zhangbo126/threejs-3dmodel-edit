@@ -15,9 +15,9 @@ const directiveLoading = (Vue) => {
 			el.appendChild(vNode.$el)
 		},
 		updated(el, binding, vnode) {
-			const loadingNode = el.children[0]
+			const loadingNode = el.parentElement.querySelector('#loading-mark')
 			const { value } = binding
-			if (!value ) {
+			if (!value) {
 				el.style.position = ''
 				loadingNode.style.display = 'none'
 			} else {
