@@ -159,14 +159,14 @@ class renderModel {
 					default:
 						break;
 				}
-		
+
 				// this.model.scale.set(1.2,1.2,2)
 				// 设置相机位置
 				this.camera.position.set(0, 2, 6)
 				// 设置相机坐标系
 				this.camera.lookAt(0, 0, 0)
 				// 设置模型位置 
-				this.model.position.set(0, 0, 1)
+				// this.model.position.set(0, 0, 1)
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
@@ -181,11 +181,11 @@ class renderModel {
 		})
 	}
 	// 创建辅助线
-    createHelper(){
+	createHelper() {
 		//网格辅助线
-		this.gridHelper = new THREE.GridHelper(4, 10,'#f1f1f1','#f1f1f1');
-		this.gridHelper.position.set(0,-.2,1)
-		this.gridHelper.visible=false
+		this.gridHelper = new THREE.GridHelper(4, 10, '#1395E6', '#1395E6');
+		this.gridHelper.position.set(0, -.2, -.1)
+		this.gridHelper.visible = false
 		this.scene.add(this.gridHelper)
 	}
 	// 切换模型
@@ -234,7 +234,7 @@ class renderModel {
 	// 设置全景图
 	onSetSceneViewImage(url) {
 		this.onClearSceneBg()
-		const sphereBufferGeometry = new THREE.SphereBufferGeometry(60, 0, 0);
+		const sphereBufferGeometry = new THREE.SphereBufferGeometry(50, 0, 0);
 		sphereBufferGeometry.scale(-2, 1, 1);
 		const material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(url)
@@ -281,10 +281,7 @@ class renderModel {
 	onSetModelHelper(visible) {
 		this.skeletonHelper.visible = visible
 	}
-	// 设置网格辅助线
-	onSetModelGridHelper(visible){
-		this.gridHelper.visible = visible
-	}
+
 	// 清除动画
 	onClearAnimation() {
 		if (!this.animateClipAction) return
@@ -311,6 +308,26 @@ class renderModel {
 		this.model.rotation.x = 0
 		this.model.rotation.y = 0
 		this.model.rotation.z = 0
+	}
+	//设置网格辅助线位置 和颜色
+	onSetModelGridHelper({ x, y, z, gridHelper ,color}) {
+		this.gridHelper.visible = gridHelper
+		this.gridHelper.position.set(x, y, z)
+		this.gridHelper.material.color.set(color);
+	}
+	// 设置网格数量和大小
+	onSetModelGridHelperSize({ x, y, z, size, divisions ,color,gridHelper}) {
+		// 需要先把辅助线移除然后在重新创建
+		this.scene.remove(this.gridHelper)
+		this.gridHelper.geometry.dispose()
+		this.gridHelper.material.dispose()
+		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
+		this.gridHelper.position.set(x, y, z)
+		this.gridHelper.material.linewidth =0.1
+		this.gridHelper.material.color.set(color);
+		this.gridHelper.visible= gridHelper
+		this.scene.add(this.gridHelper)
+    
 	}
 
 }

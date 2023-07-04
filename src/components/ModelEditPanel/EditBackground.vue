@@ -4,7 +4,7 @@
       <span>背景</span>
       <el-switch v-model="config.visible" @change="onChangeBgSwitch" />
     </div>
-    <div class="options" :class="config.visible?'':'disabled'">
+    <div class="options" :class="config.visible ? '' : 'disabled'">
       <div class="option" @click="onChangeType(1)">
         <el-space>
           <div class="icon-name">
@@ -15,10 +15,9 @@
           </div>
           <div class="action">
             <el-color-picker
-              show-alpha
               :predefine="predefineColors"
               @change="onChangeColor"
-			  @active-change="onChangeColor"
+              @active-change="activeChangeColor"
               v-model="config.color"
             />
           </div>
@@ -37,7 +36,7 @@
             </el-space>
           </div>
           <div class="action-txt">
-            <el-text type="primary" @click="onChangeImage">选择图片</el-text>
+            <el-link type="primary" @click="onChangeImage">选择图片</el-link>
           </div>
           <div class="check" v-show="config.type == 2">
             <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
@@ -66,7 +65,7 @@
             </el-space>
           </div>
           <div class="action-txt">
-            <el-text type="primary" @click="onChangeViewImage">选择图片</el-text>
+            <el-link type="primary" @click="onChangeViewImage">选择图片</el-link>
           </div>
           <div class="check" v-show="config.type == 3">
             <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
@@ -85,7 +84,6 @@
           <el-icon color="#fff" size="24px"><Plus /></el-icon>
         </div>
       </div>
-
     </div>
     <!-- 图片选择弹框 -->
     <model-bg-dialog ref="modelBg" @onChangeSuccess="onChangeSuccess"></model-bg-dialog>
@@ -94,6 +92,7 @@
 <script setup>
 import { ref, reactive, computed } from "vue";
 import { useStore } from "vuex";
+import { PREDEFINE_COLORS } from "@/config/constant";
 import ModelBgDialog from "./ModelBgDialog.vue";
 const store = useStore();
 const config = reactive({
@@ -102,30 +101,16 @@ const config = reactive({
   image: require("@/assets/image/model-bg-9.jpg"),
   viewImg: require("@/assets/image/view-1.png"),
   color: "rgba(212, 223, 224)",
-  widthSegments:0,
+  widthSegments: 0,
 });
+
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
   }),
 });
-const predefineColors = ref([
-  "#ff4500",
-  "#ff8c00",
-  "#ffd700",
-  "#90ee90",
-  "#00ced1",
-  "#1e90ff",
-  "#c71585",
-  "rgba(255, 69, 0, 0.68)",
-  "rgb(255, 120, 0)",
-  "hsv(51, 100, 98)",
-  "hsva(120, 40, 94, 0.5)",
-  "hsl(181, 100%, 37%)",
-  "hsla(209, 100%, 56%, 0.73)",
-  "#c7158577",
-]);
 const modelBg = ref(null);
+const predefineColors = PREDEFINE_COLORS;
 //切换类型
 const onChangeType = (type) => {
   config.type = type;
@@ -151,6 +136,11 @@ const onChangeImage = () => {
 const onChangeViewImage = () => {
   modelBg.value.showDialog("view-img");
 };
+// 颜色面板值发生变化
+const activeChangeColor = (color) => {
+  config.color = color;
+  state.modelApi.onSetSceneColor(config.color);
+};
 //选择颜色
 const onChangeColor = () => {
   state.modelApi.onSetSceneColor(config.color);
@@ -167,7 +157,7 @@ const onChangeBgSwitch = () => {
       state.modelApi.onSetSceneImage(image);
       break;
     case 3:
-	  state.modelApi.onSetSceneViewImage(viewImg);
+      state.modelApi.onSetSceneViewImage(viewImg);
       break;
     default:
       break;

@@ -117,7 +117,8 @@ const activeTab = ref("EditAttribute");
       background-color: #27282f;
     }
     .option {
-      padding: 0px 14px;
+      padding: 0px 18px;
+      box-sizing: border-box;
       cursor: pointer;
       color: #ccc;
       display: flex;
@@ -135,5 +136,8 @@ const activeTab = ref("EditAttribute");
 
 .el-slider{
   width: 96% !important;
+}
+.el-input-number{
+   width: 90px !important;
 }
 </style>

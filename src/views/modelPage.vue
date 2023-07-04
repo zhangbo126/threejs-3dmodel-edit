@@ -15,7 +15,7 @@
         </el-space>
       </div>
     </header>
-    <div class="model-container"  v-loading="loading">
+    <div class="model-container"  v-Loading="loading">
       <div id="model"></div>
       <div class="model-panel">
         <model-edit-panel v-if="!loading"></model-edit-panel>
