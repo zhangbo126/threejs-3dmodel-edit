@@ -32,7 +32,7 @@
 import { backgrundList, viewImageList } from "@/config/model.js";
 import { IMAGE_ERROR } from "@/config/constant.js";
 import { ref, computed } from "vue";
-import { message } from "ant-design-vue";
+import { ElMessage  } from 'element-plus';
 const emit = defineEmits(["onChangeSuccess"]);
 const visible = ref(false);
 const activeId = ref(null);
@@ -47,7 +47,7 @@ const showDialog = (typeStr) => {
 const onSubmit = () => {
   const model = imageList.value.find((v) => v.id == activeId.value);
   if (!model) {
-    return message.warning("请选择模型");
+    return ElMessage.warning("请选择模型");
   }
   emit("onChangeSuccess", model);
   visible.value = false;
