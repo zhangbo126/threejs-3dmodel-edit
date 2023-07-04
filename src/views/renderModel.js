@@ -187,6 +187,9 @@ class renderModel {
 		this.gridHelper.position.set(0, -.2, -.1)
 		this.gridHelper.visible = false
 		this.scene.add(this.gridHelper)
+
+		// const axesHelper = new THREE.AxesHelper( 5 );
+        // this.scene.add( axesHelper );
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -310,24 +313,24 @@ class renderModel {
 		this.model.rotation.z = 0
 	}
 	//设置网格辅助线位置 和颜色
-	onSetModelGridHelper({ x, y, z, gridHelper ,color}) {
+	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
 		this.gridHelper.visible = gridHelper
 		this.gridHelper.position.set(x, y, z)
 		this.gridHelper.material.color.set(color);
 	}
 	// 设置网格数量和大小
-	onSetModelGridHelperSize({ x, y, z, size, divisions ,color,gridHelper}) {
+	onSetModelGridHelperSize({ x, y, z, size, divisions, color, gridHelper }) {
 		// 需要先把辅助线移除然后在重新创建
 		this.scene.remove(this.gridHelper)
 		this.gridHelper.geometry.dispose()
 		this.gridHelper.material.dispose()
 		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
 		this.gridHelper.position.set(x, y, z)
-		this.gridHelper.material.linewidth =0.1
+		this.gridHelper.material.linewidth = 0.1
 		this.gridHelper.material.color.set(color);
-		this.gridHelper.visible= gridHelper
+		this.gridHelper.visible = gridHelper
 		this.scene.add(this.gridHelper)
-    
+
 	}
 
 }
