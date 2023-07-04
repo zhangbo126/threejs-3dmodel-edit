@@ -74,15 +74,6 @@
           :max="1"
         />
       </div>
-      <div class="option">
-        <el-space>
-          <el-icon><Eleme /></el-icon>
-          <span> 模型骨架 </span>
-        </el-space>
-      </div>
-      <div class="option">
-        <el-switch v-model="config.skeletonHelper" @change="onSetModelHelper" />
-      </div>
     </div>
   </div>
 </template>
@@ -97,7 +88,6 @@ const config = reactive({
   timeScale: 1, // 播放速度
   weight: 1, // 动作幅度
   animations: [],
-  skeletonHelper: false,
 });
 const optionDisabled = computed(() => {
   return config.visible ? "" : "disabled";
@@ -134,9 +124,6 @@ const onChangeAnimationType = ({ name }) => {
 const onUplateAnimation = () => {
   config.animations = state.modelAnimation;
   state.modelApi.onStartModelAnimaion(config);
-};
-const onSetModelHelper = () => {
-  state.modelApi.onSetModelHelper(config.skeletonHelper);
 };
 </script>
 <style scoped lang="scss"></style>

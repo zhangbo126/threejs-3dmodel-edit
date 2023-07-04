@@ -9,7 +9,6 @@ import GlobalProperties from "@/utils/globalProperties.js";
 import GlobalComponent from '@/utils/globalComponent'
 // 自定义全局指令
 import Directive from "@/utils/directive.js";
-import "ant-design-vue/dist/antd.css";
 import 'element-plus/theme-chalk/src/index.scss'
 import '@/style/index.less'
 const app = createApp(App)
