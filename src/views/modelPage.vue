@@ -15,17 +15,22 @@
         </el-space>
       </div>
     </header>
-    <div class="model-container"  v-Loading="loading">
-      <div id="model"></div>
+    <div class="model-container" v-Loading="loading">
+      <div id="model">
+        <div class="camera-icon">
+          <el-tooltip effect="dark" content="居中" placement="top">
+            <el-icon :size="18" color="#fff" @click="onResetCamera"> 
+              <Aim />
+            </el-icon>
+          </el-tooltip>
+        </div>
+      </div>
       <div class="model-panel">
         <model-edit-panel v-if="!loading"></model-edit-panel>
       </div>
     </div>
     <!-- 模型选择弹框 -->
-    <model-select-dialog
-      ref="select"
-      @onChangeSuccess="onChangeSuccess"
-    ></model-select-dialog>
+    <model-select-dialog ref="select" @onChangeSuccess="onChangeSuccess"></model-select-dialog>
   </div>
 </template>
 
@@ -46,6 +51,10 @@ const modelName = ref("默认模型");
 const onChangeModel = () => {
   select.value.showDialog();
 };
+// 重置相机位置
+const onResetCamera =()=>{
+  state.modelApi.onResetModelCamera();
+}
 //选择模型成功
 const onChangeSuccess = async (model) => {
   modelName.value = model.name;
@@ -72,7 +81,8 @@ onMounted(async () => {
 
 <style lang="less" scoped>
 .model-page {
-   width: 100%;
+  width: 100%;
+
   .model-header {
     height: 45px;
     width: 100%;
@@ -83,16 +93,26 @@ onMounted(async () => {
     align-items: center;
     box-sizing: border-box;
     padding: 0px 10px;
+
     .lr {
       display: flex;
     }
   }
+
   .model-container {
     display: flex;
   }
+
   #model {
-    width:calc(100% - 350px);
+    width: calc(100% - 350px);
     height: calc(100vh - 45px);
+    position: relative;
+    .camera-icon{
+     position: absolute;
+     top: 10px;
+     left: calc(100% - 50%);
+     cursor: pointer;
+    } 
   }
 }
 </style>
