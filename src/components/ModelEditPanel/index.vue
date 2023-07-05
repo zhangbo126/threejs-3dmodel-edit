@@ -25,6 +25,10 @@
       <div v-show="activeTab == 'EditAnimation'">
         <edit-animation></edit-animation>
       </div>
+      <!-- 属性 -->
+      <div v-show="activeTab == 'EditAttribute'">
+        <edit-attribute></edit-attribute>
+      </div>
       <!-- 场景 -->
       <div v-show="activeTab == 'EditScene'">
         <edit-scene></edit-scene>
@@ -37,6 +41,7 @@ import { ref } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditScene from "./EditScene.vue";
 import EditAnimation from "./EditAnimation.vue";
+import EditAttribute from "./EditAttribute.vue";
 const panelTabs = [
   {
     name: "背景",
@@ -49,12 +54,17 @@ const panelTabs = [
     icon: "VideoCameraFilled",
   },
   {
+    name: "模型属性",
+    key: "EditAttribute",
+    icon: "Box",
+  },
+  {
     name: "场景",
     key: "EditScene",
     icon: "DataAnalysis",
   },
 ];
-const activeTab = ref("EditAnimation");
+const activeTab = ref("EditAttribute");
 </script>
 <style lang="scss" scoped>
 .model-panel {
@@ -95,6 +105,7 @@ const activeTab = ref("EditAnimation");
     padding: 0px 20px;
     border-bottom: 1px solid #1b1c23;
     border-top: 1px solid #1b1c23;
+    box-sizing: border-box;
   }
   .disabled {
     opacity: 0.3;
@@ -103,15 +114,17 @@ const activeTab = ref("EditAnimation");
   .options {
     background-color: #1b1c23;
     .option-active {
-      background-color: #33343f;
+      background-color: #27282f;
     }
     .option {
-      padding: 0px 14px;
+      padding: 0px 18px;
+      box-sizing: border-box;
       cursor: pointer;
-      color: #fff;
+      color: #ccc;
       display: flex;
       align-items: center;
       height: 40px;
+      font-size:14px;
       .icon-name {
         display: flex;
         align-items: center;
@@ -123,5 +136,8 @@ const activeTab = ref("EditAnimation");
 
 .el-slider{
   width: 96% !important;
+}
+.el-input-number{
+   width: 90px !important;
 }
 </style>

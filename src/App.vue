@@ -1,11 +1,9 @@
 <template>
-  <a-config-provider :locale="zhCN" componentSize="small">
+  <el-config-provider >
       <router-view />
-  </a-config-provider>
+  </el-config-provider>
 </template>
 <script setup>
-import zhCN from "ant-design-vue/es/locale/zh_CN";
 </script>
 <style lang="less">
-
 </style>

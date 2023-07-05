@@ -13,7 +13,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import { ElMessage  } from 'element-plus';
+import { ElMessage } from 'element-plus';
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -57,6 +57,10 @@ class renderModel {
 		}
 		// 模型骨架
 		this.skeletonHelper
+		// 网格辅助线
+		this.gridHelper
+		// 轴旋转动画对象
+		this.rotationAnimate
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -72,6 +76,8 @@ class renderModel {
 			this.initDirectionalLight()
 			// 创建灯光
 			this.initAmbientLightt()
+			// 创建辅助线
+			this.createHelper()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-2.glb', type: 'glb' })
 			//监听场景大小改变，跳转渲染尺寸
@@ -153,15 +159,14 @@ class renderModel {
 					default:
 						break;
 				}
-				// console.log(gltf)
-				// console.log(this.model.position)
+
 				// this.model.scale.set(1.2,1.2,2)
 				// 设置相机位置
-				this.camera.position.set(0, 0, 6)
+				this.camera.position.set(0, 2, 6)
 				// 设置相机坐标系
 				this.camera.lookAt(0, 0, 0)
 				// 设置模型位置 
-				// this.model.position.set(0, -.5, 0)
+				// this.model.position.set(0, 0, 1)
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
@@ -175,6 +180,17 @@ class renderModel {
 			})
 		})
 	}
+	// 创建辅助线
+	createHelper() {
+		//网格辅助线
+		this.gridHelper = new THREE.GridHelper(4, 10, '#1395E6', '#1395E6');
+		this.gridHelper.position.set(0, -.2, -.1)
+		this.gridHelper.visible = false
+		this.scene.add(this.gridHelper)
+
+		// const axesHelper = new THREE.AxesHelper( 5 );
+        // this.scene.add( axesHelper );
+	}
 	// 切换模型
 	onSwitchModel(model) {
 		return new Promise(async (reslove, reject) => {
@@ -186,7 +202,7 @@ class renderModel {
 						v.material.dispose();
 					}
 				})
-				this.skeletonHelper.visible=false
+				this.skeletonHelper.visible = false
 				this.onClearSceneBg()
 				this.scene.remove(this.model)
 				// 加载模型
@@ -221,7 +237,7 @@ class renderModel {
 	// 设置全景图
 	onSetSceneViewImage(url) {
 		this.onClearSceneBg()
-		const sphereBufferGeometry = new THREE.SphereBufferGeometry(60, 0, 0);
+		const sphereBufferGeometry = new THREE.SphereBufferGeometry(50, 0, 0);
 		sphereBufferGeometry.scale(-2, 1, 1);
 		const material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(url)
@@ -268,11 +284,54 @@ class renderModel {
 	onSetModelHelper(visible) {
 		this.skeletonHelper.visible = visible
 	}
+
 	// 清除动画
 	onClearAnimation() {
 		if (!this.animateClipAction) return
 		this.animationMixer.stopAllAction();
 		this.animationMixer.update(0);
 	}
+	// 设置模型轴旋转
+	onSetModelRotateOnAxis(type, flag) {
+		cancelAnimationFrame(this.rotationAnimate)
+		// 每次旋转的角度
+		const maxAxis = Math.PI / 2
+		let rotationSpeed = flag ? 0.08 : -0.08
+		let maxRotate = 0
+		const animate = () => {
+			this.rotationAnimate = requestAnimationFrame(animate)
+			if (Math.abs(maxRotate) >= maxAxis) return cancelAnimationFrame(this.rotationAnimate)
+			this.model.rotation[type] += rotationSpeed;
+			maxRotate += rotationSpeed
+		}
+		animate()
+	}
+	//重置模型轴位置
+	onResultModelRotateOnAxis() {
+		this.model.rotation.x = 0
+		this.model.rotation.y = 0
+		this.model.rotation.z = 0
+	}
+	//设置网格辅助线位置 和颜色
+	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
+		this.gridHelper.visible = gridHelper
+		this.gridHelper.position.set(x, y, z)
+		this.gridHelper.material.color.set(color);
+	}
+	// 设置网格数量和大小
+	onSetModelGridHelperSize({ x, y, z, size, divisions, color, gridHelper }) {
+		// 需要先把辅助线移除然后在重新创建
+		this.scene.remove(this.gridHelper)
+		this.gridHelper.geometry.dispose()
+		this.gridHelper.material.dispose()
+		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
+		this.gridHelper.position.set(x, y, z)
+		this.gridHelper.material.linewidth = 0.1
+		this.gridHelper.material.color.set(color);
+		this.gridHelper.visible = gridHelper
+		this.scene.add(this.gridHelper)
+
+	}
+
 }
 export default renderModel
