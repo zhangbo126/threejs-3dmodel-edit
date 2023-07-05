@@ -29,6 +29,10 @@
       <div v-show="activeTab == 'EditAttribute'">
         <edit-attribute></edit-attribute>
       </div>
+      <!-- 灯光 -->
+      <div v-show="activeTab == 'EditLight'">
+        <edit-light></edit-light>
+      </div>
       <!-- 场景 -->
       <div v-show="activeTab == 'EditScene'">
         <edit-scene></edit-scene>
@@ -42,6 +46,7 @@ import EditBackground from "./EditBackground.vue";
 import EditScene from "./EditScene.vue";
 import EditAnimation from "./EditAnimation.vue";
 import EditAttribute from "./EditAttribute.vue";
+import EditLight from "./EditLight.vue";
 const panelTabs = [
   {
     name: "背景",
@@ -59,12 +64,17 @@ const panelTabs = [
     icon: "Box",
   },
   {
+    name: "灯光",
+    key: "EditLight",
+    icon: "Sunrise",
+  },
+  {
     name: "场景",
     key: "EditScene",
     icon: "DataAnalysis",
   },
 ];
-const activeTab = ref("EditAttribute");
+const activeTab = ref("EditLight");
 </script>
 <style lang="scss" scoped>
 .model-panel {
@@ -115,6 +125,9 @@ const activeTab = ref("EditAttribute");
     background-color: #1b1c23;
     .option-active {
       background-color: #27282f;
+    }
+    .space-between{
+       justify-content: space-between;
     }
     .option {
       padding: 0px 18px;
