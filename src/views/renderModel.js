@@ -63,6 +63,8 @@ class renderModel {
 		this.rotationAnimate
 		// 环境光
 		this.ambientLight
+		//环境光贴图
+		this.ambientLightProbe
 		//平行光
 		this.directionalLight
 		// 平行光辅助线
@@ -211,10 +213,10 @@ class renderModel {
 	// 创建光源
 	createLight() {
 		// 创建环境光
-		this.ambientLight = new THREE.AmbientLight(0x404040, 0)
-		// this.scene.add(this.ambientLight)
+		this.ambientLight = new THREE.AmbientLight(0xffffff, 1)
+		this.scene.add(this.ambientLight)
 		// 创建平行光
-		this.directionalLight = new THREE.DirectionalLight(0xffffff , .5)
+		this.directionalLight = new THREE.DirectionalLight(0xffffff ,1)
 		this.directionalLight.position.set(1,1,1)
 		this.scene.add(this.directionalLight)
 		//创建平行光辅助线
@@ -385,6 +387,12 @@ class renderModel {
 		this.axesHelper = new THREE.AxesHelper(axesSize);
 		this.axesHelper.visible = axesHelper
 		this.scene.add(this.axesHelper);
+	}
+	// 设置环境光
+	onSetModelAmbientLight({ambientLight,ambientLightColor,ambientLightIntensity}){
+		this.ambientLight.visible = ambientLight
+		this.ambientLight.intensity = ambientLightIntensity
+		this.ambientLight.color.set(ambientLightColor)
 	}
 
 }

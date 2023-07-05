@@ -18,3 +18,4 @@ export const PREDEFINE_COLORS = [
 	"hsla(209, 100%, 56%, 0.73)",
 	"#c7158577",
 ]
+

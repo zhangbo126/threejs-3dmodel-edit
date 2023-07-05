@@ -105,4 +105,52 @@ for (let i = 0; i <= 10; i++) {
 	viewImageList.push(image)
 }
 
-export { modelList, backgrundList, viewImageList }
+
+//环境光贴图
+const ambientLightList = [
+	{
+		name: '餐厅',
+		id:1,
+		url: 'threeFile/hdr/hdr-1.hdr',
+		icon:require('@/assets/image/light-1.png')
+	},
+	{
+		name: '黑暗空间',
+		id:2,
+		url: 'threeFile/hdr/hdr-2.hdr',
+		icon:require('@/assets/image/light-2.png')
+	},
+	{
+		name: '荒漠',
+		id:3,
+		url: 'threeFile/hdr/hdr-3.hdr',
+		icon:require('@/assets/image/light-3.png')
+	},
+	{
+		name: '夜晚',
+		id:4,
+		url: 'threeFile/hdr/hdr-4.hdr',
+		icon:require('@/assets/image/light-4.png')
+	},
+	{
+		name: '剧院',
+		id:5,
+		url: 'threeFile/hdr/hdr-5.hdr',
+		icon:require('@/assets/image/light-5.png')
+	},
+	{
+		name: '寒冬',
+		id:7,
+		url: 'threeFile/hdr/hdr-7.hdr',
+		icon:require('@/assets/image/light-7.png')
+	},
+	{
+		name: '办公厅',
+		id:8,
+		url: 'threeFile/hdr/hdr-8.hdr',
+		icon:require('@/assets/image/light-8.png')
+	},
+]
+
+
+export { modelList, backgrundList, viewImageList ,ambientLightList}
