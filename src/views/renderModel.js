@@ -29,8 +29,6 @@ class renderModel {
 		this.model
 		//平行光
 		this.hemisphereLight
-		// 灯光
-		this.ambientLight
 		//文件加载器类型
 		this.fileLoaderMap = {
 			'glb': new GLTFLoader(),
@@ -59,8 +57,18 @@ class renderModel {
 		this.skeletonHelper
 		// 网格辅助线
 		this.gridHelper
+		// 坐标轴辅助线
+		this.axesHelper
 		// 轴旋转动画对象
 		this.rotationAnimate
+		// 环境光
+		this.ambientLight
+		//环境光贴图
+		this.ambientLightProbe
+		//平行光
+		this.directionalLight
+		// 平行光辅助线
+		this.directionalLightHelper
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -72,12 +80,10 @@ class renderModel {
 			this.initRender()
 			//初始化控制器，控制摄像头,控制器一定要在渲染器后
 			this.initControls()
-			// 创建平行光
-			this.initDirectionalLight()
-			// 创建灯光
-			this.initAmbientLightt()
 			// 创建辅助线
 			this.createHelper()
+			// 创建灯光
+			this.createLight()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-2.glb', type: 'glb' })
 			//监听场景大小改变，跳转渲染尺寸
@@ -109,17 +115,7 @@ class renderModel {
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
 	}
-	// 创建平行光
-	initDirectionalLight() {
-		this.hemisphereLight = new THREE.HemisphereLight(0xffffff, '#0099cc', 1);
-		this.hemisphereLight.position.set(0, 20, 0);
-		this.scene.add(this.hemisphereLight)
-	}
-	// 创建灯光
-	initAmbientLightt() {
-		this.ambientLight = new THREE.AmbientLight(0xffffff);
-		this.scene.add(this.hemisphereLight)
-	}
+
 	// 创建平行光辅助线
 	createDirectionalLightHelper() {
 
@@ -144,6 +140,11 @@ class renderModel {
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations
+						this.model.traverse((v) => {
+							if (v.isMesh) {
+								v.castShadow = true
+							}
+						})
 						break;
 					case 'fbx':
 						result.scale.set(.006, .006, .006)
@@ -187,9 +188,40 @@ class renderModel {
 		this.gridHelper.position.set(0, -.2, -.1)
 		this.gridHelper.visible = false
 		this.scene.add(this.gridHelper)
+		// 坐标轴辅助线
+		this.axesHelper = new THREE.AxesHelper(2);
+		this.axesHelper.visible = false
+		this.scene.add(this.axesHelper);
 
-		// const axesHelper = new THREE.AxesHelper( 5 );
-        // this.scene.add( axesHelper );
+		// // 创建光源
+		// var light = new THREE.DirectionalLight(0xffffff, 1);
+		// light.position.set(-3, 10, -10);
+		// this.scene.add(light);
+		// // 开启阴影
+		// this.renderer.shadowMap.enabled = true;
+		// light.castShadow = true;
+
+		// // // 创建地面
+		// var groundGeometry = new THREE.PlaneGeometry(10, 10);
+		// var groundMaterial = new THREE.MeshStandardMaterial({ color: 0x999999 ,depthWrite:false});
+		// var ground = new THREE.Mesh(groundGeometry, groundMaterial);
+		// ground.rotation.x = -Math.PI / 2
+		// ground.receiveShadow = true; // 让地面接收阴影
+		// console.log(ground)
+		// this.scene.add(ground);
+	}
+	// 创建光源
+	createLight() {
+		// 创建环境光
+		this.ambientLight = new THREE.AmbientLight(0xffffff, 1)
+		this.scene.add(this.ambientLight)
+		// 创建平行光
+		this.directionalLight = new THREE.DirectionalLight(0xffffff ,1)
+		this.directionalLight.position.set(1,1,1)
+		this.scene.add(this.directionalLight)
+		//创建平行光辅助线
+		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight,.4)
+		this.scene.add(this.directionalLightHelper)
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -312,6 +344,21 @@ class renderModel {
 		this.model.rotation.y = 0
 		this.model.rotation.z = 0
 	}
+	// 设置模型位置
+	onSetModelPosition({ positionX, positionY, positionZ }) {
+		this.model.position.set(positionX, positionY, positionZ)
+	}
+	// 重置模型位置
+	onResultModelPosition() {
+		this.model.position.set(0, 0, 0)
+	}
+	// 重置相机位置
+	onResetModelCamera() {
+		// 设置相机位置
+		this.camera.position.set(0, 2, 6)
+		// 设置相机坐标系
+		this.camera.lookAt(0, 0, 0)
+	}
 	//设置网格辅助线位置 和颜色
 	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
 		this.gridHelper.visible = gridHelper
@@ -330,7 +377,22 @@ class renderModel {
 		this.gridHelper.material.color.set(color);
 		this.gridHelper.visible = gridHelper
 		this.scene.add(this.gridHelper)
-
+	}
+	// 设置坐标轴辅助线
+	onSetModelAxesHelper({ axesHelper, axesSize }) {
+		// 需要先把辅助线移除然后在重新创建
+		this.scene.remove(this.axesHelper)
+		this.axesHelper.geometry.dispose()
+		this.axesHelper.material.dispose()
+		this.axesHelper = new THREE.AxesHelper(axesSize);
+		this.axesHelper.visible = axesHelper
+		this.scene.add(this.axesHelper);
+	}
+	// 设置环境光
+	onSetModelAmbientLight({ambientLight,ambientLightColor,ambientLightIntensity}){
+		this.ambientLight.visible = ambientLight
+		this.ambientLight.intensity = ambientLightIntensity
+		this.ambientLight.color.set(ambientLightColor)
 	}
 
 }
