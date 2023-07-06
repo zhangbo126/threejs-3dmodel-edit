@@ -58,3 +58,20 @@ export function debounce(func, wait = 500, immediate = false) {
 		}, wait)
 	}
 }
+
+
+/**
+ * 计算光源垂直和水平方向的定位
+ *
+ * @param {Number} horizontal 水平方向值
+ * @param {Number} vertical  垂直方向值
+ * @param {Number} distance  光源距离
+ * @return {x , y , z}  返回光源坐标轴位置
+ */
+
+export function lightPosition(horizontal, vertical, distance) {
+	const x = distance * Math.sin(horizontal) * Math.cos(vertical);
+	const y = distance * Math.sin(vertical);
+	const z = distance * Math.cos(horizontal) * Math.cos(vertical);
+	return {x,y,z}
+}
