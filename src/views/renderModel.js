@@ -14,6 +14,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { ElMessage } from 'element-plus';
+import { lightPosition } from '@/utils/utilityFunction'
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -216,11 +217,14 @@ class renderModel {
 		this.ambientLight = new THREE.AmbientLight(0xffffff, 1)
 		this.scene.add(this.ambientLight)
 		// 创建平行光
-		this.directionalLight = new THREE.DirectionalLight(0xffffff ,1)
-		this.directionalLight.position.set(1,1,1)
+		this.directionalLight = new THREE.DirectionalLight('#fff', 1)
+		this.directionalLight.position.set(-1.44, 2.2, 1)
+		this.directionalLight.castShadow = true
+		this.directionalLight.visible = false
 		this.scene.add(this.directionalLight)
 		//创建平行光辅助线
-		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight,.4)
+		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .5)
+		this.directionalLightHelper.visible = false
 		this.scene.add(this.directionalLightHelper)
 	}
 	// 切换模型
@@ -269,13 +273,12 @@ class renderModel {
 	// 设置全景图
 	onSetSceneViewImage(url) {
 		this.onClearSceneBg()
-		const sphereBufferGeometry = new THREE.SphereBufferGeometry(50, 0, 0);
-		sphereBufferGeometry.scale(-2, 1, 1);
+		const sphereBufferGeometry = new THREE.SphereGeometry(40, 32, 16);
+		sphereBufferGeometry.scale(-1, -1, -1);
 		const material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(url)
 		});
 		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
-		// this.scene.background = new THREE.Color( 0xf0f0f0 );
 		this.scene.add(this.viewMesh);
 
 	}
@@ -389,10 +392,20 @@ class renderModel {
 		this.scene.add(this.axesHelper);
 	}
 	// 设置环境光
-	onSetModelAmbientLight({ambientLight,ambientLightColor,ambientLightIntensity}){
+	onSetModelAmbientLight({ ambientLight, ambientLightColor, ambientLightIntensity }) {
 		this.ambientLight.visible = ambientLight
 		this.ambientLight.intensity = ambientLightIntensity
 		this.ambientLight.color.set(ambientLightColor)
+	}
+	// 设置平行光
+	onSetModelDirectionalLight({ directionalHorizontal, directionalVertical, directionalSistance, directionalLight, directionalLightColor, directionalLightIntensity }) {
+		this.directionalLight.visible = directionalLight
+		this.directionalLightHelper.visible = directionalLight
+		this.directionalLight.intensity = directionalLightIntensity
+		this.directionalLight.color.set(directionalLightColor)
+		const { x, y, z } = lightPosition(directionalHorizontal, directionalVertical, directionalSistance)
+		this.directionalLight.position.set(x, y, z)
+		this.directionalLightHelper.update()
 	}
 
 }
