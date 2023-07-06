@@ -70,6 +70,14 @@ class renderModel {
 		this.directionalLight
 		// 平行光辅助线
 		this.directionalLightHelper
+		// 点光源
+		this.pointLight
+		//点光源辅助线
+		this.pointLightHelper
+		//聚光灯
+		this.spotLight
+		//聚光灯辅助线
+		this.spotLightHelper
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -96,6 +104,7 @@ class renderModel {
 	initScene() {
 		this.scene = new THREE.Scene()
 		this.scene.background = new THREE.Color('rgba(212, 223, 224)');
+
 	}
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
@@ -185,7 +194,7 @@ class renderModel {
 	// 创建辅助线
 	createHelper() {
 		//网格辅助线
-		this.gridHelper = new THREE.GridHelper(4, 10, '#1395E6', '#1395E6');
+		this.gridHelper = new THREE.GridHelper(4, 10, 'rgb(193,193,193)', 'rgb(193,193,193)');
 		this.gridHelper.position.set(0, -.2, -.1)
 		this.gridHelper.visible = false
 		this.scene.add(this.gridHelper)
@@ -198,34 +207,59 @@ class renderModel {
 		// var light = new THREE.DirectionalLight(0xffffff, 1);
 		// light.position.set(-3, 10, -10);
 		// this.scene.add(light);
-		// // 开启阴影
-		// this.renderer.shadowMap.enabled = true;
+		// 开启阴影
+		this.renderer.shadowMap.enabled = true;
 		// light.castShadow = true;
 
 		// // // 创建地面
-		// var groundGeometry = new THREE.PlaneGeometry(10, 10);
-		// var groundMaterial = new THREE.MeshStandardMaterial({ color: 0x999999 ,depthWrite:false});
-		// var ground = new THREE.Mesh(groundGeometry, groundMaterial);
-		// ground.rotation.x = -Math.PI / 2
-		// ground.receiveShadow = true; // 让地面接收阴影
-		// console.log(ground)
-		// this.scene.add(ground);
+		var groundGeometry = new THREE.PlaneGeometry(100, 100);
+		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#fff' });
+		var ground = new THREE.Mesh(groundGeometry, groundMaterial);
+		ground.rotation.x = -Math.PI / 2
+		ground.receiveShadow = true; // 让地面接收阴影
+		this.scene.add(ground);
 	}
 	// 创建光源
 	createLight() {
 		// 创建环境光
-		this.ambientLight = new THREE.AmbientLight(0xffffff, 1)
+		this.ambientLight = new THREE.AmbientLight('#fff', .1)
 		this.scene.add(this.ambientLight)
+
 		// 创建平行光
-		this.directionalLight = new THREE.DirectionalLight('#fff', 1)
+		this.directionalLight = new THREE.DirectionalLight('#1E90FF', 1)
 		this.directionalLight.position.set(-1.44, 2.2, 1)
 		this.directionalLight.castShadow = true
 		this.directionalLight.visible = false
 		this.scene.add(this.directionalLight)
-		//创建平行光辅助线
+		// 创建平行光辅助线
 		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .5)
 		this.directionalLightHelper.visible = false
 		this.scene.add(this.directionalLightHelper)
+
+		// 创建点光源
+		this.pointLight = new THREE.PointLight(0xff0000, 1, 100)
+		this.pointLight.visible = false
+		this.scene.add(this.pointLight)
+		// 创建点光源辅助线
+		this.pointLightHelper = new THREE.PointLightHelper(this.pointLight, .5)
+		this.pointLightHelper.visible = false
+		this.scene.add(this.pointLightHelper)
+
+		//  创建聚光灯
+		this.spotLight = new THREE.SpotLight('#0F1B1A', 100);
+		this.spotLight.visible = false
+		this.spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
+		// this.spotLight.map = new THREE.TextureLoader().load('https://threejs.org/examples/textures/disturb.jpg');
+		this.spotLight.decay = 2;
+		this.spotLight.shadow.mapSize.width = 1920;
+		this.spotLight.shadow.mapSize.height = 1080;
+		this.spotLight.shadow.camera.near = 1;
+		this.spotLight.shadow.camera.far = 10;
+		this.scene.add(this.spotLight);
+		//创建聚光灯辅助线
+		this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
+		this.spotLightHelper.visible = false
+		this.scene.add(this.spotLightHelper)
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -398,15 +432,39 @@ class renderModel {
 		this.ambientLight.color.set(ambientLightColor)
 	}
 	// 设置平行光
-	onSetModelDirectionalLight({ directionalHorizontal, directionalVertical, directionalSistance, directionalLight, directionalLightColor, directionalLightIntensity }) {
+	onSetModelDirectionalLight({ directionaShadow, directionalHorizontal, directionalVertical, directionalSistance, directionalLight, directionalLightColor, directionalLightIntensity }) {
 		this.directionalLight.visible = directionalLight
 		this.directionalLightHelper.visible = directionalLight
 		this.directionalLight.intensity = directionalLightIntensity
+		this.directionalLight.castShadow = directionaShadow
 		this.directionalLight.color.set(directionalLightColor)
 		const { x, y, z } = lightPosition(directionalHorizontal, directionalVertical, directionalSistance)
 		this.directionalLight.position.set(x, y, z)
 		this.directionalLightHelper.update()
 	}
-
+	// 设置点光源
+	onSetModelPointLight({ pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity }) {
+		this.pointLight.visible = pointLight
+		this.pointLightHelper.visible = pointLight
+		this.pointLight.intensity = pointLightIntensity
+		this.pointLight.color.set(pointLightColor)
+		const { x, y, z } = lightPosition(pointHorizontal, pointVertical, pointSistance)
+		this.pointLight.position.set(x, y, z)
+		this.pointLightHelper.update()
+	}
+	// 设置聚光灯
+	onSetModelSpotLight({ spotCastShadow, spotFocus, spotPenumbra, spotAngle, spotLight, spotLightColor, spotLightIntensity, spotHorizontal, spotVertical, spotSistance }) {
+		this.spotLight.visible = spotLight
+		this.spotLightHelper.visible = spotLight
+		this.spotLight.intensity = spotLightIntensity
+		this.spotLight.angle = spotAngle
+		this.spotLight.penumbra = spotPenumbra
+		this.spotLight.shadow.focus = spotFocus
+		this.spotLight.castShadow = spotCastShadow
+		this.spotLight.color.set(spotLightColor)
+		const { x, y, z } = lightPosition(spotHorizontal, spotVertical, spotSistance)
+		this.spotLight.position.set(x, y, z)
+		this.spotLightHelper.update()
+	}
 }
 export default renderModel

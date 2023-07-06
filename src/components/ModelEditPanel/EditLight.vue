@@ -3,107 +3,334 @@
     <div class="header">
       <span>模型灯光</span>
     </div>
-    <!-- 环境光 -->
-    <div class="options">
-      <div class="option space-between">
-        <el-space>
-          <el-icon>
-            <Setting />
-          </el-icon>
-          <span>环境光</span>
-        </el-space>
-        <el-switch v-model="config.ambientLight" @change="onChangeAmbientLight" />
-      </div>
-      <div class="option" :class="ambientDisabled">
-        <div class="color">
-          <el-color-picker color-format="hex" v-model="config.ambientLightColor" :predefine="predefineColors"
-            @change="onChangeAmbientLight" @active-change="changeAmbientLightColor" />
+    <el-scrollbar height="calc(100vh - 130px)">
+      <!-- 环境光 -->
+      <div class="options">
+        <div class="option space-between">
+          <el-space>
+            <el-icon>
+              <Odometer />
+            </el-icon>
+            <span>环境光</span>
+          </el-space>
+          <el-switch v-model="config.ambientLight" @change="onChangeAmbientLight" />
         </div>
-        <div class="silder">
-          <el-slider @change="onChangeAmbientLight" v-model="config.ambientLightIntensity" :min="-5" :max="5"
-            :step="0.01" />
-        </div>
-      </div>
-    </div>
-    <!-- 平行光 -->
-    <div class="options">
-      <div class="option space-between">
-        <el-space>
-          <el-icon>
-            <Setting />
-          </el-icon>
-          <span>平行光</span>
-        </el-space>
-        <el-switch v-model="config.directionalLight" @change="onChangeDirectionalLight" />
-      </div>
-      <div class="option" :class="directionaDisabled">
-        <div class="color">
-          <el-color-picker color-format="hex" v-model="config.directionalLightColor" :predefine="predefineColors"
-            @change="onChangeDirectionalLight" @active-change="changeDirectionalLightColor" />
-        </div>
-        <div class="silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalLightIntensity" :min="-5" :max="5"
-            :step="0.01" />
+        <div class="option" :class="ambientDisabled">
+          <div class="color">
+            <el-color-picker
+              color-format="hex"
+              v-model="config.ambientLightColor"
+              :predefine="predefineColors"
+              @change="onChangeAmbientLight"
+              @active-change="changeAmbientLightColor"
+            />
+          </div>
+          <div class="silder">
+            <el-slider
+              @change="onChangeAmbientLight"
+              v-model="config.ambientLightIntensity"
+              :min="-5"
+              :max="5"
+              :step="0.01"
+            />
+          </div>
         </div>
       </div>
-      <!-- 水平方向 -->
-      <div class="option" :class="directionaDisabled">
-        <div class="grid-txt">
-          <el-button type="text">水平方向</el-button>
+      <!-- 平行光 -->
+      <div class="options">
+        <div class="option space-between">
+          <el-space>
+            <el-icon><SetUp /></el-icon>
+            <span>平行光</span>
+          </el-space>
+          <el-switch
+            v-model="config.directionalLight"
+            @change="onChangeDirectionalLight"
+          />
         </div>
-        <div class="grid-silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalHorizontal" :min="-10" :max="10"
-            :step="0.01" />
+        <div class="option" :class="directionaDisabled">
+          <div class="color">
+            <el-color-picker
+              color-format="hex"
+              v-model="config.directionalLightColor"
+              :predefine="predefineColors"
+              @change="onChangeDirectionalLight"
+              @active-change="changeDirectionalLightColor"
+            />
+          </div>
+          <div class="silder">
+            <el-slider
+              @change="onChangeDirectionalLight"
+              v-model="config.directionalLightIntensity"
+              :min="-5"
+              :max="5"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 阴影 -->
+        <div class="option" :class="directionaDisabled">
+          <div class="grid-txt">
+            <el-button type="text">是否开启阴影</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-switch
+              v-model="config.directionaShadow"
+              @change="onChangeDirectionalLight"
+            />
+          </div>
+        </div>
+        <!-- 水平方向 -->
+        <div class="option" :class="directionaDisabled">
+          <div class="grid-txt">
+            <el-button type="text">水平方向</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeDirectionalLight"
+              v-model="config.directionalHorizontal"
+              :min="-10"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 垂直方向方向 -->
+        <div class="option" :class="directionaDisabled">
+          <div class="grid-txt">
+            <el-button type="text">垂直方向</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeDirectionalLight"
+              v-model="config.directionalVertical"
+              :min="-10"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 光源距离 -->
+        <div class="option" :class="directionaDisabled">
+          <div class="grid-txt">
+            <el-button type="text">光源距离</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeDirectionalLight"
+              v-model="config.directionalSistance"
+              :min="0"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
         </div>
       </div>
-      <!-- 垂直方向方向 -->
-      <div class="option" :class="directionaDisabled">
-        <div class="grid-txt">
-          <el-button type="text">垂直方向</el-button>
+      <!-- 点光源 -->
+      <div class="options">
+        <div class="option space-between">
+          <el-space>
+            <el-icon><Place /></el-icon>
+            <span>点光源</span>
+          </el-space>
+          <el-switch v-model="config.pointLight" @change="onChangePointLight" />
         </div>
-        <div class="grid-silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalVertical" :min="-10" :max="10"
-            :step="0.01" />
+        <div class="option" :class="pointDisabled">
+          <div class="color">
+            <el-color-picker
+              color-format="hex"
+              v-model="config.pointLightColor"
+              :predefine="predefineColors"
+              @change="onChangePointLight"
+              @active-change="changePointLightColor"
+            />
+          </div>
+          <div class="silder">
+            <el-slider
+              @change="onChangePointLight"
+              v-model="config.pointLightIntensity"
+              :min="-15"
+              :max="15"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 水平方向 -->
+        <div class="option" :class="pointDisabled">
+          <div class="grid-txt">
+            <el-button type="text">水平方向</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangePointLight"
+              v-model="config.pointHorizontal"
+              :min="-10"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 垂直方向方向 -->
+        <div class="option" :class="pointDisabled">
+          <div class="grid-txt">
+            <el-button type="text">垂直方向</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangePointLight"
+              v-model="config.pointVertical"
+              :min="-10"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 光源距离 -->
+        <div class="option" :class="pointDisabled">
+          <div class="grid-txt">
+            <el-button type="text">光源距离</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangePointLight"
+              v-model="config.pointSistance"
+              :min="0"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
         </div>
       </div>
-      <!-- 光源距离 -->
-      <div class="option" :class="directionaDisabled">
-        <div class="grid-txt">
-          <el-button type="text">光源距离</el-button>
+      <!-- 聚光灯 -->
+      <div class="options">
+        <div class="option space-between">
+          <el-space>
+            <el-icon><Orange /></el-icon>
+            <span>聚光灯</span>
+          </el-space>
+          <el-switch v-model="config.spotLight" @change="onChangeSpotLight" />
         </div>
-        <div class="grid-silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalSistance" :min="0" :max="10"
-            :step="0.01" />
+        <div class="option" :class="spotDisabled">
+          <div class="color">
+            <el-color-picker
+              color-format="hex"
+              v-model="config.spotLightColor"
+              :predefine="predefineColors"
+              @change="onChangeSpotLight"
+              @active-change="changeSpotLightColor"
+            />
+          </div>
+          <div class="silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotLightIntensity"
+              :min="0"
+              :max="500"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 阴影 -->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">是否开启阴影</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-switch v-model="config.spotCastShadow" @change="onChangeSpotLight" />
+          </div>
+        </div>
+        <!-- 水平方向 -->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">水平方向</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotHorizontal"
+              :min="-10"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 垂直方向方向 -->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">垂直方向</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotVertical"
+              :min="-10"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 光源距离 -->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">光源距离</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotSistance"
+              :min="0"
+              :max="10"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 光线照射范围 -->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">光线照射范围</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotAngle"
+              :min="0"
+              :max="2"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 边缘聚光度 -->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">边缘聚光度</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotPenumbra"
+              :min="0"
+              :max="1"
+              :step="0.01"
+            />
+          </div>
+        </div>
+        <!-- 聚光度 强度-->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">投影聚焦度</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotFocus"
+              :min="0"
+              :max="3"
+              :step="0.01"
+            />
+          </div>
         </div>
       </div>
-      <!-- <div class="option" :class="directionaDisabled">
-        <div class="grid-txt">
-          <el-button type="text">X 轴</el-button>
-        </div>
-        <div class="grid-silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalLightX" :min="-100" :max="100"
-            :step="0.01" />
-        </div>
-      </div>
-      <div class="option" :class="directionaDisabled">
-        <div class="grid-txt">
-          <el-button type="text">Y 轴</el-button>
-        </div>
-        <div class="grid-silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalLightY" :min="-20" :max="20"
-            :step="0.01" />
-        </div>
-      </div>
-      <div class="option" :class="directionaDisabled">
-        <div class="grid-txt">
-          <el-button type="text">Z 轴</el-button>
-        </div>
-        <div class="grid-silder">
-          <el-slider @change="onChangeDirectionalLight" v-model="config.directionalLightZ" :min="-100" :max="100"
-            :step="0.01" />
-        </div>
-      </div> -->
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -113,16 +340,36 @@ import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
 const store = useStore();
 const config = reactive({
+  //环境光
   ambientLight: true,
-  ambientLightColor: "#fff",  
-  ambientLightIntensity: 1,
+  ambientLightColor: "#fff",
+  ambientLightIntensity: 0.1,
+  //平行光
   directionalLight: false,
-  directionalLightColor: "#fff",
+  directionalLightColor: "#1E90FF",
   directionalLightIntensity: 1,
-  directionalHorizontal:0,
-  directionalVertical:0,
-  directionalSistance:2
-
+  directionalHorizontal: -1.26,
+  directionalVertical: -3.85,
+  directionalSistance: 2.98,
+  directionaShadow: true,
+  //点光源
+  pointLight: false,
+  pointLightColor: "#1E90FF",
+  pointLightIntensity: 1,
+  pointHorizontal: -4.21,
+  pointVertical: -4.1,
+  pointSistance: 2.53,
+  //聚光灯
+  spotLight: false,
+  spotLightColor: "#0F1B1A",
+  spotLightIntensity: 30,
+  spotHorizontal: -3.49,
+  spotVertical: -4.37,
+  spotSistance: 3.29,
+  spotAngle: 0.326725635973338,
+  spotPenumbra: 1,
+  spotFocus: 1,
+  spotCastShadow: true,
 });
 
 const predefineColors = PREDEFINE_COLORS;
@@ -134,13 +381,21 @@ const directionaDisabled = computed(() => {
   const { directionalLight } = config;
   return directionalLight ? "" : "disabled";
 });
+const pointDisabled = computed(() => {
+  const { pointLight } = config;
+  return pointLight ? "" : "disabled";
+});
+const spotDisabled = computed(() => {
+  const { spotLight } = config;
+  return spotLight ? "" : "disabled";
+});
 
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
-  })
+  }),
 });
-const changeAmbientLightColor = ambientLightColor => {
+const changeAmbientLightColor = (ambientLightColor) => {
   config.ambientLightColor = ambientLightColor;
   state.modelApi.onSetModelAmbientLight(config);
 };
@@ -150,7 +405,7 @@ const onChangeAmbientLight = () => {
   state.modelApi.onSetModelAmbientLight(config);
 };
 
-const changeDirectionalLightColor = directionalLightColor => {
+const changeDirectionalLightColor = (directionalLightColor) => {
   config.directionalLightColor = directionalLightColor;
   state.modelApi.onSetModelDirectionalLight(config);
 };
@@ -158,10 +413,33 @@ const changeDirectionalLightColor = directionalLightColor => {
 // 设置平行光
 const onChangeDirectionalLight = () => {
   state.modelApi.onSetModelDirectionalLight(config);
-}
+};
+
+const changePointLightColor = (pointLightColor) => {
+  config.pointLightColor = pointLightColor;
+  state.modelApi.onSetModelPointLight(config);
+};
+
+// 设置点光源
+const onChangePointLight = () => {
+  state.modelApi.onSetModelPointLight(config);
+};
+
+// 设置聚颜色
+const changeSpotLightColor = (spotLightColor) => {
+  config.spotLightColor = spotLightColor;
+  state.modelApi.onSetModelSpotLight(config);
+};
+// 设置聚光灯
+const onChangeSpotLight = () => {
+  state.modelApi.onSetModelSpotLight(config);
+};
 </script>
 
 <style scoped lang="scss">
+.edit-box {
+  height: auto;
+}
 .silder {
   padding-left: 12px;
   width: 270px;
@@ -194,4 +472,5 @@ const onChangeDirectionalLight = () => {
     position: relative;
     cursor: pointer;
   }
-}</style>
+}
+</style>
