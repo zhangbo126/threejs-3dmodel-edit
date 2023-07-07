@@ -78,6 +78,8 @@ class renderModel {
 		this.spotLight
 		//聚光灯辅助线
 		this.spotLightHelper
+		//模型平面
+		this.planeGeometry
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -202,22 +204,9 @@ class renderModel {
 		this.axesHelper = new THREE.AxesHelper(2);
 		this.axesHelper.visible = false
 		this.scene.add(this.axesHelper);
-
-		// // 创建光源
-		// var light = new THREE.DirectionalLight(0xffffff, 1);
-		// light.position.set(-3, 10, -10);
-		// this.scene.add(light);
 		// 开启阴影
 		this.renderer.shadowMap.enabled = true;
-		// light.castShadow = true;
-
-		// // // 创建地面
-		var groundGeometry = new THREE.PlaneGeometry(100, 100);
-		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#fff' });
-		var ground = new THREE.Mesh(groundGeometry, groundMaterial);
-		ground.rotation.x = -Math.PI / 2
-		ground.receiveShadow = true; // 让地面接收阴影
-		this.scene.add(ground);
+	
 	}
 	// 创建光源
 	createLight() {
@@ -260,6 +249,16 @@ class renderModel {
 		this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
 		this.spotLightHelper.visible = false
 		this.scene.add(this.spotLightHelper)
+
+		// 模型平面
+		const geometry = new THREE.PlaneGeometry(4	, 4);
+		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#fff' });
+		this.planeGeometry= new THREE.Mesh(geometry, groundMaterial);
+		this.planeGeometry.rotation.x = -Math.PI / 2
+		// 让地面接收阴影
+		this.planeGeometry.receiveShadow = true; 
+		this.planeGeometry.visible=false
+		this.scene.add(this.planeGeometry);
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -453,7 +452,7 @@ class renderModel {
 		this.pointLightHelper.update()
 	}
 	// 设置聚光灯
-	onSetModelSpotLight({ spotCastShadow, spotFocus, spotPenumbra, spotAngle, spotLight, spotLightColor, spotLightIntensity, spotHorizontal, spotVertical, spotSistance }) {
+	onSetModelSpotLight({spotDistance, spotCastShadow, spotFocus, spotPenumbra, spotAngle, spotLight, spotLightColor, spotLightIntensity, spotHorizontal, spotVertical, spotSistance }) {
 		this.spotLight.visible = spotLight
 		this.spotLightHelper.visible = spotLight
 		this.spotLight.intensity = spotLightIntensity
@@ -461,10 +460,20 @@ class renderModel {
 		this.spotLight.penumbra = spotPenumbra
 		this.spotLight.shadow.focus = spotFocus
 		this.spotLight.castShadow = spotCastShadow
+		this.spotLight.distance = spotDistance
 		this.spotLight.color.set(spotLightColor)
 		const { x, y, z } = lightPosition(spotHorizontal, spotVertical, spotSistance)
 		this.spotLight.position.set(x, y, z)
 		this.spotLightHelper.update()
+	}
+	// 设置模型平面
+	onSetModelPlaneGeometry({planeGeometry,planeColor,planeWidth,planeHeight}){
+         this.planeGeometry.visible=planeGeometry
+		 this.planeGeometry.geometry = new THREE.PlaneGeometry(planeWidth,planeHeight)
+		 this.planeGeometry.material.color.set(planeColor)
+		 this.planeGeometry.geometry.verticesNeedUpdate =true
+		 console.log(this.planeGeometry)
+
 	}
 }
 export default renderModel
