@@ -177,7 +177,7 @@ const config = reactive({
   positionZ:0,
   divisions: 10,
   size: 4,
-  color: "#1395E6",
+  color: 'rgb(193,193,193)',
   axesHelper: false,
   axesSize: 1.8,
 });
