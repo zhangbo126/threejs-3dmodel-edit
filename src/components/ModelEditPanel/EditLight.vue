@@ -4,6 +4,59 @@
       <span>模型灯光</span>
     </div>
     <el-scrollbar height="calc(100vh - 130px)">
+       <!-- 模型平面 -->
+       <div class="options">
+        <div class="option space-between">
+          <el-space>
+            <el-icon>
+              <Odometer />
+            </el-icon>
+            <span>模型平面</span>
+          </el-space>
+          <el-switch v-model="config.planeGeometry" @change="onChangePlaneGeometry" />
+        </div>
+          <div class="option" :class="planetDisabled">
+              <el-space>
+                <span>平面颜色</span>
+                <el-color-picker
+                  color-format="hex"
+                  v-model="config.planeColor"
+                  :predefine="predefineColors"
+                  @change="onChangePlaneGeometry"
+                  @active-change="changePlaneGeometryColor"
+                />
+              </el-space>
+          </div>
+          <div class="option" :class="planetDisabled">
+            <div class="grid-txt">
+              <el-button type="text">宽度</el-button>
+            </div>
+            <div class="grid-silder">
+              <el-slider
+                @change="onChangePlaneGeometry"
+                v-model="config.planeWidth"
+                :min="0"
+                :max="100"
+                :step="0.01"
+              />
+            </div>
+          </div>
+          <div class="option" :class="planetDisabled">
+            <div class="grid-txt">
+              <el-button type="text">高度</el-button>
+            </div>
+            <div class="grid-silder">
+              <el-slider
+                @change="onChangePlaneGeometry"
+                v-model="config.planeHeight"
+                :min="0"
+                :max="100"
+                :step="0.01"
+              />
+            </div>
+          </div>
+  
+       </div>
       <!-- 环境光 -->
       <div class="options">
         <div class="option space-between">
@@ -329,6 +382,21 @@
             />
           </div>
         </div>
+        <!--  光源照射距离-->
+        <div class="option" :class="spotDisabled">
+          <div class="grid-txt">
+            <el-button type="text">光源照射距离</el-button>
+          </div>
+          <div class="grid-silder">
+            <el-slider
+              @change="onChangeSpotLight"
+              v-model="config.spotDistance"
+              :min="1"
+              :max="500"
+              :step="1"
+            />
+          </div>
+        </div>
       </div>
     </el-scrollbar>
   </div>
@@ -340,6 +408,11 @@ import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
 const store = useStore();
 const config = reactive({
+  //模型平面
+  planeGeometry:false,
+  planeColor:'#fff',
+  planeWidth:7,
+  planeHeight:7,
   //环境光
   ambientLight: true,
   ambientLightColor: "#fff",
@@ -370,6 +443,7 @@ const config = reactive({
   spotPenumbra: 1,
   spotFocus: 1,
   spotCastShadow: true,
+  spotDistance:20
 });
 
 const predefineColors = PREDEFINE_COLORS;
@@ -388,6 +462,10 @@ const pointDisabled = computed(() => {
 const spotDisabled = computed(() => {
   const { spotLight } = config;
   return spotLight ? "" : "disabled";
+});
+const planetDisabled = computed(() => {
+  const { planeGeometry } = config;
+  return planeGeometry ? "" : "disabled";
 });
 
 const state = reactive({
@@ -412,6 +490,10 @@ const changeDirectionalLightColor = (directionalLightColor) => {
 
 // 设置平行光
 const onChangeDirectionalLight = () => {
+  if(config.directionalLight){
+     config.planeGeometry=true
+     state.modelApi.onSetModelPlaneGeometry(config);
+  }
   state.modelApi.onSetModelDirectionalLight(config);
 };
 
@@ -432,7 +514,21 @@ const changeSpotLightColor = (spotLightColor) => {
 };
 // 设置聚光灯
 const onChangeSpotLight = () => {
+  if(config.spotLight){
+     config.planeGeometry=true
+     state.modelApi.onSetModelPlaneGeometry(config);
+  }
   state.modelApi.onSetModelSpotLight(config);
+};
+
+const changePlaneGeometryColor=(planeColor)=>{
+  config.planeColor = planeColor;
+  state.modelApi.onSetModelPlaneGeometry(config);
+
+}
+// 设置模型平面
+const onChangePlaneGeometry = () => {
+  state.modelApi.onSetModelPlaneGeometry(config);
 };
 </script>
 
