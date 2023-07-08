@@ -23,6 +23,7 @@
             <el-image
               @click="onChangeModel(model)"
               class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''"
               :src="model.icon"
               fit="cover"
             />
@@ -50,6 +51,7 @@
             <el-image
               @click="onChangeModel(model)"
               class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''"
               :src="model.icon"
               fit="cover"
             />
@@ -61,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance,reactive } from "vue";
+import { ref, computed, getCurrentInstance, reactive } from "vue";
 import { modelList } from "@/config/model.js";
 import { useStore } from "vuex";
 const store = useStore();
@@ -80,13 +82,19 @@ const animationModelList = computed(() => {
   return modelList.filter((v) => v.animation);
 });
 
+//当前模型id
+const activeModelId = ref(3);
+
 //选择模型
 const onChangeModel = async (model) => {
+  if (model.id == activeModelId.value) return false;
+  activeModelId.value = model.id;
   $bus.emit("page-loading", true);
   try {
     const success = await state.modelApi.onSwitchModel(model);
     if (success) {
       $bus.emit("page-loading", false);
+      $bus.emit("model-update");
     }
   } catch (err) {
     $bus.emit("page-loading", false);
@@ -97,13 +105,20 @@ const onChangeModel = async (model) => {
 <style lang="scss">
 .model-choose {
   min-width: 305px;
-  height: calc(100vh - 45px) !important;
+  height: calc(100vh - 35px) !important;
   background-color: #1b1c23;
   .el-img {
     width: 145px;
     height: 88px;
     cursor: pointer;
     margin-bottom: 4px;
+    box-sizing: border-box;
+	opacity: 0.5;
+  }
+  .active-model {
+    border: 3px solid #18c174;
+	opacity:1;
+
   }
 }
 </style>

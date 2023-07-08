@@ -2,18 +2,8 @@
   <div class="model-page">
     <!-- 头部操作栏 -->
     <header class="model-header">
-      <div class="lf">基于three.js的3d模型可视化编辑系统</div>
-      <div class="title">当前模型:{{ modelName }}</div>
-      <div class="lr">
-        <el-space>
-          <div class="label">
-            <el-button type="primary" @click="onChangeModel">选择模型</el-button>
-          </div>
-          <div class="label">
-            <el-button type="primary">导出模型</el-button>
-          </div>
-        </el-space>
-      </div>
+      <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
+      <span>作者:answer</span>
     </header>
     <div class="model-container" v-Loading="loading">
       <!-- 模型列表 -->
@@ -30,14 +20,14 @@
       </div>
       <!-- 右侧编辑栏 -->
       <div class="edit-panel" :style="{ minWidth: '380px' }">
-        <model-edit-panel v-if="!loading"></model-edit-panel>
+        <model-edit-panel v-if="state.modelApi.model"></model-edit-panel>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ModelEditPanel,  ModelChoose } from "@/components/index";
+import { ModelEditPanel, ModelChoose } from "@/components/index";
 import { onMounted, ref, reactive, computed, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
 import renderModel from "./renderModel";
@@ -49,12 +39,8 @@ const state = reactive({
     return store.state.modelApi;
   }),
 });
-const select = ref(null);
 const loading = ref(false);
-const modelName = ref("默认模型");
-const onChangeModel = () => {
-  select.value.showDialog();
-};
+
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
@@ -66,7 +52,6 @@ onMounted(async () => {
   store.commit("SET_MODEL_API", modelApi);
   $bus.on("page-loading", (value) => {
     loading.value = value;
-    console.log(loading.value, value);
   });
   const load = await modelApi.init();
   if (load) {
@@ -79,18 +64,15 @@ onMounted(async () => {
 .model-page {
   width: 100%;
   .model-header {
-    height: 45px;
+    height: 35px;
     width: 100%;
-    background-color: #fff;
+    background-color: #010c1d;
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 0px 10px;
-    .lr {
-      display: flex;
-    }
+    text-align: center;
+    line-height: 35px;
+    font-weight: 500;
+    color: #fff;
+    text-shadow: 5px 3px 5px #c11212;
   }
 
   .model-container {
@@ -98,7 +80,7 @@ onMounted(async () => {
 
     #model {
       width: calc(100% - 630px);
-      height: calc(100vh - 45px);
+      height: calc(100vh - 35px);
       position: relative;
       .camera-icon {
         position: absolute;

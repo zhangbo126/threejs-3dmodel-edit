@@ -13,7 +13,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import { ElMessage } from 'element-plus';
+import { CommonProps, ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
 class renderModel {
 	constructor(selector) {
@@ -28,8 +28,6 @@ class renderModel {
 		this.controls
 		// 模型
 		this.model
-		//平行光
-		this.hemisphereLight
 		//文件加载器类型
 		this.fileLoaderMap = {
 			'glb': new GLTFLoader(),
@@ -148,65 +146,78 @@ class renderModel {
 		this.controls.enableDamping = true
 	}
 	//加载模型
-	setModel({ filePath, fileType, scale }) {
-		console.log(scale)
+	setModel({ filePath, fileType, scale, map, position }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
-			// const dracoLoader = new DRACOLoader()
-			// loader.setDRACOLoader(dracoLoader)
-			// dracoLoader.setDecoderPath('/threeFile/file/')
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						// console.log(this.model)
-						// const boundingBox = new THREE.Box3().setFromObject(this.model);
-						// const boundingBoxSize = new THREE.Vector3();
-						// boundingBox.getSize(boundingBoxSize);
-						// console.log(boundingBox,boundingBoxSize)
-						// const meanSize = (boundingBoxSize.x + boundingBoxSize.y + boundingBoxSize.z) / 3;
-						// const targetSize = 1; // 设置一个目标大小，例如 1 个单位
-						// const scaleFactor = targetSize / meanSize;
-						if (scale) {
-							this.model.scale.set(scale, scale, scale);
-						}
 
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations
+						this.modelAnimation = result.animations || []
+						// 如果当前模型有动画则默认播放第一条动画
+						if (this.modelAnimation.length) {
+							const animationName = this.modelAnimation[0].name
+							const config = {
+								animations: this.modelAnimation,
+								timeScale: 1, // 播放速度
+								weight: 1, // 动作幅度
+								loop: "LoopRepeat",
+								animationName
+							}
+							this.onStartModelAnimaion(config)
+						}
+						const isMap = map ? true : false
+						//设置材质可接收阴影
 						this.model.traverse((v) => {
 							if (v.isMesh) {
 								v.castShadow = true
+								if (v.material && isMap) {
+									const mapTexture = new THREE.TextureLoader().load(map)
+									const { color, name } = v.material
+									v.material = new THREE.MeshLambertMaterial({
+										map: mapTexture,
+										name,
+										color,
+									})
+								}
 							}
 						})
 						break;
 					case 'fbx':
-						result.scale.set(.006, .006, .006)
 						this.model = result
 						break;
 					case 'gltf':
 						this.model = result.scene
 						break;
 					case 'obj':
-						result.scale.set(.006, .006, .006)
 						this.model = result
 						break;
 					default:
 						break;
 				}
-				this.scene.traverse(mesh => {
-					if (mesh.isMesh) {
-						console.log(mesh)
-					}
+				// this.scene.traverse(mesh => {
+				// 	if (mesh.isMesh) {
+				// 		console.log(mesh)
+				// 	}
 
-				})
+				// })
 
-				// this.model.scale.set(.8,.5,.8)
+				if (scale) {
+					this.model.scale.set(scale, scale, scale);
+				}
+				// 设置模型位置 
+				this.model.position.set(0, -.5, 0)
+				if (position) {
+					const { x, y, z } = position
+					this.model.position.set(x, y, z)
+				}
 				// 设置相机位置
 				this.camera.position.set(0, 2, 6)
 				// 设置相机坐标系
 				this.camera.lookAt(0, 0, 0)
-				// 设置模型位置 
-				this.model.position.set(0, -.5, 0)
+
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
@@ -238,7 +249,7 @@ class renderModel {
 	// 创建光源
 	createLight() {
 		// 创建环境光
-		this.ambientLight = new THREE.AmbientLight('#fff', .8)
+		this.ambientLight = new THREE.AmbientLight('#817E7E', .8)
 		this.scene.add(this.ambientLight)
 
 		// 创建平行光
@@ -278,7 +289,7 @@ class renderModel {
 
 		// 模型平面
 		const geometry = new THREE.PlaneGeometry(4, 4);
-		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#3C4147' });
+		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#939393' });
 		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
 		this.planeGeometry.rotation.x = -Math.PI / 2
 		this.planeGeometry.position.set(0, -.59, 0)
@@ -291,6 +302,7 @@ class renderModel {
 	onSwitchModel(model) {
 		return new Promise(async (reslove, reject) => {
 			try {
+
 				//先移除模型 材质释放内存
 				this.model.traverse((v) => {
 					if (v.type === 'Mesh') {
@@ -299,7 +311,6 @@ class renderModel {
 					}
 				})
 				this.skeletonHelper.visible = false
-				// this.onClearSceneBg()
 				this.scene.remove(this.model)
 				// 加载模型
 				const load = await this.setModel(model)

@@ -428,12 +428,12 @@ const store = useStore();
 const config = reactive({
   //模型平面
   planeGeometry: false,
-  planeColor: "#3C4147",
+  planeColor: "#939393",
   planeWidth: 7,
   planeHeight: 7,
   //环境光
   ambientLight: true,
-  ambientLightColor: "#fff",
+  ambientLightColor: "#817E7E",
   ambientLightIntensity: 0.8,
   //平行光
   directionalLight: false,
