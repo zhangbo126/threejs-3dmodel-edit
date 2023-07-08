@@ -16,30 +16,34 @@
       </div>
     </header>
     <div class="model-container" v-Loading="loading">
+      <!-- 模型列表 -->
+      <model-choose></model-choose>
+      <!-- 模型视图 -->
       <div id="model">
         <div class="camera-icon">
           <el-tooltip effect="dark" content="居中" placement="top">
-            <el-icon :size="18" color="#fff" @click="onResetCamera"> 
+            <el-icon :size="18" color="#fff" @click="onResetCamera">
               <Aim />
             </el-icon>
           </el-tooltip>
         </div>
       </div>
-      <div class="model-panel">
+      <!-- 右侧编辑栏 -->
+      <div class="edit-panel" :style="{ minWidth: '380px' }">
         <model-edit-panel v-if="!loading"></model-edit-panel>
       </div>
     </div>
-    <!-- 模型选择弹框 -->
-    <model-select-dialog ref="select" @onChangeSuccess="onChangeSuccess"></model-select-dialog>
   </div>
 </template>
 
 <script setup>
-import { ModelEditPanel, ModelSelectDialog } from "@/components/index";
-import { onMounted, ref, reactive, computed } from "vue";
+import { ModelEditPanel,  ModelChoose } from "@/components/index";
+import { onMounted, ref, reactive, computed, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
 import renderModel from "./renderModel";
 const store = useStore();
+const { $bus } = getCurrentInstance().proxy;
+
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
@@ -52,26 +56,18 @@ const onChangeModel = () => {
   select.value.showDialog();
 };
 // 重置相机位置
-const onResetCamera =()=>{
+const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
-}
-//选择模型成功
-const onChangeSuccess = async (model) => {
-  modelName.value = model.name;
-  loading.value = true;
-  try {
-    const success = await state.modelApi.onSwitchModel(model);
-    if (success) {
-      loading.value = false;
-    }
-  } catch (err) {
-    loading.value = false;
-  }
 };
+
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.commit("SET_MODEL_API", modelApi);
+  $bus.on("page-loading", (value) => {
+    loading.value = value;
+    console.log(loading.value, value);
+  });
   const load = await modelApi.init();
   if (load) {
     loading.value = false;
@@ -82,7 +78,6 @@ onMounted(async () => {
 <style lang="less" scoped>
 .model-page {
   width: 100%;
-
   .model-header {
     height: 45px;
     width: 100%;
@@ -93,7 +88,6 @@ onMounted(async () => {
     align-items: center;
     box-sizing: border-box;
     padding: 0px 10px;
-
     .lr {
       display: flex;
     }
@@ -101,18 +95,70 @@ onMounted(async () => {
 
   .model-container {
     display: flex;
-  }
 
-  #model {
-    width: calc(100% - 350px);
-    height: calc(100vh - 45px);
-    position: relative;
-    .camera-icon{
-     position: absolute;
-     top: 10px;
-     left: calc(100% - 50%);
-     cursor: pointer;
-    } 
+    #model {
+      width: calc(100% - 630px);
+      height: calc(100vh - 45px);
+      position: relative;
+      .camera-icon {
+        position: absolute;
+        top: 10px;
+        left: calc(100% - 50%);
+        cursor: pointer;
+      }
+    }
   }
+}
+</style>
+
+<style lang="scss">
+.edit-box,
+.model-choose {
+  .header {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #33343f;
+    color: #ccc;
+    padding: 0px 20px;
+    border-bottom: 1px solid #1b1c23;
+    border-top: 1px solid #1b1c23;
+    box-sizing: border-box;
+  }
+  .disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .options {
+    max-width: 380px;
+    box-sizing: border-box;
+    background-color: #1b1c23;
+    .option-active {
+      background-color: #27282f;
+    }
+    .space-between {
+      justify-content: space-between;
+    }
+    .option {
+      padding: 0px 18px;
+      box-sizing: border-box;
+      cursor: pointer;
+      color: #ccc;
+      display: flex;
+      align-items: center;
+      height: 40px;
+      font-size: 14px;
+      .icon-name {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.el-input-number {
+  width: 90px !important;
 }
 </style>

@@ -1,4 +1,4 @@
 import ModelEditPanel from './ModelEditPanel/'
-import ModelSelectDialog from './ModelSelectDialog/'
+import ModelChoose from './ModelChoose/'
 
-export { ModelEditPanel, ModelSelectDialog }
+export { ModelEditPanel ,ModelChoose}

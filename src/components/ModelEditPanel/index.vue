@@ -79,7 +79,8 @@ const activeTab = ref("EditLight");
 <style lang="scss" scoped>
 .model-panel {
   background-color: #1b1c23;
-  min-width: 350px;
+  min-width: 380px;
+  height: calc(100vh - 45px);
   .panel-tabs {
     display: flex;
     .active {
@@ -101,56 +102,3 @@ const activeTab = ref("EditLight");
 }
 </style>
 
-<style lang="scss">
-.edit-box {
-  height: calc(100vh - 89px);
-  .header {
-    width: 100%;
-    height: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #33343f;
-    color: #ccc;
-    padding: 0px 20px;
-    border-bottom: 1px solid #1b1c23;
-    border-top: 1px solid #1b1c23;
-    box-sizing: border-box;
-  }
-  .disabled {
-    opacity: 0.3;
-    pointer-events: none;
-  }
-  .options {
-    background-color: #1b1c23;
-    .option-active {
-      background-color: #27282f;
-    }
-    .space-between{
-       justify-content: space-between;
-    }
-    .option {
-      padding: 0px 18px;
-      box-sizing: border-box;
-      cursor: pointer;
-      color: #ccc;
-      display: flex;
-      align-items: center;
-      height: 40px;
-      font-size:14px;
-      .icon-name {
-        display: flex;
-        align-items: center;
-      }
-    }
-   
-  }
-}
-
-.el-slider{
-  width: 96% !important;
-}
-.el-input-number{
-   width: 90px !important;
-}
-</style>

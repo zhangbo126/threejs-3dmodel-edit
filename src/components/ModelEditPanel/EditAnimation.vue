@@ -52,6 +52,7 @@
       </div>
       <div class="option">
         <el-slider
+          show-input
           v-model="config.timeScale"
           @change="onUplateAnimation"
           :step="0.01"
@@ -67,6 +68,7 @@
       </div>
       <div class="option">
         <el-slider
+          show-input
           v-model="config.weight"
           @change="onUplateAnimation"
           :step="0.01"

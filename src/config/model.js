@@ -2,55 +2,155 @@
 
 const modelList = [
 	{
-		name: '机器人1',
-		id: 1,
-		type: 'glb',
-		filePath: 'threeFile/glb/glb-1.glb',
-		icon: require('@/assets/image/mode-icon-1.png')
-	},
-	{
-		name: '人物1',
-		id: 2,
-		type: 'glb',
-		filePath: 'threeFile/glb/glb-2.glb',
-		icon: require('@/assets/image/mode-icon-1.png')
-	},
-	{
-		name: '人物2',
+		name: '人物(女)',
+		fileType:'glb',
 		id: 3,
-		type: 'glb',
+		animation:true,
 		filePath: 'threeFile/glb/glb-3.glb',
-		icon: require('@/assets/image/mode-icon-1.png')
-	},
-	{
-		name: '汽车1',
-		id: 5,
-		type: 'glb',
-		filePath: 'threeFile/glb/glb-4.glb',
-		icon: require('@/assets/image/mode-icon-1.png')
-	},
-	{
-		name: '人物3',
-		id: 6,
-		type: 'glb',
-		filePath: 'threeFile/glb/glb-5.glb',
-		icon: require('@/assets/image/mode-icon-1.png')
-	},
-	{
-		name: '机器人2',
-		id: 7,
-		type: 'glb',
-		filePath: 'threeFile/glb/glb-6.glb',
-		icon: require('@/assets/image/mode-icon-1.png')
-	},
-	{
-		name: 'fbx',
-		id: 4,
-		type: 'fbx',
-		filePath: 'threeFile/fbx/robot-1.fbx',
-		icon: require('@/assets/image/mode-icon-1.png')
+		icon: require('@/assets/model-icon/12.png')
 	},
 
+	{
+		name: '汽车人',
+		fileType:'glb',
+		id: 6,
+		animation:true,
+		filePath: 'threeFile/glb/glb-6.glb',
+		scale:1.3,
+		icon: require('@/assets/image/mode-icon-1.png')
+	},
+	
+	{
+		name: '钢铁侠',
+		fileType:'glb',
+		id: 7,
+		animation:false,
+		filePath: 'threeFile/glb/glb-7.glb',
+		icon: require('@/assets/model-icon/2.png')
+	},
+	
+	{
+		name: '黑豹',
+		fileType:'glb',
+		id: 8,
+		animation:false,
+		filePath: 'threeFile/glb/glb-8.glb',
+		icon: require('@/assets/model-icon/3.png')
+	},
+	{
+		name: '奥创',
+		fileType:'glb',
+		id: 9,
+		animation:false,
+		filePath: 'threeFile/glb/glb-9.glb',
+		icon: require('@/assets/model-icon/4.png')
+
+	},
+	{
+		name: '蚁人',
+		fileType:'glb',
+		id: 10,
+		animation:false,
+		filePath: 'threeFile/glb/glb-10.glb',
+		icon: require('@/assets/model-icon/1.png')
+	},
+	{
+		name: '蜘蛛侠',
+		fileType:'glb',
+		id: 11,
+		animation:false,
+		filePath: 'threeFile/glb/glb-11.glb',
+		icon: require('@/assets/model-icon/5.png')
+	},
+	{
+		name: '美国队长',
+		fileType:'glb',
+		id: 12,
+		animation:false,
+		filePath: 'threeFile/glb/glb-12.glb',
+		icon: require('@/assets/model-icon/6.png')
+	},
+	{
+		name: '惊奇队长',
+		fileType:'glb',
+		id: 13,
+		animation:false,
+		filePath: 'threeFile/glb/glb-13.glb',
+		icon: require('@/assets/model-icon/7.png')
+	},
+	
+
+	{
+		name: '动漫人物(女2)',
+		fileType:'glb',
+		id: 16,
+		animation:true,
+		filePath: 'threeFile/glb/glb-16.glb',
+		icon: require('@/assets/model-icon/14.png')
+	},
+	
+	{
+		name: '蜘蛛侠(2)',
+		fileType:'glb',
+		id: 17,
+		animation:true,
+		scale:1.2,
+		filePath: 'threeFile/glb/glb-17.glb',
+		icon: require('@/assets/model-icon/15.png')
+	},
+	{
+		name: '鹿',
+		fileType:'glb',
+		id: 18,
+		animation:true,
+		filePath: 'threeFile/glb/glb-18.glb',
+		icon: require('@/assets/model-icon/17.png')
+	},
+
+
+	
+	{
+		name: '浣熊',
+		fileType:'glb',
+		id: 22,
+		animation:false,
+		filePath: 'threeFile/glb/glb-22.glb',
+		icon: require('@/assets/model-icon/9.png')
+
+	},
+	{
+		name: '死诗',
+		fileType:'glb',
+		id: 23,
+		animation:false,
+		filePath: 'threeFile/glb/glb-23.glb',
+		icon: require('@/assets/model-icon/10.png')
+	},
+	{
+		name: '恶魔',
+		fileType:'glb',
+		id: 24,
+		animation:false,
+		filePath: 'threeFile/glb/glb-24.glb',
+		icon: require('@/assets/model-icon/11.png')
+	},
+	{
+		name: '牛头',
+		fileType:'glb',
+		id: 25,
+		animation:true,
+		filePath: 'threeFile/glb/glb-25.glb',
+		icon: require('@/assets/image/mode-icon-1.png')
+	},
+	{
+		name: '火男',
+		fileType:'glb',
+		id: 26,
+		animation:true,
+		filePath: 'threeFile/glb/glb-26.glb',
+		scale:.02,
+		icon: require('@/assets/model-icon/16.png')
+	},
 ]
 
 const backgrundList = [
@@ -94,10 +194,38 @@ const backgrundList = [
 		id: 10,
 		url: require('@/assets/image/model-bg-10.jpg')
 	},
+	{
+		id: 11,
+		url: require('@/assets/image/model-bg-11.jpg')
+	},
+	{
+		id: 12,
+		url: require('@/assets/image/model-bg-12.jpg')
+	},
+	{
+		id: 13,
+		url: require('@/assets/image/model-bg-13.jpg')
+	},
+	{
+		id: 15,
+		url: require('@/assets/image/model-bg-15.jpg')
+	},
+	{
+		id: 16,
+		url: require('@/assets/image/model-bg-16.jpg')
+	},
+	{
+		id: 17,
+		url: require('@/assets/image/model-bg-17.jpg')
+	},
+	{
+		id: 18,
+		url: require('@/assets/image/model-bg-18.jpg')
+	},
 ]
 
 let viewImageList = []
-for (let i = 0; i <= 10; i++) {
+for (let i = 0; i <= 22; i++) {
 	const image = {
 		id: i,
 		url: require(`@/assets/image/view-${i + 1}.png`)
