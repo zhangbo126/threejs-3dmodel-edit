@@ -52,6 +52,7 @@
       </div>
       <div class="option">
         <el-slider
+          show-input
           v-model="config.timeScale"
           @change="onUplateAnimation"
           :step="0.01"
@@ -67,6 +68,7 @@
       </div>
       <div class="option">
         <el-slider
+          show-input
           v-model="config.weight"
           @change="onUplateAnimation"
           :step="0.01"
@@ -78,9 +80,10 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
+const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   visible: true,
   animationName: null, //动画名称
@@ -92,6 +95,7 @@ const config = reactive({
 const optionDisabled = computed(() => {
   return config.visible ? "" : "disabled";
 });
+
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
@@ -103,6 +107,26 @@ const state = reactive({
     }
     return [];
   }),
+});
+
+onMounted(() => {
+  if (state.modelAnimation.length) {
+    config.animationName = state.modelAnimation[0].name;
+  }
+  // 监听模型变化
+  $bus.on("model-update", () => {
+    if (state.modelAnimation.length) {
+      const animationName = state.modelAnimation[0].name;
+      // 重置动画数据
+      Object.assign(config, {
+        visible: true,
+        animationName, //动画名称
+        loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
+        timeScale: 1, // 播放速度
+        weight: 1, // 动作幅度
+      });
+    }
+  });
 });
 
 // 动画开启/关闭

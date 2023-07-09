@@ -17,7 +17,7 @@
             </el-space>
           </div>
           <div class="action-txt">
-            <el-button type="text">选择图片</el-button>
+            <el-button type="primary" link>选择图片</el-button>
           </div>
           <div class="check" v-show="config.type == 2">
             <el-icon size="20px" color="#2a3ff6">
@@ -26,10 +26,16 @@
           </div>
         </el-space>
       </div>
-      <el-scrollbar max-height="250px"  v-show="config.type == 2">
-        <el-row >
-          <el-col :span="6" v-for="background in backgrundList" :key="background.id" >
-            <el-image  @click="onChangeImage(background)" class="el-img" :class="activeBackgroundId==background.id?'active':''"  :src="background.url" fit="cover" />
+      <el-scrollbar max-height="250px" v-show="config.type == 2">
+        <el-row>
+          <el-col :style="{ textAlign: 'center' }" :span="6" v-for="background in backgrundList" :key="background.id">
+            <el-image
+              @click="onChangeImage(background)"
+              class="el-img"
+              :class="activeBackgroundId == background.id ? 'active' : ''"
+              :src="background.url"
+              fit="cover"
+            />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -47,8 +53,12 @@
             </el-space>
           </div>
           <div class="action">
-            <el-color-picker :predefine="predefineColors" @change="onChangeColor" @active-change="activeChangeColor"
-              v-model="config.color" />
+            <el-color-picker
+              :predefine="predefineColors"
+              @change="onChangeColor"
+              @active-change="activeChangeColor"
+              v-model="config.color"
+            />
           </div>
           <div class="check" v-show="config.type == 1">
             <el-icon size="20px" color="#2a3ff6">
@@ -57,39 +67,49 @@
           </div>
         </el-space>
       </div>
-      <!-- 全景图 -->
-      <div class="options" :class="optionsDisable">
-        <div class="option" @click="onChangeType(3)">
-          <el-space>
-            <div class="icon-name">
-              <el-space>
-                <el-icon>
-                  <CameraFilled />
-                </el-icon>
-                <span> 全景图</span>
-              </el-space>
-            </div>
-            <div class="action-txt">
-              <el-button type="text" >选择图片</el-button>
-            </div>
-            <div class="check" v-show="config.type == 3">
-              <el-icon size="20px" color="#2a3ff6">
-                <Check />
-              </el-icon>
-            </div>
-          </el-space>
-        </div>
-        <el-scrollbar max-height="250px"  v-show="config.type == 3">
-          <el-row >
-            <el-col :span="6" :style="{textAlign:'center'}" v-for="view in viewImageList" :key="view.id" >
-              <el-image  @click="onChangeViewImage(view)" class="el-view" :class="activeViewImageId==view.id?'active':''"  :src="view.url" fit="cover" />
-            </el-col>
-          </el-row>
-        </el-scrollbar>
-      </div>
     </div>
-    <!-- 图片选择弹框 -->
-    <model-bg-dialog ref="modelBg" @onChangeSuccess="onChangeSuccess"></model-bg-dialog>
+    <!-- 全景图 -->
+    <div class="options" :class="optionsDisable">
+      <div class="option" @click="onChangeType(3)">
+        <el-space>
+          <div class="icon-name">
+            <el-space>
+              <el-icon>
+                <CameraFilled />
+              </el-icon>
+              <span> 全景图</span>
+            </el-space>
+          </div>
+          <div class="action-txt">
+            <el-button type="primary" link>选择图片</el-button>
+          </div>
+          <div class="check" v-show="config.type == 3">
+            <el-icon size="20px" color="#2a3ff6">
+              <Check />
+            </el-icon>
+          </div>
+        </el-space>
+      </div>
+      <el-scrollbar max-height="350px" v-show="config.type == 3">
+        <el-row>
+          <el-col
+            :span="6"
+            :style="{ textAlign: 'center' }"
+            v-for="view in viewImageList"
+            :key="view.id"
+          >
+            <el-image
+              @click="onChangeViewImage(view)"
+              class="el-view"
+              :class="activeViewImageId == view.id ? 'active' : ''"
+              :src="view.url"
+              fit="cover"
+            />
+          </el-col>
+        </el-row>
+      </el-scrollbar>
+    </div>
+
   </div>
 </template>
 <script setup>
@@ -100,23 +120,23 @@ import { backgrundList, viewImageList } from "@/config/model.js";
 const store = useStore();
 const config = reactive({
   visible: true,
-  type: 1, //1 颜色 2 图片  3全景图
-  image: require("@/assets/image/model-bg-9.jpg"),
+  type: 3, //1 颜色 2 图片  3全景图
+  image: require("@/assets/image/model-bg-3.jpg"),
   viewImg: require("@/assets/image/view-1.png"),
   color: "rgba(212, 223, 224)",
   widthSegments: 0,
 });
-const activeBackgroundId =ref(1)
-const activeViewImageId =ref(1)
+const activeBackgroundId = ref(3);
+const activeViewImageId = ref(0);
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
   }),
 });
 const optionsDisable = computed(() => {
-  const { visible } = config
-  return visible ? '' : 'disabled'
-})
+  const { visible } = config;
+  return visible ? "" : "disabled";
+});
 const modelBg = ref(null);
 const predefineColors = PREDEFINE_COLORS;
 //切换类型
@@ -137,17 +157,16 @@ const onChangeType = (type) => {
   }
 };
 //选择图片
-const onChangeImage = ({id,url}) => {
-    config.image=url
-    activeBackgroundId.value=id
-    state.modelApi.onSetSceneImage(url);
-    
+const onChangeImage = ({ id, url }) => {
+  config.image = url;
+  activeBackgroundId.value = id;
+  state.modelApi.onSetSceneImage(url);
 };
 //选择全景图
-const onChangeViewImage = ({id,url}) => {
-    config.viewImg=url
-    activeViewImageId.value=id
-    state.modelApi.onSetSceneViewImage(url);
+const onChangeViewImage = ({ id, url }) => {
+  config.viewImg = url;
+  activeViewImageId.value = id;
+  state.modelApi.onSetSceneViewImage(url);
 };
 // 颜色面板值发生变化
 const activeChangeColor = (color) => {
@@ -176,7 +195,6 @@ const onChangeBgSwitch = () => {
       break;
   }
 };
-
 </script>
 <style lang="scss" scoped>
 .add-img {
@@ -194,20 +212,19 @@ const onChangeBgSwitch = () => {
   padding: 0px 26px;
 }
 
-.el-img{
+.el-img {
   width: 78px;
   height: 40px;
   cursor: pointer;
   margin-bottom: 4px;
 }
-.el-view{
+.el-view {
   width: 60px;
   height: 60px;
   cursor: pointer;
-  margin-bottom:8px;
+  margin-bottom: 8px;
 }
-.active{
+.active {
   border: 2px solid #18c174;
-
 }
 </style>
