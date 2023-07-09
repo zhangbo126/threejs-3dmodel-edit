@@ -433,8 +433,8 @@ const config = reactive({
   planeHeight: 7,
   //环境光
   ambientLight: true,
-  ambientLightColor: "#817E7E",
-  ambientLightIntensity: 0.8,
+  ambientLightColor: "#fff",
+  ambientLightIntensity: .8,
   //平行光
   directionalLight: false,
   directionalLightColor: "#1E90FF",

@@ -9,7 +9,7 @@
       <!-- 模型列表 -->
       <model-choose></model-choose>
       <!-- 模型视图 -->
-      <div id="model">
+      <div id="model" ref="model">
         <div class="camera-icon">
           <el-tooltip effect="dark" content="居中" placement="top">
             <el-icon :size="18" color="#fff" @click="onResetCamera">
@@ -40,7 +40,7 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
-
+const model = ref(null);
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();

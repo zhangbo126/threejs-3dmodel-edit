@@ -183,7 +183,7 @@ const modelList = [
 			z: 0
 		},
 		filePath: 'threeFile/glb/glb-29.glb',
-		icon: require('@/assets/model-icon/20.png')
+		icon: require('@/assets/model-icon/21.png')
 	},
 ]
 

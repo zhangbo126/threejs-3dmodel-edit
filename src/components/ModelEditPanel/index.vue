@@ -33,9 +33,9 @@
       <div v-show="activeTab == 'EditLight'">
         <edit-light></edit-light>
       </div>
-      <!-- 场景 -->
-      <div v-show="activeTab == 'EditScene'">
-        <edit-scene></edit-scene>
+      <!-- 材质 -->
+      <div v-show="activeTab == 'EditMaterial'">
+        <edit-material></edit-material>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@
 <script setup>
 import { ref } from "vue";
 import EditBackground from "./EditBackground.vue";
-import EditScene from "./EditScene.vue";
+import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
 import EditAttribute from "./EditAttribute.vue";
 import EditLight from "./EditLight.vue";
@@ -69,12 +69,12 @@ const panelTabs = [
     icon: "Sunrise",
   },
   {
-    name: "场景",
-    key: "EditScene",
+    name: "材质",
+    key: "EditMaterial",
     icon: "DataAnalysis",
   },
 ];
-const activeTab = ref("EditLight");
+const activeTab = ref("EditMaterial");
 </script>
 <style lang="scss" scoped>
 .model-panel {

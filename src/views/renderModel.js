@@ -8,6 +8,7 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
@@ -15,6 +16,8 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { CommonProps, ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import store from '@/store'
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -78,6 +81,15 @@ class renderModel {
 		this.spotLightHelper
 		//模型平面
 		this.planeGeometry
+		//模型材质列表
+		this.modelMaterialList
+		// 效果合成器
+		this.effectComposer
+		this.outlinePass
+		// 碰撞检测
+		this.raycaster = new THREE.Raycaster()
+		// 鼠标位置
+		this.mouse = new THREE.Vector2()
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -93,11 +105,15 @@ class renderModel {
 			this.createHelper()
 			// 创建灯光
 			this.createLight()
+			// 创建效果合成器
+			this.createEffectComposer()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-3.glb', fileType: 'glb' })
 			//监听场景大小改变，跳转渲染尺寸
 			window.addEventListener("resize", this.onWindowResize.bind(this))
-			this.animate()
+			//场景渲染
+			this.sceneAnimation()
+			this.addEvenListMouseLiatener()
 			reslove(load)
 		})
 	}
@@ -133,13 +149,37 @@ class renderModel {
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
+
 	}
 
 	render() {
-		this.renderer.render(this.scene, this.camera)
+		this.effectComposer.render()
+		this.controls.update()
+		// this.renderer.render(this.scene, this.camera)
+
 	}
-	animate() {
+	sceneAnimation() {
 		this.renderer.setAnimationLoop(this.render.bind(this))
+	}
+	// 监听鼠标点击模型
+	addEvenListMouseLiatener() {
+		this.container.addEventListener('click', this.onMouseClickModel.bind(this))
+	}
+	// 模型点击事件
+	onMouseClickModel(event) {
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
+		if (intersects.length > 0) {
+			const intersectedObject = intersects[0].object
+			this.outlinePass.selectedObjects = [intersectedObject]
+			store.commit('SELECT_MESH', intersectedObject)
+		} else {
+			this.outlinePass.selectedObjects = []
+			store.commit('SELECT_MESH', {})
+		}
 	}
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
@@ -153,7 +193,6 @@ class renderModel {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
 						// 如果当前模型有动画则默认播放第一条动画
@@ -169,10 +208,15 @@ class renderModel {
 							this.onStartModelAnimaion(config)
 						}
 						const isMap = map ? true : false
-						//设置材质可接收阴影
+						this.modelMaterialList = []
 						this.model.traverse((v) => {
 							if (v.isMesh) {
+								//设置材质可接收阴影
 								v.castShadow = true
+								if (v.material) {
+									// 获取当前模型材质
+									this.modelMaterialList.push(v)
+								}
 								if (v.material && isMap) {
 									const mapTexture = new THREE.TextureLoader().load(map)
 									const { color, name } = v.material
@@ -197,13 +241,7 @@ class renderModel {
 					default:
 						break;
 				}
-				// this.scene.traverse(mesh => {
-				// 	if (mesh.isMesh) {
-				// 		console.log(mesh)
-				// 	}
-
-				// })
-
+				// 设置模型大小
 				if (scale) {
 					this.model.scale.set(scale, scale, scale);
 				}
@@ -217,7 +255,6 @@ class renderModel {
 				this.camera.position.set(0, 2, 6)
 				// 设置相机坐标系
 				this.camera.lookAt(0, 0, 0)
-
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
@@ -249,7 +286,7 @@ class renderModel {
 	// 创建光源
 	createLight() {
 		// 创建环境光
-		this.ambientLight = new THREE.AmbientLight('#817E7E', .8)
+		this.ambientLight = new THREE.AmbientLight('#fff', .8)
 		this.scene.add(this.ambientLight)
 
 		// 创建平行光
@@ -297,6 +334,27 @@ class renderModel {
 		this.planeGeometry.receiveShadow = true;
 		this.planeGeometry.visible = false
 		this.scene.add(this.planeGeometry);
+	}
+	// 创建效果合成器
+	createEffectComposer() {
+		const { clientHeight, clientWidth } = this.container
+		this.effectComposer = new EffectComposer(this.renderer)
+		const renderPass = new RenderPass(this.scene, this.camera)
+		this.effectComposer.addPass(renderPass)
+		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera)
+		this.outlinePass.visibleEdgeColor = new THREE.Color('#4d57fd') // 可见边缘的颜色
+		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
+		this.outlinePass.edgeGlow = 2.0 // 发光强度
+		//    this.outlinePass.usePatternTexture = false // 是否使用纹理图案
+		this.outlinePass.edgeThickness = 1 // 边缘浓度
+		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
+		//    this.outlinePass.pulsePeriod = 0 // 闪烁频率，值越大频率越低
+		this.effectComposer.addPass(this.outlinePass)
+		let effectFXAA = new ShaderPass(FXAAShader)
+		effectFXAA.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight)
+		effectFXAA.renderToScreen = true
+		this.effectComposer.addPass(effectFXAA)
+
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -511,7 +569,12 @@ class renderModel {
 		this.planeGeometry.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
 		this.planeGeometry.material.color.set(planeColor)
 		this.planeGeometry.geometry.verticesNeedUpdate = true
-
+	}
+	// 选择材质
+	onChangeModelMeaterial(name) {
+		const model = this.model.getObjectByName(name)
+		this.outlinePass.selectedObjects = [model]
+		store.commit('SELECT_MESH', model)
 	}
 }
 export default renderModel
