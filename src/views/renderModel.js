@@ -215,6 +215,7 @@ class renderModel {
 								v.castShadow = true
 								if (v.material) {
 									// 获取当前模型材质
+
 									this.modelMaterialList.push(v)
 								}
 								if (v.material && isMap) {
@@ -572,9 +573,28 @@ class renderModel {
 	}
 	// 选择材质
 	onChangeModelMeaterial(name) {
-		const model = this.model.getObjectByName(name)
-		this.outlinePass.selectedObjects = [model]
-		store.commit('SELECT_MESH', model)
+		const mesh = this.model.getObjectByName(name)
+		this.outlinePass.selectedObjects = [mesh]
+		store.commit('SELECT_MESH', mesh)
+		return mesh
+	}
+	// 设置材质属性
+	onSetModelMaterial(config) {
+		const { color, wireframe, depthWrite, opacity } = config
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		if (mesh && mesh.material) {
+			//设置材质颜色
+			mesh.material.color.set(new THREE.Color(color))
+			//设置网格
+			mesh.material.wireframe = wireframe
+			// 设置深度写入
+			mesh.material.depthWrite = depthWrite
+			//设置透明度
+			mesh.material.transparent = true
+			mesh.material.opacity = opacity
+		}
+
 	}
 }
 export default renderModel
