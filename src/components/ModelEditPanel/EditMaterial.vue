@@ -8,34 +8,108 @@
       <el-scrollbar max-height="250px">
         <div
           class="option"
-          :class="state.selectMeshUuid == mesh.uuid? 'option-active' : ''"
+          :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
           @click="onChangeMaterialType(mesh)"
           v-for="mesh in state.modelMaterialList"
           :key="mesh.uuid"
         >
           <el-space>
             <div class="icon-name">
-              {{ mesh.material.name}}
+              {{ mesh.material.name }}
             </div>
-            <div class="check" v-show="state.selectMeshUuid== mesh.uuid ">
+            <div class="check" v-show="state.selectMeshUuid == mesh.uuid">
               <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
             </div>
           </el-space>
         </div>
       </el-scrollbar>
     </div>
+    <div class="header">材质属性</div>
+    <div class="options" :class="optionDisabled">
+      <div class="option space-between">
+        <el-space>
+          <el-tooltip
+            effect="dark"
+            content="注意:部分模型因为原始材质特殊以及灯光等原因,修改材质颜色可能没有实际效果"
+            placement="top"
+          >
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+          </el-tooltip>
+          <el-button type="primary" link>材质颜色</el-button>
+          <el-color-picker
+            color-format="hex"
+            :predefine="PREDEFINE_COLORS"
+            @change="onChangeMeaterial"
+            @active-change="activeChangeColor"
+            v-model="config.color"
+          />
+        </el-space>
+        <el-space>
+          <el-button type="primary" link>深度写入</el-button>
+          <el-switch @change="onChangeMeaterial" v-model="config.depthWrite"></el-switch>
+        </el-space>
+        <el-space>
+          <el-tooltip
+            effect="dark"
+            content="注意:部分模型因为原始材质不支持网格,修改网格可能导致材质显示异常,或者没有实际效果"
+            placement="top"
+          >
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+          </el-tooltip>
+          <el-button type="primary" link>网格</el-button>
+          <el-switch @change="onChangeMeaterial" v-model="config.wireframe"></el-switch>
+        </el-space>
+      </div>
+      <div class="option">
+        <div class="grid-txt">
+          <el-tooltip
+            effect="dark"
+            content="注意:部分模型因为原始材质不支持透明度,修改透明度可能导致材质显示异常,或者没有实际效果"
+            placement="top"
+          >
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+          </el-tooltip>
+          <el-button type="primary" link>透明度 </el-button>
+        </div>
+        <div class="grid-silder">
+          <el-slider
+            show-input
+            @change="onChangeMeaterial"
+            v-model="config.opacity"
+            :min="0"
+            :max="1"
+            :step="0.01"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed ,onMounted,getCurrentInstance} from "vue";
+import { ref, reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
+import * as THREE from "three";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   meaterialName: null,
+  color: null,
+  wireframe: false,
+  depthWrite: true,
+  opacity: 1,
 });
-const activeMaterial = ref(null)
+const optionDisabled = computed(() => {
+  const activeMesh =
+    state.modelMaterialList.find((v) => v.uuid == state.selectMeshUuid) || {};
+  return activeMesh.uuid ? "" : "disabled";
+});
 const state = reactive({
   modelMaterialList: computed(() => {
     return store.state.modelApi.modelMaterialList;
@@ -43,18 +117,49 @@ const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
   }),
-  selectMeshUuid:computed(()=>{
-      return store.state.selectMesh.uuid
-  })
+  selectMeshUuid: computed(() => {
+    return store.state.selectMesh.uuid;
+  }),
+});
+
+onMounted(() => {
+  $bus.on("model-update", () => {
+    // 重置动画数据
+    Object.assign(config, {
+      color: null,
+      wireframe: false,
+      depthWrite: true,
+      opacity: 1,
+    });
+  });
 });
 
 // 选择材质
-const onChangeMaterialType = ({ name, id,material }) => {
-  // console.log(uuid,material)
-  config.meaterialName =material.name;
-  // activeMaterial.value = id
-  state.modelApi.onChangeModelMeaterial(name)
+const onChangeMaterialType = ({ name, id, material }) => {
+  config.meaterialName = material.name;
+  const activeMesh = state.modelApi.onChangeModelMeaterial(name);
+  const { color, wireframe, depthWrite, opacity } = activeMesh.material;
+  Object.assign(config, {
+    color: new THREE.Color(color).getStyle(),
+    wireframe,
+    depthWrite,
+    opacity,
+  });
+};
 
+const activeChangeColor = (color) => {
+  config.color = color;
+  state.modelApi.onSetModelMaterial(config);
+};
+
+const onChangeMeaterial = () => {
+  state.modelApi.onSetModelMaterial(config);
 };
 </script>
-<style></style>
+<style scoped lang="scss">
+.grid-txt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+</style>
