@@ -65,8 +65,6 @@ class renderModel {
 		this.rotationAnimate
 		// 环境光
 		this.ambientLight
-		//环境光贴图
-		this.ambientLightProbe
 		//平行光
 		this.directionalLight
 		// 平行光辅助线
@@ -78,7 +76,7 @@ class renderModel {
 		//聚光灯
 		this.spotLight
 		//聚光灯辅助线
-		this.spotLightHelper
+		this.spotLightHelper 
 		//模型平面
 		this.planeGeometry
 		//模型材质列表
@@ -215,7 +213,6 @@ class renderModel {
 								v.castShadow = true
 								if (v.material) {
 									// 获取当前模型材质
-
 									this.modelMaterialList.push(v)
 								}
 								if (v.material && isMap) {
@@ -390,10 +387,8 @@ class renderModel {
 	}
 	//设置场景颜色
 	onSetSceneColor(color) {
-		this.scene.background = null
-		if (color) {
-			this.renderer.setClearColor(color)
-		}
+		this.onClearSceneBg()
+		this.scene.background = new THREE.Color(color)
 	}
 	//设置场景图片
 	onSetSceneImage(url) {
