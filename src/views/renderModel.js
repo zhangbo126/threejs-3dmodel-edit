@@ -76,7 +76,7 @@ class renderModel {
 		//聚光灯
 		this.spotLight
 		//聚光灯辅助线
-		this.spotLightHelper 
+		this.spotLightHelper
 		//模型平面
 		this.planeGeometry
 		//模型材质列表
@@ -84,10 +84,14 @@ class renderModel {
 		// 效果合成器
 		this.effectComposer
 		this.outlinePass
+		// 动画渲染器
+		this.renderAnimation
 		// 碰撞检测
 		this.raycaster = new THREE.Raycaster()
 		// 鼠标位置
 		this.mouse = new THREE.Vector2()
+		// 模型自带贴图
+		this.modelTextureMap
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -157,7 +161,9 @@ class renderModel {
 
 	}
 	sceneAnimation() {
-		this.renderer.setAnimationLoop(this.render.bind(this))
+		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
+		this.effectComposer.render()
+		this.controls.update()
 	}
 	// 监听鼠标点击模型
 	addEvenListMouseLiatener() {
@@ -207,6 +213,7 @@ class renderModel {
 						}
 						const isMap = map ? true : false
 						this.modelMaterialList = []
+						this.modelTextureMap = []
 						this.model.traverse((v) => {
 							if (v.isMesh) {
 								//设置材质可接收阴影
@@ -223,6 +230,17 @@ class renderModel {
 										name,
 										color,
 									})
+
+								}
+								const { uuid } = v
+								if (isMap) {
+									this.modelTextureMap = [{
+										url: map,
+										uuid
+									}]
+								} else {
+									const materials = Array.isArray(v.material) ? v.material : [v.material]
+									this.modelTextureMap.push(this.getModelMaps(materials, uuid))
 								}
 							}
 						})
@@ -265,6 +283,27 @@ class renderModel {
 				reject()
 			})
 		})
+	}
+	// 获取模型贴图
+	getModelMaps(materials, uuid) {
+		let textureMap = {}
+		materials.forEach(texture => {
+			if (texture.map && texture.map.image) {
+				const canvas = document.createElement('canvas')
+				texture.map.encoding = THREE.sRGBEncoding
+				const { width, height } = texture.map.image
+				canvas.width = width
+				canvas.height = height
+				const context = canvas.getContext('2d')
+				context.drawImage(texture.map.image, 0, 0)
+				textureMap = {
+					url: canvas.toDataURL(),
+					uuid
+				}
+
+			}
+		})
+		return textureMap
 	}
 	// 创建辅助线
 	createHelper() {
@@ -358,7 +397,6 @@ class renderModel {
 	onSwitchModel(model) {
 		return new Promise(async (reslove, reject) => {
 			try {
-
 				//先移除模型 材质释放内存
 				this.model.traverse((v) => {
 					if (v.type === 'Mesh') {
@@ -367,6 +405,7 @@ class renderModel {
 					}
 				})
 				this.skeletonHelper.visible = false
+				this.modelTextureMap = []
 				this.scene.remove(this.model)
 				// 加载模型
 				const load = await this.setModel(model)
@@ -590,6 +629,33 @@ class renderModel {
 			mesh.material.opacity = opacity
 		}
 
+	}
+	// 设置模型贴图
+	onSetModelMap({ url }) {
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		if (mesh && mesh.material) {
+			const { color, name } = mesh.material
+			const mapTexture = new THREE.TextureLoader().load(url)
+			mesh.material = new THREE.MeshLambertMaterial({
+				map: mapTexture,
+				transparent: true,
+				color, 
+				name
+			})
+		}
+
+		// this.model.traverse((v) => {
+		// 	if (v.isMesh) {
+		// 		// const mapTexture = new THREE.TextureLoader().load(map)
+		// 		// const { color, name } = v.material
+		// 		// v.material = new THREE.MeshLambertMaterial({
+		// 		// 	map: mapTexture,
+		// 		// 	name,
+		// 		// 	color,
+		// 		// })
+		// 	}
+		// })
 	}
 }
 export default renderModel
