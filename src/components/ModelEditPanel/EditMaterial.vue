@@ -24,6 +24,7 @@
         </div>
       </el-scrollbar>
     </div>
+    <!-- 材质属性 -->
     <div class="header">材质属性</div>
     <div class="options" :class="optionDisabled">
       <div class="option space-between">
@@ -89,6 +90,27 @@
         </div>
       </div>
     </div>
+    <div class="header">模型自带贴图</div>
+    <div class="options" :class="optionDisabled">
+      <el-scrollbar max-height="220px">
+        <el-row>
+          <el-col
+            :span="8"
+            :style="{ textAlign: 'center' }"
+            v-for="map in state.modelTextureMap"
+            :key="map.uuid"
+          >
+            <el-image
+              @click="onChangeModelMap(map)"
+              :class="state.selectMeshUuid == map.uuid ? 'active' : ''"
+              :src="map.url"
+              class="el-map"
+              fit="cover"
+            />
+          </el-col>
+        </el-row>
+      </el-scrollbar>
+    </div>
   </div>
 </template>
 <script setup>
@@ -120,6 +142,9 @@ const state = reactive({
   selectMeshUuid: computed(() => {
     return store.state.selectMesh.uuid;
   }),
+  modelTextureMap:computed(()=>{
+      return store.state.modelApi.modelTextureMap
+  })
 });
 
 onMounted(() => {
@@ -155,11 +180,30 @@ const activeChangeColor = (color) => {
 const onChangeMeaterial = () => {
   state.modelApi.onSetModelMaterial(config);
 };
+
+//修改当前材质贴图
+const onChangeModelMap=(map)=>{
+  state.modelApi.onSetModelMap(map);
+}
+
 </script>
 <style scoped lang="scss">
 .grid-txt {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+}
+.options{
+  max-width: 380px;
+}
+.el-map{
+  width: 120px;
+  height: 120px;
+  padding: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.active {
+  border: 2px solid #18c174;
 }
 </style>
