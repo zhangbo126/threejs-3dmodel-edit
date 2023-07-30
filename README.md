@@ -10,7 +10,7 @@
 
 #### 安装/启动
 ```
-yarn 
+yarn
 yarn serve
 ```
 ### 界面
