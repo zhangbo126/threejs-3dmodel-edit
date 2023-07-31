@@ -95,14 +95,14 @@
       <el-scrollbar max-height="220px">
         <el-row>
           <el-col
-            :span="8"
+            :span="6"
             :style="{ textAlign: 'center' }"
             v-for="map in state.modelTextureMap"
-            :key="map.uuid"
+            :key="map.mapId"
           >
             <el-image
               @click="onChangeModelMap(map)"
-              :class="state.selectMeshUuid == map.uuid ? 'active' : ''"
+              :class="activeTextureMap == map.mapId ? 'active' : ''"
               :src="map.url"
               class="el-map"
               fit="cover"
@@ -111,6 +111,10 @@
         </el-row>
       </el-scrollbar>
     </div>
+    <div class="header">系统贴图</div>
+    <div class="option">
+        
+    </div>
   </div>
 </template>
 <script setup>
@@ -118,6 +122,8 @@ import { ref, reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
 import * as THREE from "three";
+import { ElMessage } from 'element-plus'
+
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
@@ -127,11 +133,19 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
+const activeTextureMap =ref(null)
+
 const optionDisabled = computed(() => {
   const activeMesh =
     state.modelMaterialList.find((v) => v.uuid == state.selectMeshUuid) || {};
   return activeMesh.uuid ? "" : "disabled";
 });
+
+// const activeMap =computed(()=>{
+//   state.modelMaterialList.find((v) => v.mapId == activeTextureMap.value) || {};
+  
+// })
+
 const state = reactive({
   modelMaterialList: computed(() => {
     return store.state.modelApi.modelMaterialList;
@@ -160,8 +174,9 @@ onMounted(() => {
 });
 
 // 选择材质
-const onChangeMaterialType = ({ name, id, material }) => {
+const onChangeMaterialType = ({ name, id, material,mapId }) => {
   config.meaterialName = material.name;
+  activeTextureMap.value = mapId
   const activeMesh = state.modelApi.onChangeModelMeaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
   Object.assign(config, {
@@ -183,7 +198,9 @@ const onChangeMeaterial = () => {
 
 //修改当前材质贴图
 const onChangeModelMap=(map)=>{
+  activeTextureMap.value = map.mapId
   state.modelApi.onSetModelMap(map);
+  ElMessage.success('当前材质贴图修改成功')
 }
 
 </script>
@@ -197,8 +214,8 @@ const onChangeModelMap=(map)=>{
   max-width: 380px;
 }
 .el-map{
-  width: 120px;
-  height: 120px;
+  width:90px;
+  height: 90px;
   padding: 6px;
   box-sizing: border-box;
   cursor: pointer;

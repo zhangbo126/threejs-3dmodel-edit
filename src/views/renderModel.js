@@ -215,13 +215,24 @@ class renderModel {
 						this.modelMaterialList = []
 						this.modelTextureMap = []
 						this.model.traverse((v) => {
+							const { uuid } = v
 							if (v.isMesh) {
 								//设置材质可接收阴影
 								v.castShadow = true
 								if (v.material) {
+						    		const materials = Array.isArray(v.material) ? v.material : [v.material]
+									const {url,mapId} = this.getModelMaps(materials, uuid)
+									 const mesh ={
+										material:v.material,
+										url,
+										mapId
+									}
+									this.modelTextureMap.push(mesh)
 									// 获取当前模型材质
+									v.mapId = mapId
 									this.modelMaterialList.push(v)
 								}
+								// 部分模型本身没有贴图需 要单独处理
 								if (v.material && isMap) {
 									const mapTexture = new THREE.TextureLoader().load(map)
 									const { color, name } = v.material
@@ -230,18 +241,26 @@ class renderModel {
 										name,
 										color,
 									})
-
-								}
-								const { uuid } = v
-								if (isMap) {
 									this.modelTextureMap = [{
 										url: map,
 										uuid
 									}]
-								} else {
-									const materials = Array.isArray(v.material) ? v.material : [v.material]
-									this.modelTextureMap.push(this.getModelMaps(materials, uuid))
 								}
+								// if (isMap) {
+								// 	this.modelTextureMap = [{
+								// 		url: map,
+								// 		uuid
+								// 	}]
+								// } else {
+								// 	const materials = Array.isArray(v.material) ? v.material : [v.material]
+								// 	const {url,id} = this.getModelMaps(materials, uuid)
+								// 	const mesh ={
+								// 		material:v.material,
+								// 		url,
+								// 		mapId:id
+								// 	}
+								// 	this.modelTextureMap.push(mesh)
+								// }
 							}
 						})
 						break;
@@ -290,15 +309,14 @@ class renderModel {
 		materials.forEach(texture => {
 			if (texture.map && texture.map.image) {
 				const canvas = document.createElement('canvas')
-				texture.map.encoding = THREE.sRGBEncoding
 				const { width, height } = texture.map.image
 				canvas.width = width
 				canvas.height = height
 				const context = canvas.getContext('2d')
 				context.drawImage(texture.map.image, 0, 0)
 				textureMap = {
-					url: canvas.toDataURL(),
-					uuid
+					url: canvas.toDataURL('image/png'),
+					mapId: texture.map.uuid
 				}
 
 			}
@@ -631,31 +649,17 @@ class renderModel {
 
 	}
 	// 设置模型贴图
-	onSetModelMap({ url }) {
+	onSetModelMap({ material, mapId }) {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		if (mesh && mesh.material) {
-			const { color, name } = mesh.material
-			const mapTexture = new THREE.TextureLoader().load(url)
-			mesh.material = new THREE.MeshLambertMaterial({
-				map: mapTexture,
-				transparent: true,
-				color, 
-				name
-			})
-		}
-
-		// this.model.traverse((v) => {
-		// 	if (v.isMesh) {
-		// 		// const mapTexture = new THREE.TextureLoader().load(map)
-		// 		// const { color, name } = v.material
-		// 		// v.material = new THREE.MeshLambertMaterial({
-		// 		// 	map: mapTexture,
-		// 		// 	name,
-		// 		// 	color,
-		// 		// })
-		// 	}
-		// })
+		const { name, color } = mesh.material
+		mesh.material = new THREE.MeshLambertMaterial({
+			map: material.map,
+			transparent: true,
+			color,
+			name,
+		})
+		mesh.mapId = mapId
 	}
 }
 export default renderModel
