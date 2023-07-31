@@ -297,7 +297,7 @@ class renderModel {
 				const context = canvas.getContext('2d')
 				context.drawImage(texture.map.image, 0, 0)
 				textureMap = {
-					url: canvas.toDataURL(),
+					url: canvas.toDataURL('image/png'),
 					uuid
 				}
 
