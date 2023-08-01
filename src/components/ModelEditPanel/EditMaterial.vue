@@ -112,17 +112,15 @@
       </el-scrollbar>
     </div>
     <div class="header">系统贴图</div>
-    <div class="option">
-        
-    </div>
+    <div class="option"></div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, onMounted, getCurrentInstance } from "vue";
+import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
 import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
 import * as THREE from "three";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -133,18 +131,13 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
-const activeTextureMap =ref(null)
+const activeTextureMap = ref(null);
 
 const optionDisabled = computed(() => {
   const activeMesh =
     state.modelMaterialList.find((v) => v.uuid == state.selectMeshUuid) || {};
   return activeMesh.uuid ? "" : "disabled";
 });
-
-// const activeMap =computed(()=>{
-//   state.modelMaterialList.find((v) => v.mapId == activeTextureMap.value) || {};
-  
-// })
 
 const state = reactive({
   modelMaterialList: computed(() => {
@@ -153,14 +146,11 @@ const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
   }),
-  selectMeshUuid: computed(() => {
-    return store.state.selectMesh.uuid;
+  selectMeshUuid: computed(() => store.getters.selectMeshUuid),
+  modelTextureMap: computed(() => {
+    return store.state.modelApi.modelTextureMap;
   }),
-  modelTextureMap:computed(()=>{
-      return store.state.modelApi.modelTextureMap
-  })
 });
-
 onMounted(() => {
   $bus.on("model-update", () => {
     // 重置动画数据
@@ -173,10 +163,16 @@ onMounted(() => {
   });
 });
 
+watch(
+  () => store.getters.selectMeshUuid,
+  (val) => {
+    const map = state.modelMaterialList.find((v) => v.uuid == val) || {};
+    activeTextureMap.value = map.mapId;
+  }
+);
 // 选择材质
-const onChangeMaterialType = ({ name, id, material,mapId }) => {
+const onChangeMaterialType = ({ name, id, material, mapId }) => {
   config.meaterialName = material.name;
-  activeTextureMap.value = mapId
   const activeMesh = state.modelApi.onChangeModelMeaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
   Object.assign(config, {
@@ -197,12 +193,17 @@ const onChangeMeaterial = () => {
 };
 
 //修改当前材质贴图
-const onChangeModelMap=(map)=>{
-  activeTextureMap.value = map.mapId
+const onChangeModelMap = (map) => {
+  activeTextureMap.value = map.mapId;
   state.modelApi.onSetModelMap(map);
-  ElMessage.success('当前材质贴图修改成功')
-}
-
+  Object.assign(config, {
+    color: null,
+    wireframe: false,
+    depthWrite: true,
+    opacity: 1,
+  });
+  ElMessage.success("当前材质贴图修改成功");
+};
 </script>
 <style scoped lang="scss">
 .grid-txt {
@@ -210,11 +211,11 @@ const onChangeModelMap=(map)=>{
   flex-wrap: wrap;
   align-items: center;
 }
-.options{
+.options {
   max-width: 380px;
 }
-.el-map{
-  width:90px;
+.el-map {
+  width: 90px;
   height: 90px;
   padding: 6px;
   box-sizing: border-box;
