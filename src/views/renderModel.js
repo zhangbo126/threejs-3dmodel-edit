@@ -241,26 +241,13 @@ class renderModel {
 										name,
 										color,
 									})
+									v.mapId = uuid
 									this.modelTextureMap = [{
+										material:v.material,
 										url: map,
-										uuid
+										mapId:uuid
 									}]
 								}
-								// if (isMap) {
-								// 	this.modelTextureMap = [{
-								// 		url: map,
-								// 		uuid
-								// 	}]
-								// } else {
-								// 	const materials = Array.isArray(v.material) ? v.material : [v.material]
-								// 	const {url,id} = this.getModelMaps(materials, uuid)
-								// 	const mesh ={
-								// 		material:v.material,
-								// 		url,
-								// 		mapId:id
-								// 	}
-								// 	this.modelTextureMap.push(mesh)
-								// }
 							}
 						})
 						break;
@@ -316,7 +303,7 @@ class renderModel {
 				context.drawImage(texture.map.image, 0, 0)
 				textureMap = {
 					url: canvas.toDataURL('image/png'),
-					mapId: texture.map.uuid
+					mapId: texture.uuid
 				}
 
 			}

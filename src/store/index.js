@@ -8,6 +8,7 @@ export default createStore({
     selectMesh:{}
   },
   getters: {
+    selectMeshUuid:(state)=>state.selectMesh.uuid
   },
   mutations: {
     SET_MODEL_API: (state, modelApi) => {
