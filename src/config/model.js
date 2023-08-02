@@ -314,5 +314,68 @@ const ambientLightList = [
 	},
 ]
 
+const mapImageList =[
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/5.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/6.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/7.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/8.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/9.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/10.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/11.png`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/12.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/13.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/14.png`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/15.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/16.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/17.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/18.jpg`)
+	},
+	{
+		id: Math.random()*100,
+		url: require(`@/assets/maps/19.jpg`)
+	},
+	...viewImageList
+]
 
-export { modelList, backgrundList, viewImageList, ambientLightList }
+export { modelList, backgrundList, viewImageList, ambientLightList ,mapImageList }
