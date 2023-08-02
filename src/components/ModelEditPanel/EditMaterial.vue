@@ -5,7 +5,7 @@
     </div>
     <!-- 材质列表 -->
     <div class="options">
-      <el-scrollbar max-height="250px">
+      <el-scrollbar max-height="240px">
         <div
           class="option"
           :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
@@ -92,7 +92,7 @@
     </div>
     <div class="header">模型自带贴图</div>
     <div class="options" :class="optionDisabled">
-      <el-scrollbar max-height="220px">
+      <el-scrollbar max-height="100px">
         <el-row>
           <el-col
             :span="6"
@@ -100,25 +100,51 @@
             v-for="map in state.modelTextureMap"
             :key="map.mapId"
           >
-            <el-image
+            <div
               @click="onChangeModelMap(map)"
+              class="image-box"
               :class="activeTextureMap == map.mapId ? 'active' : ''"
-              :src="map.url"
-              class="el-map"
-              fit="cover"
-            />
+            >
+              <el-image :src="map.url" class="el-map" fit="cover" />
+              <div class="select" v-if="activeTextureMap == map.mapId">
+                <el-icon color="#18c174" :size="26"><Select /></el-icon>
+              </div>
+            </div>
           </el-col>
         </el-row>
       </el-scrollbar>
     </div>
     <div class="header">系统贴图</div>
-    <div class="option"></div>
+    <div class="options" :class="optionDisabled">
+      <el-scrollbar max-height="240px">
+        <el-row>
+          <el-col
+            :span="6"
+            :style="{ textAlign: 'center' }"
+            v-for="map in mapImageList"
+            :key="map.id"
+          >
+            <div
+              @click="onChangeSystemModelMap(map)"
+              class="image-box"
+              :class="activeTextureMap == map.id ? 'active' : ''"
+            >
+              <el-image :src="map.url" class="el-map" fit="cover" />
+              <div class="select" v-if="activeTextureMap == map.id">
+                <el-icon color="#18c174" :size="26"><Select /></el-icon>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-scrollbar>
+    </div>
   </div>
 </template>
 <script setup>
 import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
 import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
+import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
 
@@ -204,6 +230,18 @@ const onChangeModelMap = (map) => {
   });
   ElMessage.success("当前材质贴图修改成功");
 };
+// 修改当前材质贴图
+const onChangeSystemModelMap = (map) => {
+  activeTextureMap.value = map.id;
+  state.modelApi.onSetSystemModelMap(map);
+  Object.assign(config, {
+    color: null,
+    wireframe: false,
+    depthWrite: true,
+    opacity: 1,
+  });
+  ElMessage.success("当前材质贴图修改成功");
+};
 </script>
 <style scoped lang="scss">
 .grid-txt {
@@ -214,14 +252,26 @@ const onChangeModelMap = (map) => {
 .options {
   max-width: 380px;
 }
-.el-map {
+.image-box {
   width: 90px;
   height: 90px;
-  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   cursor: pointer;
+  opacity: 0.6;
+  position: relative;
+  .el-map {
+    padding: 6px;
+  }
+  .select {
+    position: absolute;
+  }
 }
+
 .active {
   border: 2px solid #18c174;
+  opacity: 1;
 }
 </style>

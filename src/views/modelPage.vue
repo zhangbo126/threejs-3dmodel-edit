@@ -63,6 +63,7 @@ onMounted(async () => {
 <style lang="less" scoped>
 .model-page {
   width: 100%;
+  background-color: #1b1c23;
   .model-header {
     height: 35px;
     width: 100%;

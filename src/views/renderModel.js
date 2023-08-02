@@ -164,6 +164,8 @@ class renderModel {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.effectComposer.render()
 		this.controls.update()
+		//this.renderer.render(this.scene, this.camera)
+
 	}
 	// 监听鼠标点击模型
 	addEvenListMouseLiatener() {
@@ -220,10 +222,10 @@ class renderModel {
 								//设置材质可接收阴影
 								v.castShadow = true
 								if (v.material) {
-						    		const materials = Array.isArray(v.material) ? v.material : [v.material]
-									const {url,mapId} = this.getModelMaps(materials, uuid)
-									 const mesh ={
-										material:v.material,
+									const materials = Array.isArray(v.material) ? v.material : [v.material]
+									const { url, mapId } = this.getModelMaps(materials, uuid)
+									const mesh = {
+										material: v.material,
 										url,
 										mapId
 									}
@@ -243,9 +245,9 @@ class renderModel {
 									})
 									v.mapId = uuid
 									this.modelTextureMap = [{
-										material:v.material,
+										material: v.material,
 										url: map,
-										mapId:uuid
+										mapId: uuid
 									}]
 								}
 							}
@@ -647,6 +649,20 @@ class renderModel {
 			name,
 		})
 		mesh.mapId = mapId
+	}
+	// 设置模型贴图
+	onSetSystemModelMap({ id, url }) {
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		const { name, color } = mesh.material
+		const mapTexture = new THREE.TextureLoader().load(url)
+		mesh.material = new THREE.MeshLambertMaterial({
+			map: mapTexture,
+			transparent: true,
+			color,
+			name,
+		})
+		mesh.mapId = id
 	}
 }
 export default renderModel

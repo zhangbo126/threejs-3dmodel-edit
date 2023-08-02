@@ -21,6 +21,10 @@
       <div v-show="activeTab == 'EditBackground'">
         <edit-background></edit-background>
       </div>
+      <!-- 材质 -->
+      <div v-show="activeTab == 'EditMaterial'">
+        <edit-material></edit-material>
+      </div>
       <!-- 动画 -->
       <div v-show="activeTab == 'EditAnimation'">
         <edit-animation></edit-animation>
@@ -32,10 +36,6 @@
       <!-- 灯光 -->
       <div v-show="activeTab == 'EditLight'">
         <edit-light></edit-light>
-      </div>
-      <!-- 材质 -->
-      <div v-show="activeTab == 'EditMaterial'">
-        <edit-material></edit-material>
       </div>
     </div>
   </div>
@@ -54,6 +54,11 @@ const panelTabs = [
     icon: "Picture",
   },
   {
+    name: "材质",
+    key: "EditMaterial",
+    icon: "DataAnalysis",
+  },
+  {
     name: "模型动画",
     key: "EditAnimation",
     icon: "VideoCameraFilled",
@@ -68,11 +73,7 @@ const panelTabs = [
     key: "EditLight",
     icon: "Sunrise",
   },
-  {
-    name: "材质",
-    key: "EditMaterial",
-    icon: "DataAnalysis",
-  },
+
 ];
 const activeTab = ref("EditMaterial");
 </script>
@@ -101,4 +102,3 @@ const activeTab = ref("EditMaterial");
   }
 }
 </style>
-
