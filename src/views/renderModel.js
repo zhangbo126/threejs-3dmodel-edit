@@ -14,7 +14,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import { CommonProps, ElMessage } from 'element-plus';
+import {  ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import store from '@/store'
@@ -389,14 +389,15 @@ class renderModel {
 		this.outlinePass.visibleEdgeColor = new THREE.Color('#4d57fd') // 可见边缘的颜色
 		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
 		this.outlinePass.edgeGlow = 2.0 // 发光强度
-		//    this.outlinePass.usePatternTexture = false // 是否使用纹理图案
+		//this.outlinePass.usePatternTexture = false // 是否使用纹理图案
 		this.outlinePass.edgeThickness = 1 // 边缘浓度
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
-		//    this.outlinePass.pulsePeriod = 0 // 闪烁频率，值越大频率越低
+		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
+		// 抗锯齿
 		let effectFXAA = new ShaderPass(FXAAShader)
 		effectFXAA.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight)
-		effectFXAA.renderToScreen = true
+		// effectFXAA.renderToScreen = true
 		this.effectComposer.addPass(effectFXAA)
 
 	}
