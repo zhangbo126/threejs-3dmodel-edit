@@ -259,7 +259,7 @@ const backgrundList = [
 ]
 
 let viewImageList = []
-for (let i = 0; i <= 22; i++) {
+for (let i = 0; i <= 11; i++) {
 	const image = {
 		id: i,
 		url: require(`@/assets/image/view-${i + 1}.png`)
