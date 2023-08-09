@@ -76,7 +76,9 @@
       <!-- 模型内容 -->
       <div class="file-name">
         <span>当前模型:</span>
-        <b>{{ localModelName }}</b>
+        <el-tooltip effect="dark" :content="localModelName" placement="top">
+          <b>{{ localModelName }}</b>
+        </el-tooltip>
       </div>
 
       <el-upload
@@ -86,12 +88,11 @@
         :show-file-list="false"
         :auto-upload="false"
         :on-change="onUpload"
-        :before-upload="onBeforeUpload"
       >
         <div class="upload">
           <div class="icon">
             <el-icon :size="44"><Plus /></el-icon>
-            <div><span>请选择</span></div>
+            <div><span>请选择(目前仅支持.glb格式)</span></div>
           </div>
         </div>
       </el-upload>
@@ -131,10 +132,10 @@ const onChangeModel = async (model) => {
   activeModelId.value = model.id;
   $bus.emit("page-loading", true);
   try {
-    const success = await state.modelApi.onSwitchModel(model);
-    if (success) {
-      $bus.emit("page-loading", false);
+    const { load } = await state.modelApi.onSwitchModel(model);
+    if (load) {
       $bus.emit("model-update");
+      $bus.emit("page-loading", false);
     }
   } catch (err) {
     $bus.emit("page-loading", false);
@@ -151,17 +152,17 @@ const onUpload = async (file) => {
   };
   $bus.emit("page-loading", true);
   try {
-    const success = await state.modelApi.onSwitchModel(model);
-    if (success) {
-      $bus.emit("page-loading", false);
+    const { load, filePath } = await state.modelApi.onSwitchModel(model);
+    // TODO: 加载成功之后手动释放 否则会造成内存浪费
+    URL.revokeObjectURL(filePath);
+    if (load) {
       $bus.emit("model-update");
+      $bus.emit("page-loading", false);
     }
   } catch (err) {
+    localModelName.value = null;
     $bus.emit("page-loading", false);
   }
-};
-const onBeforeUpload = (file) => {
-  return true;
 };
 </script>
 
@@ -217,6 +218,9 @@ const onBeforeUpload = (file) => {
     color: #fff;
     text-align: center;
     font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 </style>

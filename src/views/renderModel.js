@@ -222,8 +222,8 @@ class renderModel {
 						this.model.traverse((v) => {
 							const { uuid } = v
 							if (v.isMesh) {
-								//设置材质可接收阴影
 								v.castShadow = true
+								v.frustumCulled = false
 								if (v.material) {
 									const materials = Array.isArray(v.material) ? v.material : [v.material]
 									const { url, mapId } = this.getModelMaps(materials, uuid)
@@ -268,20 +268,17 @@ class renderModel {
 					default:
 						break;
 				}
-				// 设置模型大小
-				// if (scale) {
-				// 	this.model.scale.set(scale, scale, scale);
-				// }
-				// // 设置模型位置 
-				// this.model.position.set(0, -.5, 0)
-				// if (position) {
-				// 	const { x, y, z } = position
-				// 	this.model.position.set(x, y, z)
-				// }
-
 				this.setModelPositionSize()
-
-
+				//	设置模型大小
+				if (scale) {
+					this.model.scale.set(scale, scale, scale);
+				}
+				//设置模型位置 
+				this.model.position.set(0, -.5, 0)
+				if (position) {
+					const { x, y, z } = position
+					this.model.position.set(x, y, z)
+				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
@@ -289,7 +286,7 @@ class renderModel {
 			}, () => {
 
 			}, (err) => {
-				ElMessage.error('模型加载失败')
+				ElMessage.error('文件错误')
 				console.log(err)
 				reject()
 			})
@@ -302,32 +299,20 @@ class renderModel {
 		const box = new THREE.Box3().setFromObject(this.model);
 		const size = box.getSize(new THREE.Vector3());
 		const center = box.getCenter(new THREE.Vector3());
-		// const { x, y, z } = this.model.position
-		// this.model.position.x += (x - center.x);
-		// this.model.position.y += (y - center.y);
-		// this.model.position.z += (z - center.z);
-        // 计算缩放比例
+		// 计算缩放比例
 		const maxSize = Math.max(size.x, size.y, size.z);
 		const targetSize = 2.5; // 目标大小
-		const scale = targetSize / maxSize; 
-		this.model.scale.set(scale,scale,scale)
+		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
+		this.model.scale.set(scale, scale, scale)
+		// 设置模型位置
 		this.model.position.sub(center.multiplyScalar(scale))
-
-
-		// 设置控制器
+		// 设置控制器最小缩放值
 		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
-		//    const X = this.camera.position.x =size / 2.0
-		//    const Y = this.camera.position.y =size / 5.0
-		//    const Z = this.camera.position.z =size / 2.0
-		//    this.camera.position.set(X, Y, Z)
 		this.camera.position.set(0, 2, 6)
 		// 设置相机坐标系
 		this.camera.lookAt(center)
-		//  this.model.scale.set(size, size, size);
-		// this.camera.near = size / 100;
-		// this.camera.far = size * 100;
-		// this.camera.updateProjectionMatrix();
+		this.camera.updateProjectionMatrix();
 
 	}
 	// 获取模型贴图
@@ -411,7 +396,7 @@ class renderModel {
 		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#939393' });
 		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
 		this.planeGeometry.rotation.x = -Math.PI / 2
-		this.planeGeometry.position.set(0, -1, 0)
+		this.planeGeometry.position.set(0, -.5, 0)
 		// 让地面接收阴影
 		this.planeGeometry.receiveShadow = true;
 		this.planeGeometry.visible = false
@@ -450,13 +435,16 @@ class renderModel {
 						v.material.dispose();
 					}
 				})
+				//取消动画帧
+				cancelAnimationFrame(this.rotationAnimate)
+				cancelAnimationFrame(this.animationFram)
 				this.skeletonHelper.visible = false
 				this.modelTextureMap = []
 				this.scene.remove(this.model)
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
-				reslove(load)
+				reslove({ load, filePath: model.filePath })
 			} catch {
 				reject()
 			}

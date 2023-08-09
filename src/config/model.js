@@ -107,8 +107,6 @@ const modelList = [
 		icon: require('@/assets/model-icon/17.png')
 	},
 
-
-
 	{
 		name: '浣熊',
 		fileType: 'glb',
@@ -117,14 +115,6 @@ const modelList = [
 		filePath: 'threeFile/glb/glb-22.glb',
 		icon: require('@/assets/model-icon/9.png')
 
-	},
-	{
-		name: '死诗',
-		fileType: 'glb',
-		id: 23,
-		animation: false,
-		filePath: 'threeFile/glb/glb-23.glb',
-		icon: require('@/assets/model-icon/10.png')
 	},
 	{
 		name: '恶魔',
