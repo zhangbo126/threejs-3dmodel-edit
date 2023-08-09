@@ -14,7 +14,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import {  ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import store from '@/store'
@@ -122,7 +122,7 @@ class renderModel {
 	//创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
-		const sphereBufferGeometry = new THREE.SphereGeometry(40, 32, 16);
+		const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
 		sphereBufferGeometry.scale(-1, -1, -1);
 		const material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(require('@/assets/image/view-1.png'))
@@ -189,7 +189,10 @@ class renderModel {
 	}
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-		this.controls.enableDamping = true
+		// this.controls.enableDamping = true
+		// this.controls.minDistance=10
+		// this.controls.maxDistance = 50
+		this.controls.enablePan = false
 	}
 	//加载模型
 	setModel({ filePath, fileType, scale, map, position }) {
@@ -219,8 +222,8 @@ class renderModel {
 						this.model.traverse((v) => {
 							const { uuid } = v
 							if (v.isMesh) {
-								//设置材质可接收阴影
 								v.castShadow = true
+								v.frustumCulled = false
 								if (v.material) {
 									const materials = Array.isArray(v.material) ? v.material : [v.material]
 									const { url, mapId } = this.getModelMaps(materials, uuid)
@@ -265,20 +268,17 @@ class renderModel {
 					default:
 						break;
 				}
-				// 设置模型大小
+				this.setModelPositionSize()
+				//	设置模型大小
 				if (scale) {
 					this.model.scale.set(scale, scale, scale);
 				}
-				// 设置模型位置 
+				//设置模型位置 
 				this.model.position.set(0, -.5, 0)
 				if (position) {
 					const { x, y, z } = position
 					this.model.position.set(x, y, z)
 				}
-				// 设置相机位置
-				this.camera.position.set(0, 2, 6)
-				// 设置相机坐标系
-				this.camera.lookAt(0, 0, 0)
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
@@ -286,11 +286,34 @@ class renderModel {
 			}, () => {
 
 			}, (err) => {
+				ElMessage.error('文件错误')
 				console.log(err)
-				ElMessage.error('模型加载失败', err)
 				reject()
 			})
 		})
+	}
+	//设置模型定位大小
+	setModelPositionSize() {
+		//设置模型位置
+		this.model.updateMatrixWorld()
+		const box = new THREE.Box3().setFromObject(this.model);
+		const size = box.getSize(new THREE.Vector3());
+		const center = box.getCenter(new THREE.Vector3());
+		// 计算缩放比例
+		const maxSize = Math.max(size.x, size.y, size.z);
+		const targetSize = 2.5; // 目标大小
+		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
+		this.model.scale.set(scale, scale, scale)
+		// 设置模型位置
+		this.model.position.sub(center.multiplyScalar(scale))
+		// 设置控制器最小缩放值
+		this.controls.maxDistance = size.length() * 10
+		// 设置相机位置
+		this.camera.position.set(0, 2, 6)
+		// 设置相机坐标系
+		this.camera.lookAt(center)
+		this.camera.updateProjectionMatrix();
+
 	}
 	// 获取模型贴图
 	getModelMaps(materials, uuid) {
@@ -373,7 +396,7 @@ class renderModel {
 		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#939393' });
 		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
 		this.planeGeometry.rotation.x = -Math.PI / 2
-		this.planeGeometry.position.set(0, -.59, 0)
+		this.planeGeometry.position.set(0, -.5, 0)
 		// 让地面接收阴影
 		this.planeGeometry.receiveShadow = true;
 		this.planeGeometry.visible = false
@@ -412,13 +435,16 @@ class renderModel {
 						v.material.dispose();
 					}
 				})
+				//取消动画帧
+				cancelAnimationFrame(this.rotationAnimate)
+				cancelAnimationFrame(this.animationFram)
 				this.skeletonHelper.visible = false
 				this.modelTextureMap = []
 				this.scene.remove(this.model)
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
-				reslove(load)
+				reslove({ load, filePath: model.filePath })
 			} catch {
 				reject()
 			}
@@ -445,7 +471,7 @@ class renderModel {
 	// 设置全景图
 	onSetSceneViewImage(url) {
 		this.onClearSceneBg()
-		const sphereBufferGeometry = new THREE.SphereGeometry(40, 32, 16);
+		const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
 		sphereBufferGeometry.scale(-1, -1, -1);
 		const material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(url)
