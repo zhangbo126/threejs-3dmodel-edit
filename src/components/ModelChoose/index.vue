@@ -130,6 +130,7 @@ const localModelName = ref(null);
 const onChangeModel = async (model) => {
   if (model.id == activeModelId.value) return false;
   activeModelId.value = model.id;
+  localModelName.value = null;
   $bus.emit("page-loading", true);
   try {
     const { load } = await state.modelApi.onSwitchModel(model);
