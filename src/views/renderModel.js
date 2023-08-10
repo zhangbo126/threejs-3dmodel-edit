@@ -597,9 +597,19 @@ class renderModel {
 		this.ambientLight.color.set(ambientLightColor)
 	}
 	// 设置平行光
-	onSetModelDirectionalLight({ directionaShadow, directionalHorizontal, directionalVertical, directionalSistance, directionalLight, directionalLightColor, directionalLightIntensity }) {
+	onSetModelDirectionalLight(config) {
+		const {
+			directionaShadow,
+			directionalHorizontal,
+			directionalVertical,
+			directionalSistance,
+			directionalLight,
+			directionalLightColor,
+			directionalLightIntensity,
+			directionalLightHelper
+		} = config
 		this.directionalLight.visible = directionalLight
-		this.directionalLightHelper.visible = directionalLight
+		this.directionalLightHelper.visible = directionalLightHelper && directionalLight
 		this.directionalLight.intensity = directionalLightIntensity
 		this.directionalLight.castShadow = directionaShadow
 		this.directionalLight.color.set(directionalLightColor)
@@ -608,9 +618,11 @@ class renderModel {
 		this.directionalLightHelper.update()
 	}
 	// 设置点光源
-	onSetModelPointLight({ pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity }) {
+	onSetModelPointLight(config) {
+		const { pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } = config
 		this.pointLight.visible = pointLight
-		this.pointLightHelper.visible = pointLight
+	console.log(pointLightHelper)
+		this.pointLightHelper.visible = pointLight && pointLightHelper
 		this.pointLight.intensity = pointLightIntensity
 		this.pointLight.color.set(pointLightColor)
 		const { x, y, z } = lightPosition(pointHorizontal, pointVertical, pointSistance)
@@ -618,9 +630,10 @@ class renderModel {
 		this.pointLightHelper.update()
 	}
 	// 设置聚光灯
-	onSetModelSpotLight({ spotDistance, spotCastShadow, spotFocus, spotPenumbra, spotAngle, spotLight, spotLightColor, spotLightIntensity, spotHorizontal, spotVertical, spotSistance }) {
+	onSetModelSpotLight(config) {
+		const { spotDistance, spotCastShadow, spotLightHelper, spotFocus, spotPenumbra, spotAngle, spotLight, spotLightColor, spotLightIntensity, spotHorizontal, spotVertical, spotSistance } = config
 		this.spotLight.visible = spotLight
-		this.spotLightHelper.visible = spotLight
+		this.spotLightHelper.visible = spotLight && spotLightHelper
 		this.spotLight.intensity = spotLightIntensity
 		this.spotLight.angle = spotAngle
 		this.spotLight.penumbra = spotPenumbra

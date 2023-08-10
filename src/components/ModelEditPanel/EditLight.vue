@@ -124,8 +124,8 @@
             />
           </div>
         </div>
-        <!-- 阴影 -->
         <div class="option" :class="directionaDisabled">
+          <!-- 阴影 -->
           <div class="grid-txt">
             <el-button type="primary" link>是否开启阴影</el-button>
           </div>
@@ -135,6 +135,18 @@
               @change="onChangeDirectionalLight"
             />
           </div>
+          <!-- 辅助线 -->
+          <el-space>
+            <div class="grid-txt">
+              <el-button type="primary" link>辅助线</el-button>
+            </div>
+            <div class="grid-silder">
+              <el-switch
+                v-model="config.directionalLightHelper"
+                @change="onChangeDirectionalLight"
+              />
+            </div>
+          </el-space>
         </div>
         <!-- 水平方向 -->
         <div class="option" :class="directionaDisabled">
@@ -193,6 +205,20 @@
             <span>点光源</span>
           </el-space>
           <el-switch v-model="config.pointLight" @change="onChangePointLight" />
+        </div>
+        <div class="option" :class="pointDisabled">
+          <!-- 辅助线 -->
+          <el-space>
+            <div class="grid-txt">
+              <el-button type="primary" link>辅助线</el-button>
+            </div>
+            <div class="grid-silder">
+              <el-switch
+                v-model="config.pointLightHelper"
+                @change="onChangePointLight"
+              />
+            </div>
+          </el-space>
         </div>
         <div class="option" :class="pointDisabled">
           <div class="color">
@@ -302,6 +328,15 @@
           <div class="grid-silder">
             <el-switch v-model="config.spotCastShadow" @change="onChangeSpotLight" />
           </div>
+          <!-- 辅助线 -->
+          <el-space>
+            <div class="grid-txt">
+              <el-button type="primary" link>辅助线</el-button>
+            </div>
+            <div class="grid-silder">
+              <el-switch v-model="config.spotLightHelper" @change="onChangeSpotLight" />
+            </div>
+          </el-space>
         </div>
         <!-- 水平方向 -->
         <div class="option" :class="spotDisabled">
@@ -434,9 +469,10 @@ const config = reactive({
   //环境光
   ambientLight: true,
   ambientLightColor: "#fff",
-  ambientLightIntensity: .8,
+  ambientLightIntensity: 0.8,
   //平行光
   directionalLight: false,
+  directionalLightHelper: true,
   directionalLightColor: "#1E90FF",
   directionalLightIntensity: 1,
   directionalHorizontal: -1.26,
@@ -445,6 +481,7 @@ const config = reactive({
   directionaShadow: true,
   //点光源
   pointLight: false,
+  pointLightHelper: true,
   pointLightColor: "#1E90FF",
   pointLightIntensity: 1,
   pointHorizontal: -4.21,
@@ -461,6 +498,7 @@ const config = reactive({
   spotPenumbra: 1,
   spotFocus: 1,
   spotCastShadow: true,
+  spotLightHelper: true,
   spotDistance: 20,
 });
 
