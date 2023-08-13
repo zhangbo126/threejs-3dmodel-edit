@@ -26,4 +26,5 @@ yarn serve
 
 ###### Three.js:[https://threejs.org/](https://threejs.org/)
 ###### Element-Plus:[https://element-plus.gitee.io/zh-CN/](https://element-plus.gitee.io/zh-CN/)
+###### 模型下载网站 [https://sketchfab.com/feed](https://sketchfab.com/feed)
 
