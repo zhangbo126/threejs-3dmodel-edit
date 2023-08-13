@@ -152,15 +152,6 @@ const modelList = [
 		icon: require('@/assets/model-icon/19.png')
 	},
 	{
-		name: '飞机',
-		fileType: 'glb',
-		map: require('@/assets/maps/3.png'),
-		id: 28,
-		animation: true,
-		filePath: 'threeFile/glb/glb-28.glb',
-		icon: require('@/assets/model-icon/20.png')
-	},
-	{
 		name: '龙',
 		fileType: 'glb',
 		map: require('@/assets/maps/4.png'),
