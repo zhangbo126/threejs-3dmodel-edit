@@ -122,12 +122,11 @@ const config = reactive({
   visible: true,
   type: 3, //1 颜色 2 图片  3全景图
   image: require("@/assets/image/model-bg-3.jpg"),
-  viewImg: require("@/assets/image/view-1.png"),
+  viewImg: require("@/assets/image/view-4.png"),
   color: "rgba(212, 223, 224)",
-  widthSegments: 0,
 });
 const activeBackgroundId = ref(3);
-const activeViewImageId = ref(0);
+const activeViewImageId = ref(3);
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
@@ -137,7 +136,6 @@ const optionsDisable = computed(() => {
   const { visible } = config;
   return visible ? "" : "disabled";
 });
-const modelBg = ref(null);
 const predefineColors = PREDEFINE_COLORS;
 //切换类型
 const onChangeType = (type) => {
