@@ -125,7 +125,7 @@ class renderModel {
 		const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
 		sphereBufferGeometry.scale(-1, -1, -1);
 		const material = new THREE.MeshBasicMaterial({
-			map: new THREE.TextureLoader().load(require('@/assets/image/view-1.png'))
+			map: new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
 		});
 		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
 		this.scene.add(this.viewMesh);
