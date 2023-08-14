@@ -2,8 +2,8 @@
 
 ###  基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
 ### 内容预览
-注意:受gitee带宽限速页面首次加载模型文件需要等待较长时间 
-[https://zhang_6666.gitee.io/three.js3d](https://zhang_6666.gitee.io/three.js3d)
+- 1.注意:受gitee带宽限速页面首次加载模型文件需要等待较长时间 
+- 2.线上访问:[https://zhang_6666.gitee.io/three.js3d](https://zhang_6666.gitee.io/three.js3d)
 ###	功能简介
 - 1.背景:场景背景图，场景背景颜色，场景全景图的可视化编辑
 - 2.动画:模型自带动画的播放功能,和动画播放速度,动作幅度的配置
@@ -14,8 +14,10 @@
 
 #### 安装/启动
 ```
-yarn
-yarn serve
+- yarn  / yarn serve 
+- npm i / npm run serve
+- cnpm i / cnpm run serve
+- 注意:node版本>=16.0.0
 ```
 ### 界面
 ![输入图片说明](public/image/1.png)
