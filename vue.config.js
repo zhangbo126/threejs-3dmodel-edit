@@ -6,5 +6,4 @@ module.exports = defineConfig({
   lintOnSave: false,
   assetsDir: 'static',
   productionSourceMap: false,
-  
 })
