@@ -338,10 +338,6 @@ const mapImageList =[
 	},
 	{
 		id: Math.random()*100,
-		url: require(`@/assets/maps/15.jpg`)
-	},
-	{
-		id: Math.random()*100,
 		url: require(`@/assets/maps/16.jpg`)
 	},
 	{
