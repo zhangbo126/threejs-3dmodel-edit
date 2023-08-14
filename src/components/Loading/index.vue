@@ -3,7 +3,7 @@
     <div class="loading-box">
       <div class="loading">
         <img :src="require('@/assets/image/loading.svg')" />
-        <div class="loading-txt">加载中...</div>
+        <div class="loading-txt">模型文件首次加载时间较长请耐心等待...</div>
       </div>
     </div>
   </div>
@@ -27,17 +27,16 @@
     align-items: center;
     transition: opacity 0.3s;
     background-color: rgb(0 0 0 / 64%);
-	.loading {
-		width: 100px;
-		height: 100px;
-	  }
-	  .loading-txt {
-		text-align: center;
-		font-size: 14px;
-		color: #ff7c81;
-	  }
+    .loading {
+      width: 200px;
+      height: 120px;
+      text-align: center;
+    }
+    .loading-txt {
+      text-align: center;
+      font-size: 14px;
+      color: #ff7c81;
+    }
   }
 }
-
-
 </style>
