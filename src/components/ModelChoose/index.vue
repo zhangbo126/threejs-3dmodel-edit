@@ -38,7 +38,7 @@
       <div class="option">
         <el-space>
           <el-icon>
-            <Orange />
+            <Paperclip />
           </el-icon>
           <span>动画模型</span>
         </el-space>
@@ -68,7 +68,7 @@
       <div class="option">
         <el-space>
           <el-icon>
-            <Orange />
+            <UploadFilled />
           </el-icon>
           <span>外部模型</span>
         </el-space>

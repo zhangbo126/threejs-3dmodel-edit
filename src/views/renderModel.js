@@ -18,6 +18,7 @@ import { ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import store from '@/store'
+import { vertexShader, fragmentShader } from '@/config/constant.js'
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -92,6 +93,8 @@ class renderModel {
 		this.mouse = new THREE.Vector2()
 		// 模型自带贴图
 		this.modelTextureMap
+		this.glowComposer
+
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -128,6 +131,7 @@ class renderModel {
 			map: new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
 		});
 		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
+		this.viewMesh.name = 'viewMesh'
 		this.scene.add(this.viewMesh);
 
 	}
@@ -158,12 +162,27 @@ class renderModel {
 		this.effectComposer.render()
 		this.controls.update()
 		// this.renderer.render(this.scene, this.camera)
-
 	}
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		this.effectComposer.render()
 		this.controls.update()
+		this.scene.traverse((v) => {
+			if (v.name == 'viewMesh') {
+
+				v.originalMaterial = v.material
+				v.material = Object.getPrototypeOf(v.material).constructor
+			}
+		})
+		this.glowComposer.render()
+		this.scene.traverse((v) => {
+			if (v.name == 'viewMesh') {
+				if (!v.originalMaterial) return
+				v.material = v.originalMaterial
+				delete v.originalMaterial
+
+			}
+		})
+		this.effectComposer.render()
 		//this.renderer.render(this.scene, this.camera)
 
 	}
@@ -406,10 +425,11 @@ class renderModel {
 	createEffectComposer() {
 		const { clientHeight, clientWidth } = this.container
 		this.effectComposer = new EffectComposer(this.renderer)
+		// this.effectComposer.renderToScreen =true
 		const renderPass = new RenderPass(this.scene, this.camera)
 		this.effectComposer.addPass(renderPass)
 		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera)
-		this.outlinePass.visibleEdgeColor = new THREE.Color('#4d57fd') // 可见边缘的颜色
+		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
 		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
 		this.outlinePass.edgeGlow = 2.0 // 发光强度
 		//this.outlinePass.usePatternTexture = false // 是否使用纹理图案
@@ -417,10 +437,39 @@ class renderModel {
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
 		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
+
+		// 辉光参数
+		const params = {
+			// 强度
+			bloomStrength: .7,
+			// 阈值
+			bloomThreshold: 0,
+			// 半径
+			bloomRadius: .2
+		}
+		// 辉光通道
+		const bloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), params.bloomStrength, params.bloomRadius, params.bloomThreshold)
+		// 辉光合成器
+		this.glowComposer = new EffectComposer(this.renderer)
+		this.glowComposer.renderToScreen = false
+		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
+		this.glowComposer.addPass(bloomPass)
+
 		// 抗锯齿
-		let effectFXAA = new ShaderPass(FXAAShader)
-		effectFXAA.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight)
+		// let effectFXAA = new ShaderPass(FXAAShader)
+		let effectFXAA = new ShaderPass(new THREE.ShaderMaterial({
+			uniforms: {
+				baseTexture: { value: null },
+				bloomTexture: { value: this.glowComposer.renderTarget2.texture }
+			},
+			vertexShader,
+			fragmentShader,
+			defines: {}
+		}), 'baseTexture')
+
+		// effectFXAA.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight)
 		// effectFXAA.renderToScreen = true
+		effectFXAA.needsSwap = true
 		this.effectComposer.addPass(effectFXAA)
 
 	}
@@ -477,6 +526,7 @@ class renderModel {
 			map: new THREE.TextureLoader().load(url)
 		});
 		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
+		this.viewMesh.name = 'viewMesh'
 		this.scene.add(this.viewMesh);
 
 	}
@@ -621,7 +671,7 @@ class renderModel {
 	onSetModelPointLight(config) {
 		const { pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } = config
 		this.pointLight.visible = pointLight
-	console.log(pointLightHelper)
+		console.log(pointLightHelper)
 		this.pointLightHelper.visible = pointLight && pointLightHelper
 		this.pointLight.intensity = pointLightIntensity
 		this.pointLight.color.set(pointLightColor)
@@ -703,6 +753,29 @@ class renderModel {
 			name,
 		})
 		mesh.mapId = id
+	}
+	// 创建辉光效果
+	createUnrealBloomPass() {
+		// const { clientHeight, clientWidth } = this.container
+		// const bloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 1.5, 0.4, 0.85);
+		// bloomPass.strength = .1
+		// bloomPass.radius = .1
+		// bloomPass.threshold = 0
+		// // this.finalComposer = new EffectComposer( this.renderer );
+		// console.log(bloomPass)
+		// this.finalComposer.setSize(clientWidth,clientHeight)
+		// this.finalComposer.addPass( new RenderPass(this.scene, this.camera) );
+		// // this.finalComposer.renderToScreen =true
+		// this.finalComposer.addPass( bloomPass );
+		// console.log(this.finalComposer)
+		// this.finalComposer.addPass( outputPass )
+
+		// this.effectComposer.addPass(bloomPass)
+
+
+
+
+
 	}
 }
 export default renderModel

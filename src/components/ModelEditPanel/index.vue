@@ -37,6 +37,10 @@
       <div v-show="activeTab == 'EditLight'">
         <edit-light></edit-light>
       </div>
+      <!-- 后期 -->
+      <div v-show="activeTab == 'EditLaterStage'">
+        <edit-later-stage></edit-later-stage>
+      </div>
     </div>
   </div>
 </template>
@@ -47,6 +51,7 @@ import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
 import EditAttribute from "./EditAttribute.vue";
 import EditLight from "./EditLight.vue";
+import EditLaterStage from "./EditLaterStage.vue";
 const panelTabs = [
   {
     name: "背景",
@@ -73,9 +78,14 @@ const panelTabs = [
     key: "EditLight",
     icon: "Sunrise",
   },
+  {
+    name: "后期",
+    key: "EditLaterStage",
+    icon: "MagicStick",
+  },
 
 ];
-const activeTab = ref("EditMaterial");
+const activeTab = ref("EditLaterStage");
 </script>
 <style lang="scss" scoped>
 .model-panel {
