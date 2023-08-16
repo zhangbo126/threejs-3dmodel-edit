@@ -17,6 +17,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { SSAARenderPass } from 'three/addons/postprocessing/SSAARenderPass.js';
 import store from '@/store'
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 class renderModel {
@@ -93,7 +94,13 @@ class renderModel {
 		this.mouse = new THREE.Vector2()
 		// 模型自带贴图
 		this.modelTextureMap
+		// 辉光效果合成器
 		this.glowComposer
+		// 辉光渲染器
+		this.unrealBloomPass
+		// 需要辉光的材质
+		this.glowMaterialList
+
 
 	}
 	init() {
@@ -110,10 +117,10 @@ class renderModel {
 			this.createHelper()
 			// 创建灯光
 			this.createLight()
-			// 创建效果合成器
-			this.createEffectComposer()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-3.glb', fileType: 'glb' })
+			// 创建效果合成器
+			this.createEffectComposer()
 			//监听场景大小改变，跳转渲染尺寸
 			window.addEventListener("resize", this.onWindowResize.bind(this))
 			//场景渲染
@@ -149,9 +156,11 @@ class renderModel {
 		const { clientHeight, clientWidth } = this.container
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
-		this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+		this.renderer.toneMapping = THREE.ReinhardToneMapping
+		this.renderer.outputEncoding = THREE.sRGBEncoding
 		//曝光
-		this.renderer.toneMappingExposure = 3
+		this.renderer.toneMappingExposure = 2
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
@@ -167,24 +176,22 @@ class renderModel {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.controls.update()
 		this.scene.traverse((v) => {
-			if (v.name == 'viewMesh') {
-
+			if (!this.glowMaterialList.includes(v.name) && v.material) {
 				v.originalMaterial = v.material
-				v.material = Object.getPrototypeOf(v.material).constructor
+				const Proto = Object.getPrototypeOf(v.material).constructor;
+				v.material = new Proto({ color: 0x000000 })
 			}
 		})
 		this.glowComposer.render()
 		this.scene.traverse((v) => {
-			if (v.name == 'viewMesh') {
+			if (!this.glowMaterialList.includes(v.name) && v.material) {
 				if (!v.originalMaterial) return
 				v.material = v.originalMaterial
 				delete v.originalMaterial
-
 			}
 		})
 		this.effectComposer.render()
 		//this.renderer.render(this.scene, this.camera)
-
 	}
 	// 监听鼠标点击模型
 	addEvenListMouseLiatener() {
@@ -255,6 +262,7 @@ class renderModel {
 									// 获取当前模型材质
 									v.mapId = mapId
 									this.modelMaterialList.push(v)
+
 								}
 								// 部分模型本身没有贴图需 要单独处理
 								if (v.material && isMap) {
@@ -301,6 +309,8 @@ class renderModel {
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 				this.scene.add(this.model)
+				// 需要辉光的材质
+				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				resolve(true)
 			}, () => {
 
@@ -414,6 +424,7 @@ class renderModel {
 		const geometry = new THREE.PlaneGeometry(4, 4);
 		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#939393' });
 		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
+		this.planeGeometry.name = 'planeGeometry'
 		this.planeGeometry.rotation.x = -Math.PI / 2
 		this.planeGeometry.position.set(0, -.5, 0)
 		// 让地面接收阴影
@@ -425,7 +436,6 @@ class renderModel {
 	createEffectComposer() {
 		const { clientHeight, clientWidth } = this.container
 		this.effectComposer = new EffectComposer(this.renderer)
-		// this.effectComposer.renderToScreen =true
 		const renderPass = new RenderPass(this.scene, this.camera)
 		this.effectComposer.addPass(renderPass)
 		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera)
@@ -438,26 +448,25 @@ class renderModel {
 		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
 
-		// 辉光参数
-		const params = {
-			// 强度
-			bloomStrength: .7,
-			// 阈值
-			bloomThreshold: 0,
-			// 半径
-			bloomRadius: .2
-		}
-		// 辉光通道
-		const bloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), params.bloomStrength, params.bloomRadius, params.bloomThreshold)
+		let effectFXAA = new ShaderPass(FXAAShader)
+		const pixelRatio = this.renderer.getPixelRatio()
+		effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio))
+		effectFXAA.renderToScreen = true
+		effectFXAA.needsSwap = true
+		this.effectComposer.addPass(effectFXAA)
+
+		// 创建辉光效果
+		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0)
+		this.unrealBloomPass.threshold = 0
+		this.unrealBloomPass.strength = 0
+		this.unrealBloomPass.radius = 0
 		// 辉光合成器
 		this.glowComposer = new EffectComposer(this.renderer)
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
-		this.glowComposer.addPass(bloomPass)
-
-		// 抗锯齿
-		// let effectFXAA = new ShaderPass(FXAAShader)
-		let effectFXAA = new ShaderPass(new THREE.ShaderMaterial({
+		this.glowComposer.addPass(this.unrealBloomPass)
+		// 着色器
+		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
 				bloomTexture: { value: this.glowComposer.renderTarget2.texture }
@@ -467,10 +476,10 @@ class renderModel {
 			defines: {}
 		}), 'baseTexture')
 
-		// effectFXAA.uniforms.resolution.value.set(1 / clientWidth, 1 / clientHeight)
-		// effectFXAA.renderToScreen = true
-		effectFXAA.needsSwap = true
-		this.effectComposer.addPass(effectFXAA)
+		shaderPass.renderToScreen = true
+		shaderPass.needsSwap = true
+		this.effectComposer.addPass(shaderPass)
+
 
 	}
 	// 切换模型
@@ -506,6 +515,8 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
+		this.effectComposer.setSize(clientWidth, clientHeight)
+		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	//设置场景颜色
 	onSetSceneColor(color) {
@@ -516,27 +527,20 @@ class renderModel {
 	onSetSceneImage(url) {
 		this.onClearSceneBg()
 		this.scene.background = new THREE.TextureLoader().load(url);
+		this.scene.background.name = 'background'
 	}
 	// 设置全景图
 	onSetSceneViewImage(url) {
-		this.onClearSceneBg()
-		const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
-		sphereBufferGeometry.scale(-1, -1, -1);
-		const material = new THREE.MeshBasicMaterial({
+		const mesh = this.scene.getObjectByProperty('name', 'viewMesh')
+		mesh.visible = true
+		mesh.material = new THREE.MeshBasicMaterial({
 			map: new THREE.TextureLoader().load(url)
 		});
-		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
-		this.viewMesh.name = 'viewMesh'
-		this.scene.add(this.viewMesh);
-
 	}
 	// 清除场景背景
 	onClearSceneBg() {
-		this.scene.background = new THREE.Color('rgba(212, 223, 224)')
-		if (!this.viewMesh) return false
-		this.viewMesh.material.dispose()
-		this.viewMesh.geometry.dispose()
-		this.scene.remove(this.viewMesh)
+		const mesh = this.scene.getObjectByProperty('name', 'viewMesh')
+		if (mesh) { mesh.visible = false }
 	}
 	// 开始执行动画
 	onStartModelAnimaion(config) {
@@ -754,28 +758,21 @@ class renderModel {
 		})
 		mesh.mapId = id
 	}
-	// 创建辉光效果
-	createUnrealBloomPass() {
-		// const { clientHeight, clientWidth } = this.container
-		// const bloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 1.5, 0.4, 0.85);
-		// bloomPass.strength = .1
-		// bloomPass.radius = .1
-		// bloomPass.threshold = 0
-		// // this.finalComposer = new EffectComposer( this.renderer );
-		// console.log(bloomPass)
-		// this.finalComposer.setSize(clientWidth,clientHeight)
-		// this.finalComposer.addPass( new RenderPass(this.scene, this.camera) );
-		// // this.finalComposer.renderToScreen =true
-		// this.finalComposer.addPass( bloomPass );
-		// console.log(this.finalComposer)
-		// this.finalComposer.addPass( outputPass )
+	// 设置辉光效果
+	onSetUnrealBloomPass(config) {
+		const { glow, threshold, strength, radius, toneMappingExposure } = config
+		if (glow) {
+			this.unrealBloomPass.threshold = threshold
+			this.unrealBloomPass.strength = strength
+			this.unrealBloomPass.radius = radius
+			this.renderer.toneMappingExposure = 1
 
-		// this.effectComposer.addPass(bloomPass)
-
-
-
-
-
+		} else {
+			this.unrealBloomPass.threshold = 0
+			this.unrealBloomPass.strength = 0
+			this.unrealBloomPass.radius = 0
+			this.renderer.toneMappingExposure = toneMappingExposure
+		}
 	}
 }
 export default renderModel

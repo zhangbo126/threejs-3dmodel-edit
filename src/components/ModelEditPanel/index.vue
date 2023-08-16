@@ -85,7 +85,7 @@ const panelTabs = [
   },
 
 ];
-const activeTab = ref("EditLaterStage");
+const activeTab = ref("EditMaterial");
 </script>
 <style lang="scss" scoped>
 .model-panel {

@@ -123,7 +123,7 @@ const config = reactive({
   type: 3, //1 颜色 2 图片  3全景图
   image: require("@/assets/image/model-bg-3.jpg"),
   viewImg: require("@/assets/image/view-4.png"),
-  color: "rgba(212, 223, 224)",
+  color: "#000",
 });
 const activeBackgroundId = ref(3);
 const activeViewImageId = ref(3);
