@@ -242,46 +242,7 @@ class renderModel {
 							}
 							this.onStartModelAnimaion(config)
 						}
-						const isMap = map ? true : false
-						this.modelMaterialList = []
-						this.modelTextureMap = []
-						this.model.traverse((v) => {
-							const { uuid } = v
-							if (v.isMesh) {
-								v.castShadow = true
-								v.frustumCulled = false
-								if (v.material) {
-									const materials = Array.isArray(v.material) ? v.material : [v.material]
-									const { url, mapId } = this.getModelMaps(materials, uuid)
-									const mesh = {
-										material: v.material,
-										url,
-										mapId
-									}
-									this.modelTextureMap.push(mesh)
-									// 获取当前模型材质
-									v.mapId = mapId
-									this.modelMaterialList.push(v)
-
-								}
-								// 部分模型本身没有贴图需 要单独处理
-								if (v.material && isMap) {
-									const mapTexture = new THREE.TextureLoader().load(map)
-									const { color, name } = v.material
-									v.material = new THREE.MeshLambertMaterial({
-										map: mapTexture,
-										name,
-										color,
-									})
-									v.mapId = uuid
-									this.modelTextureMap = [{
-										material: v.material,
-										url: map,
-										mapId: uuid
-									}]
-								}
-							}
-						})
+				        this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
@@ -321,6 +282,49 @@ class renderModel {
 			})
 		})
 	}
+	// 获取当前模型材质
+	getModelMeaterialList(map){
+		const isMap = map ? true : false
+		this.modelMaterialList = []
+		this.modelTextureMap = []
+		this.model.traverse((v) => {
+			const { uuid } = v
+			if (v.isMesh) {
+				v.castShadow = true
+				v.frustumCulled = false
+				if (v.material) {
+					const materials = Array.isArray(v.material) ? v.material : [v.material]
+					const { url, mapId } = this.getModelMaps(materials, uuid)
+					const mesh = {
+						material: v.material,
+						url,
+						mapId
+					}
+					this.modelTextureMap.push(mesh)
+					// 获取当前模型材质
+					v.mapId = mapId
+					this.modelMaterialList.push(v)
+
+				}
+				// 部分模型本身没有贴图需 要单独处理
+				if (v.material && isMap) {
+					const mapTexture = new THREE.TextureLoader().load(map)
+					const { color, name } = v.material
+					v.material = new THREE.MeshLambertMaterial({
+						map: mapTexture,
+						name,
+						color,
+					})
+					v.mapId = uuid
+					this.modelTextureMap = [{
+						material: v.material,
+						url: map,
+						mapId: uuid
+					}]
+				}
+			}
+		})
+	}
 	//设置模型定位大小
 	setModelPositionSize() {
 		//设置模型位置
@@ -334,7 +338,7 @@ class renderModel {
 		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
 		this.model.scale.set(scale, scale, scale)
 		// 设置模型位置
-		this.model.position.sub(center.multiplyScalar(scale))
+		// this.model.position.sub(center.multiplyScalar(scale))
 		// 设置控制器最小缩放值
 		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
@@ -427,6 +431,7 @@ class renderModel {
 		this.planeGeometry.name = 'planeGeometry'
 		this.planeGeometry.rotation.x = -Math.PI / 2
 		this.planeGeometry.position.set(0, -.5, 0)
+
 		// 让地面接收阴影
 		this.planeGeometry.receiveShadow = true;
 		this.planeGeometry.visible = false
