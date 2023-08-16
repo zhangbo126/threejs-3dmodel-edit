@@ -28,15 +28,6 @@ const modelList = [
 		filePath: 'threeFile/glb/glb-7.glb',
 		icon: require('@/assets/model-icon/2.png')
 	},
-
-	{
-		name: '黑豹',
-		fileType: 'glb',
-		id: 8,
-		animation: false,
-		filePath: 'threeFile/glb/glb-8.glb',
-		icon: require('@/assets/model-icon/3.png')
-	},
 	{
 		name: '奥创',
 		fileType: 'glb',
@@ -70,15 +61,6 @@ const modelList = [
 		filePath: 'threeFile/glb/glb-12.glb',
 		icon: require('@/assets/model-icon/6.png')
 	},
-	{
-		name: '惊奇队长',
-		fileType: 'glb',
-		id: 13,
-		animation: false,
-		filePath: 'threeFile/glb/glb-13.glb',
-		icon: require('@/assets/model-icon/7.png')
-	},
-
 
 	{
 		name: '动漫人物(女2)',
@@ -143,15 +125,6 @@ const modelList = [
 		icon: require('@/assets/model-icon/16.png')
 	},
 	{
-		name: '巴德',
-		fileType: 'glb',
-		map: require('@/assets/maps/2.png'),
-		id: 27,
-		animation: true,
-		filePath: 'threeFile/glb/glb-27.glb',
-		icon: require('@/assets/model-icon/19.png')
-	},
-	{
 		name: '龙',
 		fileType: 'glb',
 		map: require('@/assets/maps/4.png'),
@@ -212,14 +185,6 @@ const backgrundList = [
 	{
 		id: 11,
 		url: require('@/assets/image/model-bg-11.jpg')
-	},
-	{
-		id: 12,
-		url: require('@/assets/image/model-bg-12.jpg')
-	},
-	{
-		id: 13,
-		url: require('@/assets/image/model-bg-13.jpg')
 	},
 	{
 		id: 15,
