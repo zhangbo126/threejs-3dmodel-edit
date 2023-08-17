@@ -100,15 +100,16 @@ class renderModel {
 		this.unrealBloomPass
 		// 需要辉光的材质
 		this.glowMaterialList
+		
 
 
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
+			//初始化渲染器
+		    this.initRender()
 			//初始化相机
 			this.initCamera()
-			//初始化渲染器
-			this.initRender()
 			//初始化场景
 			this.initScene()
 			//初始化控制器，控制摄像头,控制器一定要在渲染器后
@@ -132,22 +133,10 @@ class renderModel {
 	//创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
-		// const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
-		// sphereBufferGeometry.scale(-1, -1, -1);
-		// const material = new THREE.MeshBasicMaterial({
-		// 	map: new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
-		// });
-		// this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
-		// this.viewMesh.name = 'viewMesh'
-		// this.scene.add(this.viewMesh);
-		const loader = new RGBELoader()
-		const texture = loader.load('threeFile/hdr/2.hdr')
+		const texture =  new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
 	    texture.mapping =THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment =texture
-
-		// this.scene.background = new THREE.TextureLoader().load('threeFile/hdr/1.hdr');
-
 	}
 	// 创建相机
 	initCamera() {
@@ -168,9 +157,11 @@ class renderModel {
 		this.renderer.outputEncoding = THREE.sRGBEncoding
 		//曝光
 		this.renderer.toneMappingExposure = 2
+		// this.renderer.physicallyCorrectLights = true
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
+	
 
 	}
 
@@ -182,22 +173,25 @@ class renderModel {
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.controls.update()
-		this.scene.traverse((v) => {
-			if (!this.glowMaterialList.includes(v.name) && v.material) {
-				v.originalMaterial = v.material
-				const Proto = Object.getPrototypeOf(v.material).constructor;
-				v.material = new Proto({ color: 0x000000 })
-			}
-		})
-		this.glowComposer.render()
-		this.scene.traverse((v) => {
-			if (!this.glowMaterialList.includes(v.name) && v.material) {
-				if (!v.originalMaterial) return
-				v.material = v.originalMaterial
-				delete v.originalMaterial
-			}
-		})
+		// this.scene.traverse((v) => {
+		// 	if (!this.glowMaterialList.includes(v.name) && v.material) {
+		// 		v.originalMaterial = v.material
+		// 		const Proto = Object.getPrototypeOf(v.material).constructor;
+		// 		v.material = new Proto({ color: 0x000000 })
+		// 	}
+		// })
+		// this.scene.traverse((v) => {
+		// 	if (!this.glowMaterialList.includes(v.name) && v.material) {
+		// 		if (!v.originalMaterial) return
+		// 		v.material = v.originalMaterial
+		// 		delete v.originalMaterial
+		// 	}
+		// })
+
 		this.effectComposer.render()
+		this.glowComposer.render()
+
+
 		//this.renderer.render(this.scene, this.camera)
 	}
 	// 监听鼠标点击模型
@@ -481,12 +475,16 @@ class renderModel {
 		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
-				bloomTexture: { value: this.glowComposer.renderTarget2.texture }
+				bloomTexture: { value: this.glowComposer.renderTarget2.texture },
+				tDiffuse:{
+					value:null
+				}
 			},
 			vertexShader,
 			fragmentShader,
 			defines: {}
 		}), 'baseTexture')
+
 
 		shaderPass.renderToScreen = true
 		shaderPass.needsSwap = true
@@ -539,15 +537,14 @@ class renderModel {
 	onSetSceneImage(url) {
 		this.onClearSceneBg()
 		this.scene.background = new THREE.TextureLoader().load(url);
-		this.scene.background.name = 'background'
+		// this.scene.background.name = 'background'
 	}
 	// 设置全景图
 	onSetSceneViewImage(url) {
-		const mesh = this.scene.getObjectByProperty('name', 'viewMesh')
-		mesh.visible = true
-		mesh.material = new THREE.MeshBasicMaterial({
-			map: new THREE.TextureLoader().load(url)
-		});
+		const texture = new THREE.TextureLoader().load(url);
+		texture.mapping =THREE.EquirectangularReflectionMapping
+		this.scene.background = texture
+		this.scene.environment =texture
 	}
 	// 清除场景背景
 	onClearSceneBg() {
