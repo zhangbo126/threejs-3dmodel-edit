@@ -105,12 +105,12 @@ class renderModel {
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
-			//初始化场景
-			this.initScene()
 			//初始化相机
 			this.initCamera()
 			//初始化渲染器
 			this.initRender()
+			//初始化场景
+			this.initScene()
 			//初始化控制器，控制摄像头,控制器一定要在渲染器后
 			this.initControls()
 			// 创建辅助线
@@ -132,14 +132,21 @@ class renderModel {
 	//创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
-		const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
-		sphereBufferGeometry.scale(-1, -1, -1);
-		const material = new THREE.MeshBasicMaterial({
-			map: new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
-		});
-		this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
-		this.viewMesh.name = 'viewMesh'
-		this.scene.add(this.viewMesh);
+		// const sphereBufferGeometry = new THREE.SphereGeometry(30, 32, 16);
+		// sphereBufferGeometry.scale(-1, -1, -1);
+		// const material = new THREE.MeshBasicMaterial({
+		// 	map: new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
+		// });
+		// this.viewMesh = new THREE.Mesh(sphereBufferGeometry, material);
+		// this.viewMesh.name = 'viewMesh'
+		// this.scene.add(this.viewMesh);
+		const loader = new RGBELoader()
+		const texture = loader.load('threeFile/hdr/2.hdr')
+	    texture.mapping =THREE.EquirectangularReflectionMapping
+		this.scene.background = texture
+		this.scene.environment =texture
+
+		// this.scene.background = new THREE.TextureLoader().load('threeFile/hdr/1.hdr');
 
 	}
 	// 创建相机
