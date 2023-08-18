@@ -171,6 +171,7 @@ class renderModel {
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.controls.update()
+		// 将不需要处理辉光的材质进行存储备份
 		this.scene.traverse((v) => {
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
@@ -182,6 +183,7 @@ class renderModel {
 			}
 		})
 		this.glowComposer.render()
+		// 在辉光渲染器执行完之后在恢复材质原效果
 		this.scene.traverse((v) => {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
