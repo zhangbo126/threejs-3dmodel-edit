@@ -9,6 +9,8 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
+import { BloomPass } from 'three/addons/postprocessing/BloomPass.js'
+import { CopyShader } from 'three/examples/jsm/shaders/CopyShader.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
@@ -18,6 +20,7 @@ import { ElMessage } from 'element-plus';
 import { lightPosition } from '@/utils/utilityFunction'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SSAARenderPass } from 'three/addons/postprocessing/SSAARenderPass.js';
+import { TexturePass } from 'three/addons/postprocessing/TexturePass.js'
 import store from '@/store'
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 class renderModel {
@@ -100,14 +103,14 @@ class renderModel {
 		this.unrealBloomPass
 		// 需要辉光的材质
 		this.glowMaterialList
-		
+		this.materials = {}
 
 
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
 			//初始化渲染器
-		    this.initRender()
+			this.initRender()
 			//初始化相机
 			this.initCamera()
 			//初始化场景
@@ -133,10 +136,12 @@ class renderModel {
 	//创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
-		const texture =  new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
-	    texture.mapping =THREE.EquirectangularReflectionMapping
+		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
+		texture.mapping = THREE.EquirectangularReflectionMapping
+		// texture.colorSpace = THREE.SRGBColorSpace
 		this.scene.background = texture
-		this.scene.environment =texture
+		this.scene.environment = texture
+
 	}
 	// 创建相机
 	initCamera() {
@@ -156,43 +161,43 @@ class renderModel {
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
 		this.renderer.outputEncoding = THREE.sRGBEncoding
 		//曝光
-		this.renderer.toneMappingExposure = 2
+		this.renderer.toneMappingExposure = 3
 		// this.renderer.physicallyCorrectLights = true
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
-	
+
 
 	}
 
-	render() {
-		this.effectComposer.render()
-		this.controls.update()
-		// this.renderer.render(this.scene, this.camera)
-	}
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.controls.update()
-		// this.scene.traverse((v) => {
-		// 	if (!this.glowMaterialList.includes(v.name) && v.material) {
-		// 		v.originalMaterial = v.material
-		// 		const Proto = Object.getPrototypeOf(v.material).constructor;
-		// 		v.material = new Proto({ color: 0x000000 })
-		// 	}
-		// })
-		// this.scene.traverse((v) => {
-		// 	if (!this.glowMaterialList.includes(v.name) && v.material) {
-		// 		if (!v.originalMaterial) return
-		// 		v.material = v.originalMaterial
-		// 		delete v.originalMaterial
-		// 	}
-		// })
-
-		this.effectComposer.render()
+		this.scene.traverse((v) => {
+			if (v instanceof THREE.Scene) {
+				this.materials.scene = v.background
+				v.background = null
+				console.log(v)
+			}
+			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
+				this.materials[v.uuid] = v.material
+				v.material = new THREE.MeshBasicMaterial({ color: 'black' })
+			}
+		})
 		this.glowComposer.render()
+		this.scene.traverse((v) => {
+			if (this.materials[v.uuid]) {
+				v.material = this.materials[v.uuid]
+				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.Scene) {
+				v.background = this.materials.scene
+				delete this.materials.scene
+			}
+		})
+		this.effectComposer.render()
 
 
-		//this.renderer.render(this.scene, this.camera)
 	}
 	// 监听鼠标点击模型
 	addEvenListMouseLiatener() {
@@ -243,7 +248,7 @@ class renderModel {
 							}
 							this.onStartModelAnimaion(config)
 						}
-				        this.getModelMeaterialList(map)
+						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
@@ -273,6 +278,7 @@ class renderModel {
 				this.scene.add(this.model)
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
+				this.setMaterialFlow()
 				resolve(true)
 			}, () => {
 
@@ -284,7 +290,7 @@ class renderModel {
 		})
 	}
 	// 获取当前模型材质
-	getModelMeaterialList(map){
+	getModelMeaterialList(map) {
 		const isMap = map ? true : false
 		this.modelMaterialList = []
 		this.modelTextureMap = []
@@ -323,6 +329,22 @@ class renderModel {
 						mapId: uuid
 					}]
 				}
+			}
+		})
+	}
+	setMaterialFlow() {
+		var scanConfig = {
+			value: 1.0,
+			start: 0,
+			end: 0,
+			during: 3,
+		}
+		this.scene.traverse(v => {
+
+			if (this.glowMaterialList.includes(v.name)) {
+
+				// 将发光材质应用到子对象
+				// v.material;
 			}
 		})
 	}
@@ -461,11 +483,16 @@ class renderModel {
 		effectFXAA.needsSwap = true
 		this.effectComposer.addPass(effectFXAA)
 
-		// 创建辉光效果
+		//创建辉光效果
 		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0)
 		this.unrealBloomPass.threshold = 0
 		this.unrealBloomPass.strength = 0
 		this.unrealBloomPass.radius = 0
+		this.unrealBloomPass.renderToScreen = false
+		this.glowComposer = new EffectComposer(this.renderer)
+		this.glowComposer.renderToScreen = false
+		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
+		this.glowComposer.addPass(this.unrealBloomPass)
 		// 辉光合成器
 		this.glowComposer = new EffectComposer(this.renderer)
 		this.glowComposer.renderToScreen = false
@@ -476,15 +503,14 @@ class renderModel {
 			uniforms: {
 				baseTexture: { value: null },
 				bloomTexture: { value: this.glowComposer.renderTarget2.texture },
-				tDiffuse:{
-					value:null
+				tDiffuse: {
+					value: null
 				}
 			},
 			vertexShader,
 			fragmentShader,
 			defines: {}
 		}), 'baseTexture')
-
 
 		shaderPass.renderToScreen = true
 		shaderPass.needsSwap = true
@@ -530,21 +556,19 @@ class renderModel {
 	}
 	//设置场景颜色
 	onSetSceneColor(color) {
-		this.onClearSceneBg()
 		this.scene.background = new THREE.Color(color)
 	}
 	//设置场景图片
 	onSetSceneImage(url) {
-		this.onClearSceneBg()
 		this.scene.background = new THREE.TextureLoader().load(url);
 		// this.scene.background.name = 'background'
 	}
 	// 设置全景图
 	onSetSceneViewImage(url) {
 		const texture = new THREE.TextureLoader().load(url);
-		texture.mapping =THREE.EquirectangularReflectionMapping
+		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
-		this.scene.environment =texture
+		this.scene.environment = texture
 	}
 	// 清除场景背景
 	onClearSceneBg() {
@@ -775,6 +799,7 @@ class renderModel {
 			this.unrealBloomPass.strength = strength
 			this.unrealBloomPass.radius = radius
 			this.renderer.toneMappingExposure = 1
+			this.renderer.setClearAlpha(0);
 
 		} else {
 			this.unrealBloomPass.threshold = 0
