@@ -348,6 +348,10 @@ const onChangeGridHelperSize = () => {
 const onChangeAxesHelper = () => {
   state.modelApi.onSetModelAxesHelper(config);
 };
+
+defineExpose({
+  config
+});
 </script>
 
 <style lang="scss">

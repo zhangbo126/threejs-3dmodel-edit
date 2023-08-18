@@ -149,5 +149,9 @@ const onUplateAnimation = () => {
   config.animations = state.modelAnimation;
   state.modelApi.onStartModelAnimaion(config);
 };
+
+defineExpose({
+  config
+});
 </script>
 <style scoped lang="scss"></style>

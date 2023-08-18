@@ -242,6 +242,10 @@ const onChangeSystemModelMap = (map) => {
   });
   ElMessage.success("当前材质贴图修改成功");
 };
+defineExpose({
+  config,
+  mapId:activeTextureMap
+});
 </script>
 <style scoped lang="scss">
 .grid-txt {
