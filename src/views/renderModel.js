@@ -166,8 +166,6 @@ class renderModel {
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
-
-
 	}
 
 	sceneAnimation() {
@@ -177,7 +175,6 @@ class renderModel {
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
 				v.background = null
-				console.log(v)
 			}
 			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
 				this.materials[v.uuid] = v.material
