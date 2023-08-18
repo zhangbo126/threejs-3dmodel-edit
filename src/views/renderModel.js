@@ -195,8 +195,6 @@ class renderModel {
 			}
 		})
 		this.effectComposer.render()
-
-
 	}
 	// 监听鼠标点击模型
 	addEvenListMouseLiatener() {
@@ -221,8 +219,6 @@ class renderModel {
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 		// this.controls.enableDamping = true
-		// this.controls.minDistance=10
-		// this.controls.maxDistance = 50
 		this.controls.enablePan = false
 	}
 	//加载模型
@@ -277,7 +273,6 @@ class renderModel {
 				this.scene.add(this.model)
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
-				this.setMaterialFlow()
 				resolve(true)
 			}, () => {
 
@@ -309,8 +304,15 @@ class renderModel {
 					this.modelTextureMap.push(mesh)
 					// 获取当前模型材质
 					v.mapId = mapId
+	            	const { name, color,map } = v.material
+					// 统一将模型材质 设置为 MeshLambertMaterial 类型
+					v.material = new THREE.MeshLambertMaterial({
+						map,
+						transparent: true,
+						color,
+						name,
+					})
 					this.modelMaterialList.push(v)
-
 				}
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
@@ -319,6 +321,7 @@ class renderModel {
 					v.material = new THREE.MeshLambertMaterial({
 						map: mapTexture,
 						name,
+						transparent: true,
 						color,
 					})
 					v.mapId = uuid
@@ -331,22 +334,7 @@ class renderModel {
 			}
 		})
 	}
-	setMaterialFlow() {
-		var scanConfig = {
-			value: 1.0,
-			start: 0,
-			end: 0,
-			during: 3,
-		}
-		this.scene.traverse(v => {
 
-			if (this.glowMaterialList.includes(v.name)) {
-
-				// 将发光材质应用到子对象
-				// v.material;
-			}
-		})
-	}
 	//设置模型定位大小
 	setModelPositionSize() {
 		//设置模型位置
@@ -488,10 +476,6 @@ class renderModel {
 		this.unrealBloomPass.strength = 0
 		this.unrealBloomPass.radius = 0
 		this.unrealBloomPass.renderToScreen = false
-		this.glowComposer = new EffectComposer(this.renderer)
-		this.glowComposer.renderToScreen = false
-		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
-		this.glowComposer.addPass(this.unrealBloomPass)
 		// 辉光合成器
 		this.glowComposer = new EffectComposer(this.renderer)
 		this.glowComposer.renderToScreen = false
@@ -560,7 +544,6 @@ class renderModel {
 	//设置场景图片
 	onSetSceneImage(url) {
 		this.scene.background = new THREE.TextureLoader().load(url);
-		// this.scene.background.name = 'background'
 	}
 	// 设置全景图
 	onSetSceneViewImage(url) {
@@ -568,11 +551,6 @@ class renderModel {
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
-	}
-	// 清除场景背景
-	onClearSceneBg() {
-		const mesh = this.scene.getObjectByProperty('name', 'viewMesh')
-		if (mesh) { mesh.visible = false }
 	}
 	// 开始执行动画
 	onStartModelAnimaion(config) {
@@ -797,8 +775,7 @@ class renderModel {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
 			this.unrealBloomPass.radius = radius
-			this.renderer.toneMappingExposure = 1
-			this.renderer.setClearAlpha(0);
+			this.renderer.toneMappingExposure = toneMappingExposure
 
 		} else {
 			this.unrealBloomPass.threshold = 0

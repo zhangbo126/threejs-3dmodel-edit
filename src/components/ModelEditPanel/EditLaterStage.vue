@@ -63,7 +63,7 @@
       </div>
     </div>
     <!-- 曝光度 -->
-    <div class="options" :class="exposureDisable">
+    <div class="options">
       <div class="option space-between">
         <el-space>
           <el-icon>
@@ -98,14 +98,11 @@ const optionsDisable = computed(() => {
   const { glow } = config;
   return glow ? "" : "disabled";
 });
-const exposureDisable = computed(() => {
-  const { glow } = config;
-  return glow ? "disabled" : "";
-});
+
 const config = reactive({
     glow: false,
     threshold:0.05,
-    strength:1,
+    strength:0.6,
     radius:1,
     toneMappingExposure:2,
 });
@@ -113,5 +110,8 @@ const config = reactive({
 const onChangeFlow = () => {
 	state.modelApi.onSetUnrealBloomPass(config)
 };
+defineExpose({
+  config
+});
 </script>
 <style lang="scss" scoped></style>

@@ -193,6 +193,10 @@ const onChangeBgSwitch = () => {
       break;
   }
 };
+
+defineExpose({
+  config
+});
 </script>
 <style lang="scss" scoped>
 .add-img {

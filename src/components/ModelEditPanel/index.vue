@@ -19,27 +19,27 @@
     <div class="panel-edit">
       <!-- 背景 -->
       <div v-show="activeTab == 'EditBackground'">
-        <edit-background></edit-background>
+        <edit-background ref="background"></edit-background>
       </div>
       <!-- 材质 -->
       <div v-show="activeTab == 'EditMaterial'">
-        <edit-material></edit-material>
+        <edit-material ref="material"></edit-material>
       </div>
       <!-- 动画 -->
       <div v-show="activeTab == 'EditAnimation'">
-        <edit-animation></edit-animation>
+        <edit-animation ref="animation"></edit-animation>
       </div>
       <!-- 属性 -->
       <div v-show="activeTab == 'EditAttribute'">
-        <edit-attribute></edit-attribute>
+        <edit-attribute ref="attribute"></edit-attribute>
       </div>
       <!-- 灯光 -->
       <div v-show="activeTab == 'EditLight'">
-        <edit-light></edit-light>
+        <edit-light ref="light"></edit-light>
       </div>
       <!-- 后期 -->
       <div v-show="activeTab == 'EditLaterStage'">
-        <edit-later-stage></edit-later-stage>
+        <edit-later-stage ref="stage"></edit-later-stage>
       </div>
     </div>
   </div>
@@ -83,9 +83,29 @@ const panelTabs = [
     key: "EditLaterStage",
     icon: "MagicStick",
   },
-
 ];
 const activeTab = ref("EditMaterial");
+const background = ref(null);
+const material = ref(null);
+const animation = ref(null);
+const attribute = ref(null);
+const light = ref(null);
+const stage = ref(null);
+
+// 获取所有面板配置
+const getPanelConfig = () => {
+  return{
+    background:background.value,
+    material:material.value,
+    animation:animation.value,
+    attribute:attribute.value,
+    light:light.value,
+    stage:stage.value,
+  }
+};
+defineExpose({
+  getPanelConfig,
+});
 </script>
 <style lang="scss" scoped>
 .model-panel {

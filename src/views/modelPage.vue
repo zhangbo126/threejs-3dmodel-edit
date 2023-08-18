@@ -2,8 +2,14 @@
   <div class="model-page">
     <!-- 头部操作栏 -->
     <header class="model-header">
-      <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
-      <span>作者:answer</span>
+      <div class="header-lf">
+        <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
+        <span>作者:answer</span>
+      </div>
+      <div class="header-lr">
+        <el-button type="primary" @click="onSaveConfig">保存配置</el-button>
+        <el-button type="primary" @click="onPrivew">预览</el-button>
+      </div>
     </header>
     <div class="model-container" v-Loading="loading">
       <!-- 模型列表 -->
@@ -20,7 +26,7 @@
       </div>
       <!-- 右侧编辑栏 -->
       <div class="edit-panel" :style="{ minWidth: '380px' }">
-        <model-edit-panel v-if="state.modelApi.model"></model-edit-panel>
+        <model-edit-panel ref="editPanel" v-if="state.modelApi.model"></model-edit-panel>
       </div>
     </div>
   </div>
@@ -30,6 +36,7 @@
 import { ModelEditPanel, ModelChoose } from "@/components/index";
 import { onMounted, ref, reactive, computed, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
+import { ElMessage } from "element-plus";
 import renderModel from "./renderModel";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -40,12 +47,23 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
-const model = ref(null);
+const editPanel = ref(null)
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
 };
+// 预览
+const onPrivew = () => {
+  ElMessage.success("敬请期待");
+};
+// 保存配置
+const onSaveConfig = () => {
+    const modelConfig = editPanel.value.getPanelConfig()
+    console.log(modelConfig)
+    ElMessage.success("配置获取成功请在控制台中查看");
 
+
+};
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
@@ -70,10 +88,14 @@ onMounted(async () => {
     background-color: #010c1d;
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
     text-align: center;
-    line-height: 35px;
     font-weight: 500;
     color: #fff;
     text-shadow: 5px 3px 5px #c11212;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    box-sizing: border-box;
   }
 
   .model-container {

@@ -585,6 +585,10 @@ const changePlaneGeometryColor = (planeColor) => {
 const onChangePlaneGeometry = () => {
   state.modelApi.onSetModelPlaneGeometry(config);
 };
+
+defineExpose({
+  config
+});
 </script>
 
 <style scoped lang="scss">
