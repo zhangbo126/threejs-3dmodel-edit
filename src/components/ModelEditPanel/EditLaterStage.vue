@@ -16,12 +16,12 @@
       </div>
     </div>
     <div class="options" :class="optionsDisable">
-      <div class="option" >
+      <div class="option">
         <div class="grid-txt">
           <el-button type="primary" link>强度</el-button>
         </div>
-         <div class="grid-silder">
-            <el-slider
+        <div class="grid-silder">
+          <el-slider
             show-input
             v-model="config.strength"
             @change="onChangeFlow"
@@ -29,14 +29,14 @@
             :min="0"
             :max="3"
           />
-         </div>
+        </div>
       </div>
       <div class="option">
         <div class="grid-txt">
           <el-button type="primary" link>半径</el-button>
         </div>
-         <div class="grid-silder">
-            <el-slider
+        <div class="grid-silder">
+          <el-slider
             show-input
             v-model="config.radius"
             @change="onChangeFlow"
@@ -44,14 +44,14 @@
             :min="0"
             :max="2"
           />
-         </div>
+        </div>
       </div>
       <div class="option">
         <div class="grid-txt">
           <el-button type="primary" link>阈值</el-button>
         </div>
-         <div class="grid-silder">
-            <el-slider
+        <div class="grid-silder">
+          <el-slider
             show-input
             v-model="config.threshold"
             @change="onChangeFlow"
@@ -59,7 +59,7 @@
             :min="0"
             :max="1"
           />
-         </div>
+        </div>
       </div>
     </div>
     <!-- 曝光度 -->
@@ -67,28 +67,55 @@
       <div class="option space-between">
         <el-space>
           <el-icon>
-            <Sunny />
+            <Umbrella />
           </el-icon>
           <span> 色调曝光度 </span>
         </el-space>
         <div class="grid-silder">
           <el-slider
-          show-input
-          v-model="config.toneMappingExposure"
-          @change="onChangeFlow"
-          :step="0.01"
-          :min="0.5"
-          :max="10"
-        />
-       </div>
+            show-input
+            v-model="config.toneMappingExposure"
+            @change="onChangeFlow"
+            :step="0.01"
+            :min="0.5"
+            :max="10"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- 模型拆分 -->
+    <div class="options">
+      <div class="option space-between">
+        <el-space>
+          <el-tooltip effect="dark" content="当前模型不可拆分" placement="top">
+            <el-icon v-if="decomposeDisable == 'disabled'">
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+          </el-tooltip>
+          <el-icon>
+            <Cpu />
+          </el-icon>
+          <span> 模型分解 </span>
+        </el-space>
+        <div class="grid-silder" :class="decomposeDisable">
+          <el-slider
+            show-input
+            v-model="config.decompose"
+            @change="onChangeDecompose"
+            :step="0.01"
+            :min="0"
+            :max="20"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, getCurrentInstance,onMounted } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
+const { $bus } = getCurrentInstance().proxy;
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
@@ -99,19 +126,35 @@ const optionsDisable = computed(() => {
   return glow ? "" : "disabled";
 });
 
-const config = reactive({
-    glow: false,
-    threshold:0.05,
-    strength:0.6,
-    radius:1,
-    toneMappingExposure:2,
+const decomposeDisable = computed(() => {
+  const modelMaterialList = state.modelApi.modelMaterialList;
+  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
+  return decomposeMesh.length <= 1 ? "disabled" : "";
 });
-
+const config = reactive({
+  glow: false,
+  threshold: 0.05,
+  strength: 0.6,
+  radius: 1,
+  decompose: 0,
+  toneMappingExposure: 2,
+});
+onMounted(() => {
+  $bus.on("model-update", () => {
+    Object.assign(config, {
+      decompose: 0,
+      toneMappingExposure: 2,
+    });
+  });
+});
 const onChangeFlow = () => {
-	state.modelApi.onSetUnrealBloomPass(config)
+  state.modelApi.onSetUnrealBloomPass(config);
+};
+const onChangeDecompose = () => {
+  state.modelApi.setModelMeshDecompose(config);
 };
 defineExpose({
-  config
+  config,
 });
 </script>
 <style lang="scss" scoped></style>

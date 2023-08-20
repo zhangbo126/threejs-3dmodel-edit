@@ -15,7 +15,7 @@
         >
           <el-space>
             <div class="icon-name">
-              {{ mesh.material.name }}
+              {{ mesh.name }}
             </div>
             <div class="check" v-show="state.selectMeshUuid == mesh.uuid">
               <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>

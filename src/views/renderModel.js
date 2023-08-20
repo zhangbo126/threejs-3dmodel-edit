@@ -22,7 +22,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SSAARenderPass } from 'three/addons/postprocessing/SSAARenderPass.js';
 import { TexturePass } from 'three/addons/postprocessing/TexturePass.js'
 import store from '@/store'
-import { vertexShader, fragmentShader } from '@/config/constant.js'
+import TWEEN from "@tweenjs/tween.js";
+import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -122,7 +123,7 @@ class renderModel {
 			// 创建灯光
 			this.createLight()
 			// 添加物体模型 TODO：初始化时需要默认一个
-			const load = await this.setModel({ filePath: 'threeFile/glb/glb-3.glb', fileType: 'glb' })
+			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb' ,decomposeName:'transformers_3'})
 			// 创建效果合成器
 			this.createEffectComposer()
 			//监听场景大小改变，跳转渲染尺寸
@@ -194,6 +195,7 @@ class renderModel {
 				delete this.materials.scene
 			}
 		})
+		TWEEN.update();
 		this.effectComposer.render()
 	}
 	// 监听鼠标点击模型
@@ -222,13 +224,14 @@ class renderModel {
 		this.controls.enablePan = false
 	}
 	//加载模型
-	setModel({ filePath, fileType, scale, map, position }) {
+	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
+						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
 						// 如果当前模型有动画则默认播放第一条动画
@@ -270,9 +273,9 @@ class renderModel {
 				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
-				this.scene.add(this.model)
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
+				this.scene.add(this.model)
 				resolve(true)
 			}, () => {
 
@@ -288,47 +291,50 @@ class renderModel {
 		const isMap = map ? true : false
 		this.modelMaterialList = []
 		this.modelTextureMap = []
+		let i = 0;
 		this.model.traverse((v) => {
 			const { uuid } = v
 			if (v.isMesh) {
 				v.castShadow = true
 				v.frustumCulled = false
+				i++;
 				if (v.material) {
 					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					const { url, mapId } = this.getModelMaps(materials, uuid)
-					const mesh = {
-						material: v.material,
-						url,
-						mapId
-					}
-					this.modelTextureMap.push(mesh)
-					// 获取当前模型材质
-					v.mapId = mapId
-	            	const { name, color,map } = v.material
+					const { name, color, map } = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					v.material = new THREE.MeshLambertMaterial({
+					v.material = new THREE.MeshStandardMaterial({
 						map,
 						transparent: true,
 						color,
 						name,
 					})
 					this.modelMaterialList.push(v)
+					// 获取模型自动材质贴图
+					const { url, mapId } = this.getModelMaps(materials, uuid)
+					const mesh = {
+						material: v.material,
+						url,
+						mapId: mapId + '_' + i
+					}
+					// 获取当前模型材质
+					v.mapId = mapId + '_' + i
+					this.modelTextureMap.push(mesh)
 				}
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
 					const mapTexture = new THREE.TextureLoader().load(map)
 					const { color, name } = v.material
-					v.material = new THREE.MeshLambertMaterial({
+					v.material = new THREE.MeshStandardMaterial({
 						map: mapTexture,
 						name,
 						transparent: true,
 						color,
 					})
-					v.mapId = uuid
+					v.mapId = uuid + '_' + i
 					this.modelTextureMap = [{
 						material: v.material,
 						url: map,
-						mapId: uuid
+						mapId: uuid + '_' + i
 					}]
 				}
 			}
@@ -518,6 +524,7 @@ class renderModel {
 				this.skeletonHelper.visible = false
 				this.modelTextureMap = []
 				this.scene.remove(this.model)
+				this.renderer.toneMappingExposure = 3
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
@@ -783,6 +790,56 @@ class renderModel {
 			this.unrealBloomPass.radius = 0
 			this.renderer.toneMappingExposure = toneMappingExposure
 		}
+	}
+	// 模型拆分
+	setModelMeshDecompose({ decompose }) {
+		if (this.glowMaterialList.length <= 1) return false
+		const modelDecomposeMove = (obj, position) => {
+			new TWEEN.Tween(obj.position)
+				.to(position, 500)
+				.onUpdate(function (val) {
+					obj.position.set(val.x || 0, val.y || 0, val.z || 0);
+				})
+				.start();
+		}
+		const length = this.glowMaterialList.length
+		const angleStep = (2 * Math.PI) / length;
+		this.glowMaterialList.forEach((name, i) => {
+			const mesh = this.model.getObjectByName(name)
+			const { decomposeName } = this.model
+			if (mesh.type == 'Mesh') {
+				// 如果当前模型有设置模型分解的自定义参数
+				if (MODEL_DECOMPOSE[decomposeName] && MODEL_DECOMPOSE[decomposeName][name]) {
+					const position = { x: 0, y: 0, z: 0 }
+					const { x: modelX, y: modelY, z: modelZ } = MODEL_DECOMPOSE[decomposeName][name]
+					if (modelX == 'straight') {
+						position.x += decompose
+					} else if (modelX == 'burden') {
+						position.x -= decompose
+					}
+					if (modelY == 'straight') {
+						position.y += decompose
+					} else if (modelY == 'burden') {
+						position.y -= decompose
+					}
+					if (modelZ == 'straight') {
+						position.z += decompose
+					} else if (modelZ == 'burden') {
+						position.z -= decompose
+					}
+					modelDecomposeMove(mesh, position)
+				} else {
+					// 材质位置计算
+					const angle = i * angleStep;
+					const x = (decompose) * Math.cos(angle);
+					const y = (decompose) * Math.sin(angle);
+					const position = {
+						x, y, z: 0
+					}
+					modelDecomposeMove(mesh, position)
+				}
+			}
+		})
 	}
 }
 export default renderModel

@@ -29,21 +29,22 @@ const modelList = [
 		icon: require('@/assets/model-icon/2.png')
 	},
 	{
-		name: '奥创',
+		name: '变形金刚（3）',
 		fileType: 'glb',
 		id: 9,
 		animation: false,
 		filePath: 'threeFile/glb/glb-9.glb',
-		icon: require('@/assets/model-icon/4.png')
-
+		icon: require('@/assets/model-icon/4.png'),
+		decomposeName:'transformers_3'
 	},
 	{
-		name: '蚁人',
+		name: '变形金刚（1）',
 		fileType: 'glb',
 		id: 10,
 		animation: false,
 		filePath: 'threeFile/glb/glb-10.glb',
-		icon: require('@/assets/model-icon/1.png')
+		icon: require('@/assets/model-icon/1.png'),
+		decomposeName:'transformers_1'
 	},
 	{
 		name: '蜘蛛侠',
@@ -90,13 +91,13 @@ const modelList = [
 	},
 
 	{
-		name: '浣熊',
+		name: '变形金刚（2）',
 		fileType: 'glb',
 		id: 22,
 		animation: false,
 		filePath: 'threeFile/glb/glb-22.glb',
-		icon: require('@/assets/model-icon/9.png')
-
+		icon: require('@/assets/model-icon/9.png'),
+		decomposeName:'transformers_2'
 	},
 	{
 		name: '恶魔',
