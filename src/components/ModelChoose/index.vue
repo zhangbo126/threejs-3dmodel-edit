@@ -121,7 +121,7 @@ const animationModelList = computed(() => {
 });
 
 //当前模型id
-const activeModelId = ref(3);
+const activeModelId = ref(9);
 
 //当前本地模型
 const localModelName = ref(null);
