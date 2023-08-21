@@ -47,7 +47,7 @@ const modelList = [
 		decomposeName:'transformers_1'
 	},
 	{
-		name: '蜘蛛侠',
+		name: '人物（女）2',
 		fileType: 'glb',
 		id: 11,
 		animation: false,
@@ -55,7 +55,7 @@ const modelList = [
 		icon: require('@/assets/model-icon/5.png')
 	},
 	{
-		name: '美国队长',
+		name: '变形金刚(4)',
 		fileType: 'glb',
 		id: 12,
 		animation: false,
