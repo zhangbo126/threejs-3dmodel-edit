@@ -55,7 +55,7 @@ const modelList = [
 		icon: require('@/assets/model-icon/5.png')
 	},
 	{
-		name: '美国队长',
+		name: '变形金刚(4)',
 		fileType: 'glb',
 		id: 12,
 		animation: false,
