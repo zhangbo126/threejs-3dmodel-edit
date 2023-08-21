@@ -47,7 +47,7 @@ const modelList = [
 		decomposeName:'transformers_1'
 	},
 	{
-		name: '蜘蛛侠',
+		name: '人物（女）2',
 		fileType: 'glb',
 		id: 11,
 		animation: false,
