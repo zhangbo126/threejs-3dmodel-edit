@@ -28,6 +28,15 @@ const modelList = [
 		filePath: 'threeFile/glb/glb-7.glb',
 		icon: require('@/assets/model-icon/2.png')
 	},
+
+	{
+		name: '人物（男）',
+		fileType: 'glb',
+		id: 8,
+		animation: false,
+		filePath: 'threeFile/glb/glb-8.glb',
+		icon: require('@/assets/model-icon/3.png')
+	},
 	{
 		name: '变形金刚（3）',
 		fileType: 'glb',
