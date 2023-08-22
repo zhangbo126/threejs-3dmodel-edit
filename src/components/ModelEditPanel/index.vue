@@ -79,7 +79,7 @@ const panelTabs = [
     icon: "Sunrise",
   },
   {
-    name: "后期",
+    name: "后期/操作",
     key: "EditLaterStage",
     icon: "MagicStick",
   },

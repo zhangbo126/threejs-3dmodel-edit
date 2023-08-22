@@ -24,6 +24,7 @@ import { TexturePass } from 'three/addons/postprocessing/TexturePass.js'
 import store from '@/store'
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
+import { debounce } from '@/utils/utilityFunction.js'
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -105,6 +106,8 @@ class renderModel {
 		// 需要辉光的材质
 		this.glowMaterialList
 		this.materials = {}
+		// 鼠标是否按下
+		this.mouseDown = false
 
 
 	}
@@ -123,7 +126,7 @@ class renderModel {
 			// 创建灯光
 			this.createLight()
 			// 添加物体模型 TODO：初始化时需要默认一个
-			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb' ,decomposeName:'transformers_3'})
+			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//监听场景大小改变，跳转渲染尺寸
@@ -201,12 +204,16 @@ class renderModel {
 	// 监听鼠标点击模型
 	addEvenListMouseLiatener() {
 		this.container.addEventListener('click', this.onMouseClickModel.bind(this))
+		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
+		this.container.addEventListener('mouseup', this.onMouseUpModel.bind(this))
+		this.container.addEventListener('mousedown', this.onMouseDownModel.bind(this))
 	}
 	// 模型点击事件
 	onMouseClickModel(event) {
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+
 		this.raycaster.setFromCamera(this.mouse, this.camera)
 		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
 		if (intersects.length > 0) {
@@ -218,9 +225,62 @@ class renderModel {
 			store.commit('SELECT_MESH', {})
 		}
 	}
+	//鼠标移入模型事件
+	onMouseMoveModel(event) {
+		// TODO:动画模型不显示材质标签
+		if (this.modelAnimation.length) return false
+		const meshTxt = document.getElementById("mesh-txt");
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
+		if (intersects.length > 0) {
+			const intersectedObject = intersects[0].object
+			meshTxt.innerHTML = intersectedObject.name
+			meshTxt.style.display = "block";
+			meshTxt.style.top = event.clientY - offsetTop + 'px';
+			meshTxt.style.left = event.clientX - offsetLeft + 'px';
+		} else {
+			meshTxt.style.display = "none";
+		}
+
+		// if (this.outlinePass.selectedObjects.length && this.mouseDown) {
+		// 	// if (this.outlinePass.selectedObjects.length) {}
+		// 	const mesh = this.model.getObjectByName(this.outlinePass.selectedObjects[0].name)
+		// 	// console.log(mesh)
+		// 	if (!mesh) return false
+		// 	const x = mesh.position.x + this.mouse.x
+		// 	// const z = mesh.position.y + this.mouse.y
+		// 	console.log(x, this.mouse.x,mesh.position.x)
+		// 	mesh.position.set(x, 0, 0)	
+		// }
+	}
+	// 鼠标按下事件
+	onMouseDownModel() {
+		if (this.modelAnimation.length) return false
+		this.mouseDown = true
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
+
+		if (intersects.length > 0) {
+			this.controls.enabled = false
+
+		} else {
+			this.controls.enabled = true
+		}
+	}
+	// 鼠标抬起事件
+	onMouseUpModel(event) {
+		this.controls.enabled = true
+		this.mouseDown = false
+	}
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-		// this.controls.enableDamping = true
 		this.controls.enablePan = false
 	}
 	//加载模型

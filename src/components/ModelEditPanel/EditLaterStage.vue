@@ -83,12 +83,20 @@
         </div>
       </div>
     </div>
+    <div class="header">
+      <span>模型操作</span>
+    </div>
     <!-- 模型拆分 -->
     <div class="options">
       <div class="option space-between">
         <el-space>
-          <el-tooltip effect="dark" content="当前模型不可拆分" placement="top">
-            <el-icon v-if="decomposeDisable == 'disabled'">
+          <el-tooltip
+            v-if="decomposeDisable == 'disabled'"
+            effect="dark"
+            content="当前模型不可拆分"
+            placement="top"
+          >
+            <el-icon>
               <WarnTriangleFilled :size="20" color="#ffb940" />
             </el-icon>
           </el-tooltip>
@@ -108,11 +116,22 @@
           />
         </div>
       </div>
+      <div class="option">
+        <el-space>
+          <el-icon>
+            <Rank :size="20" />
+          </el-icon>
+          <span> 模型材质拖拽 </span>
+        </el-space>
+        <div class="grid-silder" :class="moveDisable">
+          <el-switch v-model="config.move" @change="onChangeMove" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, getCurrentInstance,onMounted } from "vue";
+import { ref, reactive, computed, getCurrentInstance, onMounted } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -129,14 +148,21 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
+  return decomposeMesh.length <= 1 || config.move ? "disabled" : "";
+});
+const moveDisable = computed(() => {
+  const modelMaterialList = state.modelApi.modelMaterialList;
+  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
   return decomposeMesh.length <= 1 ? "disabled" : "";
 });
+
 const config = reactive({
   glow: false,
   threshold: 0.05,
   strength: 0.6,
   radius: 1,
   decompose: 0,
+  move: false,
   toneMappingExposure: 2,
 });
 onMounted(() => {
@@ -151,6 +177,10 @@ const onChangeFlow = () => {
   state.modelApi.onSetUnrealBloomPass(config);
 };
 const onChangeDecompose = () => {
+  state.modelApi.setModelMeshDecompose(config);
+};
+const onChangeMove = () => {
+  config.decompose = 0;
   state.modelApi.setModelMeshDecompose(config);
 };
 defineExpose({

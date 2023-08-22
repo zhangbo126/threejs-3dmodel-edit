@@ -86,7 +86,7 @@ const modelList = [
 		fileType: 'glb',
 		id: 17,
 		animation: true,
-		scale: .3,
+		scale: .2,
 		filePath: 'threeFile/glb/glb-17.glb',
 		icon: require('@/assets/model-icon/15.png')
 	},
