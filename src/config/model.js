@@ -82,11 +82,11 @@ const modelList = [
 	},
 
 	{
-		name: '蜘蛛侠(2)',
+		name: '直升机',
 		fileType: 'glb',
 		id: 17,
 		animation: true,
-		scale: 1.2,
+		scale: .3,
 		filePath: 'threeFile/glb/glb-17.glb',
 		icon: require('@/assets/model-icon/15.png')
 	},
