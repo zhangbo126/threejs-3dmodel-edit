@@ -108,6 +108,9 @@ class renderModel {
 		this.materials = {}
 		// 鼠标是否按下
 		this.mouseDown = false
+		// 模型材质位置计算参数
+		this.initialMousePosition  = new THREE.Vector2()
+		this.initialModelPosition = new THREE.Vector3()
 
 
 	}
@@ -210,6 +213,74 @@ class renderModel {
 	}
 	// 模型点击事件
 	onMouseClickModel(event) {
+		// const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		// this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		// this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+
+		// this.raycaster.setFromCamera(this.mouse, this.camera)
+		// const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
+		// if (intersects.length > 0) {
+		// 	const intersectedObject = intersects[0].object
+		// 	this.outlinePass.selectedObjects = [intersectedObject]
+		// 	store.commit('SELECT_MESH', intersectedObject)
+		// } else {
+		// 	this.outlinePass.selectedObjects = []
+		// 	store.commit('SELECT_MESH', {})
+		// }
+	}
+	//鼠标移入模型事件
+	onMouseMoveModel(event) {
+		// TODO:动画模型不显示材质标签
+		if (this.modelAnimation.length) return false
+		// const meshTxt = document.getElementById("mesh-txt");
+		// const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		// this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		// this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		// this.raycaster.setFromCamera(this.mouse, this.camera)
+
+		// const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
+		// if (intersects.length > 0) {
+		// 	const intersectedObject = intersects[0].object
+		// 	meshTxt.innerHTML = intersectedObject.name
+		// 	meshTxt.style.display = "block";
+		// 	meshTxt.style.top = event.clientY - offsetTop + 'px';
+		// 	meshTxt.style.left = event.clientX - offsetLeft + 'px';
+
+		// } else {
+		// 	meshTxt.style.display = "none";
+		// }
+		if (this.outlinePass.selectedObjects.length > 0 && this.mouseDown) {
+			const intersectedObject = this.outlinePass.selectedObjects[0]
+			var deltaX = event.clientX - this.initialMousePosition.x;
+			var deltaY = event.clientY - this.initialMousePosition.z;
+			intersectedObject.position.x= this.initialModelPosition.x+ deltaX /45
+			intersectedObject.position.z= this.initialModelPosition.z - deltaY /45
+		}
+		// console.log(this.mouse.x)
+
+	}
+	// 鼠标按下事件
+	onMouseDownModel() {
+		if (this.modelAnimation.length) return false
+		document.body.style.cursor = 'all-scroll';
+		this.mouseDown = true
+		// const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		// this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		// this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		// this.raycaster.setFromCamera(this.mouse, this.camera)
+		// const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
+
+		// if (intersects.length > 0) {
+		// 	this.controls.enabled = false
+		// 	const intersectedObject = intersects[0].object
+		// 	this.initialMousePosition.x = event.clientX;
+		// 	this.initialMousePosition.z = event.clientY;
+		// 	this.initialModelPosition.copy(intersectedObject.position);
+
+		// } else {
+		// 	this.controls.enabled = true
+		// }
+
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -218,66 +289,25 @@ class renderModel {
 		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
 		if (intersects.length > 0) {
 			const intersectedObject = intersects[0].object
+			// 设置当前选中的材质
 			this.outlinePass.selectedObjects = [intersectedObject]
 			store.commit('SELECT_MESH', intersectedObject)
+			this.controls.enabled = false
+			this.initialMousePosition.x = event.clientX;
+			this.initialMousePosition.z = event.clientY;
+			this.initialModelPosition.copy(intersectedObject.position);
 		} else {
 			this.outlinePass.selectedObjects = []
-			store.commit('SELECT_MESH', {})
-		}
-	}
-	//鼠标移入模型事件
-	onMouseMoveModel(event) {
-		// TODO:动画模型不显示材质标签
-		if (this.modelAnimation.length) return false
-		const meshTxt = document.getElementById("mesh-txt");
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
-		if (intersects.length > 0) {
-			const intersectedObject = intersects[0].object
-			meshTxt.innerHTML = intersectedObject.name
-			meshTxt.style.display = "block";
-			meshTxt.style.top = event.clientY - offsetTop + 'px';
-			meshTxt.style.left = event.clientX - offsetLeft + 'px';
-		} else {
-			meshTxt.style.display = "none";
-		}
-
-		// if (this.outlinePass.selectedObjects.length && this.mouseDown) {
-		// 	// if (this.outlinePass.selectedObjects.length) {}
-		// 	const mesh = this.model.getObjectByName(this.outlinePass.selectedObjects[0].name)
-		// 	// console.log(mesh)
-		// 	if (!mesh) return false
-		// 	const x = mesh.position.x + this.mouse.x
-		// 	// const z = mesh.position.y + this.mouse.y
-		// 	console.log(x, this.mouse.x,mesh.position.x)
-		// 	mesh.position.set(x, 0, 0)	
-		// }
-	}
-	// 鼠标按下事件
-	onMouseDownModel() {
-		if (this.modelAnimation.length) return false
-		this.mouseDown = true
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
-
-		if (intersects.length > 0) {
-			this.controls.enabled = false
-
-		} else {
 			this.controls.enabled = true
+		    document.body.style.cursor = '';
+			store.commit('SELECT_MESH', {})
 		}
 	}
 	// 鼠标抬起事件
 	onMouseUpModel(event) {
 		this.controls.enabled = true
 		this.mouseDown = false
+		document.body.style.cursor = '';
 	}
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
