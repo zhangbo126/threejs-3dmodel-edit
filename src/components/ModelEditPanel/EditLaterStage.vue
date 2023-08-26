@@ -83,21 +83,31 @@
         </div>
       </div>
     </div>
+    <div class="header">
+      <el-space>
+        <span>模型操作</span>
+        <el-tooltip
+          v-if="decomposeDisable == 'disabled'"
+          effect="dark"
+          content="当前模型不可进行以下操作"
+          placement="top"
+        >
+          <el-icon>
+            <WarnTriangleFilled :size="20" color="#ffb940" />
+          </el-icon>
+        </el-tooltip>
+      </el-space>
+    </div>
     <!-- 模型拆分 -->
     <div class="options">
-      <div class="option space-between">
+      <div class="option space-between" :class="decomposeDisable">
         <el-space>
-          <el-tooltip effect="dark" content="当前模型不可拆分" placement="top">
-            <el-icon v-if="decomposeDisable == 'disabled'">
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
           <el-icon>
             <Cpu />
           </el-icon>
           <span> 模型分解 </span>
         </el-space>
-        <div class="grid-silder" :class="decomposeDisable">
+        <div class="grid-silder">
           <el-slider
             show-input
             v-model="config.decompose"
@@ -108,11 +118,33 @@
           />
         </div>
       </div>
+      <div class="option" :class="moveDisable">
+        <el-space>
+          <el-icon>
+            <Rank :size="20" />
+          </el-icon>
+          <span> 模型材质拖拽 </span>
+        </el-space>
+        <div class="grid-silder">
+          <el-switch v-model="config.modelDrag" @change="onChangeDrag" />
+        </div>
+      </div>
+      <div class="option" :class="meshTagDisable">
+        <el-space>
+          <el-icon>
+            <Message :size="20" />
+          </el-icon>
+          <span> hover是否显示材质标签 </span>
+        </el-space>
+        <div class="grid-silder">
+          <el-switch v-model="config.hoverMeshTag" @change="onChangeMeshTag" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, getCurrentInstance,onMounted } from "vue";
+import { ref, reactive, computed, getCurrentInstance, onMounted } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -129,21 +161,36 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
+  return decomposeMesh.length <= 1 || config.modelDrag ? "disabled" : "";
+});
+const moveDisable = computed(() => {
+  const modelMaterialList = state.modelApi.modelMaterialList;
+  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
   return decomposeMesh.length <= 1 ? "disabled" : "";
 });
+const meshTagDisable = computed(() => {
+  const modelMaterialList = state.modelApi.modelMaterialList;
+  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
+  return decomposeMesh.length <= 1 && !config.hoverMeshTag ? "disabled" : "";
+});
+
 const config = reactive({
   glow: false,
   threshold: 0.05,
   strength: 0.6,
   radius: 1,
   decompose: 0,
+  modelDrag: false,
   toneMappingExposure: 2,
+  hoverMeshTag: false,
 });
 onMounted(() => {
   $bus.on("model-update", () => {
     Object.assign(config, {
       decompose: 0,
       toneMappingExposure: 2,
+      modelDrag: false,
+      hoverMeshTag: false,
     });
   });
 });
@@ -152,6 +199,14 @@ const onChangeFlow = () => {
 };
 const onChangeDecompose = () => {
   state.modelApi.setModelMeshDecompose(config);
+};
+const onChangeMeshTag = () => {
+  state.modelApi.setModelMeshTag(config);
+};
+const onChangeDrag = () => {
+  config.decompose = 0;
+  state.modelApi.setModelMeshDecompose(config);
+  state.modelApi.setModelMeshDrag(config);
 };
 defineExpose({
   config,

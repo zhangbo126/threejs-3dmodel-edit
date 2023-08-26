@@ -23,6 +23,7 @@
             </el-icon>
           </el-tooltip>
         </div>
+        <div id="mesh-txt"></div>
       </div>
       <!-- 右侧编辑栏 -->
       <div class="edit-panel" :style="{ minWidth: '380px' }">
@@ -47,7 +48,7 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
-const editPanel = ref(null)
+const editPanel = ref(null);
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
@@ -58,11 +59,9 @@ const onPrivew = () => {
 };
 // 保存配置
 const onSaveConfig = () => {
-    const modelConfig = editPanel.value.getPanelConfig()
-    console.log(modelConfig)
-    ElMessage.success("配置获取成功请在控制台中查看");
-
-
+  const modelConfig = editPanel.value.getPanelConfig();
+  console.log(modelConfig);
+  ElMessage.success("配置获取成功请在控制台中查看");
 };
 onMounted(async () => {
   loading.value = true;
@@ -110,6 +109,23 @@ onMounted(async () => {
         top: 10px;
         left: calc(100% - 50%);
         cursor: pointer;
+      }
+      #mesh-txt {
+        position: absolute;
+        display: none;
+        color: white;
+				background-color:#67c23a;
+        opacity: .8;
+				font-size: 14px;
+				font-weight: 600;
+				pointer-events: none;
+				padding: 10px;
+				border-radius: 10px;
+        cursor: all-scroll;
+        -webkit-user-select: none; /* Safari 3.1+ */
+        -moz-user-select: none; /* Firefox 2+ */
+        -ms-user-select: none; /* IE 10+ */
+        user-select: none; /* Standard syntax */
       }
     }
   }

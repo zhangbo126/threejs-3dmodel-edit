@@ -25,21 +25,21 @@
       <div v-show="activeTab == 'EditMaterial'">
         <edit-material ref="material"></edit-material>
       </div>
+      <!-- 后期 -->
+      <div v-show="activeTab == 'EditLaterStage'">
+        <edit-later-stage ref="stage"></edit-later-stage>
+      </div>
       <!-- 动画 -->
       <div v-show="activeTab == 'EditAnimation'">
         <edit-animation ref="animation"></edit-animation>
-      </div>
-      <!-- 属性 -->
-      <div v-show="activeTab == 'EditAttribute'">
-        <edit-attribute ref="attribute"></edit-attribute>
       </div>
       <!-- 灯光 -->
       <div v-show="activeTab == 'EditLight'">
         <edit-light ref="light"></edit-light>
       </div>
-      <!-- 后期 -->
-      <div v-show="activeTab == 'EditLaterStage'">
-        <edit-later-stage ref="stage"></edit-later-stage>
+      <!-- 属性 -->
+      <div v-show="activeTab == 'EditAttribute'">
+        <edit-attribute ref="attribute"></edit-attribute>
       </div>
     </div>
   </div>
@@ -64,14 +64,9 @@ const panelTabs = [
     icon: "DataAnalysis",
   },
   {
-    name: "模型动画",
-    key: "EditAnimation",
-    icon: "VideoCameraFilled",
-  },
-  {
-    name: "模型属性",
-    key: "EditAttribute",
-    icon: "Box",
+    name: "后期/操作",
+    key: "EditLaterStage",
+    icon: "MagicStick",
   },
   {
     name: "灯光",
@@ -79,9 +74,14 @@ const panelTabs = [
     icon: "Sunrise",
   },
   {
-    name: "后期",
-    key: "EditLaterStage",
-    icon: "MagicStick",
+    name: "模型动画",
+    key: "EditAnimation",
+    icon: "VideoCameraFilled",
+  },
+  {
+    name: "辅助线/轴配置",
+    key: "EditAttribute",
+    icon: "Box",
   },
 ];
 const activeTab = ref("EditMaterial");
@@ -94,14 +94,14 @@ const stage = ref(null);
 
 // 获取所有面板配置
 const getPanelConfig = () => {
-  return{
-    background:background.value,
-    material:material.value,
-    animation:animation.value,
-    attribute:attribute.value,
-    light:light.value,
-    stage:stage.value,
-  }
+  return {
+    background: background.value,
+    material: material.value,
+    animation: animation.value,
+    attribute: attribute.value,
+    light: light.value,
+    stage: stage.value,
+  };
 };
 defineExpose({
   getPanelConfig,
