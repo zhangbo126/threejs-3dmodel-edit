@@ -1,7 +1,7 @@
 <template>
   <div class="edit-box">
     <div class="header">
-      <span>模型属性</span>
+      <span>辅助线/轴配置</span>
       <el-switch v-model="config.visible" @change="onChangeAttributeSwitch" />
     </div>
     <!-- 模型旋转 -->
