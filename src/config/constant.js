@@ -81,3 +81,7 @@ export const MODEL_DECOMPOSE = {
 		'Mesh_0258001_Tex_0253_0dd1_0': { x: 'burden', y: 0, z: 0 },
 	}
 }
+
+
+// 预览缓存本地key
+export const MODEL_PRIVEW_CONFIG = 'MODEL_PRIVEW_CONFIG'

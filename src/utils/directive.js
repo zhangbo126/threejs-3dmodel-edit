@@ -6,7 +6,7 @@ import Loading from '@/components/Loading'
 */
 
 const directiveLoading = (Vue) => {
-	Vue.directive('Loading', {
+	Vue.directive('zLoading', {
 		mounted(el, binding, vnode) {
 			const app = createApp(Loading)
 			const vNode = app.mount(document.createElement('div'))

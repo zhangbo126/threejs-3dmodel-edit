@@ -415,7 +415,7 @@ class renderModel {
 			}
 		})
 	}
-	// 移除模型
+	// 监听窗口变化
 	onWindowResize() {
 		const { clientHeight, clientWidth } = this.container
 		//调整屏幕大小
@@ -746,12 +746,7 @@ class renderModel {
 				meshTxt.style.top = event.clientY - offsetTop + 'px';
 				meshTxt.style.left = event.clientX - offsetLeft + 20 + 'px';
 			}
-			// 如果当前开启了拖拽 则设置拖拽图标
-			if (this.dragControls) {
-				document.body.style.cursor = 'all-scroll'
-			} else {
-				document.body.style.cursor = 'pointer'
-			}
+			document.body.style.cursor = 'pointer'
 
 		} else {
 			document.body.style.cursor = '';

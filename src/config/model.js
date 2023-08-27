@@ -3,6 +3,7 @@
 const modelList = [
 	{
 		name: '人物(女)',
+		key: 'character',
 		fileType: 'glb',
 		id: 3,
 		animation: true,
@@ -12,6 +13,7 @@ const modelList = [
 
 	{
 		name: '汽车人',
+		key: 'autobots',
 		fileType: 'glb',
 		id: 6,
 		animation: true,
@@ -22,6 +24,7 @@ const modelList = [
 
 	{
 		name: '钢铁侠',
+		key: 'IronMan',
 		fileType: 'glb',
 		id: 7,
 		animation: false,
@@ -31,6 +34,7 @@ const modelList = [
 
 	{
 		name: '人物（男）',
+		key: 'characterMan',
 		fileType: 'glb',
 		id: 8,
 		animation: false,
@@ -39,6 +43,7 @@ const modelList = [
 	},
 	{
 		name: '变形金刚（3）',
+		key: 'transformers-3',
 		fileType: 'glb',
 		id: 9,
 		animation: false,
@@ -48,6 +53,7 @@ const modelList = [
 	},
 	{
 		name: '变形金刚（1）',
+		key: 'transformers-1',
 		fileType: 'glb',
 		id: 10,
 		animation: false,
@@ -57,6 +63,7 @@ const modelList = [
 	},
 	{
 		name: '人物（女）2',
+		key: 'character-2',
 		fileType: 'glb',
 		id: 11,
 		animation: false,
@@ -65,6 +72,7 @@ const modelList = [
 	},
 	{
 		name: '变形金刚(4)',
+		key: 'transformers-4',
 		fileType: 'glb',
 		id: 12,
 		animation: false,
@@ -74,6 +82,7 @@ const modelList = [
 
 	{
 		name: '动漫人物(女2)',
+		key: 'Anime-2',
 		fileType: 'glb',
 		id: 16,
 		animation: true,
@@ -83,6 +92,7 @@ const modelList = [
 
 	{
 		name: '直升机',
+		key: 'aircraft',
 		fileType: 'glb',
 		id: 17,
 		animation: true,
@@ -92,6 +102,7 @@ const modelList = [
 	},
 	{
 		name: '鹿',
+		key: 'deer',
 		fileType: 'glb',
 		id: 18,
 		animation: true,
@@ -101,6 +112,7 @@ const modelList = [
 
 	{
 		name: '变形金刚（2）',
+		key: 'transformers-2',
 		fileType: 'glb',
 		id: 22,
 		animation: false,
@@ -110,6 +122,7 @@ const modelList = [
 	},
 	{
 		name: '恶魔',
+		key: 'emo-2',
 		fileType: 'glb',
 		id: 24,
 		animation: false,
@@ -118,6 +131,7 @@ const modelList = [
 	},
 	{
 		name: '牛头酋长',
+		key: 'taurenchieftain',
 		fileType: 'glb',
 		map: require('@/assets/maps/1.png'),
 		id: 25,
@@ -127,6 +141,7 @@ const modelList = [
 	},
 	{
 		name: '火男',
+		key: 'hyottoko',
 		fileType: 'glb',
 		id: 26,
 		animation: true,
@@ -136,6 +151,7 @@ const modelList = [
 	},
 	{
 		name: '龙',
+		key: 'dragon',
 		fileType: 'glb',
 		map: require('@/assets/maps/4.png'),
 		id: 29,

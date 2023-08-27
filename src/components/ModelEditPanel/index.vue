@@ -84,7 +84,7 @@ const panelTabs = [
     icon: "Box",
   },
 ];
-const activeTab = ref("EditMaterial");
+const activeTab = ref("EditBackground");
 const background = ref(null);
 const material = ref(null);
 const animation = ref(null);
@@ -95,7 +95,7 @@ const stage = ref(null);
 // 获取所有面板配置
 const getPanelConfig = () => {
   return {
-    background: background.value,
+    background: background.value.config,
     material: material.value,
     animation: animation.value,
     attribute: attribute.value,
