@@ -181,14 +181,14 @@ const config = reactive({
   radius: 1,
   decompose: 0,
   modelDrag: false,
-  toneMappingExposure: 2,
+  toneMappingExposure: 3,
   hoverMeshTag: false,
 });
 onMounted(() => {
   $bus.on("model-update", () => {
     Object.assign(config, {
       decompose: 0,
-      toneMappingExposure: 2,
+      toneMappingExposure: 3,
       modelDrag: false,
       hoverMeshTag: false,
     });
