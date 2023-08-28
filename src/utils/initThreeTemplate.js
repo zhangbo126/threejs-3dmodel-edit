@@ -480,13 +480,13 @@ class renderModel {
 		const { material } = this.config
 		const mapIdList = mapImageList.map(v => v.id)
 		material.meshList.forEach(v => {
+			const mesh = this.model.getObjectByProperty('name', v.meshName)
+			const { color, opacity, depthWrite, wireframe } = v
 			if (v.meshFrom) {
-				const { color, opacity, depthWrite, wireframe } = v
-				const mesh = this.model.getObjectByProperty('name', v.meshName)
 				// 如果使用的是系统贴图
 				if (mapIdList.includes(v.meshFrom)) {
 					// 找到当前的系统材质
-					const mapInfo = mapImageList.find(m => m.id == v.meshFrom ) || {}
+					const mapInfo = mapImageList.find(m => m.id == v.meshFrom) || {}
 					// 加载系统材质贴图
 					const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
 					mesh.material = new THREE.MeshStandardMaterial({
@@ -500,17 +500,16 @@ class renderModel {
 						map,
 					})
 				}
-				//设置材质颜色
-				mesh.material.color.set(new THREE.Color(color))
-				//设置网格
-				mesh.material.wireframe = wireframe
-				// 设置深度写入
-				mesh.material.depthWrite = depthWrite
-				//设置透明度
-				mesh.material.transparent = true
-				mesh.material.opacity = opacity
-
 			}
+			//设置材质颜色
+			mesh.material.color.set(new THREE.Color(color))
+			//设置网格
+			mesh.material.wireframe = wireframe
+			// 设置深度写入
+			mesh.material.depthWrite = depthWrite
+			//设置透明度
+			mesh.material.transparent = true
+			mesh.material.opacity = opacity
 		})
 
 	}
