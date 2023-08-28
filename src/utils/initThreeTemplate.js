@@ -16,6 +16,8 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
+import { mapImageList } from "@/config/model";
+
 
 /**
  * @describe 创建3d模型组件的方法
@@ -155,7 +157,7 @@ class renderModel {
 		this.scene = new THREE.Scene()
 		const { background } = this.config
 		if (!background) return false
-
+		// 设置背景
 		if (background.visible) {
 			const { color, image, viewImg } = background
 			switch (background.type) {
@@ -303,6 +305,7 @@ class renderModel {
 						break;
 				}
 				this.setModelPositionSize()
+				this.setModelMeaterial()
 				//	设置模型大小
 				if (scale) {
 					this.model.scale.set(scale, scale, scale);
@@ -415,7 +418,6 @@ class renderModel {
 	getModelMeaterialList(map) {
 		const isMap = map ? true : false
 		this.modelMaterialList = []
-		this.modelTextureMap = []
 		let i = 0;
 		this.model.traverse((v) => {
 			const { uuid } = v
@@ -424,7 +426,6 @@ class renderModel {
 				v.frustumCulled = false
 				i++;
 				if (v.material) {
-					const materials = Array.isArray(v.material) ? v.material : [v.material]
 					const { name, color, map } = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
 					v.material = new THREE.MeshStandardMaterial({
@@ -434,16 +435,8 @@ class renderModel {
 						name,
 					})
 					this.modelMaterialList.push(v)
-					// 获取模型自动材质贴图
-					const { url, mapId } = this.getModelMaps(materials, uuid)
-					const mesh = {
-						material: v.material,
-						url,
-						mapId: mapId + '_' + i
-					}
 					// 获取当前模型材质
-					v.mapId = mapId + '_' + i
-					this.modelTextureMap.push(mesh)
+					v.mapId = uuid + '_' + i
 				}
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
@@ -456,34 +449,12 @@ class renderModel {
 						color,
 					})
 					v.mapId = uuid + '_' + i
-					this.modelTextureMap = [{
-						material: v.material,
-						url: map,
-						mapId: uuid + '_' + i
-					}]
+
 				}
 			}
 		})
 	}
-	// 获取模型自带贴图
-	getModelMaps(materials, uuid) {
-		let textureMap = {}
-		materials.forEach(texture => {
-			if (texture.map && texture.map.image) {
-				const canvas = document.createElement('canvas')
-				const { width, height } = texture.map.image
-				canvas.width = width
-				canvas.height = height
-				const context = canvas.getContext('2d')
-				context.drawImage(texture.map.image, 0, 0)
-				textureMap = {
-					url: canvas.toDataURL('image/png'),
-					mapId: texture.uuid
-				}
-			}
-		})
-		return textureMap
-	}
+
 	// 设置模型定位缩放大小
 	setModelPositionSize() {
 		//设置模型位置
@@ -496,8 +467,6 @@ class renderModel {
 		const targetSize = 2.5; // 目标大小
 		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
 		this.model.scale.set(scale, scale, scale)
-		// 设置模型位置
-		// this.model.position.sub(center.multiplyScalar(scale))
 		// 设置控制器最小缩放值
 		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
@@ -505,8 +474,47 @@ class renderModel {
 		// 设置相机坐标系
 		this.camera.lookAt(center)
 		this.camera.updateProjectionMatrix();
+	}
+	// 设置模型材质
+	setModelMeaterial() {
+		const { material } = this.config
+		const mapIdList = mapImageList.map(v => v.id)
+		material.meshList.forEach(v => {
+			if (v.meshFrom) {
+				const { color, opacity, depthWrite, wireframe } = v
+				const mesh = this.model.getObjectByProperty('name', v.meshName)
+				// 如果使用的是系统贴图
+				if (mapIdList.includes(v.meshFrom)) {
+					// 找到当前的系统材质
+					const mapInfo = mapImageList.find(m => m.id == v.meshFrom ) || {}
+					// 加载系统材质贴图
+					const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
+					mesh.material = new THREE.MeshStandardMaterial({
+						map: mapTexture,
+					})
+				} else {
+					// 如果是当前模型材质自身贴图
+					const meshFrom = this.model.getObjectByProperty('name', v.meshFrom)
+					const { map } = meshFrom.material
+					mesh.material = new THREE.MeshStandardMaterial({
+						map,
+					})
+				}
+				//设置材质颜色
+				mesh.material.color.set(new THREE.Color(color))
+				//设置网格
+				mesh.material.wireframe = wireframe
+				// 设置深度写入
+				mesh.material.depthWrite = depthWrite
+				//设置透明度
+				mesh.material.transparent = true
+				mesh.material.opacity = opacity
+
+			}
+		})
 
 	}
+
 }
 
 
@@ -517,7 +525,6 @@ class renderModel {
 
 function createThreeDComponent(config) {
 	const { fileInfo } = config
-
 	return defineComponent({
 		data() {
 			return {

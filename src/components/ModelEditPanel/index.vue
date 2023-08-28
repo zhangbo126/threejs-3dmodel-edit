@@ -84,7 +84,7 @@ const panelTabs = [
     icon: "Box",
   },
 ];
-const activeTab = ref("EditBackground");
+const activeTab = ref("EditMaterial");
 const background = ref(null);
 const material = ref(null);
 const animation = ref(null);
@@ -96,7 +96,7 @@ const stage = ref(null);
 const getPanelConfig = () => {
   return {
     background: background.value.config,
-    material: material.value,
+    material: material.value.getMeshConfig(),
     animation: animation.value,
     attribute: attribute.value,
     light: light.value,

@@ -68,6 +68,7 @@ const onPrivew = () => {
 // 保存配置
 const onSaveConfig = () => {
   const modelConfig = editPanel.value.getPanelConfig();
+  console.log(modelConfig)
   ElMessage.success("配置获取成功请在控制台中查看");
 };
 onMounted(async () => {

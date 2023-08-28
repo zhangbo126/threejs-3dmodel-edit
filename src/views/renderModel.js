@@ -192,6 +192,7 @@ class renderModel {
 	}
 	// 监听事件
 	addEvenListMouseLiatener() {
+		this.container.addEventListener('click', this.onMouseClickModel.bind(this))
 		this.container.addEventListener('mousedown', this.onMouseDownModel.bind(this))
 		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
 	}
@@ -462,6 +463,7 @@ class renderModel {
 	 * @function onSetSystemModelMap 设置模型贴图（系统贴图）
 	 * @function onChangeModelMeaterial 选择材质
 	 * @function onMouseDownModel 鼠标选中材质
+	 * @function onGetEditMeshList 获取最新材质信息列表
 	 */
 	// 获取当前模型材质
 	getModelMeaterialList(map) {
@@ -582,13 +584,15 @@ class renderModel {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
-		mesh.material = new THREE.MeshLambertMaterial({
+		mesh.material = new THREE.MeshStandardMaterial({
 			map: material.map,
 			transparent: true,
 			color,
 			name,
 		})
 		mesh.mapId = mapId
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = mesh.name
 	}
 	// 设置模型贴图（系统贴图）
 	onSetSystemModelMap({ id, url }) {
@@ -596,13 +600,15 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
 		const mapTexture = new THREE.TextureLoader().load(url)
-		mesh.material = new THREE.MeshLambertMaterial({
+		mesh.material = new THREE.MeshStandardMaterial({
 			map: mapTexture,
 			transparent: true,
 			color,
 			name,
 		})
 		mesh.mapId = id
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = id
 	}
 	// 选择材质
 	onChangeModelMeaterial(name) {
@@ -613,6 +619,7 @@ class renderModel {
 	}
 	// 鼠标选中材质
 	onMouseDownModel() {
+		if (this.modelAnimation.length) return false
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -628,6 +635,41 @@ class renderModel {
 			store.commit('SELECT_MESH', {})
 		}
 	}
+	// 模型点击事件
+	onMouseClickModel(event) {
+		if (!this.modelAnimation.length) return false
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
+		if (intersects.length > 0) {
+			const intersectedObject = intersects[0].object
+			this.outlinePass.selectedObjects = [intersectedObject]
+			store.commit('SELECT_MESH', intersectedObject)
+		} else {
+			this.outlinePass.selectedObjects = []
+			store.commit('SELECT_MESH', {})
+		}
+	}
+	// 获取最新材质信息列表
+	onGetEditMeshList() {
+		const meshList = []
+		this.model.traverse((v) => {
+			if (v.isMesh && v.material) {
+				const { color, opacity, depthWrite, wireframe } = v.material
+				const obj = {
+					meshName: v.name,
+					meshFrom: v.meshFrom,
+					color: color.getStyle(),
+					opacity, depthWrite, wireframe
+				}
+				meshList.push(obj)
+			}
+		})
+		return meshList
+	}
+
 
 
 	/**
@@ -725,6 +767,7 @@ class renderModel {
 	}
 	// 鼠标移入模型材质
 	onMouseMoveModel(event) {
+		if (this.modelAnimation.length) return false
 		const meshTxt = document.getElementById("mesh-txt");
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
