@@ -95,8 +95,8 @@ const stage = ref(null);
 // 获取所有面板配置
 const getPanelConfig = () => {
   return {
-    background: background.value,
-    material: material.value,
+    background: background.value.config,
+    material: material.value.getMeshConfig(),
     animation: animation.value,
     attribute: attribute.value,
     light: light.value,

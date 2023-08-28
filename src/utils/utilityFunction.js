@@ -75,3 +75,32 @@ export function lightPosition(horizontal, vertical, distance) {
 	const z = distance * Math.cos(horizontal) * Math.cos(vertical);
 	return {x,y,z}
 }
+
+
+
+/** 
+ * @description 生成唯一标识符方法函数
+ * @param {Number} len  长度
+ * @param {Number} radix  基数
+ * @return {String} 唯一标识符字符串
+*/
+
+export function onlyKey(len, radix) {
+	var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+	var uuid = [], i;
+	radix = radix || chars.length;
+	if (len) {
+		for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+	} else {
+		var r;
+		uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+		uuid[14] = '4';
+		for (i = 0; i < 36; i++) {
+			if (!uuid[i]) {
+				r = 0 | Math.random() * 16;
+				uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+			}
+		}
+	}
+	return uuid.join('');
+}

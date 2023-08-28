@@ -242,9 +242,14 @@ const onChangeSystemModelMap = (map) => {
   });
   ElMessage.success("当前材质贴图修改成功");
 };
+const getMeshConfig = () => {
+  return {
+    config,
+    meshList: state.modelApi.onGetEditMeshList(),
+  };
+};
 defineExpose({
-  config,
-  mapId:activeTextureMap
+  getMeshConfig,
 });
 </script>
 <style scoped lang="scss">

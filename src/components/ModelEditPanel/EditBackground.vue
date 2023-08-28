@@ -178,7 +178,7 @@ const onChangeColor = () => {
 
 const onChangeBgSwitch = () => {
   const { type, visible, image, viewImg } = config;
-  if (!visible) return state.modelApi.onClearSceneBg();
+  if (!visible) return state.modelApi.onSetSceneColor('#000');
   switch (type) {
     case 1:
       state.modelApi.onSetSceneColor(config.color);

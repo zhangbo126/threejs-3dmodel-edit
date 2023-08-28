@@ -111,6 +111,7 @@ const state = reactive({
     return store.state.modelApi;
   }),
 });
+
 //普通模型
 const ordinaryModelList = computed(() => {
   return modelList.filter((v) => !v.animation);
@@ -122,7 +123,17 @@ const animationModelList = computed(() => {
 
 //当前模型id
 const activeModelId = ref(9);
-
+// 当前模型信息
+const activeModel = ref({
+  name: "变形金刚（3）",
+  fileType: "glb",
+  id: 9,
+  animation: false,
+  filePath: "threeFile/glb/glb-9.glb",
+  icon: require("@/assets/model-icon/4.png"),
+  decomposeName: "transformers_3",
+  key: "transformers-3",
+});
 //当前本地模型
 const localModelName = ref(null);
 
@@ -131,6 +142,7 @@ const onChangeModel = async (model) => {
   if (model.id == activeModelId.value) return false;
   activeModelId.value = model.id;
   localModelName.value = null;
+  activeModel.value = model;
   $bus.emit("page-loading", true);
   try {
     const { load } = await state.modelApi.onSwitchModel(model);
@@ -165,6 +177,10 @@ const onUpload = async (file) => {
     $bus.emit("page-loading", false);
   }
 };
+
+defineExpose({
+  activeModel,
+});
 </script>
 
 <style lang="scss">

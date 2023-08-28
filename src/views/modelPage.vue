@@ -11,9 +11,9 @@
         <el-button type="primary" @click="onPrivew">预览</el-button>
       </div>
     </header>
-    <div class="model-container" v-Loading="loading">
+    <div class="model-container" v-zLoading="loading">
       <!-- 模型列表 -->
-      <model-choose></model-choose>
+      <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
       <div id="model" ref="model">
         <div class="camera-icon">
@@ -37,11 +37,14 @@
 import { ModelEditPanel, ModelChoose } from "@/components/index";
 import { onMounted, ref, reactive, computed, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import renderModel from "./renderModel";
+import { local } from "@/utils/storage";
+import { MODEL_PRIVEW_CONFIG } from "@/config/constant";
 const store = useStore();
+const router = useRouter();
 const { $bus } = getCurrentInstance().proxy;
-
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
@@ -49,18 +52,23 @@ const state = reactive({
 });
 const loading = ref(false);
 const editPanel = ref(null);
+const choosePanel = ref(null);
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
 };
 // 预览
 const onPrivew = () => {
-  ElMessage.success("敬请期待");
+  const modelConfig = editPanel.value.getPanelConfig();
+  modelConfig.fileInfo = choosePanel.value.activeModel;
+  local.set(MODEL_PRIVEW_CONFIG, modelConfig);
+  const { href } = router.resolve({ path: "/preview" });
+  window.open(href, "_blank");
 };
 // 保存配置
 const onSaveConfig = () => {
   const modelConfig = editPanel.value.getPanelConfig();
-  console.log(modelConfig);
+  console.log(modelConfig)
   ElMessage.success("配置获取成功请在控制台中查看");
 };
 onMounted(async () => {
@@ -114,13 +122,13 @@ onMounted(async () => {
         position: absolute;
         display: none;
         color: white;
-				background-color:#67c23a;
-        opacity: .8;
-				font-size: 14px;
-				font-weight: 600;
-				pointer-events: none;
-				padding: 10px;
-				border-radius: 10px;
+        background-color: #67c23a;
+        opacity: 0.8;
+        font-size: 14px;
+        font-weight: 600;
+        pointer-events: none;
+        padding: 10px;
+        border-radius: 10px;
         cursor: all-scroll;
         -webkit-user-select: none; /* Safari 3.1+ */
         -moz-user-select: none; /* Firefox 2+ */

@@ -3,6 +3,7 @@
 const modelList = [
 	{
 		name: '人物(女)',
+		key: 'character',
 		fileType: 'glb',
 		id: 3,
 		animation: true,
@@ -12,6 +13,7 @@ const modelList = [
 
 	{
 		name: '汽车人',
+		key: 'autobots',
 		fileType: 'glb',
 		id: 6,
 		animation: true,
@@ -22,6 +24,7 @@ const modelList = [
 
 	{
 		name: '钢铁侠',
+		key: 'IronMan',
 		fileType: 'glb',
 		id: 7,
 		animation: false,
@@ -31,6 +34,7 @@ const modelList = [
 
 	{
 		name: '人物（男）',
+		key: 'characterMan',
 		fileType: 'glb',
 		id: 8,
 		animation: false,
@@ -39,24 +43,27 @@ const modelList = [
 	},
 	{
 		name: '变形金刚（3）',
+		key: 'transformers-3',
 		fileType: 'glb',
 		id: 9,
 		animation: false,
 		filePath: 'threeFile/glb/glb-9.glb',
 		icon: require('@/assets/model-icon/4.png'),
-		decomposeName:'transformers_3'
+		decomposeName: 'transformers_3'
 	},
 	{
 		name: '变形金刚（1）',
+		key: 'transformers-1',
 		fileType: 'glb',
 		id: 10,
 		animation: false,
 		filePath: 'threeFile/glb/glb-10.glb',
 		icon: require('@/assets/model-icon/1.png'),
-		decomposeName:'transformers_1'
+		decomposeName: 'transformers_1'
 	},
 	{
 		name: '人物（女）2',
+		key: 'character-2',
 		fileType: 'glb',
 		id: 11,
 		animation: false,
@@ -65,6 +72,7 @@ const modelList = [
 	},
 	{
 		name: '变形金刚(4)',
+		key: 'transformers-4',
 		fileType: 'glb',
 		id: 12,
 		animation: false,
@@ -74,6 +82,7 @@ const modelList = [
 
 	{
 		name: '动漫人物(女2)',
+		key: 'Anime-2',
 		fileType: 'glb',
 		id: 16,
 		animation: true,
@@ -83,6 +92,7 @@ const modelList = [
 
 	{
 		name: '直升机',
+		key: 'aircraft',
 		fileType: 'glb',
 		id: 17,
 		animation: true,
@@ -92,6 +102,7 @@ const modelList = [
 	},
 	{
 		name: '鹿',
+		key: 'deer',
 		fileType: 'glb',
 		id: 18,
 		animation: true,
@@ -101,15 +112,17 @@ const modelList = [
 
 	{
 		name: '变形金刚（2）',
+		key: 'transformers-2',
 		fileType: 'glb',
 		id: 22,
 		animation: false,
 		filePath: 'threeFile/glb/glb-22.glb',
 		icon: require('@/assets/model-icon/9.png'),
-		decomposeName:'transformers_2'
+		decomposeName: 'transformers_2'
 	},
 	{
 		name: '恶魔',
+		key: 'emo-2',
 		fileType: 'glb',
 		id: 24,
 		animation: false,
@@ -118,6 +131,7 @@ const modelList = [
 	},
 	{
 		name: '牛头酋长',
+		key: 'taurenchieftain',
 		fileType: 'glb',
 		map: require('@/assets/maps/1.png'),
 		id: 25,
@@ -127,6 +141,7 @@ const modelList = [
 	},
 	{
 		name: '火男',
+		key: 'hyottoko',
 		fileType: 'glb',
 		id: 26,
 		animation: true,
@@ -136,6 +151,7 @@ const modelList = [
 	},
 	{
 		name: '龙',
+		key: 'dragon',
 		fileType: 'glb',
 		map: require('@/assets/maps/4.png'),
 		id: 29,
@@ -219,69 +235,69 @@ for (let i = 0; i <= 14; i++) {
 	const image = {
 		id: i,
 		url: require(`@/assets/image/view-${i + 1}.png`),
-		file:`threeFile/hdr/${i+1}.hdr`
+		file: `threeFile/hdr/${i + 1}.hdr`
 	}
 	viewImageList.push(image)
 }
 
-const mapImageList =[
+const mapImageList = [
 	{
-		id: Math.random()*100,
+		id: 100,
 		url: require(`@/assets/maps/5.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 99,
 		url: require(`@/assets/maps/6.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 98,
 		url: require(`@/assets/maps/7.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 97,
 		url: require(`@/assets/maps/8.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 96,
 		url: require(`@/assets/maps/9.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 95,
 		url: require(`@/assets/maps/10.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 94,
 		url: require(`@/assets/maps/11.png`)
 	},
 	{
-		id: Math.random()*100,
+		id: 93,
 		url: require(`@/assets/maps/12.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 92,
 		url: require(`@/assets/maps/13.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 91,
 		url: require(`@/assets/maps/14.png`)
 	},
 	{
-		id: Math.random()*100,
+		id: 90,
 		url: require(`@/assets/maps/16.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 89,
 		url: require(`@/assets/maps/17.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 88,
 		url: require(`@/assets/maps/18.jpg`)
 	},
 	{
-		id: Math.random()*100,
+		id: 87,
 		url: require(`@/assets/maps/19.jpg`)
 	},
 	...viewImageList
 ]
 
-export { modelList, backgrundList, viewImageList ,mapImageList }
+export { modelList, backgrundList, viewImageList, mapImageList }

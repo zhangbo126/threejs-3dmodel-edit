@@ -38,8 +38,6 @@ class renderModel {
 			'gltf': new GLTFLoader(),
 			'obj': new OBJLoader(),
 		}
-		// 全景图材质
-		this.viewMesh
 		//模型动画列表
 		this.modelAnimation
 		//模型动画对象
@@ -61,8 +59,6 @@ class renderModel {
 		this.gridHelper
 		// 坐标轴辅助线
 		this.axesHelper
-		// 轴旋转动画对象
-		this.rotationAnimate
 		// 环境光
 		this.ambientLight
 		//平行光
@@ -101,7 +97,7 @@ class renderModel {
 		this.materials = {}
 		// 拖拽对象控制器
 		this.dragControls
-		//是否显示材质标签
+		// 是否显示材质标签
 		this.hoverMeshTag = false
 
 	}
@@ -131,7 +127,7 @@ class renderModel {
 			reslove(load)
 		})
 	}
-	//创建场景
+	// 创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
 		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
@@ -139,14 +135,13 @@ class renderModel {
 		// texture.colorSpace = THREE.SRGBColorSpace
 		this.scene.background = texture
 		this.scene.environment = texture
-
 	}
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
 		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 100)
 	}
-	// 创建 渲染器
+	// 创建渲染器
 	initRender() {
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }) //设置抗锯齿
 		//设置屏幕像素比
@@ -165,7 +160,7 @@ class renderModel {
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
 	}
-
+	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.controls.update()
@@ -197,69 +192,16 @@ class renderModel {
 	}
 	// 监听事件
 	addEvenListMouseLiatener() {
+		this.container.addEventListener('click', this.onMouseClickModel.bind(this))
 		this.container.addEventListener('mousedown', this.onMouseDownModel.bind(this))
 		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
 	}
-	// 鼠标按下事件
-	onMouseDownModel() {
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
-		if (intersects.length > 0) {
-			const intersectedObject = intersects[0].object
-			// 设置当前选中的材质
-			this.outlinePass.selectedObjects = [intersectedObject]
-			store.commit('SELECT_MESH', intersectedObject)
-		} else {
-			this.outlinePass.selectedObjects = []
-			store.commit('SELECT_MESH', {})
-		}
-	}
-	//鼠标移入模型事件
-	onMouseMoveModel(event) {
-		const meshTxt = document.getElementById("mesh-txt");
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
-		if (intersects.length > 0) {
-			// TODO:动画模型不显示材质标签
-			if (this.modelAnimation.length) {
-				document.body.style.cursor = 'pointer';
-				return false
-			}
-			// 判断是否开启显示材质标签
-			if (this.hoverMeshTag) {
-				// 设置材质标签位置
-				const intersectedObject = intersects[0].object
-				meshTxt.innerHTML = intersectedObject.name
-				meshTxt.style.display = "block";
-				meshTxt.style.top = event.clientY - offsetTop + 'px';
-				meshTxt.style.left = event.clientX - offsetLeft + 20 + 'px';
-			}
-			// 如果当前开启了拖拽 则设置拖拽图标
-			if (this.dragControls) {
-				document.body.style.cursor = 'all-scroll'
-			} else {
-				document.body.style.cursor = 'pointer'
-			}
-
-		} else {
-			document.body.style.cursor = '';
-			meshTxt.style.display = "none";
-
-		}
-	}
-
+	// 创建控制器
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 		this.controls.enablePan = false
 	}
-	//加载模型
+	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
@@ -322,104 +264,7 @@ class renderModel {
 			})
 		})
 	}
-	// 获取当前模型材质
-	getModelMeaterialList(map) {
-		const isMap = map ? true : false
-		this.modelMaterialList = []
-		this.modelTextureMap = []
-		let i = 0;
-		this.model.traverse((v) => {
-			const { uuid } = v
-			if (v.isMesh) {
-				v.castShadow = true
-				v.frustumCulled = false
-				i++;
-				if (v.material) {
-					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					const { name, color, map } = v.material
-					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					v.material = new THREE.MeshStandardMaterial({
-						map,
-						transparent: true,
-						color,
-						name,
-					})
-					this.modelMaterialList.push(v)
-					// 获取模型自动材质贴图
-					const { url, mapId } = this.getModelMaps(materials, uuid)
-					const mesh = {
-						material: v.material,
-						url,
-						mapId: mapId + '_' + i
-					}
-					// 获取当前模型材质
-					v.mapId = mapId + '_' + i
-					this.modelTextureMap.push(mesh)
-				}
-				// 部分模型本身没有贴图需 要单独处理
-				if (v.material && isMap) {
-					const mapTexture = new THREE.TextureLoader().load(map)
-					const { color, name } = v.material
-					v.material = new THREE.MeshStandardMaterial({
-						map: mapTexture,
-						name,
-						transparent: true,
-						color,
-					})
-					v.mapId = uuid + '_' + i
-					this.modelTextureMap = [{
-						material: v.material,
-						url: map,
-						mapId: uuid + '_' + i
-					}]
-				}
-			}
-		})
-	}
 
-	//设置模型定位大小
-	setModelPositionSize() {
-		//设置模型位置
-		this.model.updateMatrixWorld()
-		const box = new THREE.Box3().setFromObject(this.model);
-		const size = box.getSize(new THREE.Vector3());
-		const center = box.getCenter(new THREE.Vector3());
-		// 计算缩放比例
-		const maxSize = Math.max(size.x, size.y, size.z);
-		const targetSize = 2.5; // 目标大小
-		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
-		this.model.scale.set(scale, scale, scale)
-		// 设置模型位置
-		// this.model.position.sub(center.multiplyScalar(scale))
-		// 设置控制器最小缩放值
-		this.controls.maxDistance = size.length() * 10
-		// 设置相机位置
-		this.camera.position.set(0, 2, 6)
-		// 设置相机坐标系
-		this.camera.lookAt(center)
-		this.camera.updateProjectionMatrix();
-
-	}
-	// 获取模型贴图
-	getModelMaps(materials, uuid) {
-		let textureMap = {}
-		materials.forEach(texture => {
-			if (texture.map && texture.map.image) {
-				const canvas = document.createElement('canvas')
-				const { width, height } = texture.map.image
-				canvas.width = width
-				canvas.height = height
-				const context = canvas.getContext('2d')
-				context.drawImage(texture.map.image, 0, 0)
-				textureMap = {
-					url: canvas.toDataURL('image/png'),
-					mapId: texture.uuid
-				}
-
-			}
-		})
-		return textureMap
-	}
 	// 创建辅助线
 	createHelper() {
 		//网格辅助线
@@ -543,7 +388,6 @@ class renderModel {
 
 
 	}
-
 	// 切换模型
 	onSwitchModel(model) {
 		return new Promise(async (reslove, reject) => {
@@ -556,7 +400,6 @@ class renderModel {
 					}
 				})
 				//取消动画帧
-				cancelAnimationFrame(this.rotationAnimate)
 				cancelAnimationFrame(this.animationFram)
 				this.skeletonHelper.visible = false
 				this.modelTextureMap = []
@@ -573,7 +416,7 @@ class renderModel {
 			}
 		})
 	}
-	// 移除模型
+	// 监听窗口变化
 	onWindowResize() {
 		const { clientHeight, clientWidth } = this.container
 		//调整屏幕大小
@@ -583,11 +426,20 @@ class renderModel {
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
-	//设置场景颜色
+
+
+
+	/**
+	 * @describe 背景模块方法
+	 * @function onSetSceneColor 设置场景颜色
+	 * @function onSetSceneImage 设置场景图片
+	 * @function onSetSceneViewImage 设置全景图
+	 */
+	// 设置场景颜色
 	onSetSceneColor(color) {
 		this.scene.background = new THREE.Color(color)
 	}
-	//设置场景图片
+	// 设置场景图片
 	onSetSceneImage(url) {
 		this.scene.background = new THREE.TextureLoader().load(url);
 	}
@@ -598,108 +450,364 @@ class renderModel {
 		this.scene.background = texture
 		this.scene.environment = texture
 	}
-	// 开始执行动画
-	onStartModelAnimaion(config) {
-		this.onSetModelAnimaion(config)
-		cancelAnimationFrame(this.animationFram)
-		this.animationFrameFun()
-	}
-	// 设置模型动画
-	onSetModelAnimaion({ animations, animationName, loop, timeScale, weight }) {
-		this.animationMixer = new THREE.AnimationMixer(this.model)
-		const clip = THREE.AnimationClip.findByName(animations, animationName)
-		if (clip) {
-			this.animateClipAction = this.animationMixer.clipAction(clip)
-			this.animateClipAction.setEffectiveTimeScale(timeScale)
-			this.animateClipAction.setEffectiveWeight(weight)
-			this.animateClipAction.setLoop(this.loopMap[loop])
-			this.animateClipAction.play()
-		}
-	}
-	// 动画帧
-	animationFrameFun() {
-		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
-		if (this.animationMixer) {
-			this.animationMixer.update(this.animationColock.getDelta())
-		}
-	}
-	// 设置模型骨架
-	onSetModelHelper(visible) {
-		this.skeletonHelper.visible = visible
-	}
 
-	// 清除动画
-	onClearAnimation() {
-		if (!this.animateClipAction) return
-		this.animationMixer.stopAllAction();
-		this.animationMixer.update(0);
+
+
+	/**
+	 * @describe 材质模块方法
+	 * @function getModelMeaterialList 获取当前模型材质
+	 * @function setModelPositionSize 设置模型定位缩放大小
+	 * @function getModelMaps 获取模型自带贴图
+	 * @function onSetModelMaterial 设置材质属性（网格,透明度，颜色，深度写入）
+	 * @function onSetModelMap 设置模型贴图（模型自带）
+	 * @function onSetSystemModelMap 设置模型贴图（系统贴图）
+	 * @function onChangeModelMeaterial 选择材质
+	 * @function onMouseDownModel 鼠标选中材质
+	 * @function onGetEditMeshList 获取最新材质信息列表
+	 */
+	// 获取当前模型材质
+	getModelMeaterialList(map) {
+		const isMap = map ? true : false
+		this.modelMaterialList = []
+		this.modelTextureMap = []
+		let i = 0;
+		this.model.traverse((v) => {
+			const { uuid } = v
+			if (v.isMesh) {
+				v.castShadow = true
+				v.frustumCulled = false
+				i++;
+				if (v.material) {
+					const materials = Array.isArray(v.material) ? v.material : [v.material]
+					const { name, color, map } = v.material
+					// 统一将模型材质 设置为 MeshLambertMaterial 类型
+					v.material = new THREE.MeshStandardMaterial({
+						map,
+						transparent: true,
+						color,
+						name,
+					})
+					this.modelMaterialList.push(v)
+					// 获取模型自动材质贴图
+					const { url, mapId } = this.getModelMaps(materials, uuid)
+					const mesh = {
+						material: v.material,
+						url,
+						mapId: mapId + '_' + i
+					}
+					// 获取当前模型材质
+					v.mapId = mapId + '_' + i
+					this.modelTextureMap.push(mesh)
+				}
+				// 部分模型本身没有贴图需 要单独处理
+				if (v.material && isMap) {
+					const mapTexture = new THREE.TextureLoader().load(map)
+					const { color, name } = v.material
+					v.material = new THREE.MeshStandardMaterial({
+						map: mapTexture,
+						name,
+						transparent: true,
+						color,
+					})
+					v.mapId = uuid + '_' + i
+					this.modelTextureMap = [{
+						material: v.material,
+						url: map,
+						mapId: uuid + '_' + i
+					}]
+				}
+			}
+		})
 	}
-	// 设置模型轴旋转
-	onSetModelRotateOnAxis(type, flag) {
-		cancelAnimationFrame(this.rotationAnimate)
-		// 每次旋转的角度
-		const maxAxis = Math.PI / 2
-		let rotationSpeed = flag ? 0.08 : -0.08
-		let maxRotate = 0
-		const animate = () => {
-			this.rotationAnimate = requestAnimationFrame(animate)
-			if (Math.abs(maxRotate) >= maxAxis) return cancelAnimationFrame(this.rotationAnimate)
-			this.model.rotation[type] += rotationSpeed;
-			maxRotate += rotationSpeed
-		}
-		animate()
-	}
-	//重置模型轴位置
-	onResultModelRotateOnAxis() {
-		this.model.rotation.x = 0
-		this.model.rotation.y = 0
-		this.model.rotation.z = 0
-	}
-	// 设置模型位置
-	onSetModelPosition({ positionX, positionY, positionZ }) {
-		this.model.position.set(positionX, positionY, positionZ)
-	}
-	// 重置模型位置
-	onResultModelPosition({ positionX, positionY, positionZ }) {
-		this.model.position.set(positionX, positionY, positionZ)
-	}
-	// 重置相机位置
-	onResetModelCamera() {
+	// 设置模型定位缩放大小
+	setModelPositionSize() {
+		//设置模型位置
+		this.model.updateMatrixWorld()
+		const box = new THREE.Box3().setFromObject(this.model);
+		const size = box.getSize(new THREE.Vector3());
+		const center = box.getCenter(new THREE.Vector3());
+		// 计算缩放比例
+		const maxSize = Math.max(size.x, size.y, size.z);
+		const targetSize = 2.5; // 目标大小
+		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
+		this.model.scale.set(scale, scale, scale)
+		// 设置模型位置
+		// this.model.position.sub(center.multiplyScalar(scale))
+		// 设置控制器最小缩放值
+		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
 		this.camera.position.set(0, 2, 6)
 		// 设置相机坐标系
-		this.camera.lookAt(0, 0, 0)
+		this.camera.lookAt(center)
+		this.camera.updateProjectionMatrix();
+
 	}
-	//设置网格辅助线位置 和颜色
-	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
-		this.gridHelper.visible = gridHelper
-		this.gridHelper.position.set(x, y, z)
-		this.gridHelper.material.color.set(color);
+	// 获取模型自带贴图
+	getModelMaps(materials, uuid) {
+		let textureMap = {}
+		materials.forEach(texture => {
+			if (texture.map && texture.map.image) {
+				const canvas = document.createElement('canvas')
+				const { width, height } = texture.map.image
+				canvas.width = width
+				canvas.height = height
+				const context = canvas.getContext('2d')
+				context.drawImage(texture.map.image, 0, 0)
+				textureMap = {
+					url: canvas.toDataURL('image/png'),
+					mapId: texture.uuid
+				}
+			}
+		})
+		return textureMap
 	}
-	// 设置网格数量和大小
-	onSetModelGridHelperSize({ x, y, z, size, divisions, color, gridHelper }) {
-		// 需要先把辅助线移除然后在重新创建
-		this.scene.remove(this.gridHelper)
-		this.gridHelper.geometry.dispose()
-		this.gridHelper.material.dispose()
-		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
-		this.gridHelper.position.set(x, y, z)
-		this.gridHelper.material.linewidth = 0.1
-		this.gridHelper.material.color.set(color);
-		this.gridHelper.visible = gridHelper
-		this.scene.add(this.gridHelper)
+	// 设置材质属性
+	onSetModelMaterial(config) {
+		const { color, wireframe, depthWrite, opacity } = config
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		if (mesh && mesh.material) {
+			//设置材质颜色
+			mesh.material.color.set(new THREE.Color(color))
+			//设置网格
+			mesh.material.wireframe = wireframe
+			// 设置深度写入
+			mesh.material.depthWrite = depthWrite
+			//设置透明度
+			mesh.material.transparent = true
+			mesh.material.opacity = opacity
+		}
+
 	}
-	// 设置坐标轴辅助线
-	onSetModelAxesHelper({ axesHelper, axesSize }) {
-		// 需要先把辅助线移除然后在重新创建
-		this.scene.remove(this.axesHelper)
-		this.axesHelper.geometry.dispose()
-		this.axesHelper.material.dispose()
-		this.axesHelper = new THREE.AxesHelper(axesSize);
-		this.axesHelper.position.set(0, -.50, 0)
-		this.axesHelper.visible = axesHelper
-		this.scene.add(this.axesHelper);
+	// 设置模型贴图（模型自带）
+	onSetModelMap({ material, mapId }) {
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		const { name, color } = mesh.material
+		mesh.material = new THREE.MeshStandardMaterial({
+			map: material.map,
+			transparent: true,
+			color,
+			name,
+		})
+		mesh.mapId = mapId
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = mesh.name
 	}
+	// 设置模型贴图（系统贴图）
+	onSetSystemModelMap({ id, url }) {
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		const { name, color } = mesh.material
+		const mapTexture = new THREE.TextureLoader().load(url)
+		mesh.material = new THREE.MeshStandardMaterial({
+			map: mapTexture,
+			transparent: true,
+			color,
+			name,
+		})
+		mesh.mapId = id
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = id
+	}
+	// 选择材质
+	onChangeModelMeaterial(name) {
+		const mesh = this.model.getObjectByName(name)
+		this.outlinePass.selectedObjects = [mesh]
+		store.commit('SELECT_MESH', mesh)
+		return mesh
+	}
+	// 鼠标选中材质
+	onMouseDownModel() {
+		if (this.modelAnimation.length) return false
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
+		if (intersects.length > 0) {
+			const intersectedObject = intersects[0].object
+			// 设置当前选中的材质
+			this.outlinePass.selectedObjects = [intersectedObject]
+			store.commit('SELECT_MESH', intersectedObject)
+		} else {
+			this.outlinePass.selectedObjects = []
+			store.commit('SELECT_MESH', {})
+		}
+	}
+	// 模型点击事件
+	onMouseClickModel(event) {
+		if (!this.modelAnimation.length) return false
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
+		if (intersects.length > 0) {
+			const intersectedObject = intersects[0].object
+			this.outlinePass.selectedObjects = [intersectedObject]
+			store.commit('SELECT_MESH', intersectedObject)
+		} else {
+			this.outlinePass.selectedObjects = []
+			store.commit('SELECT_MESH', {})
+		}
+	}
+	// 获取最新材质信息列表
+	onGetEditMeshList() {
+		const meshList = []
+		this.model.traverse((v) => {
+			if (v.isMesh && v.material) {
+				const { color, opacity, depthWrite, wireframe } = v.material
+				const obj = {
+					meshName: v.name,
+					meshFrom: v.meshFrom,
+					color: color.getStyle(),
+					opacity, depthWrite, wireframe
+				}
+				meshList.push(obj)
+			}
+		})
+		return meshList
+	}
+
+
+
+	/**
+	 * @describe 后期/操作模块方法
+	 * @function onSetUnrealBloomPass 设置辉光效果
+	 * @function setModelMeshDecompose 模型拆分
+	 * @function setModelMeshDrag 模型材质可拖拽
+	 * @function setModelMeshTag 是否显示模型材质标签
+	 * @function onMouseMoveModel 鼠标移入模型材质
+	 */
+	// 设置辉光效果
+	onSetUnrealBloomPass(config) {
+		const { glow, threshold, strength, radius, toneMappingExposure } = config
+		if (glow) {
+			this.unrealBloomPass.threshold = threshold
+			this.unrealBloomPass.strength = strength
+			this.unrealBloomPass.radius = radius
+			this.renderer.toneMappingExposure = toneMappingExposure
+
+		} else {
+			this.unrealBloomPass.threshold = 0
+			this.unrealBloomPass.strength = 0
+			this.unrealBloomPass.radius = 0
+			this.renderer.toneMappingExposure = toneMappingExposure
+		}
+	}
+	// 模型拆分
+	setModelMeshDecompose({ decompose }) {
+		if (this.glowMaterialList.length <= 1) return false
+		const modelDecomposeMove = (obj, position) => {
+			const Tween = new TWEEN.Tween(obj.position)
+			Tween.to(position, 500)
+			Tween.onUpdate(function (val) {
+				obj.position.set(val.x || 0, val.y || 0, val.z || 0);
+			})
+			Tween.start()
+		}
+		const length = this.glowMaterialList.length
+		const angleStep = (2 * Math.PI) / length;
+		this.glowMaterialList.forEach((name, i) => {
+			const mesh = this.model.getObjectByName(name)
+			const { decomposeName } = this.model
+			if (mesh.type == 'Mesh') {
+				// 如果当前模型有设置模型分解的自定义参数
+				if (MODEL_DECOMPOSE[decomposeName] && MODEL_DECOMPOSE[decomposeName][name]) {
+					const position = { x: 0, y: 0, z: 0 }
+					const { x: modelX, y: modelY, z: modelZ } = MODEL_DECOMPOSE[decomposeName][name]
+					if (modelX == 'straight') {
+						position.x += decompose
+					} else if (modelX == 'burden') {
+						position.x -= decompose
+					}
+					if (modelY == 'straight') {
+						position.y += decompose
+					} else if (modelY == 'burden') {
+						position.y -= decompose
+					}
+					if (modelZ == 'straight') {
+						position.z += decompose
+					} else if (modelZ == 'burden') {
+						position.z -= decompose
+					}
+					modelDecomposeMove(mesh, position)
+				} else {
+					// 材质位置计算
+					const angle = i * angleStep;
+					const x = (decompose) * Math.cos(angle);
+					const y = (decompose) * Math.sin(angle);
+					const position = {
+						x, y, z: 0
+					}
+					modelDecomposeMove(mesh, position)
+				}
+			}
+		})
+	}
+	// 模型材质可拖拽
+	setModelMeshDrag({ modelDrag }) {
+		if (modelDrag) {
+			this.dragControls = new DragControls(this.modelMaterialList, this.camera, this.renderer.domElement);
+			// 拖拽事件监听
+			this.dragControls.addEventListener('dragstart', () => {
+				this.controls.enabled = false
+			})
+			this.dragControls.addEventListener('dragend', () => {
+				this.controls.enabled = true
+			})
+		} else {
+			if (this.dragControls) this.dragControls.dispose()
+		}
+	}
+	// 是否显示模型材质标签
+	setModelMeshTag({ hoverMeshTag }) {
+		this.hoverMeshTag = hoverMeshTag
+	}
+	// 鼠标移入模型材质
+	onMouseMoveModel(event) {
+		if (this.modelAnimation.length) return false
+		const meshTxt = document.getElementById("mesh-txt");
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
+		if (intersects.length > 0) {
+			// TODO:动画模型不显示材质标签
+			if (this.modelAnimation.length) {
+				document.body.style.cursor = 'pointer';
+				return false
+			}
+			// 判断是否开启显示材质标签
+			if (this.hoverMeshTag) {
+				// 设置材质标签位置
+				const intersectedObject = intersects[0].object
+				meshTxt.innerHTML = intersectedObject.name
+				meshTxt.style.display = "block";
+				meshTxt.style.top = event.clientY - offsetTop + 'px';
+				meshTxt.style.left = event.clientX - offsetLeft + 20 + 'px';
+			}
+			document.body.style.cursor = 'pointer'
+
+		} else {
+			document.body.style.cursor = '';
+			meshTxt.style.display = "none";
+
+		}
+	}
+
+
+
+	/**
+	 * @describe 灯光模块方法
+	 * @function onSetModelAmbientLight 设置环境光
+	 * @function onSetModelDirectionalLight 设置平行光
+	 * @function onSetModelPointLight 设置点光源
+	 * @function onSetModelSpotLight 设置聚光灯
+	 * @function onSetModelPlaneGeometry 设置模型平面
+	 */
 	// 设置环境光
 	onSetModelAmbientLight({ ambientLight, ambientLightColor, ambientLightIntensity }) {
 		this.ambientLight.visible = ambientLight
@@ -762,144 +870,141 @@ class renderModel {
 		this.planeGeometry.material.color.set(planeColor)
 		this.planeGeometry.geometry.verticesNeedUpdate = true
 	}
-	// 选择材质
-	onChangeModelMeaterial(name) {
-		const mesh = this.model.getObjectByName(name)
-		this.outlinePass.selectedObjects = [mesh]
-		store.commit('SELECT_MESH', mesh)
-		return mesh
-	}
-	// 设置材质属性
-	onSetModelMaterial(config) {
-		const { color, wireframe, depthWrite, opacity } = config
-		const uuid = store.state.selectMesh.uuid
-		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		if (mesh && mesh.material) {
-			//设置材质颜色
-			mesh.material.color.set(new THREE.Color(color))
-			//设置网格
-			mesh.material.wireframe = wireframe
-			// 设置深度写入
-			mesh.material.depthWrite = depthWrite
-			//设置透明度
-			mesh.material.transparent = true
-			mesh.material.opacity = opacity
-		}
 
-	}
-	// 设置模型贴图
-	onSetModelMap({ material, mapId }) {
-		const uuid = store.state.selectMesh.uuid
-		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		const { name, color } = mesh.material
-		mesh.material = new THREE.MeshLambertMaterial({
-			map: material.map,
-			transparent: true,
-			color,
-			name,
-		})
-		mesh.mapId = mapId
-	}
-	// 设置模型贴图
-	onSetSystemModelMap({ id, url }) {
-		const uuid = store.state.selectMesh.uuid
-		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		const { name, color } = mesh.material
-		const mapTexture = new THREE.TextureLoader().load(url)
-		mesh.material = new THREE.MeshLambertMaterial({
-			map: mapTexture,
-			transparent: true,
-			color,
-			name,
-		})
-		mesh.mapId = id
-	}
-	// 设置辉光效果
-	onSetUnrealBloomPass(config) {
-		const { glow, threshold, strength, radius, toneMappingExposure } = config
-		if (glow) {
-			this.unrealBloomPass.threshold = threshold
-			this.unrealBloomPass.strength = strength
-			this.unrealBloomPass.radius = radius
-			this.renderer.toneMappingExposure = toneMappingExposure
 
-		} else {
-			this.unrealBloomPass.threshold = 0
-			this.unrealBloomPass.strength = 0
-			this.unrealBloomPass.radius = 0
-			this.renderer.toneMappingExposure = toneMappingExposure
-		}
-	}
-	// 模型拆分
-	setModelMeshDecompose({ decompose }) {
-		if (this.glowMaterialList.length <= 1) return false
-		const modelDecomposeMove = (obj, position) => {
-			new TWEEN.Tween(obj.position)
-				.to(position, 500)
-				.onUpdate(function (val) {
-					obj.position.set(val.x || 0, val.y || 0, val.z || 0);
-				})
-				.start();
-		}
-		const length = this.glowMaterialList.length
-		const angleStep = (2 * Math.PI) / length;
-		this.glowMaterialList.forEach((name, i) => {
-			const mesh = this.model.getObjectByName(name)
-			const { decomposeName } = this.model
-			if (mesh.type == 'Mesh') {
-				// 如果当前模型有设置模型分解的自定义参数
-				if (MODEL_DECOMPOSE[decomposeName] && MODEL_DECOMPOSE[decomposeName][name]) {
-					const position = { x: 0, y: 0, z: 0 }
-					const { x: modelX, y: modelY, z: modelZ } = MODEL_DECOMPOSE[decomposeName][name]
-					if (modelX == 'straight') {
-						position.x += decompose
-					} else if (modelX == 'burden') {
-						position.x -= decompose
-					}
-					if (modelY == 'straight') {
-						position.y += decompose
-					} else if (modelY == 'burden') {
-						position.y -= decompose
-					}
-					if (modelZ == 'straight') {
-						position.z += decompose
-					} else if (modelZ == 'burden') {
-						position.z -= decompose
-					}
-					modelDecomposeMove(mesh, position)
-				} else {
-					// 材质位置计算
-					const angle = i * angleStep;
-					const x = (decompose) * Math.cos(angle);
-					const y = (decompose) * Math.sin(angle);
-					const position = {
-						x, y, z: 0
-					}
-					modelDecomposeMove(mesh, position)
-				}
-			}
-		})
-	}
-	// 模型材质可拖拽
-	setModelMeshDrag({ modelDrag }) {
-		if (modelDrag) {
-			this.dragControls = new DragControls(this.modelMaterialList, this.camera, this.renderer.domElement);
-			// 拖拽事件监听
-			this.dragControls.addEventListener('dragstart', () => {
-				this.controls.enabled = false
-			})
-			this.dragControls.addEventListener('dragend', () => {
-				this.controls.enabled = true
-				document.body.style.cursor = '';
-			})
-		} else {
-			if (this.dragControls) this.dragControls.dispose()
-		}
 
+	/**
+	 * @describe 模型动画模块方法
+	 * @function onStartModelAnimaion 开始执行动画
+	 * @function onSetModelAnimaion 设置模型动画
+	 * @function animationFrameFun 动画帧
+	 * @function onClearAnimation 清除动画
+	 */
+	// 开始执行动画
+	onStartModelAnimaion(config) {
+		this.onSetModelAnimaion(config)
+		cancelAnimationFrame(this.animationFram)
+		this.animationFrameFun()
 	}
-	// 是否显示模型材质标签
-	setModelMeshTag({ hoverMeshTag }) {
-		this.hoverMeshTag = hoverMeshTag
+	// 设置模型动画
+	onSetModelAnimaion({ animations, animationName, loop, timeScale, weight }) {
+		this.animationMixer = new THREE.AnimationMixer(this.model)
+		const clip = THREE.AnimationClip.findByName(animations, animationName)
+		if (clip) {
+			this.animateClipAction = this.animationMixer.clipAction(clip)
+			this.animateClipAction.setEffectiveTimeScale(timeScale)
+			this.animateClipAction.setEffectiveWeight(weight)
+			this.animateClipAction.setLoop(this.loopMap[loop])
+			this.animateClipAction.play()
+		}
+	}
+	// 动画帧
+	animationFrameFun() {
+		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
+		if (this.animationMixer) {
+			this.animationMixer.update(this.animationColock.getDelta())
+		}
+	}
+	// 清除动画
+	onClearAnimation() {
+		if (!this.animateClipAction) return
+		this.animationMixer.stopAllAction();
+		this.animationMixer.update(0);
+	}
+
+
+
+	/**
+	 * @describe 辅助线/轴配置模块方法
+	 * @function onSetModelHelper 设置模型骨架
+	 * @function onSetModelRotateOnAxis 设置模型轴旋转
+	 * @function onResultModelRotateOnAxis 重置模型轴位置
+	 * @function onSetModelPosition 设置模型位置
+	 * @function onResultModelPosition 重置模型位置
+	 * @function onResetModelCamera 重置相机位置
+	 * @function onSetModelGridHelper 设置网格辅助线位置和颜色
+	 * @function onSetModelGridHelperSize 设置网格数量和大小
+	 * @function onSetModelAxesHelper 设置坐标轴辅助线
+	 */
+	// 设置模型骨架
+	onSetModelHelper(visible) {
+		this.skeletonHelper.visible = visible
+	}
+	// 设置模型轴旋转
+	onSetModelRotateOnAxis(type, flag) {
+		const maxAxis = Math.PI / 2
+		const { x, y, z } = this.model.rotation
+		const endPosition = {
+			x, y, z
+		}
+		endPosition[type] += flag ? maxAxis : -maxAxis
+		const Tween = new TWEEN.Tween({ x, y, z })
+		Tween.to(endPosition, 500)
+		Tween.onUpdate((val) => {
+			this.model.rotation[type] = val[type]
+		})
+		Tween.start();
+	}
+	// 重置模型轴位置
+	onResultModelRotateOnAxis() {
+		this.model.rotation.x = 0
+		this.model.rotation.y = 0
+		this.model.rotation.z = 0
+	}
+	// 设置模型位置
+	onSetModelPosition({ positionX, positionY, positionZ }) {
+		const Tween = new TWEEN.Tween(this.model.position)
+		const endPosition = {
+			x: positionX,
+			y: positionY,
+			z: positionZ
+		}
+		Tween.to(endPosition, 500)
+		Tween.onUpdate((val) => {
+			this.model.position.set(val.x || 0, val.y || 0, val.z || 0)
+		})
+		Tween.start();
+	}
+	// 重置模型位置
+	onResultModelPosition({ positionX, positionY, positionZ }) {
+		this.model.position.set(positionX, positionY, positionZ)
+	}
+	// 重置相机位置
+	onResetModelCamera() {
+		// 设置相机位置
+		this.camera.position.set(0, 2, 6)
+		// 设置相机坐标系
+		this.camera.lookAt(0, 0, 0)
+	}
+	// 设置网格辅助线位置和颜色
+	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
+		this.gridHelper.visible = gridHelper
+		this.gridHelper.position.set(x, y, z)
+		this.gridHelper.material.color.set(color);
+	}
+	// 设置网格数量和大小
+	onSetModelGridHelperSize({ x, y, z, size, divisions, color, gridHelper }) {
+		// 需要先把辅助线移除然后在重新创建
+		this.scene.remove(this.gridHelper)
+		this.gridHelper.geometry.dispose()
+		this.gridHelper.material.dispose()
+		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
+		this.gridHelper.position.set(x, y, z)
+		this.gridHelper.material.linewidth = 0.1
+		this.gridHelper.material.color.set(color);
+		this.gridHelper.visible = gridHelper
+		this.scene.add(this.gridHelper)
+	}
+	// 设置坐标轴辅助线
+	onSetModelAxesHelper({ axesHelper, axesSize }) {
+		// 需要先把辅助线移除然后在重新创建
+		this.scene.remove(this.axesHelper)
+		this.axesHelper.geometry.dispose()
+		this.axesHelper.material.dispose()
+		this.axesHelper = new THREE.AxesHelper(axesSize);
+		this.axesHelper.position.set(0, -.50, 0)
+		this.axesHelper.visible = axesHelper
+		this.scene.add(this.axesHelper);
 	}
 }
 export default renderModel
