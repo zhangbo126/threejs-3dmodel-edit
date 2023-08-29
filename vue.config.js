@@ -6,4 +6,16 @@ module.exports = defineConfig({
   lintOnSave: false,
   assetsDir: 'static',
   productionSourceMap: false,
+  pages: {
+    index: {
+      entry: 'src/main.js',
+      template: 'public/index.html',
+      filename: 'index.html',
+    },
+    preview: {
+      entry: 'src/main.js',
+      template: 'public/preview.html',
+      filename: 'preview.html',
+    },
+  },
 })
