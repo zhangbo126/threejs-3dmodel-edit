@@ -8,7 +8,7 @@
       </div>
       <div class="header-lr">
         <el-button type="primary" @click="onSaveConfig">保存配置</el-button>
-        <el-button type="primary" @click="onPrivew">预览</el-button>
+        <el-button type="primary" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
     <div class="model-container" v-zLoading="loading">
@@ -61,15 +61,26 @@ const onResetCamera = () => {
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
   modelConfig.fileInfo = choosePanel.value.activeModel;
-  local.set(MODEL_PRIVEW_CONFIG, modelConfig);
-  const { href } = router.resolve({ path: "/preview" });
-  window.open(href, "_blank");
+  //判断是否是外部模型
+  if (modelConfig.fileInfo.filePath) {
+    local.set(MODEL_PRIVEW_CONFIG, modelConfig);
+    const { href } = router.resolve({ path: "/preview" });
+    window.open(href, "_blank");
+  } else {
+    ElMessage.warning("外部模型不支持“效果预览”");
+  }
 };
 // 保存配置
 const onSaveConfig = () => {
   const modelConfig = editPanel.value.getPanelConfig();
-  console.log(modelConfig)
-  ElMessage.success("配置获取成功请在控制台中查看");
+  modelConfig.fileInfo = choosePanel.value.activeModel;
+  local.set(MODEL_PRIVEW_CONFIG, modelConfig);
+  // 判断是否是外部模型
+  if (modelConfig.fileInfo.filePath) {
+    ElMessage.success("配置获取成功请在控制台中查看");
+  } else {
+    ElMessage.warning("外部模型不支持数据保存");
+  }
 };
 onMounted(async () => {
   loading.value = true;
@@ -117,23 +128,6 @@ onMounted(async () => {
         top: 10px;
         left: calc(100% - 50%);
         cursor: pointer;
-      }
-      #mesh-txt {
-        position: absolute;
-        display: none;
-        color: white;
-        background-color: #67c23a;
-        opacity: 0.8;
-        font-size: 14px;
-        font-weight: 600;
-        pointer-events: none;
-        padding: 10px;
-        border-radius: 10px;
-        cursor: all-scroll;
-        -webkit-user-select: none; /* Safari 3.1+ */
-        -moz-user-select: none; /* Firefox 2+ */
-        -ms-user-select: none; /* IE 10+ */
-        user-select: none; /* Standard syntax */
       }
     }
   }

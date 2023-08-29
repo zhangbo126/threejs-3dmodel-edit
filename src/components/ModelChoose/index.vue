@@ -171,6 +171,8 @@ const onUpload = async (file) => {
     if (load) {
       $bus.emit("model-update");
       $bus.emit("page-loading", false);
+      activeModelId.value=null
+      activeModel.value={}
     }
   } catch (err) {
     localModelName.value = null;

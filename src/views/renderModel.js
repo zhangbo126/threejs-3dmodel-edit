@@ -123,7 +123,7 @@ class renderModel {
 			window.addEventListener("resize", this.onWindowResize.bind(this))
 			//场景渲染
 			this.sceneAnimation()
-			this.addEvenListMouseLiatener()
+			this.addEvenListMouseLisatener()
 			reslove(load)
 		})
 	}
@@ -191,7 +191,7 @@ class renderModel {
 		this.effectComposer.render()
 	}
 	// 监听事件
-	addEvenListMouseLiatener() {
+	addEvenListMouseLisatener() {
 		this.container.addEventListener('click', this.onMouseClickModel.bind(this))
 		this.container.addEventListener('mousedown', this.onMouseDownModel.bind(this))
 		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
@@ -403,9 +403,11 @@ class renderModel {
 				cancelAnimationFrame(this.animationFram)
 				this.skeletonHelper.visible = false
 				this.modelTextureMap = []
+				const meshTxt = document.getElementById("mesh-txt");
 				this.scene.remove(this.model)
 				if (this.dragControls) this.dragControls.dispose()
 				document.body.style.cursor = '';
+                meshTxt.style.display='none'
 				this.renderer.toneMappingExposure = 3
 				// 加载模型
 				const load = await this.setModel(model)
@@ -491,6 +493,7 @@ class renderModel {
 					// 获取模型自动材质贴图
 					const { url, mapId } = this.getModelMaps(materials, uuid)
 					const mesh = {
+						meshName: v.name,
 						material: v.material,
 						url,
 						mapId: mapId + '_' + i
@@ -511,6 +514,7 @@ class renderModel {
 					})
 					v.mapId = uuid + '_' + i
 					this.modelTextureMap = [{
+						meshName: v.name,
 						material: v.material,
 						url: map,
 						mapId: uuid + '_' + i
@@ -580,7 +584,7 @@ class renderModel {
 
 	}
 	// 设置模型贴图（模型自带）
-	onSetModelMap({ material, mapId }) {
+	onSetModelMap({ material, mapId, meshName }) {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
@@ -592,7 +596,7 @@ class renderModel {
 		})
 		mesh.mapId = mapId
 		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
-		mesh.meshFrom = mesh.name
+		mesh.meshFrom = meshName
 	}
 	// 设置模型贴图（系统贴图）
 	onSetSystemModelMap({ id, url }) {
@@ -679,6 +683,7 @@ class renderModel {
 	 * @function setModelMeshDrag 模型材质可拖拽
 	 * @function setModelMeshTag 是否显示模型材质标签
 	 * @function onMouseMoveModel 鼠标移入模型材质
+	 * @function getMeshDragPosition 获取模型材质位拖拽置
 	 */
 	// 设置辉光效果
 	onSetUnrealBloomPass(config) {
@@ -768,13 +773,13 @@ class renderModel {
 	// 鼠标移入模型材质
 	onMouseMoveModel(event) {
 		if (this.modelAnimation.length) return false
-		const meshTxt = document.getElementById("mesh-txt");
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
 		this.raycaster.setFromCamera(this.mouse, this.camera)
 		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
 		if (intersects.length > 0) {
+		   const meshTxt = document.getElementById("mesh-txt");
 			// TODO:动画模型不显示材质标签
 			if (this.modelAnimation.length) {
 				document.body.style.cursor = 'pointer';
@@ -792,10 +797,24 @@ class renderModel {
 			document.body.style.cursor = 'pointer'
 
 		} else {
+		   const meshTxt = document.getElementById("mesh-txt");
 			document.body.style.cursor = '';
 			meshTxt.style.display = "none";
 
 		}
+	}
+	// 获取模型材质位拖拽置
+	getMeshDragPosition(){
+       const positonList =[]
+	   this.modelMaterialList.forEach(v=>{
+		   const mesh = this.model.getObjectByProperty('name', v.name)
+		   const obj ={
+			 name:v.name,
+			 ...mesh.position
+		   }
+		   positonList.push(obj)
+	   })
+	   return positonList
 	}
 
 

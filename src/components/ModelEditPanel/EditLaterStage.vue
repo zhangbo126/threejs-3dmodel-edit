@@ -208,8 +208,14 @@ const onChangeDrag = () => {
   state.modelApi.setModelMeshDecompose(config);
   state.modelApi.setModelMeshDrag(config);
 };
+const getStageConfig = () => {
+  return {
+    meshPositonList: state.modelApi.getMeshDragPosition(),
+    ...config,
+  };
+};
 defineExpose({
-  config,
+  getStageConfig,
 });
 </script>
 <style lang="scss" scoped></style>

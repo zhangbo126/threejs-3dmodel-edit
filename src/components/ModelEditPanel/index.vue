@@ -99,8 +99,8 @@ const getPanelConfig = () => {
     material: material.value.getMeshConfig(),
     animation: animation.value,
     attribute: attribute.value,
-    light: light.value,
-    stage: stage.value,
+    light: light.value.config,
+    stage: stage.value.getStageConfig(),
   };
 };
 defineExpose({

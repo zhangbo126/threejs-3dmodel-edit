@@ -244,7 +244,6 @@ const onChangeSystemModelMap = (map) => {
 };
 const getMeshConfig = () => {
   return {
-    config,
     meshList: state.modelApi.onGetEditMeshList(),
   };
 };
