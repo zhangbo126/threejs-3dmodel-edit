@@ -407,7 +407,7 @@ class renderModel {
 				this.scene.remove(this.model)
 				if (this.dragControls) this.dragControls.dispose()
 				document.body.style.cursor = '';
-                meshTxt.style.display='none'
+				meshTxt.style.display = 'none'
 				this.renderer.toneMappingExposure = 3
 				// 加载模型
 				const load = await this.setModel(model)
@@ -779,7 +779,7 @@ class renderModel {
 		this.raycaster.setFromCamera(this.mouse, this.camera)
 		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
 		if (intersects.length > 0) {
-		   const meshTxt = document.getElementById("mesh-txt");
+			const meshTxt = document.getElementById("mesh-txt");
 			// TODO:动画模型不显示材质标签
 			if (this.modelAnimation.length) {
 				document.body.style.cursor = 'pointer';
@@ -797,24 +797,24 @@ class renderModel {
 			document.body.style.cursor = 'pointer'
 
 		} else {
-		   const meshTxt = document.getElementById("mesh-txt");
+			const meshTxt = document.getElementById("mesh-txt");
 			document.body.style.cursor = '';
 			meshTxt.style.display = "none";
 
 		}
 	}
 	// 获取模型材质位拖拽置
-	getMeshDragPosition(){
-       const positonList =[]
-	   this.modelMaterialList.forEach(v=>{
-		   const mesh = this.model.getObjectByProperty('name', v.name)
-		   const obj ={
-			 name:v.name,
-			 ...mesh.position
-		   }
-		   positonList.push(obj)
-	   })
-	   return positonList
+	getMeshDragPosition() {
+		const positonList = []
+		this.modelMaterialList.forEach(v => {
+			const mesh = this.model.getObjectByProperty('name', v.name)
+			const obj = {
+				name: v.name,
+				...mesh.position
+			}
+			positonList.push(obj)
+		})
+		return positonList
 	}
 
 
@@ -906,9 +906,9 @@ class renderModel {
 		this.animationFrameFun()
 	}
 	// 设置模型动画
-	onSetModelAnimaion({ animations, animationName, loop, timeScale, weight }) {
+	onSetModelAnimaion({ animationName, loop, timeScale, weight }) {
 		this.animationMixer = new THREE.AnimationMixer(this.model)
-		const clip = THREE.AnimationClip.findByName(animations, animationName)
+		const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
 		if (clip) {
 			this.animateClipAction = this.animationMixer.clipAction(clip)
 			this.animateClipAction.setEffectiveTimeScale(timeScale)
@@ -998,8 +998,18 @@ class renderModel {
 	// 设置网格辅助线位置和颜色
 	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
 		this.gridHelper.visible = gridHelper
-		this.gridHelper.position.set(x, y, z)
+		// this.gridHelper.position.set(x, y, z)
 		this.gridHelper.material.color.set(color);
+
+		const Tween = new TWEEN.Tween(this.gridHelper.position)
+		const endPosition = {
+			x,y,z
+		}
+		Tween.to(endPosition, 500)
+		Tween.onUpdate((val) => {
+			this.gridHelper.position.set(val.x || 0, val.y || 0, val.z || 0)
+		})
+		Tween.start();
 	}
 	// 设置网格数量和大小
 	onSetModelGridHelperSize({ x, y, z, size, divisions, color, gridHelper }) {

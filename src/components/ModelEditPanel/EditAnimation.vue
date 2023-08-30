@@ -90,7 +90,6 @@ const config = reactive({
   loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
   timeScale: 1, // 播放速度
   weight: 1, // 动作幅度
-  animations: [],
 });
 const optionDisabled = computed(() => {
   return config.visible ? "" : "disabled";
@@ -141,12 +140,10 @@ const onChangeAnimationSwitch = () => {
 // 选择动画
 const onChangeAnimationType = ({ name }) => {
   config.animationName = name;
-  config.animations = state.modelAnimation;
   state.modelApi.onStartModelAnimaion(config);
 };
 // 更新模型状态
 const onUplateAnimation = () => {
-  config.animations = state.modelAnimation;
   state.modelApi.onStartModelAnimaion(config);
 };
 

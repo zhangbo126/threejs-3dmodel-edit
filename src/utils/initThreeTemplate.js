@@ -118,7 +118,7 @@ class renderModel {
 			this.initScene()
 			//初始化控制器，控制摄像头,控制器一定要在渲染器后
 			this.initControls()
-		
+
 			const load = await this.loadModel(this.config.fileInfo)
 			// 创建效果合成器
 			this.createEffectComposer()
@@ -132,6 +132,10 @@ class renderModel {
 			this.setModelLaterStage()
 			// 设置灯光信息
 			this.setSceneLight()
+			// 设置模型动画信息
+			this.setModelAnimation()
+			// 设置模型轴/辅助线信息
+			this.setModelAxleLine()
 			//场景渲染
 			this.sceneAnimation()
 			this.addEvenListMouseLisatener()
@@ -267,18 +271,6 @@ class renderModel {
 						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
-						// 如果当前模型有动画则默认播放第一条动画
-						if (this.modelAnimation.length) {
-							const animationName = this.modelAnimation[0].name
-							const config = {
-								animations: this.modelAnimation,
-								timeScale: 1, // 播放速度
-								weight: 1, // 动作幅度
-								loop: "LoopRepeat",
-								animationName
-							}
-							// this.onStartModelAnimaion(config)
-						}
 						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
@@ -387,27 +379,6 @@ class renderModel {
 				}
 			}
 		})
-	}
-
-	// 设置模型定位缩放大小
-	setModelPositionSize() {
-		//设置模型位置
-		this.model.updateMatrixWorld()
-		const box = new THREE.Box3().setFromObject(this.model);
-		const size = box.getSize(new THREE.Vector3());
-		const center = box.getCenter(new THREE.Vector3());
-		// 计算缩放比例
-		const maxSize = Math.max(size.x, size.y, size.z);
-		const targetSize = 2.5; // 目标大小
-		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
-		this.model.scale.set(scale, scale, scale)
-		// 设置控制器最小缩放值
-		this.controls.maxDistance = size.length() * 10
-		// 设置相机位置
-		this.camera.position.set(0, 2, 6)
-		// 设置相机坐标系
-		this.camera.lookAt(center)
-		this.camera.updateProjectionMatrix();
 	}
 
 	// 处理背景数据回填
@@ -539,7 +510,6 @@ class renderModel {
 		const { light } = this.config
 		if (!light) return false
 		// 环境光
-		console.log(light)
 		if (light.ambientLight) {
 			// 创建环境光
 			this.ambientLight = new THREE.AmbientLight(light.ambientLightColor, light.ambientLightIntensity)
@@ -608,6 +578,58 @@ class renderModel {
 			this.planeGeometry.receiveShadow = true;
 			this.scene.add(this.planeGeometry);
 		}
+	}
+	// 处理模型动画数据回填
+	setModelAnimation() {
+		const { animation } = this.config
+		if (!this.modelAnimation.length || !animation.visible) return false
+		this.animationMixer = new THREE.AnimationMixer(this.model)
+		const { animationName, timeScale, weight, loop } = animation
+		const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
+		if (clip) {
+			this.animateClipAction = this.animationMixer.clipAction(clip)
+			this.animateClipAction.setEffectiveTimeScale(timeScale)
+			this.animateClipAction.setEffectiveWeight(weight)
+			this.animateClipAction.setLoop(this.loopMap[loop])
+			this.animateClipAction.play()
+		}
+		this.animationFrameFun()
+	}
+	// 模型动画帧
+	animationFrameFun() {
+		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
+		if (this.animationMixer) {
+			this.animationMixer.update(this.animationColock.getDelta())
+		}
+	}
+	// 模型轴辅助线配置
+	setModelAxleLine() {
+		const { attribute } = this.config
+
+		if (!attribute) return false
+		const { axesHelper, axesSize, color, divisions, gridHelper, positionX, positionY, positionZ, size, skeletonHelper, visible, x, y, z,rotationX,rotationY,rotationZ } = attribute
+		if(!visible) return false
+        console.log()
+		//网格辅助线
+		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
+		this.gridHelper.position.set(x, y, z )
+		this.gridHelper.visible = gridHelper
+		this.gridHelper.material.linewidth = 0.1
+		this.scene.add(this.gridHelper)
+		// 坐标轴辅助线
+		this.axesHelper = new THREE.AxesHelper(axesSize);
+		this.axesHelper.visible = axesHelper
+		this.axesHelper.position.set(0, -.50, 0)
+		this.scene.add(this.axesHelper);
+		// 设置模型位置
+		this.model.position.set(positionX, positionY, positionZ )
+		// 设置模型轴位置
+		this.model.rotation.set(rotationX,rotationY,rotationZ )
+		// 开启阴影
+		this.renderer.shadowMap.enabled = true;
+		// 骨骼辅助线
+		this.skeletonHelper = new THREE.SkeletonHelper(this.model)
+		this.skeletonHelper = skeletonHelper
 	}
 
 }
