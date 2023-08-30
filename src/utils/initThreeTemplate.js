@@ -15,12 +15,12 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
-import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
+import { vertexShader, fragmentShader } from '@/config/constant.js'
 import { mapImageList } from "@/config/model";
 import { lightPosition } from '@/utils/utilityFunction'
 
 /**
- * @describe 创建3d模型组件的方法
+ * @describe three.js 组件数据初始化方法
  * @param config 组件参数配置信息
 */
 
@@ -67,20 +67,6 @@ class renderModel {
 		this.gridHelper
 		// 坐标轴辅助线
 		this.axesHelper
-		// 环境光
-		this.ambientLight
-		//平行光
-		this.directionalLight
-		// 平行光辅助线
-		this.directionalLightHelper
-		// 点光源
-		this.pointLight
-		//点光源辅助线
-		this.pointLightHelper
-		//聚光灯
-		this.spotLight
-		//聚光灯辅助线
-		this.spotLightHelper
 		//模型平面
 		this.planeGeometry
 		//模型材质列表
@@ -105,8 +91,6 @@ class renderModel {
 		this.materials = {}
 		// 拖拽对象控制器
 		this.dragControls
-		// 是否显示材质标签
-		this.hoverMeshTag = false
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -165,7 +149,13 @@ class renderModel {
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
-		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 100)
+		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 1000)
+		this.camera.near = 0.1
+		const { camera } = this.config
+		if (!camera) return false
+		const { x, y, z } = camera
+		this.camera.position.set(x, y, z)
+		this.camera.updateProjectionMatrix()
 	}
 	// 创建场景
 	initScene() {
@@ -334,7 +324,7 @@ class renderModel {
 		// 设置控制器最小缩放值
 		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
-		this.camera.position.set(0, 2, 6)
+		// this.camera.position.set(0, 2, 6)
 		// 设置相机坐标系
 		this.camera.lookAt(center)
 		this.camera.updateProjectionMatrix();
@@ -512,71 +502,71 @@ class renderModel {
 		// 环境光
 		if (light.ambientLight) {
 			// 创建环境光
-			this.ambientLight = new THREE.AmbientLight(light.ambientLightColor, light.ambientLightIntensity)
-			this.ambientLight.visible = light.ambientLight
-			this.scene.add(this.ambientLight)
+			const ambientLight = new THREE.AmbientLight(light.ambientLightColor, light.ambientLightIntensity)
+			ambientLight.visible = light.ambientLight
+			this.scene.add(ambientLight)
 		}
 		// 平行光
 		if (light.directionalLight) {
-			this.directionalLight = new THREE.DirectionalLight(light.directionalLightColor, light.directionalLightIntensity)
+			const directionalLight = new THREE.DirectionalLight(light.directionalLightColor, light.directionalLightIntensity)
 			const { x, y, z } = lightPosition(light.directionalHorizontal, light.directionalVertical, light.directionalSistance)
-			this.directionalLight.position.set(x, y, z)
-			this.directionalLight.castShadow = light.directionaShadow
-			this.directionalLight.visible = light.directionalLight
-			this.scene.add(this.directionalLight)
-			this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .5)
-			this.directionalLightHelper.visible = light.directionalLightHelper
-			this.scene.add(this.directionalLightHelper)
+			directionalLight.position.set(x, y, z)
+			directionalLight.castShadow = light.directionaShadow
+			directionalLight.visible = light.directionalLight
+			this.scene.add(directionalLight)
+			const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, .5)
+			directionalLightHelper.visible = light.directionalLightHelper
+			this.scene.add(directionalLightHelper)
 		}
 		// 点光源
 		if (light.pointLight) {
-			this.pointLight = new THREE.PointLight(light.pointLightColor, light.pointLightIntensity, 100)
-			this.pointLight.visible = light.pointLight
+			const pointLight = new THREE.PointLight(light.pointLightColor, light.pointLightIntensity, 100)
+			pointLight.visible = light.pointLight
 			const { x, y, z } = lightPosition(light.pointHorizontal, light.pointVertical, light.pointSistance)
-			this.pointLight.position.set(x, y, z)
-			this.scene.add(this.pointLight)
+			pointLight.position.set(x, y, z)
+			this.scene.add(pointLight)
 			// 创建点光源辅助线
-			this.pointLightHelper = new THREE.PointLightHelper(this.pointLight, .5)
-			this.pointLightHelper.visible = light.pointLightHelper
-			this.scene.add(this.pointLightHelper)
+			const pointLightHelper = new THREE.PointLightHelper(pointLight, .5)
+			pointLightHelper.visible = light.pointLightHelper
+			this.scene.add(pointLightHelper)
 		}
 		// 聚光灯
 		if (light.spotLight) {
-			this.spotLight = new THREE.SpotLight(light.spotLightColor, 440);
-			this.spotLight.visible = light.spotLight
-			this.spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
-			this.spotLight.decay = 2;
-			this.spotLight.shadow.mapSize.width = 1920;
-			this.spotLight.shadow.mapSize.height = 1080;
-			this.spotLight.shadow.camera.near = 1;
-			this.spotLight.shadow.camera.far = 10;
-			this.spotLight.intensity = light.spotLightIntensity
-			this.spotLight.angle = light.spotAngle
-			this.spotLight.penumbra = light.spotPenumbra
-			this.spotLight.shadow.focus = light.spotFocus
-			this.spotLight.castShadow = light.spotCastShadow
-			this.spotLight.distance = light.spotDistance
+			const spotLight = new THREE.SpotLight(light.spotLightColor, 440);
+			spotLight.visible = light.spotLight
+			spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
+			spotLight.decay = 2;
+			spotLight.shadow.mapSize.width = 1920;
+			spotLight.shadow.mapSize.height = 1080;
+			spotLight.shadow.camera.near = 1;
+			spotLight.shadow.camera.far = 10;
+			spotLight.intensity = light.spotLightIntensity
+			spotLight.angle = light.spotAngle
+			spotLight.penumbra = light.spotPenumbra
+			spotLight.shadow.focus = light.spotFocus
+			spotLight.castShadow = light.spotCastShadow
+			spotLight.distance = light.spotDistance
 			const { x, y, z } = lightPosition(light.spotHorizontal, light.spotVertical, light.spotSistance)
-			this.spotLight.position.set(x, y, z)
-			this.scene.add(this.spotLight);
+			spotLight.position.set(x, y, z)
+			this.scene.add(spotLight);
 			//创建聚光灯辅助线
-			this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
-			this.spotLightHelper.visible = light.spotLightHelper && light.spotLight
-			this.scene.add(this.spotLightHelper)
+			const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+			spotLightHelper.visible = light.spotLightHelper && light.spotLight
+			this.scene.add(spotLightHelper)
 		}
 		// 模型平面
 		if (light.planeGeometry) {
 			const geometry = new THREE.PlaneGeometry(light.planeWidth, light.planeHeight);
 			var groundMaterial = new THREE.MeshStandardMaterial({ color: light.planeColor });
-			this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
-			this.planeGeometry.name = 'planeGeometry'
-			this.planeGeometry.rotation.x = -Math.PI / 2
-			this.planeGeometry.position.set(0, -.5, 0)
-			this.planeGeometry.visible = light.planeGeometry
-			this.planeGeometry.geometry.verticesNeedUpdate = true
+			const planeGeometry = new THREE.Mesh(geometry, groundMaterial);
+			planeGeometry.name = 'planeGeometry'
+			planeGeometry.rotation.x = -Math.PI / 2
+			planeGeometry.position.set(0, -.5, 0)
+			planeGeometry.visible = light.planeGeometry
+			planeGeometry.geometry.verticesNeedUpdate = true
 			// 让地面接收阴影
-			this.planeGeometry.receiveShadow = true;
-			this.scene.add(this.planeGeometry);
+			planeGeometry.receiveShadow = true;
+			this.scene.add(planeGeometry);
 		}
 	}
 	// 处理模型动画数据回填
@@ -607,12 +597,11 @@ class renderModel {
 		const { attribute } = this.config
 
 		if (!attribute) return false
-		const { axesHelper, axesSize, color, divisions, gridHelper, positionX, positionY, positionZ, size, skeletonHelper, visible, x, y, z,rotationX,rotationY,rotationZ } = attribute
-		if(!visible) return false
-        console.log()
+		const { axesHelper, axesSize, color, divisions, gridHelper, positionX, positionY, positionZ, size, skeletonHelper, visible, x, y, z, rotationX, rotationY, rotationZ } = attribute
+		if (!visible) return false
 		//网格辅助线
 		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
-		this.gridHelper.position.set(x, y, z )
+		this.gridHelper.position.set(x, y, z)
 		this.gridHelper.visible = gridHelper
 		this.gridHelper.material.linewidth = 0.1
 		this.scene.add(this.gridHelper)
@@ -622,9 +611,9 @@ class renderModel {
 		this.axesHelper.position.set(0, -.50, 0)
 		this.scene.add(this.axesHelper);
 		// 设置模型位置
-		this.model.position.set(positionX, positionY, positionZ )
+		this.model.position.set(positionX, positionY, positionZ)
 		// 设置模型轴位置
-		this.model.rotation.set(rotationX,rotationY,rotationZ )
+		this.model.rotation.set(rotationX, rotationY, rotationZ)
 		// 开启阴影
 		this.renderer.shadowMap.enabled = true;
 		// 骨骼辅助线

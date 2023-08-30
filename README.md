@@ -43,4 +43,6 @@
 ###### Three.js:[https://threejs.org/](https://threejs.org/)
 ###### Element-Plus:[https://element-plus.gitee.io/zh-CN/](https://element-plus.gitee.io/zh-CN/)
 ###### 模型下载网站 [https://sketchfab.com/feed](https://sketchfab.com/feed)
+###### 贴图素材网站 [https://polyhaven.com/](https://polyhaven.com/)
+###### 图片格式转换网站 [https://onlineconvertfree.com/zh/convert/hdr/](https://onlineconvertfree.com/zh/convert/hdr/)
 

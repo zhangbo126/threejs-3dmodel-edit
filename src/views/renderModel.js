@@ -139,7 +139,7 @@ class renderModel {
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
-		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 100)
+		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 1000)
 	}
 	// 创建渲染器
 	initRender() {
@@ -941,6 +941,7 @@ class renderModel {
 	 * @function onSetModelPosition 设置模型位置
 	 * @function onResultModelPosition 重置模型位置
 	 * @function onResetModelCamera 重置相机位置
+	 * @function onGetModelCamera 获取相机位置
 	 * @function onSetModelGridHelper 设置网格辅助线位置和颜色
 	 * @function onSetModelGridHelperSize 设置网格数量和大小
 	 * @function onSetModelAxesHelper 设置坐标轴辅助线
@@ -994,6 +995,10 @@ class renderModel {
 		this.camera.position.set(0, 2, 6)
 		// 设置相机坐标系
 		this.camera.lookAt(0, 0, 0)
+	}
+	// 获取相机位置
+	onGetModelCamera(){
+		return this.camera.position
 	}
 	// 设置网格辅助线位置和颜色
 	onSetModelGridHelper({ x, y, z, gridHelper, color }) {

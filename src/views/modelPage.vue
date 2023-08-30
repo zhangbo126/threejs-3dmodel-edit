@@ -60,26 +60,28 @@ const onResetCamera = () => {
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
+  modelConfig.camera = state.modelApi.onGetModelCamera()
   modelConfig.fileInfo = choosePanel.value.activeModel;
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
     local.set(MODEL_PRIVEW_CONFIG, modelConfig);
-    const { href } = router.resolve({ path: "/preview" });
-    window.open(href, "_blank");
+    const { href } = router.resolve({ path: "/preview" })
+    window.open(href, "_blank")
   } else {
-    ElMessage.warning("外部模型不支持“效果预览”");
+    ElMessage.warning("外部模型不支持“效果预览”")
   }
 };
 // 保存配置
 const onSaveConfig = () => {
-  const modelConfig = editPanel.value.getPanelConfig();
-  modelConfig.fileInfo = choosePanel.value.activeModel;
-  local.set(MODEL_PRIVEW_CONFIG, modelConfig);
+  const modelConfig = editPanel.value.getPanelConfig()
+  modelConfig.camera = state.modelApi.onGetModelCamera()
+  modelConfig.fileInfo = choosePanel.value.activeModel
+  local.set(MODEL_PRIVEW_CONFIG, modelConfig)
   // 判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
-    ElMessage.success("配置获取成功请在控制台中查看");
+    ElMessage.success("配置获取成功请在控制台中查看")
   } else {
-    ElMessage.warning("外部模型不支持数据保存");
+    ElMessage.warning("外部模型不支持“数据保存”")
   }
 };
 onMounted(async () => {
