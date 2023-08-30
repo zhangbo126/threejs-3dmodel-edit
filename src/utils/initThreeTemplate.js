@@ -334,13 +334,10 @@ class renderModel {
 	getModelMeaterialList(map) {
 		const isMap = map ? true : false
 		this.modelMaterialList = []
-		let i = 0;
 		this.model.traverse((v) => {
-			const { uuid } = v
 			if (v.isMesh) {
 				v.castShadow = true
 				v.frustumCulled = false
-				i++;
 				if (v.material) {
 					const { name, color, map } = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
@@ -351,8 +348,6 @@ class renderModel {
 						name,
 					})
 					this.modelMaterialList.push(v)
-					// 获取当前模型材质
-					v.mapId = uuid + '_' + i
 				}
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
@@ -364,8 +359,6 @@ class renderModel {
 						transparent: true,
 						color,
 					})
-					v.mapId = uuid + '_' + i
-
 				}
 			}
 		})
@@ -625,7 +618,7 @@ class renderModel {
 
 
 /**
- * @describe 创建3d模型组件的方法
+ * @describe 动态创建3d模型组件的方法
  * @param config 组件参数配置信息
 */
 
