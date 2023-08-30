@@ -2,13 +2,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'modelPage',
-    component:  () => import(/* webpackChunkName: "about" */ '@/views/modelPage.vue')
+    name: 'modelEdit',
+    component:  () => import('@/views/modelEdit/index.vue')
   },
   {
     path: '/preview',
     name: 'modelPreview',
-    component:  () => import(/* webpackChunkName: "about" */ '@/views/modelPreview.vue')
+    component:  () => import('@/views/modelPreview/index.vue')
+  },
+  {
+    path: '/modelBase',
+    name: 'modelBase',
+    component:  () => import('@/views/modelBase/index.vue')
   }
 ]
 

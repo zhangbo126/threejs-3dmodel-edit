@@ -83,5 +83,8 @@ export const MODEL_DECOMPOSE = {
 }
 
 
-// 预览缓存本地key
+// 模型预览缓存本地key
 export const MODEL_PRIVEW_CONFIG = 'MODEL_PRIVEW_CONFIG'
+
+// 模型库数据缓存key
+export const MODEL_BASE_DATA= 'MODEL_BASE_DATA'

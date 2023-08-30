@@ -7,6 +7,7 @@
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
+        <el-button type="primary" @click="onGoModelBase">模型库</el-button>
         <el-button type="primary" @click="onSaveConfig">保存配置</el-button>
         <el-button type="primary" @click="onPrivew">效果预览</el-button>
       </div>
@@ -35,16 +36,16 @@
 
 <script setup>
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import { onMounted, ref, reactive, computed, getCurrentInstance } from "vue";
+import { onMounted, ref, reactive, computed, getCurrentInstance, nextTick } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
-import { local } from "@/utils/storage";
-import { MODEL_PRIVEW_CONFIG } from "@/config/constant";
+import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA } from "@/config/constant";
+import { modelList } from "@/config/model";
 const store = useStore();
 const router = useRouter();
-const { $bus } = getCurrentInstance().proxy;
+const { $bus, $local } = getCurrentInstance().proxy;
 const state = reactive({
   modelApi: computed(() => {
     return store.state.modelApi;
@@ -57,31 +58,68 @@ const choosePanel = ref(null);
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
 };
+
+// 跳转模型库
+const onGoModelBase = () => {
+  ElMessage.success("敬请期待");
+};
+
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
-  modelConfig.camera = state.modelApi.onGetModelCamera()
+  modelConfig.camera = state.modelApi.onGetModelCamera();
   modelConfig.fileInfo = choosePanel.value.activeModel;
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
-    local.set(MODEL_PRIVEW_CONFIG, modelConfig);
-    const { href } = router.resolve({ path: "/preview" })
-    window.open(href, "_blank")
+    $local.set(MODEL_PRIVEW_CONFIG, modelConfig);
+    const { href } = router.resolve({ path: "/preview" });
+    window.open(href, "_blank");
   } else {
-    ElMessage.warning("外部模型不支持“效果预览”")
+    ElMessage.warning("外部模型不支持“效果预览”");
   }
 };
 // 保存配置
 const onSaveConfig = () => {
-  const modelConfig = editPanel.value.getPanelConfig()
-  modelConfig.camera = state.modelApi.onGetModelCamera()
-  modelConfig.fileInfo = choosePanel.value.activeModel
-  local.set(MODEL_PRIVEW_CONFIG, modelConfig)
-  // 判断是否是外部模型
-  if (modelConfig.fileInfo.filePath) {
-    ElMessage.success("配置获取成功请在控制台中查看")
-  } else {
-    ElMessage.warning("外部模型不支持“数据保存”")
+  ElMessageBox.confirm(" 确认要更新当前模型数据至“模板库”?", "提示", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "success",
+  })
+    .then(() => {
+      const modelConfig = editPanel.value.getPanelConfig();
+      modelConfig.camera = state.modelApi.onGetModelCamera();
+      modelConfig.fileInfo = choosePanel.value.activeModel;
+      // 判断是否是外部模型
+      if (modelConfig.fileInfo.filePath) {
+        const modelBaseData = $local.get(MODEL_BASE_DATA);
+        const { id } = modelConfig.fileInfo;
+        // 更新缓存数据
+        Object.assign(modelBaseData.filter((v) => id === v.fileInfo.id)[0], modelConfig);
+        $local.set(MODEL_BASE_DATA,modelBaseData)
+        
+        ElMessage.success("配置获取成功请在控制台中查看");
+      } else {
+        ElMessage.warning("外部模型不支持“数据保存”");
+      }
+    })
+    .catch(() => {});
+};
+
+// 初始化模型库数据
+const initModelBaseData = () => {
+  const modelBase = $local.get(MODEL_BASE_DATA);
+  // 如果是首次加载需要设置模型库初始数据值
+  if (!Array.isArray(modelBase)) {
+    let modelBaseData = [];
+    const modelConfig = editPanel.value.getPanelConfig();
+    modelConfig.camera = state.modelApi.onGetModelCamera();
+    modelList.forEach((v) => {
+      modelBaseData.push({
+        ...modelConfig,
+        fileInfo:{...v}
+      });
+    });
+    $local.set(MODEL_BASE_DATA, modelBaseData);
   }
 };
 onMounted(async () => {
@@ -95,6 +133,9 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
   }
+  nextTick(() => {
+    initModelBaseData();
+  });
 });
 </script>
 
@@ -102,6 +143,7 @@ onMounted(async () => {
 .model-page {
   width: 100%;
   background-color: #1b1c23;
+
   .model-header {
     height: 35px;
     width: 100%;
@@ -125,6 +167,7 @@ onMounted(async () => {
       width: calc(100% - 630px);
       height: calc(100vh - 35px);
       position: relative;
+
       .camera-icon {
         position: absolute;
         top: 10px;
@@ -152,20 +195,25 @@ onMounted(async () => {
     border-top: 1px solid #1b1c23;
     box-sizing: border-box;
   }
+
   .disabled {
     opacity: 0.3;
     pointer-events: none;
   }
+
   .options {
     max-width: 380px;
     box-sizing: border-box;
     background-color: #1b1c23;
+
     .option-active {
       background-color: #27282f;
     }
+
     .space-between {
       justify-content: space-between;
     }
+
     .option {
       padding: 0px 18px;
       box-sizing: border-box;
@@ -175,6 +223,7 @@ onMounted(async () => {
       align-items: center;
       height: 40px;
       font-size: 14px;
+
       .icon-name {
         display: flex;
         align-items: center;
