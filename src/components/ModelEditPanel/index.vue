@@ -97,10 +97,10 @@ const getPanelConfig = () => {
   return {
     background: background.value.config,
     material: material.value.getMeshConfig(),
-    animation: animation.value,
-    attribute: attribute.value,
-    light: light.value,
-    stage: stage.value,
+    animation: animation.value.config,
+    attribute: attribute.value.getAttrbuteConfig(),
+    light: light.value.config,
+    stage: stage.value.getStageConfig(),
   };
 };
 defineExpose({

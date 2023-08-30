@@ -17,7 +17,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
 import { mapImageList } from "@/config/model";
-
+import { lightPosition } from '@/utils/utilityFunction'
 
 /**
  * @describe 创建3d模型组件的方法
@@ -118,15 +118,27 @@ class renderModel {
 			this.initScene()
 			//初始化控制器，控制摄像头,控制器一定要在渲染器后
 			this.initControls()
-			// 创建灯光
-			this.createLight()
+
 			const load = await this.loadModel(this.config.fileInfo)
 			// 创建效果合成器
 			this.createEffectComposer()
 			//监听场景大小改变，跳转渲染尺寸
 			window.addEventListener("resize", this.onWindowResize.bind(this))
+			// 设置背景信息
+			this.setSceneBackground()
+			// 设置模型材质信息
+			this.setModelMeaterial()
+			// 设置后期/操作信息
+			this.setModelLaterStage()
+			// 设置灯光信息
+			this.setSceneLight()
+			// 设置模型动画信息
+			this.setModelAnimation()
+			// 设置模型轴/辅助线信息
+			this.setModelAxleLine()
 			//场景渲染
 			this.sceneAnimation()
+			this.addEvenListMouseLisatener()
 			reslove(load)
 		})
 	}
@@ -145,6 +157,9 @@ class renderModel {
 		this.renderer.toneMappingExposure = 3
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+		const meshTxt = document.createElement('div')
+		meshTxt.id = 'mesh-txt'
+		this.container.appendChild(meshTxt)
 		this.container.appendChild(this.renderer.domElement)
 	}
 	// 创建相机
@@ -155,32 +170,10 @@ class renderModel {
 	// 创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
-		const { background } = this.config
-		if (!background) return false
-		// 设置背景
-		if (background.visible) {
-			const { color, image, viewImg } = background
-			switch (background.type) {
-				case 1:
-					this.scene.background = new THREE.Color(color)
-					break;
-				case 2:
-					this.scene.background = new THREE.TextureLoader().load(image);
-					break;
-				case 3:
-					const texture = new THREE.TextureLoader().load(viewImg);
-					texture.mapping = THREE.EquirectangularReflectionMapping
-					this.scene.background = texture
-					this.scene.environment = texture
-					break;
-				default:
-					break;
-			}
-		} else {
-			this.scene.background = new THREE.Color('#000')
-		}
 	}
-
+	addEvenListMouseLisatener() {
+		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
+	}
 	// 创建控制器
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
@@ -278,18 +271,6 @@ class renderModel {
 						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
-						// 如果当前模型有动画则默认播放第一条动画
-						if (this.modelAnimation.length) {
-							const animationName = this.modelAnimation[0].name
-							const config = {
-								animations: this.modelAnimation,
-								timeScale: 1, // 播放速度
-								weight: 1, // 动作幅度
-								loop: "LoopRepeat",
-								animationName
-							}
-							// this.onStartModelAnimaion(config)
-						}
 						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
@@ -305,7 +286,6 @@ class renderModel {
 						break;
 				}
 				this.setModelPositionSize()
-				this.setModelMeaterial()
 				//	设置模型大小
 				if (scale) {
 					this.model.scale.set(scale, scale, scale);
@@ -336,60 +316,6 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
-	}
-	// 创建光源
-	createLight() {
-		// 创建环境光
-		this.ambientLight = new THREE.AmbientLight('#fff', .8)
-		this.scene.add(this.ambientLight)
-
-		// 创建平行光
-		this.directionalLight = new THREE.DirectionalLight('#1E90FF', 1)
-		this.directionalLight.position.set(-1.44, 2.2, 1)
-		this.directionalLight.castShadow = true
-		this.directionalLight.visible = false
-		this.scene.add(this.directionalLight)
-		// 创建平行光辅助线
-		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .5)
-		this.directionalLightHelper.visible = false
-		this.scene.add(this.directionalLightHelper)
-
-		// 创建点光源
-		this.pointLight = new THREE.PointLight(0xff0000, 1, 100)
-		this.pointLight.visible = false
-		this.scene.add(this.pointLight)
-		// 创建点光源辅助线
-		this.pointLightHelper = new THREE.PointLightHelper(this.pointLight, .5)
-		this.pointLightHelper.visible = false
-		this.scene.add(this.pointLightHelper)
-
-		//  创建聚光灯
-		this.spotLight = new THREE.SpotLight('#323636', 440);
-		this.spotLight.visible = false
-		this.spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
-		this.spotLight.decay = 2;
-		this.spotLight.shadow.mapSize.width = 1920;
-		this.spotLight.shadow.mapSize.height = 1080;
-		this.spotLight.shadow.camera.near = 1;
-		this.spotLight.shadow.camera.far = 10;
-		this.scene.add(this.spotLight);
-		//创建聚光灯辅助线
-		this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
-		this.spotLightHelper.visible = false
-		this.scene.add(this.spotLightHelper)
-
-		// 模型平面
-		const geometry = new THREE.PlaneGeometry(4, 4);
-		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#939393' });
-		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
-		this.planeGeometry.name = 'planeGeometry'
-		this.planeGeometry.rotation.x = -Math.PI / 2
-		this.planeGeometry.position.set(0, -.5, 0)
-
-		// 让地面接收阴影
-		this.planeGeometry.receiveShadow = true;
-		this.planeGeometry.visible = false
-		this.scene.add(this.planeGeometry);
 	}
 	// 设置模型定位缩放大小
 	setModelPositionSize() {
@@ -455,27 +381,34 @@ class renderModel {
 		})
 	}
 
-	// 设置模型定位缩放大小
-	setModelPositionSize() {
-		//设置模型位置
-		this.model.updateMatrixWorld()
-		const box = new THREE.Box3().setFromObject(this.model);
-		const size = box.getSize(new THREE.Vector3());
-		const center = box.getCenter(new THREE.Vector3());
-		// 计算缩放比例
-		const maxSize = Math.max(size.x, size.y, size.z);
-		const targetSize = 2.5; // 目标大小
-		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
-		this.model.scale.set(scale, scale, scale)
-		// 设置控制器最小缩放值
-		this.controls.maxDistance = size.length() * 10
-		// 设置相机位置
-		this.camera.position.set(0, 2, 6)
-		// 设置相机坐标系
-		this.camera.lookAt(center)
-		this.camera.updateProjectionMatrix();
+	// 处理背景数据回填
+	setSceneBackground() {
+		const { background } = this.config
+		if (!background) return false
+		// 设置背景
+		if (background.visible) {
+			const { color, image, viewImg } = background
+			switch (background.type) {
+				case 1:
+					this.scene.background = new THREE.Color(color)
+					break;
+				case 2:
+					this.scene.background = new THREE.TextureLoader().load(image);
+					break;
+				case 3:
+					const texture = new THREE.TextureLoader().load(viewImg);
+					texture.mapping = THREE.EquirectangularReflectionMapping
+					this.scene.background = texture
+					this.scene.environment = texture
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.scene.background = new THREE.Color('#000')
+		}
 	}
-	// 设置模型材质
+	// 处理模型材质数据回填
 	setModelMeaterial() {
 		const { material } = this.config
 		const mapIdList = mapImageList.map(v => v.id)
@@ -513,6 +446,191 @@ class renderModel {
 		})
 
 	}
+	// 设置辉光和模型操作数据回填
+	setModelLaterStage() {
+		const { stage } = this.config
+		if (!stage) return false
+		const { threshold, strength, radius, toneMappingExposure, meshPositonList } = stage
+		// 设置辉光效果
+		if (stage.glow) {
+			this.unrealBloomPass.threshold = threshold
+			this.unrealBloomPass.strength = strength
+			this.unrealBloomPass.radius = radius
+			this.renderer.toneMappingExposure = toneMappingExposure
+
+		} else {
+			this.unrealBloomPass.threshold = 0
+			this.unrealBloomPass.strength = 0
+			this.unrealBloomPass.radius = 0
+			this.renderer.toneMappingExposure = toneMappingExposure
+		}
+		// 模型材质位置
+		meshPositonList.forEach(v => {
+			const mesh = this.model.getObjectByProperty('name', v.name)
+			const { x, y, z } = v
+			mesh.position.set(x, y, z)
+		})
+	}
+	// 鼠标移入模型材质
+	onMouseMoveModel(event) {
+		if (this.modelAnimation.length) return false
+		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
+		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
+		this.raycaster.setFromCamera(this.mouse, this.camera)
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
+		if (intersects.length > 0) {
+			const meshTxt = document.getElementById("mesh-txt");
+			// TODO:动画模型不显示材质标签
+			if (this.modelAnimation.length) {
+				document.body.style.cursor = 'pointer';
+				return false
+			}
+			// 判断是否开启显示材质标签
+			const { hoverMeshTag } = this.config.stage
+			if (hoverMeshTag) {
+				// 设置材质标签位置
+				const intersectedObject = intersects[0].object
+				meshTxt.innerHTML = intersectedObject.name
+				meshTxt.style.display = "block";
+				meshTxt.style.top = event.clientY - offsetTop + 'px';
+				meshTxt.style.left = event.clientX - offsetLeft + 20 + 'px';
+			}
+			document.body.style.cursor = 'pointer'
+
+		} else {
+			const meshTxt = document.getElementById("mesh-txt");
+			document.body.style.cursor = '';
+			meshTxt.style.display = "none";
+
+		}
+	}
+	// 处理灯光数据回填
+	setSceneLight() {
+		const { light } = this.config
+		if (!light) return false
+		// 环境光
+		if (light.ambientLight) {
+			// 创建环境光
+			this.ambientLight = new THREE.AmbientLight(light.ambientLightColor, light.ambientLightIntensity)
+			this.ambientLight.visible = light.ambientLight
+			this.scene.add(this.ambientLight)
+		}
+		// 平行光
+		if (light.directionalLight) {
+			this.directionalLight = new THREE.DirectionalLight(light.directionalLightColor, light.directionalLightIntensity)
+			const { x, y, z } = lightPosition(light.directionalHorizontal, light.directionalVertical, light.directionalSistance)
+			this.directionalLight.position.set(x, y, z)
+			this.directionalLight.castShadow = light.directionaShadow
+			this.directionalLight.visible = light.directionalLight
+			this.scene.add(this.directionalLight)
+			this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .5)
+			this.directionalLightHelper.visible = light.directionalLightHelper
+			this.scene.add(this.directionalLightHelper)
+		}
+		// 点光源
+		if (light.pointLight) {
+			this.pointLight = new THREE.PointLight(light.pointLightColor, light.pointLightIntensity, 100)
+			this.pointLight.visible = light.pointLight
+			const { x, y, z } = lightPosition(light.pointHorizontal, light.pointVertical, light.pointSistance)
+			this.pointLight.position.set(x, y, z)
+			this.scene.add(this.pointLight)
+			// 创建点光源辅助线
+			this.pointLightHelper = new THREE.PointLightHelper(this.pointLight, .5)
+			this.pointLightHelper.visible = light.pointLightHelper
+			this.scene.add(this.pointLightHelper)
+		}
+		// 聚光灯
+		if (light.spotLight) {
+			this.spotLight = new THREE.SpotLight(light.spotLightColor, 440);
+			this.spotLight.visible = light.spotLight
+			this.spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
+			this.spotLight.decay = 2;
+			this.spotLight.shadow.mapSize.width = 1920;
+			this.spotLight.shadow.mapSize.height = 1080;
+			this.spotLight.shadow.camera.near = 1;
+			this.spotLight.shadow.camera.far = 10;
+			this.spotLight.intensity = light.spotLightIntensity
+			this.spotLight.angle = light.spotAngle
+			this.spotLight.penumbra = light.spotPenumbra
+			this.spotLight.shadow.focus = light.spotFocus
+			this.spotLight.castShadow = light.spotCastShadow
+			this.spotLight.distance = light.spotDistance
+			const { x, y, z } = lightPosition(light.spotHorizontal, light.spotVertical, light.spotSistance)
+			this.spotLight.position.set(x, y, z)
+			this.scene.add(this.spotLight);
+			//创建聚光灯辅助线
+			this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
+			this.spotLightHelper.visible = light.spotLightHelper && light.spotLight
+			this.scene.add(this.spotLightHelper)
+		}
+		// 模型平面
+		if (light.planeGeometry) {
+			const geometry = new THREE.PlaneGeometry(light.planeWidth, light.planeHeight);
+			var groundMaterial = new THREE.MeshStandardMaterial({ color: light.planeColor });
+			this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
+			this.planeGeometry.name = 'planeGeometry'
+			this.planeGeometry.rotation.x = -Math.PI / 2
+			this.planeGeometry.position.set(0, -.5, 0)
+			this.planeGeometry.visible = light.planeGeometry
+			this.planeGeometry.geometry.verticesNeedUpdate = true
+			// 让地面接收阴影
+			this.planeGeometry.receiveShadow = true;
+			this.scene.add(this.planeGeometry);
+		}
+	}
+	// 处理模型动画数据回填
+	setModelAnimation() {
+		const { animation } = this.config
+		if (!this.modelAnimation.length || !animation.visible) return false
+		this.animationMixer = new THREE.AnimationMixer(this.model)
+		const { animationName, timeScale, weight, loop } = animation
+		const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
+		if (clip) {
+			this.animateClipAction = this.animationMixer.clipAction(clip)
+			this.animateClipAction.setEffectiveTimeScale(timeScale)
+			this.animateClipAction.setEffectiveWeight(weight)
+			this.animateClipAction.setLoop(this.loopMap[loop])
+			this.animateClipAction.play()
+		}
+		this.animationFrameFun()
+	}
+	// 模型动画帧
+	animationFrameFun() {
+		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
+		if (this.animationMixer) {
+			this.animationMixer.update(this.animationColock.getDelta())
+		}
+	}
+	// 模型轴辅助线配置
+	setModelAxleLine() {
+		const { attribute } = this.config
+
+		if (!attribute) return false
+		const { axesHelper, axesSize, color, divisions, gridHelper, positionX, positionY, positionZ, size, skeletonHelper, visible, x, y, z,rotationX,rotationY,rotationZ } = attribute
+		if(!visible) return false
+        console.log()
+		//网格辅助线
+		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
+		this.gridHelper.position.set(x, y, z )
+		this.gridHelper.visible = gridHelper
+		this.gridHelper.material.linewidth = 0.1
+		this.scene.add(this.gridHelper)
+		// 坐标轴辅助线
+		this.axesHelper = new THREE.AxesHelper(axesSize);
+		this.axesHelper.visible = axesHelper
+		this.axesHelper.position.set(0, -.50, 0)
+		this.scene.add(this.axesHelper);
+		// 设置模型位置
+		this.model.position.set(positionX, positionY, positionZ )
+		// 设置模型轴位置
+		this.model.rotation.set(rotationX,rotationY,rotationZ )
+		// 开启阴影
+		this.renderer.shadowMap.enabled = true;
+		// 骨骼辅助线
+		this.skeletonHelper = new THREE.SkeletonHelper(this.model)
+		this.skeletonHelper = skeletonHelper
+	}
 
 }
 
@@ -531,7 +649,9 @@ function createThreeDComponent(config) {
 			}
 		},
 		render() {
-			return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={fileInfo.key} ></div>)
+			return h(
+				<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={fileInfo.key} ></div>
+			)
 		},
 		async mounted() {
 			this.loading = true

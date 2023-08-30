@@ -18,43 +18,19 @@
         </el-button>
       </div>
       <div class="option">
-        <el-button
-          type="info"
-          icon="RefreshRight"
-          @click="onSetRotateOnAxis('x', 'right')"
-        />
+        <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
         <el-button type="primary" link>X轴</el-button>
-        <el-button
-          type="info"
-          icon="RefreshLeft"
-          @click="onSetRotateOnAxis('x', 'left')"
-        />
+        <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('x', 'left')" />
       </div>
       <div class="option">
-        <el-button
-          type="info"
-          icon="RefreshRight"
-          @click="onSetRotateOnAxis('y', 'right')"
-        />
+        <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('y', 'right')" />
         <el-button type="primary" link>Y轴</el-button>
-        <el-button
-          type="info"
-          icon="RefreshLeft"
-          @click="onSetRotateOnAxis('y', 'left')"
-        />
+        <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('y', 'left')" />
       </div>
       <div class="option">
-        <el-button
-          type="info"
-          icon="RefreshRight"
-          @click="onSetRotateOnAxis('z', 'right')"
-        />
+        <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('z', 'right')" />
         <el-button type="primary" link>Z轴</el-button>
-        <el-button
-          type="info"
-          icon="RefreshLeft"
-          @click="onSetRotateOnAxis('z', 'left')"
-        />
+        <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('z', 'left')" />
       </div>
       <!-- 模型位置 -->
       <div class="option space-between">
@@ -73,14 +49,7 @@
           <el-button type="primary" link>X 轴</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @change="onSetPosition"
-            show-input
-            v-model="config.positionX"
-            :min="-10"
-            :max="10"
-            :step="0.1"
-          />
+          <el-slider @change="onSetPosition" show-input v-model="config.positionX" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
       <div class="option">
@@ -88,14 +57,7 @@
           <el-button type="primary" link>Y 轴</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @change="onSetPosition"
-            show-input
-            v-model="config.positionY"
-            :min="-10"
-            :max="10"
-            :step="0.1"
-          />
+          <el-slider @change="onSetPosition" show-input v-model="config.positionY" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
       <div class="option">
@@ -103,14 +65,7 @@
           <el-button type="primary" link>Z 轴</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @change="onSetPosition"
-            show-input
-            v-model="config.positionZ"
-            :min="-10"
-            :max="10"
-            :step="0.1"
-          />
+          <el-slider @change="onSetPosition" show-input v-model="config.positionZ" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
       <!-- 模型骨架 -->
@@ -143,14 +98,7 @@
           <el-button type="primary" link>X 轴</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            @change="onChangeGridHelper"
-            v-model="config.x"
-            :min="-2"
-            :max="2"
-            :step="0.01"
-          />
+          <el-slider show-input @change="onChangeGridHelper" v-model="config.x" :min="-2" :max="4" :step="0.01" />
         </div>
       </div>
       <!-- Y轴 -->
@@ -159,14 +107,7 @@
           <el-button type="primary" link>Y 轴</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            @change="onChangeGridHelper"
-            v-model="config.y"
-            :min="-2"
-            :max="2"
-            :step="0.01"
-          />
+          <el-slider show-input @change="onChangeGridHelper" v-model="config.y" :min="-2" :max="4" :step="0.01" />
         </div>
       </div>
       <!-- Z轴 -->
@@ -175,50 +116,27 @@
           <el-button type="primary" link>Z 轴</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            @change="onChangeGridHelper"
-            v-model="config.z"
-            :min="-2"
-            :max="2"
-            :step="0.01"
-          />
+          <el-slider show-input @change="onChangeGridHelper" v-model="config.z" :min="-2" :max="4" :step="0.01" />
         </div>
       </div>
       <!-- 网格数量/大小 -->
       <div class="option">
         <div>
           <el-button type="primary" link>大小</el-button>
-          <el-input-number
-            :controls="true"
-            @change="onChangeGridHelperSize"
-            v-model="config.size"
-            :min="1"
-            :max="40"
-          />
+          <el-input-number :controls="true" @change="onChangeGridHelperSize" v-model="config.size" :min="1" :max="40" />
         </div>
         <div>
           <el-button type="primary" link>分割数</el-button>
-          <el-input-number
-            :controls="true"
-            @change="onChangeGridHelperSize"
-            v-model="config.divisions"
-            :min="1"
-            :max="40"
-          />
+          <el-input-number :controls="true" @change="onChangeGridHelperSize" v-model="config.divisions" :min="1"
+            :max="40" />
         </div>
       </div>
       <!-- 网格颜色 -->
       <div class="option">
         <el-space>
           <el-button type="primary" link>网格颜色</el-button>
-          <el-color-picker
-            color-format="hex"
-            :predefine="predefineColors"
-            @change="onChangeGridHelper"
-            @active-change="activeChangeColor"
-            v-model="config.color"
-          />
+          <el-color-picker color-format="hex" :predefine="predefineColors" @change="onChangeGridHelper"
+            @active-change="activeChangeColor" v-model="config.color" />
         </el-space>
       </div>
     </div>
@@ -238,13 +156,7 @@
           <el-button type="primary" link>轴长度</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @change="onChangeAxesHelper"
-            v-model="config.axesSize"
-            :min="1"
-            :max="10"
-            :step="0.2"
-          />
+          <el-slider @change="onChangeAxesHelper" v-model="config.axesSize" :min="1" :max="10" :step="0.2" />
         </div>
       </div>
     </div>
@@ -273,6 +185,7 @@ const config = reactive({
   color: "rgb(193,193,193)",
   axesHelper: false,
   axesSize: 1.8,
+
 });
 const predefineColors = PREDEFINE_COLORS;
 const optionDisabled = computed(() => {
@@ -305,11 +218,11 @@ onMounted(() => {
     });
   });
 });
-const onChangeAttributeSwitch = () => {};
+const onChangeAttributeSwitch = () => { };
 // 设置模型轴角度
 const onSetRotateOnAxis = (type, direction) => {
   const flag = direction == "right" ? true : false;
-  throttle(() => state.modelApi.onSetModelRotateOnAxis(type, flag), 400);
+  state.modelApi.onSetModelRotateOnAxis(type, flag)
 };
 // 重置模型角度
 const onResultRotate = () => {
@@ -348,9 +261,21 @@ const onChangeGridHelperSize = () => {
 const onChangeAxesHelper = () => {
   state.modelApi.onSetModelAxesHelper(config);
 };
+const getAttrbuteConfig = () => {
+  const { x, y, z } = state.modelApi.model.rotation
+  let rotationX = x
+  let rotationY = y
+  let rotationZ = z
+  return {
+    ...config,
+    rotationX,
+    rotationY,
+    rotationZ,
 
+  }
+}
 defineExpose({
-  config
+  getAttrbuteConfig
 });
 </script>
 
