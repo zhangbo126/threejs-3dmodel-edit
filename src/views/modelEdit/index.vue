@@ -41,7 +41,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
-import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA } from "@/config/constant";
+import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA ,MODEL_DEFAULT_CONFIG} from "@/config/constant";
 import { modelList } from "@/config/model";
 const store = useStore();
 const router = useRouter();
@@ -111,11 +111,9 @@ const initModelBaseData = () => {
   // 如果是首次加载需要设置模型库初始数据值
   if (!Array.isArray(modelBase)) {
     let modelBaseData = [];
-    const modelConfig = editPanel.value.getPanelConfig();
-    modelConfig.camera = state.modelApi.onGetModelCamera();
     modelList.forEach((v) => {
       modelBaseData.push({
-        ...modelConfig,
+        ...MODEL_DEFAULT_CONFIG,
         fileInfo:{...v}
       });
     });

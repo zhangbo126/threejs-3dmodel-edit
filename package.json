@@ -18,8 +18,8 @@
     "mitt": "^3.0.0",
     "three": "^0.153.0",
     "vue": "^3.2.13",
-    "vue-draggable-resizable": "^2.3.0",
     "vue-router": "^4.0.3",
+    "vue3-draggable-resizable": "^1.6.5",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

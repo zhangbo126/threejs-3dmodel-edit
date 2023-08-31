@@ -149,6 +149,7 @@ class renderModel {
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
+		console.log(clientHeight, clientWidth)
 		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 1000)
 		this.camera.near = 0.1
 		const { camera } = this.config
@@ -394,6 +395,7 @@ class renderModel {
 	// 处理模型材质数据回填
 	setModelMeaterial() {
 		const { material } = this.config
+		if (!material || !material.meshList) return false
 		const mapIdList = mapImageList.map(v => v.id)
 		material.meshList.forEach(v => {
 			const mesh = this.model.getObjectByProperty('name', v.meshName)
@@ -565,7 +567,7 @@ class renderModel {
 	// 处理模型动画数据回填
 	setModelAnimation() {
 		const { animation } = this.config
-		if (!this.modelAnimation.length || !animation.visible) return false
+		if (!this.modelAnimation.length || !animation ||  !animation.visible) return false
 		this.animationMixer = new THREE.AnimationMixer(this.model)
 		const { animationName, timeScale, weight, loop } = animation
 		const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
@@ -623,7 +625,7 @@ class renderModel {
 */
 
 function createThreeDComponent(config) {
-	const { fileInfo } = config
+	const { fileInfo, width, height } = config
 	return defineComponent({
 		data() {
 			return {
@@ -631,9 +633,14 @@ function createThreeDComponent(config) {
 			}
 		},
 		render() {
-			return h(
-				<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={fileInfo.key} ></div>
-			)
+
+			if (width && height) {
+				return h(
+					<div v-zLoading={this.loading} style={{ width: width + 'px', height: height + 'px' }} id={fileInfo.key} ></div>
+				)
+			} else {
+				return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={fileInfo.key} ></div>)
+			}
 		},
 		async mounted() {
 			this.loading = true

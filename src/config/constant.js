@@ -87,4 +87,97 @@ export const MODEL_DECOMPOSE = {
 export const MODEL_PRIVEW_CONFIG = 'MODEL_PRIVEW_CONFIG'
 
 // 模型库数据缓存key
-export const MODEL_BASE_DATA= 'MODEL_BASE_DATA'
+export const MODEL_BASE_DATA = 'MODEL_BASE_DATA'
+
+// 模型初始化数据
+export const MODEL_DEFAULT_CONFIG = {
+	"background": {
+		"visible": true,
+		"type": 3,
+		"image": "/static/img/model-bg-3.6c273dac.jpg",
+		"viewImg": "/static/img/view-4.46878642.png",
+		"color": "#000"
+	},
+	"material": {
+		"meshList": []
+	},
+	"animation": {
+		"visible": true,
+		"animationName": null,
+		"loop": "LoopRepeat",
+		"timeScale": 1,
+		"weight": 1
+	},
+	"attribute": {
+		"visible": true,
+		"skeletonHelper": false,
+		"gridHelper": false,
+		"x": 0,
+		"y": -0.59,
+		"z": -0.1,
+		"positionX": 0,
+		"positionY": -0.5,
+		"positionZ": 0,
+		"divisions": 10,
+		"size": 4,
+		"color": "rgb(193,193,193)",
+		"axesHelper": false,
+		"axesSize": 1.8,
+		"rotationX": 0,
+		"rotationY": 0,
+		"rotationZ": 0
+	},
+	"light": {
+		"planeGeometry": false,
+		"planeColor": "#939393",
+		"planeWidth": 7,
+		"planeHeight": 7,
+		"ambientLight": true,
+		"ambientLightColor": "#fff",
+		"ambientLightIntensity": 0.8,
+		"directionalLight": false,
+		"directionalLightHelper": true,
+		"directionalLightColor": "#1E90FF",
+		"directionalLightIntensity": 1,
+		"directionalHorizontal": -1.26,
+		"directionalVertical": -3.85,
+		"directionalSistance": 2.98,
+		"directionaShadow": true,
+		"pointLight": false,
+		"pointLightHelper": true,
+		"pointLightColor": "#1E90FF",
+		"pointLightIntensity": 1,
+		"pointHorizontal": -4.21,
+		"pointVertical": -4.1,
+		"pointSistance": 2.53,
+		"spotLight": false,
+		"spotLightColor": "#323636",
+		"spotLightIntensity": 400,
+		"spotHorizontal": -3.49,
+		"spotVertical": -4.37,
+		"spotSistance": 4.09,
+		"spotAngle": 0.5,
+		"spotPenumbra": 1,
+		"spotFocus": 1,
+		"spotCastShadow": true,
+		"spotLightHelper": true,
+		"spotDistance": 20
+	},
+	"stage": {
+		"meshPositonList": [],
+		"glow": false,
+		"threshold": 0.05,
+		"strength": 0.6,
+		"radius": 1,
+		"decompose": 0,
+		"modelDrag": false,
+		"toneMappingExposure": 3,
+		"hoverMeshTag": false
+	},
+	"camera": {
+		"x": 0,
+		"y": 2,
+		"z": 6
+	},
+
+}

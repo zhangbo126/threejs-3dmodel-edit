@@ -1,6 +1,6 @@
 <template>
   <div id="preview">
-    <treeComponent />
+    <tree-component />
   </div>
 </template>
 <script setup lang="jsx">
