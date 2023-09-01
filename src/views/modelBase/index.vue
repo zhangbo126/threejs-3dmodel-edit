@@ -17,13 +17,8 @@
     <div class="base-container">
       <el-scrollbar :max-height="'calc(100vh - 45px)'" class="base-menu">
         <ul class="menu-list">
-          <li
-            v-for="model in modelList"
-            :key="model.fileInfo.id"
-            draggable="true"
-            @dragstart="onDragStart(model)"
-            @drag="onDrag"
-          >
+          <li v-for="model in modelList" :key="model.fileInfo.id" draggable="true"
+            @dragstart="(e) => onDragStart(e, model)" @drag="(e) => onDrag(e)">
             <div class="model-image">
               <el-image fit="scale-down" :src="model.fileInfo.icon"></el-image>
             </div>
@@ -40,7 +35,7 @@
       <div class="drag-content">
         <div class="content" @drop="onDrop" @dragover.prevent>
           <draggable-container :adsorbParent="true" :disabled="true">
-             <draggable-resizable-item v-for="drag in dragModelList" :config="drag"></draggable-resizable-item>
+            <draggable-resizable-item v-for="drag in dragModelList" :config="drag"></draggable-resizable-item>
           </draggable-container>
         </div>
       </div>
@@ -51,13 +46,14 @@
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from '@/components/DraggableResizableItem/index'
 import { MODEL_BASE_DATA } from "@/config/constant";
-import { ref ,getCurrentInstance} from "vue";
-const {$local } = getCurrentInstance().proxy;
+import { ref, getCurrentInstance } from "vue";
+const { $local } = getCurrentInstance().proxy;
 const modelList = $local.get(MODEL_BASE_DATA)
 const dragModelList = ref([]);
-const dragActive =ref(null)
+const dragActive = ref(null)
 // 拖拽开始
-const onDragStart = (model) => {
+const onDragStart = (event, model) => {
+  // event.preventDefault();
   dragActive.value = model
 };
 // 拖拽结束
@@ -67,8 +63,8 @@ const onDrag = (event) => {
 // 拖拽完成
 const onDrop = (event) => {
   event.preventDefault();
-  dragActive.value.width=500
-  dragActive.value.height=350
+  dragActive.value.width = 500
+  dragActive.value.height = 350
   dragModelList.value.push(dragActive.value)
 };
 </script>
@@ -87,6 +83,7 @@ const onDrop = (event) => {
     align-items: center;
     padding: 0px 20px;
     box-sizing: border-box;
+
     .center-box {
       display: flex;
       align-items: center;
@@ -113,6 +110,7 @@ const onDrop = (event) => {
           box-sizing: border-box;
           cursor: all-scroll;
           border: 1px solid #323332;
+
           &:hover {
             border: 2px solid #18c174;
           }
@@ -149,6 +147,7 @@ const onDrop = (event) => {
       flex-flow: row;
       width: 100%;
       border: 5px solid #000000;
+
       .content {
         position: relative;
         width: 100%;
@@ -156,14 +155,12 @@ const onDrop = (event) => {
         background-size: 15px 15px, 15px 15px;
         background-image: linear-gradient(#18181c 14px, transparent 0),
           linear-gradient(90deg, transparent 14px, #86909c 0);
-          .dragging{
-            cursor: all-scroll;
+
+        .drag-box {
+          .drag-image {
+            font-size: 0;
           }
-          .drag-box{
-              .drag-image{
-                font-size: 0;
-              }
-          }
+        }
       }
     }
   }

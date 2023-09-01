@@ -1,5 +1,5 @@
 
-import { defineComponent, h } from 'vue'
+import { defineComponent, h ,watch} from 'vue'
 import * as THREE from 'three' //导入整个 three.js核心库
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
@@ -17,7 +17,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 import { mapImageList } from "@/config/model";
-import { lightPosition } from '@/utils/utilityFunction'
+import { lightPosition ,onlyKey} from '@/utils/utilityFunction'
 
 /**
  * @describe three.js 组件数据初始化方法
@@ -25,10 +25,10 @@ import { lightPosition } from '@/utils/utilityFunction'
 */
 
 class renderModel {
-	constructor(config) {
-		const { fileInfo } = config
+	constructor(config,elementId) {
 		this.config = config
-		this.container = document.querySelector('#' + fileInfo.key)
+
+		this.container = document.querySelector('#' + elementId)
 		// 相机
 		this.camera
 		// 场景
@@ -168,7 +168,8 @@ class renderModel {
 	// 创建控制器
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-		this.controls.enablePan = true
+		this.controls.enablePan = false
+		this.controls.enabled = false
 	}
 	// 更新场景
 	sceneAnimation() {
@@ -625,27 +626,31 @@ class renderModel {
 */
 
 function createThreeDComponent(config) {
-	const { fileInfo, width, height } = config
+	
+	// 创建一个元素ID 
+	const elementId ='answer'+ onlyKey(5,10)
 	return defineComponent({
 		data() {
 			return {
-				loading: false
+				loading: false,
+				modelApi:null
 			}
 		},
+		props:['width','height'],
 		render() {
-
-			if (width && height) {
-				return h(
-					<div v-zLoading={this.loading} style={{ width: width + 'px', height: height + 'px' }} id={fileInfo.key} ></div>
-				)
-			} else {
-				return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={fileInfo.key} ></div>)
-			}
+			// if (width && height) {
+			// 	return h(
+			// 		<div v-zLoading={this.loading} style={{ width: width + 'px', height: height + 'px' }} id={elementId} ></div>
+			// 	)
+			// } else {
+			// 	return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={elementId} ></div>)
+			// }
+			return h(<div v-zLoading={this.loading} style={{ width:this.width+'px', height:this.height+ 'px' }} id={elementId} ></div>)
 		},
 		async mounted() {
 			this.loading = true
-			const modelApi = new renderModel(config);
-			const load = await modelApi.init()
+			this.modelApi = new renderModel(config,elementId);
+			const load =  this.modelApi.init()
 			if (load) {
 				this.loading = false
 			}
