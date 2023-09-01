@@ -42,7 +42,6 @@ import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
 import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA ,MODEL_DEFAULT_CONFIG} from "@/config/constant";
-import { modelList } from "@/config/model";
 const store = useStore();
 const router = useRouter();
 const { $bus, $local } = getCurrentInstance().proxy;
@@ -96,8 +95,7 @@ const onSaveConfig = () => {
         // 更新缓存数据
         Object.assign(modelBaseData.filter((v) => id === v.fileInfo.id)[0], modelConfig);
         $local.set(MODEL_BASE_DATA,modelBaseData)
-        
-        ElMessage.success("配置获取成功请在控制台中查看");
+        ElMessage.success("更新成功");
       } else {
         ElMessage.warning("外部模型不支持“数据保存”");
       }
@@ -105,21 +103,7 @@ const onSaveConfig = () => {
     .catch(() => {});
 };
 
-// 初始化模型库数据
-const initModelBaseData = () => {
-  const modelBase = $local.get(MODEL_BASE_DATA);
-  // 如果是首次加载需要设置模型库初始数据值
-  if (!Array.isArray(modelBase)) {
-    let modelBaseData = [];
-    modelList.forEach((v) => {
-      modelBaseData.push({
-        ...MODEL_DEFAULT_CONFIG,
-        fileInfo:{...v}
-      });
-    });
-    $local.set(MODEL_BASE_DATA, modelBaseData);
-  }
-};
+
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
@@ -131,9 +115,7 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
   }
-  nextTick(() => {
-    initModelBaseData();
-  });
+
 });
 </script>
 

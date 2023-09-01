@@ -3,10 +3,10 @@
     class="draggable-resizable"
     classNameDragging="dragging"
     classNameActive="active"
-    :initW="500"
-    :initH="350"
-    :x="10"
-    :y="10"
+    :initW="600"
+    :initH="400"
+    :x="100"
+    :y="0"
     v-model:w="props.config.width"
     v-model:h="props.config.height"
     :parent="true"
@@ -33,14 +33,6 @@ const props = defineProps({
   }
 });
 
-const dragItemStyle = computed(() => {
-  const { width, height } = props.config;
-  return {
-    width: width + "px",
-    height: height + "px"
-  };
-});
-
 const dragMask = ref("");
 // 开始拖拽
 const dragHandle = e => {
@@ -64,6 +56,10 @@ const treeComponent = createThreeDComponent(props.config);
 <style lang="less" scoped>
 .draggable-resizable {
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
   .mask {
     position: absolute;
     top: 0;
@@ -89,5 +85,6 @@ const treeComponent = createThreeDComponent(props.config);
   cursor: all-scroll;
   border-style: solid;
   border-color: #d5ad11;
+  border-width: 2px;
 }
 </style>

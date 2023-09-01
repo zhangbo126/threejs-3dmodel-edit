@@ -17,7 +17,7 @@
     <div class="base-container">
       <el-scrollbar :max-height="'calc(100vh - 45px)'" class="base-menu">
         <ul class="menu-list">
-          <li v-for="model in modelList" :key="model.fileInfo.id" draggable="true"
+          <li v-for="model in modelBaseList" :key="model.fileInfo.id" draggable="true"
             @dragstart="(e) => onDragStart(e, model)" @drag="(e) => onDrag(e)">
             <div class="model-image">
               <el-image fit="scale-down" :src="model.fileInfo.icon"></el-image>
@@ -45,28 +45,61 @@
 <script setup>
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from '@/components/DraggableResizableItem/index'
-import { MODEL_BASE_DATA } from "@/config/constant";
-import { ref, getCurrentInstance } from "vue";
-const { $local } = getCurrentInstance().proxy;
-const modelList = $local.get(MODEL_BASE_DATA)
+import { MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
+import { modelList } from "@/config/model";
+import { ref, getCurrentInstance, onMounted, nextTick } from "vue";
+const { $local, $bus } = getCurrentInstance().proxy;
+const modelBaseList = ref([])
 const dragModelList = ref([]);
 const dragActive = ref(null)
 // 拖拽开始
 const onDragStart = (event, model) => {
-  // event.preventDefault();
   dragActive.value = model
 };
-// 拖拽结束
+// 拖拽中
 const onDrag = (event) => {
   event.preventDefault();
 };
 // 拖拽完成
 const onDrop = (event) => {
+  
+  // const partent = event.target.getBoundingClientRect()
+  // console.log(partent)
   event.preventDefault();
-  dragActive.value.width = 500
-  dragActive.value.height = 350
+  dragActive.value.width = 600
+  dragActive.value.height = 400
   dragModelList.value.push(dragActive.value)
+    nextTick(() => {
+       const {left} =  event.target.firstElementChild.getBoundingClientRect()
+       const leftMenu  =  document.querySelector('.base-menu').clientWidth
+       const x =  left -leftMenu
+      //  console.log(x)
+  });
 };
+
+// 初始化模型库数据
+const initModelBaseData = () => {
+  const modelBase = $local.get(MODEL_BASE_DATA);
+  // 如果是首次加载需要设置模型库初始数据值
+  if (!Array.isArray(modelBase)) {
+  let modelBaseData = [];
+    modelList.forEach((v) => {
+      modelBaseData.push({
+        ...MODEL_DEFAULT_CONFIG,
+        fileInfo: { ...v }
+      });
+    });
+    $local.set(MODEL_BASE_DATA, modelBaseData);
+  }
+  modelBaseList.value = $local.get(MODEL_BASE_DATA)
+
+};
+// 监听缓存数据变化
+onMounted(async () => {
+  nextTick(() => {
+    initModelBaseData();
+  });
+});
 </script>
 <style scoped lang="scss">
 .model-base {

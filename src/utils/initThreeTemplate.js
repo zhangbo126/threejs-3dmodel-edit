@@ -1,5 +1,5 @@
 
-import { defineComponent, h ,watch} from 'vue'
+import { defineComponent, h, watch } from 'vue'
 import * as THREE from 'three' //导入整个 three.js核心库
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
@@ -17,7 +17,7 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 import { mapImageList } from "@/config/model";
-import { lightPosition ,onlyKey} from '@/utils/utilityFunction'
+import { lightPosition, onlyKey ,debounce} from '@/utils/utilityFunction'
 
 /**
  * @describe three.js 组件数据初始化方法
@@ -25,7 +25,7 @@ import { lightPosition ,onlyKey} from '@/utils/utilityFunction'
 */
 
 class renderModel {
-	constructor(config,elementId) {
+	constructor(config, elementId) {
 		this.config = config
 
 		this.container = document.querySelector('#' + elementId)
@@ -106,8 +106,6 @@ class renderModel {
 			const load = await this.loadModel(this.config.fileInfo)
 			// 创建效果合成器
 			this.createEffectComposer()
-			//监听场景大小改变，跳转渲染尺寸
-			window.addEventListener("resize", this.onWindowResize.bind(this))
 			// 设置背景信息
 			this.setSceneBackground()
 			// 设置模型材质信息
@@ -149,7 +147,6 @@ class renderModel {
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
-		console.log(clientHeight, clientWidth)
 		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 1000)
 		this.camera.near = 0.1
 		const { camera } = this.config
@@ -306,8 +303,8 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-		this.effectComposer.setSize(clientWidth, clientHeight)
-		this.glowComposer.setSize(clientWidth, clientHeight)
+		if (this.effectComposer) this.effectComposer.setSize(clientWidth, clientHeight)
+		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	// 设置模型定位缩放大小
 	setModelPositionSize() {
@@ -568,7 +565,7 @@ class renderModel {
 	// 处理模型动画数据回填
 	setModelAnimation() {
 		const { animation } = this.config
-		if (!this.modelAnimation.length || !animation ||  !animation.visible) return false
+		if (!this.modelAnimation.length || !animation || !animation.visible) return false
 		this.animationMixer = new THREE.AnimationMixer(this.model)
 		const { animationName, timeScale, weight, loop } = animation
 		const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
@@ -626,31 +623,40 @@ class renderModel {
 */
 
 function createThreeDComponent(config) {
-	
+
 	// 创建一个元素ID 
-	const elementId ='answer'+ onlyKey(5,10)
+	const elementId = 'answer' + onlyKey(5, 10)
+	let modelApi = null
 	return defineComponent({
 		data() {
 			return {
 				loading: false,
-				modelApi:null
 			}
 		},
-		props:['width','height'],
+		props: ['width', 'height'],
+		watch: {
+			$props: {
+				handler(val) {
+					if (modelApi) {		
+						debounce(modelApi.onWindowResize(),200)
+					}
+				},
+				immediate: false,
+				deep: true
+			}
+		},
 		render() {
-			// if (width && height) {
-			// 	return h(
-			// 		<div v-zLoading={this.loading} style={{ width: width + 'px', height: height + 'px' }} id={elementId} ></div>
-			// 	)
-			// } else {
-			// 	return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100vh' }} id={elementId} ></div>)
-			// }
-			return h(<div v-zLoading={this.loading} style={{ width:this.width+'px', height:this.height+ 'px' }} id={elementId} ></div>)
+			if (this.width && this.height) {
+				return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px' }} id={elementId} ></div>)
+
+			} else {
+				return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100%' }} id={elementId} ></div>)
+			}
 		},
 		async mounted() {
 			this.loading = true
-			this.modelApi = new renderModel(config,elementId);
-			const load =  this.modelApi.init()
+			modelApi = new renderModel(config, elementId);
+			const load = await modelApi.init()
 			if (load) {
 				this.loading = false
 			}
