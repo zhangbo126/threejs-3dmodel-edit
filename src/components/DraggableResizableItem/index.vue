@@ -3,13 +3,13 @@
     class="draggable-resizable"
     classNameDragging="dragging"
     classNameActive="active"
-    :initW="600"
-    :initH="400"
-    :x="100"
-    :y="0"
+    :initW="520"
+    :initH="360"
+    :x="props.config.x"
+    :y="props.config.y"
     v-model:w="props.config.width"
     v-model:h="props.config.height"
-    :parent="true"
+    :parent="false"
     :resizable="true"
     :draggable="true"
     @drag-end="dragEndHandle"
@@ -17,8 +17,11 @@
     @activated="activatedHandle"
     @deactivated="deactivatedHandle"
   >
-      <tree-component :width="props.config.width" :height="props.config.height"></tree-component>
-      <div :class="dragMask" class="mask"></div>
+    <tree-component
+      :width="props.config.width"
+      :height="props.config.height"
+    ></tree-component>
+    <div :class="dragMask" class="mask"></div>
   </draggable-resizable>
 </template>
 <script setup>
@@ -29,26 +32,30 @@ import { ref, computed } from "vue";
 const props = defineProps({
   config: {
     type: Object,
-    default: {}
-  }
+    default: {},
+  },
 });
+
+const emit = defineEmits(["onDragActived", "onDragDeactivated"]);
 
 const dragMask = ref("");
 // 开始拖拽
-const dragHandle = e => {
+const dragHandle = (e) => {
   dragMask.value = "mask-dragging";
 };
 // 拖拽结束
-const dragEndHandle = e => {
+const dragEndHandle = (e) => {
   dragMask.value = "mask-dragactive";
 };
 // 选中
-const activatedHandle = e => {
+const activatedHandle = (e) => {
   dragMask.value = "mask-dragactive";
+  emit("onDragActived", props.config);
 };
 // 取消选中
-const deactivatedHandle = e => {
+const deactivatedHandle = (e) => {
   dragMask.value = "";
+  emit("onDragDeactivated");
 };
 const treeComponent = createThreeDComponent(props.config);
 </script>
@@ -86,5 +93,6 @@ const treeComponent = createThreeDComponent(props.config);
   border-style: solid;
   border-color: #d5ad11;
   border-width: 2px;
+  z-index: 100;
 }
 </style>
