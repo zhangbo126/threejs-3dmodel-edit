@@ -194,6 +194,15 @@ watch(
   (val) => {
     const map = state.modelMaterialList.find((v) => v.uuid == val) || {};
     activeTextureMap.value = map.mapId;
+    if (map.mapId) {
+      const { color, wireframe, depthWrite, opacity } = map.material;
+      Object.assign(config, {
+        color: new THREE.Color(color).getStyle(),
+        wireframe,
+        depthWrite,
+        opacity,
+      });
+    }
   }
 );
 // 选择材质
