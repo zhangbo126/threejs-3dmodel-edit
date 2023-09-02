@@ -2,16 +2,26 @@
   <div class="model-base">
     <!-- 头部区域 -->
     <header class="base-header">
-      <div class="lf-box"></div>
+      <div class="lf-box">
+        <el-button type="primary" @click="$router.push({ path: '/' })" icon="DArrowLeft"
+          >返回编辑器</el-button
+        >
+      </div>
       <div class="center-box">
         <el-space>
           <el-icon>
-            <ElementPlus />
+            <Film />
           </el-icon>
-          <p>3d模型库</p>
+          <p>3D组件模型库</p>
         </el-space>
       </div>
-      <div class="lr-box"></div>
+      <div class="lr-box">
+        <el-space>
+          <el-button type="primary" icon="Tickets" @click="onSavaDragdata"
+            >保存数据</el-button
+          >
+        </el-space>
+      </div>
     </header>
     <!-- 内容区 -->
     <div class="base-container">
@@ -45,6 +55,7 @@
               @onDragActived="onDragActived"
               @onDragDeactivated="onDragDeactivated"
               v-for="drag in dragModelList"
+              :key="drag.modelKey"
               :config="drag"
             ></draggable-resizable-item>
           </draggable-container>
@@ -56,13 +67,21 @@
 <script setup>
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from "@/components/DraggableResizableItem/index";
-import { MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
+import {
+  MODEL_BASE_DATA,
+  MODEL_DEFAULT_CONFIG,
+  MODEL_BASE_DRAGE_DATA,
+} from "@/config/constant";
 import { modelList } from "@/config/model";
-import { deepCopy } from "@/utils/utilityFunction";
+import { deepCopy, onlyKey } from "@/utils/utilityFunction";
 import { ref, getCurrentInstance, onMounted, nextTick } from "vue";
+import { ElMessage } from "element-plus";
 const { $local, $bus } = getCurrentInstance().proxy;
+// 左侧模板库数据
 const modelBaseList = ref([]);
+//可拖拽模型列表
 const dragModelList = ref([]);
+// 当前选中的内容
 const dragActive = ref(null);
 // 拖拽开始
 const onDragStart = (event, model) => {
@@ -75,9 +94,20 @@ const onDrag = (event) => {
 // 拖拽结束
 const onDragEnd = (event) => {
   event.preventDefault();
+  const { x, y } = dragActive.value;
+  if (!x || !y) {
+    dragActive.value = null;
+    return false;
+  }
   dragActive.value.width = 520;
   dragActive.value.height = 360;
+  // 生成当前拖拽模型的唯一值
+  dragActive.value.modelKey = onlyKey(20, 2);
   dragModelList.value.push(dragActive.value);
+  dragActive.value = null;
+  if(dragModelList.value.length>=8){
+    ElMessage.warning('请注意:当前面板模型组件加载过多!!!')
+  }
 };
 // 拖拽完成
 const onDrop = (event) => {
@@ -88,6 +118,17 @@ const onDrop = (event) => {
   const y = event.clientY - container.top - 360 / 2;
   dragActive.value.x = x;
   dragActive.value.y = y;
+};
+
+// 选中拖拽元素
+const onDragActived = (drag) => {
+  dragActive.value = drag;
+};
+// 取消选中拖拽元素
+const onDragDeactivated = (modelKey) => {
+  if (modelKey == dragActive.value.modelKey) {
+    dragActive.value = null;
+  }
 };
 
 // 初始化模型库数据
@@ -107,23 +148,29 @@ const initModelBaseData = () => {
   modelBaseList.value = $local.get(MODEL_BASE_DATA);
 };
 
-// 选中拖拽元素
-const onDragActived = (drag) => {
-  dragActive.value = drag;
+// 获取拖拽数据列表
+const getDragDataList = () => {
+  dragModelList.value = $local.get(MODEL_BASE_DRAGE_DATA) || [];
 };
-// 取消选中拖拽元素
-const onDragDeactivated = () => {
-  dragActive.value = null;
+
+// 保存拖拽数据
+const onSavaDragdata = () => {
+  $local.set(MODEL_BASE_DRAGE_DATA, dragModelList.value);
+  ElMessage.success('更新成功')
 };
+
 // 监听缓存数据变化
 onMounted(async () => {
   nextTick(() => {
     initModelBaseData();
+    getDragDataList();
   });
   // 监听键盘按下 delete 键
   window.addEventListener("keydown", (event) => {
-    if (event.keyCode === 46 && dragActive.value) {
-      console.log(dragActive.value);
+    if (event.keyCode === 46 && event.key == "Delete" && dragActive.value) {
+      const { modelKey } = dragActive.value;
+      dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
+      dragActive.value = null;
     }
   });
 });

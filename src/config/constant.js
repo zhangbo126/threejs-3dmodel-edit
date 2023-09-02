@@ -18,7 +18,7 @@ export const PREDEFINE_COLORS = [
 	"hsla(209, 100%, 56%, 0.73)",
 	"#c7158577",
 ]
-
+// 着色器配置
 export const vertexShader = '\t\t\tvarying vec2 vUv;\n' +
 	'\n' +
 	'\t\t\tvoid main() {\n' +
@@ -28,7 +28,7 @@ export const vertexShader = '\t\t\tvarying vec2 vUv;\n' +
 	'\t\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n' +
 	'\n' +
 	'\t\t\t}'
-
+//着色器配置
 export const fragmentShader = '\t\t\tuniform sampler2D baseTexture;\n' +
 	'\t\t\tuniform sampler2D bloomTexture;\n' +
 	'\n' +
@@ -88,6 +88,9 @@ export const MODEL_PRIVEW_CONFIG = 'MODEL_PRIVEW_CONFIG'
 
 // 模型库数据缓存key
 export const MODEL_BASE_DATA = 'MODEL_BASE_DATA'
+
+// 模型库拖拽列表数据缓存 key
+export const MODEL_BASE_DRAGE_DATA = 'MODEL_BASE_DRAGE_DATA'
 
 // 模型初始化数据
 export const MODEL_DEFAULT_CONFIG = {

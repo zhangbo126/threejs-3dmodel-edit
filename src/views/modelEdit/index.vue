@@ -7,9 +7,11 @@
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
-        <el-button type="primary" @click="onGoModelBase">模型库</el-button>
-        <el-button type="primary" @click="onSaveConfig">保存配置</el-button>
-        <el-button type="primary" @click="onPrivew">效果预览</el-button>
+        <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
+          模型库
+        </el-button>
+        <el-button type="primary" icon="Document" @click="onSaveConfig">保存模板库</el-button>
+        <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
     <div class="model-container" v-zLoading="loading">
@@ -41,7 +43,11 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
-import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA ,MODEL_DEFAULT_CONFIG} from "@/config/constant";
+import {
+  MODEL_PRIVEW_CONFIG,
+  MODEL_BASE_DATA,
+  MODEL_DEFAULT_CONFIG,
+} from "@/config/constant";
 const store = useStore();
 const router = useRouter();
 const { $bus, $local } = getCurrentInstance().proxy;
@@ -56,11 +62,6 @@ const choosePanel = ref(null);
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
-};
-
-// 跳转模型库
-const onGoModelBase = () => {
-  ElMessage.success("敬请期待");
 };
 
 // 预览
@@ -94,7 +95,7 @@ const onSaveConfig = () => {
         const { id } = modelConfig.fileInfo;
         // 更新缓存数据
         Object.assign(modelBaseData.filter((v) => id === v.fileInfo.id)[0], modelConfig);
-        $local.set(MODEL_BASE_DATA,modelBaseData)
+        $local.set(MODEL_BASE_DATA, modelBaseData);
         ElMessage.success("更新成功");
       } else {
         ElMessage.warning("外部模型不支持“数据保存”");
@@ -102,7 +103,6 @@ const onSaveConfig = () => {
     })
     .catch(() => {});
 };
-
 
 onMounted(async () => {
   loading.value = true;
@@ -115,7 +115,6 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
   }
-
 });
 </script>
 

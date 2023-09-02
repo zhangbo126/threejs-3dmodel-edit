@@ -3,10 +3,10 @@
     class="draggable-resizable"
     classNameDragging="dragging"
     classNameActive="active"
-    :initW="520"
-    :initH="360"
-    :x="props.config.x"
-    :y="props.config.y"
+    :initW="props.config.width"
+    :initH="props.config.height"
+    v-model:x="props.config.x"
+    v-model:y="props.config.y"
     v-model:w="props.config.width"
     v-model:h="props.config.height"
     :parent="false"
@@ -35,7 +35,7 @@ const props = defineProps({
     default: {},
   },
 });
-
+const selectItem = ref(null)
 const emit = defineEmits(["onDragActived", "onDragDeactivated"]);
 
 const dragMask = ref("");
@@ -55,7 +55,7 @@ const activatedHandle = (e) => {
 // 取消选中
 const deactivatedHandle = (e) => {
   dragMask.value = "";
-  emit("onDragDeactivated");
+  emit("onDragDeactivated",props.config.modelKey);
 };
 const treeComponent = createThreeDComponent(props.config);
 </script>
