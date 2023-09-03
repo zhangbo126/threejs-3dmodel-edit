@@ -54,11 +54,14 @@
             <draggable-resizable-item
               @onDragActived="onDragActived"
               @onDragDeactivated="onDragDeactivated"
+              @contextmenu.prevent="onContextmenu"
               v-for="drag in dragModelList"
               :key="drag.modelKey"
               :config="drag"
             ></draggable-resizable-item>
           </draggable-container>
+           <!-- 右键菜单 -->
+          <right-context-menu :rightMenuPositon="rightMenuPositon" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
       </div>
     </div>
@@ -67,6 +70,7 @@
 <script setup>
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from "@/components/DraggableResizableItem/index";
+import RightContextMenu from "@/components/RightContextMenu";
 import {
   MODEL_BASE_DATA,
   MODEL_DEFAULT_CONFIG,
@@ -83,6 +87,7 @@ const modelBaseList = ref([]);
 const dragModelList = ref([]);
 // 当前选中的内容
 const dragActive = ref(null);
+const rightMenuPositon = ref({});
 // 拖拽开始
 const onDragStart = (event, model) => {
   dragActive.value = deepCopy(model);
@@ -130,6 +135,20 @@ const onDragDeactivated = (modelKey) => {
     dragActive.value = null;
   }
 };
+// 鼠标右键事件
+const onContextmenu = (e) => {
+  rightMenuPositon.value = {
+    x: e.clientX,
+    y: e.clientY,
+    modelKey:dragActive.value.modelKey
+  };
+  e.preventDefault();
+};
+
+// 删除
+const onDeleteDrag =(modelKey)=>{
+   dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
+}
 
 // 初始化模型库数据
 const initModelBaseData = () => {
@@ -190,7 +209,6 @@ onMounted(async () => {
     align-items: center;
     padding: 0px 20px;
     box-sizing: border-box;
-
     .center-box {
       display: flex;
       align-items: center;
@@ -200,7 +218,6 @@ onMounted(async () => {
 
   .base-container {
     display: flex;
-
     .base-menu {
       height: calc(100vh - 45px);
       width: 230px;
@@ -217,7 +234,6 @@ onMounted(async () => {
           box-sizing: border-box;
           cursor: all-scroll;
           border: 1px solid #323332;
-
           &:hover {
             border: 2px solid #18c174;
           }
@@ -254,7 +270,6 @@ onMounted(async () => {
       flex-flow: row;
       width: 100%;
       border: 5px solid #000000;
-
       .content {
         position: relative;
         overflow: hidden;

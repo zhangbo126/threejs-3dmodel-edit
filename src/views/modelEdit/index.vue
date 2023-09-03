@@ -10,7 +10,7 @@
         <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
           模型库
         </el-button>
-        <el-button type="primary" icon="Document" @click="onSaveConfig">保存模板库</el-button>
+        <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
         <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
@@ -38,7 +38,7 @@
 
 <script setup>
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import { onMounted, ref, reactive, computed, getCurrentInstance, nextTick } from "vue";
+import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -116,6 +116,9 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+onBeforeUnmount(()=>{
+  state.modelApi.onClearModelData()
+})
 </script>
 
 <style lang="less" scoped>

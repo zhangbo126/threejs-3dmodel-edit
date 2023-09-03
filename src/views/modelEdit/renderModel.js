@@ -45,6 +45,8 @@ class renderModel {
 		this.animationColock = new THREE.Clock()
 		//动画帧
 		this.animationFrame
+		// 轴动画帧
+		this.rotationAnimationFrame
 		// 动画构造器
 		this.animateClipAction = null
 		// 动画循环方式枚举
@@ -212,18 +214,6 @@ class renderModel {
 						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
-						// 如果当前模型有动画则默认播放第一条动画
-						if (this.modelAnimation.length) {
-							const animationName = this.modelAnimation[0].name
-							const config = {
-								animations: this.modelAnimation,
-								timeScale: 1, // 播放速度
-								weight: 1, // 动作幅度
-								loop: "LoopRepeat",
-								animationName
-							}
-							this.onStartModelAnimaion(config)
-						}
 						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
@@ -393,14 +383,15 @@ class renderModel {
 		return new Promise(async (reslove, reject) => {
 			try {
 				//先移除模型 材质释放内存
-				this.model.traverse((v) => {
+				this.scene.traverse((v) => {
 					if (v.type === 'Mesh') {
 						v.geometry.dispose();
 						v.material.dispose();
 					}
 				})
 				//取消动画帧
-				cancelAnimationFrame(this.animationFram)
+				cancelAnimationFrame(this.animationFrame)
+				cancelAnimationFrame(this.rotationAnimationFrame)
 				this.skeletonHelper.visible = false
 				this.modelTextureMap = []
 				const meshTxt = document.getElementById("mesh-txt");
@@ -428,7 +419,16 @@ class renderModel {
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
-
+    // 清除模型数据
+	onClearModelData(){
+		cancelAnimationFrame(this.rotationAnimationFrame)
+		cancelAnimationFrame(this.renderAnimation)
+		cancelAnimationFrame(this.animationFrame)
+		this.container.removeEventListener('click', this.onMouseClickModel)
+		this.container.removeEventListener('mousedown', this.onMouseDownModel)
+		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
+		window.removeEventListener("resize", this.onWindowResize)
+	}
 
 
 	/**
@@ -898,11 +898,13 @@ class renderModel {
 	 * @function onSetModelAnimaion 设置模型动画
 	 * @function animationFrameFun 动画帧
 	 * @function onClearAnimation 清除动画
+	 * @function onSetRotation 设置模型轴动画
+	 * @function onSetRotationType 设置模型轴动画类型
 	 */
 	// 开始执行动画
 	onStartModelAnimaion(config) {
 		this.onSetModelAnimaion(config)
-		cancelAnimationFrame(this.animationFram)
+		cancelAnimationFrame(this.animationFrame)
 		this.animationFrameFun()
 	}
 	// 设置模型动画
@@ -919,7 +921,7 @@ class renderModel {
 	}
 	// 动画帧
 	animationFrameFun() {
-		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
+		this.animationFrame = requestAnimationFrame(() => this.animationFrameFun())
 		if (this.animationMixer) {
 			this.animationMixer.update(this.animationColock.getDelta())
 		}
@@ -929,6 +931,29 @@ class renderModel {
 		if (!this.animateClipAction) return
 		this.animationMixer.stopAllAction();
 		this.animationMixer.update(0);
+	}
+	// 设置模型轴动画
+	onSetRotation(config) {
+		const { rotationVisible, rotationType, rotationSpeed } = config
+		if (rotationVisible) {
+			 cancelAnimationFrame(this.rotationAnimationFrame)
+			 this.rotationAnimationFun(rotationType, rotationSpeed )
+		} else {
+			cancelAnimationFrame(this.rotationAnimationFrame)
+			this.model.rotation.set(0,0,0)
+		}
+	}
+	// 设置轴动画类型
+	onSetRotationType(config){
+		const {  rotationType, rotationSpeed } = config
+		this.model.rotation.set(0,0,0)
+		cancelAnimationFrame(this.rotationAnimationFrame)
+		this.rotationAnimationFun(rotationType, rotationSpeed)
+	}
+	// 轴动画帧
+	rotationAnimationFun(rotationType, rotationSpeed) {
+		this.rotationAnimationFrame = requestAnimationFrame(() => this.rotationAnimationFun(rotationType, rotationSpeed))
+		this.model.rotation[rotationType]+=rotationSpeed / 50
 	}
 
 
@@ -997,18 +1022,17 @@ class renderModel {
 		this.camera.lookAt(0, 0, 0)
 	}
 	// 获取相机位置
-	onGetModelCamera(){
+	onGetModelCamera() {
 		return this.camera.position
 	}
 	// 设置网格辅助线位置和颜色
 	onSetModelGridHelper({ x, y, z, gridHelper, color }) {
 		this.gridHelper.visible = gridHelper
-		// this.gridHelper.position.set(x, y, z)
 		this.gridHelper.material.color.set(color);
 
 		const Tween = new TWEEN.Tween(this.gridHelper.position)
 		const endPosition = {
-			x,y,z
+			x, y, z
 		}
 		Tween.to(endPosition, 500)
 		Tween.onUpdate((val) => {

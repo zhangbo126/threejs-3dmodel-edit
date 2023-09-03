@@ -1,5 +1,5 @@
 
-import { defineComponent, h, watch } from 'vue'
+import { defineComponent, h } from 'vue'
 import * as THREE from 'three' //导入整个 three.js核心库
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
@@ -11,13 +11,9 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
-import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
-import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 import { mapImageList } from "@/config/model";
-import { lightPosition, onlyKey ,debounce} from '@/utils/utilityFunction'
+import { lightPosition, onlyKey, debounce } from '@/utils/utilityFunction'
 
 /**
  * @describe three.js 组件数据初始化方法
@@ -51,8 +47,10 @@ class renderModel {
 		//模型动画对象
 		this.animationMixer
 		this.animationColock = new THREE.Clock()
-		//动画帧
+		// 动画帧
 		this.animationFrame
+		// 轴动画帧
+		this.rotationAnimationFrame
 		// 动画构造器
 		this.animateClipAction = null
 		// 动画循环方式枚举
@@ -90,7 +88,6 @@ class renderModel {
 		this.glowMaterialList
 		this.materials = {}
 		// 拖拽对象控制器
-		this.dragControls
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -165,8 +162,8 @@ class renderModel {
 	// 创建控制器
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-		this.controls.enablePan = false
-		this.controls.enabled = false
+		this.controls.enablePan = true
+		this.controls.enabled = true
 	}
 	// 更新场景
 	sceneAnimation() {
@@ -306,6 +303,21 @@ class renderModel {
 		if (this.effectComposer) this.effectComposer.setSize(clientWidth, clientHeight)
 		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
 	}
+	// 清除模型数据
+	onClearModelData() {
+		cancelAnimationFrame(this.rotationAnimationFrame)
+		cancelAnimationFrame(this.renderAnimation)
+		cancelAnimationFrame(this.animationFrame)
+		this.container.removeEventListener('click', this.onMouseClickModel)
+		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
+		this.scene.traverse((v) => {
+			if (v.type === 'Mesh') {
+				v.geometry.dispose();
+				v.material.dispose();
+			}
+		})
+	}
+
 	// 设置模型定位缩放大小
 	setModelPositionSize() {
 		//设置模型位置
@@ -565,25 +577,38 @@ class renderModel {
 	// 处理模型动画数据回填
 	setModelAnimation() {
 		const { animation } = this.config
-		if (!this.modelAnimation.length || !animation || !animation.visible) return false
-		this.animationMixer = new THREE.AnimationMixer(this.model)
-		const { animationName, timeScale, weight, loop } = animation
-		const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
-		if (clip) {
-			this.animateClipAction = this.animationMixer.clipAction(clip)
-			this.animateClipAction.setEffectiveTimeScale(timeScale)
-			this.animateClipAction.setEffectiveWeight(weight)
-			this.animateClipAction.setLoop(this.loopMap[loop])
-			this.animateClipAction.play()
+		if (!animation) return false
+		if (this.modelAnimation.length && animation && animation.visible) {
+			this.animationMixer = new THREE.AnimationMixer(this.model)
+			const { animationName, timeScale, weight, loop } = animation
+			// 模型动画
+			const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName)
+			if (clip) {
+				this.animateClipAction = this.animationMixer.clipAction(clip)
+				this.animateClipAction.setEffectiveTimeScale(timeScale)
+				this.animateClipAction.setEffectiveWeight(weight)
+				this.animateClipAction.setLoop(this.loopMap[loop])
+				this.animateClipAction.play()
+			}
+			this.animationFrameFun()
 		}
-		this.animationFrameFun()
+		// 轴动画
+		if (animation.rotationVisible) {
+			const { rotationType, rotationSpeed } = animation
+			this.rotationAnimationFun(rotationType, rotationSpeed)
+		}
 	}
 	// 模型动画帧
 	animationFrameFun() {
-		this.animationFram = requestAnimationFrame(() => this.animationFrameFun())
+		this.animationFrame = requestAnimationFrame(() => this.animationFrameFun())
 		if (this.animationMixer) {
 			this.animationMixer.update(this.animationColock.getDelta())
 		}
+	}
+	// 轴动画帧
+	rotationAnimationFun(rotationType, rotationSpeed) {
+		this.rotationAnimationFrame = requestAnimationFrame(() => this.rotationAnimationFun(rotationType, rotationSpeed))
+		this.model.rotation[rotationType] += rotationSpeed / 50
 	}
 	// 模型轴辅助线配置
 	setModelAxleLine() {
@@ -637,8 +662,8 @@ function createThreeDComponent(config) {
 		watch: {
 			$props: {
 				handler(val) {
-					if (modelApi) {		
-						debounce(modelApi.onWindowResize(),200)
+					if (modelApi) {
+						debounce(modelApi.onWindowResize(), 200)
 					}
 				},
 				immediate: false,
@@ -647,7 +672,7 @@ function createThreeDComponent(config) {
 		},
 		render() {
 			if (this.width && this.height) {
-				return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px' }} id={elementId} ></div>)
+				return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px', pointerEvents: 'none', }} id={elementId} ></div>)
 
 			} else {
 				return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100%' }} id={elementId} ></div>)
@@ -660,6 +685,9 @@ function createThreeDComponent(config) {
 			if (load) {
 				this.loading = false
 			}
+		},
+		beforeUnmount() {
+			modelApi.onClearModelData()
 		}
 	})
 }

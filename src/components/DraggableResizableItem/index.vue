@@ -27,15 +27,14 @@
 <script setup>
 import DraggableResizable from "vue3-draggable-resizable";
 import createThreeDComponent from "@/utils/initThreeTemplate";
-import "vue3-draggable-resizable/dist/Vue3DraggableResizable.css";
-import { ref, computed } from "vue";
+import { ref   } from "vue";
 const props = defineProps({
   config: {
     type: Object,
     default: {},
   },
 });
-const selectItem = ref(null)
+
 const emit = defineEmits(["onDragActived", "onDragDeactivated"]);
 
 const dragMask = ref("");
@@ -55,9 +54,11 @@ const activatedHandle = (e) => {
 // 取消选中
 const deactivatedHandle = (e) => {
   dragMask.value = "";
-  emit("onDragDeactivated",props.config.modelKey);
+  emit("onDragDeactivated", props.config.modelKey);
 };
+
 const treeComponent = createThreeDComponent(props.config);
+
 </script>
 
 <style lang="less" scoped>
@@ -67,6 +68,7 @@ const treeComponent = createThreeDComponent(props.config);
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+
   .mask {
     position: absolute;
     top: 0;
@@ -78,10 +80,12 @@ const treeComponent = createThreeDComponent(props.config);
     display: none;
     box-shadow: 1px 1px 40px #15d7aa;
   }
+
   .mask-dragactive {
     opacity: 0.2;
     display: block;
   }
+
   .mask-dragging {
     opacity: 0.1;
     display: block;

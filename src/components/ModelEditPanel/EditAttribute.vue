@@ -18,9 +18,9 @@
         </el-button>
       </div>
       <div class="option">
-        <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
-        <el-button type="primary" link>X轴</el-button>
-        <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('x', 'left')" />
+          <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
+          <el-button type="primary" link>X轴</el-button>
+          <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('x', 'left')" />
       </div>
       <div class="option">
         <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('y', 'right')" />
