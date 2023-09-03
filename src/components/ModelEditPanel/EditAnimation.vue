@@ -24,7 +24,7 @@
           </el-space>
         </div>
       </el-scrollbar>
-      <el-empty v-else description="暂无动画" :image-size="200" />
+      <el-empty v-else description="暂无动画" :image-size="120" />
     </div>
     <!-- 动画配置 -->
     <div class="header">
@@ -77,6 +77,39 @@
         />
       </div>
     </div>
+    <!-- 轴动画 -->
+    <div class="header">
+      <span>轴动画</span>
+      <el-switch v-model="config.rotationVisible" @change="onRotationAnimation" />
+    </div>
+    <div class="options">
+      <div class="option" :class="optionRotation">
+        <el-space>
+          <span> 轴方向 </span>
+          <el-radio-group v-model="config.rotationType" @change="onRotationType">
+            <el-radio-button label="x">X轴</el-radio-button>
+            <el-radio-button label="y">Y轴</el-radio-button>
+            <el-radio-button label="z">Z轴</el-radio-button>
+          </el-radio-group>
+        </el-space>
+      </div>
+      <div class="option" :class="optionRotation">
+        <el-space>
+          <el-icon><VideoPlay /></el-icon>
+          <span> 播放速度 </span>
+        </el-space>
+      </div>
+      <div class="option" :class="optionRotation">
+        <el-slider
+          @change="onRotationAnimation"
+          show-input
+          v-model="config.rotationSpeed"
+          :step="0.01"
+          :min="1"
+          :max="10"
+        />
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
@@ -85,14 +118,20 @@ import { useStore } from "vuex";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
-  visible: true,
+  visible: false,
   animationName: null, //动画名称
   loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
   timeScale: 1, // 播放速度
   weight: 1, // 动作幅度
+  rotationVisible: false, //轴动画开关
+  rotationType: "y", // 轴类型
+  rotationSpeed: 1, // 旋转速度
 });
 const optionDisabled = computed(() => {
   return config.visible ? "" : "disabled";
+});
+const optionRotation = computed(() => {
+  return config.rotationVisible ? "" : "disabled";
 });
 
 const state = reactive({
@@ -118,11 +157,14 @@ onMounted(() => {
       const animationName = state.modelAnimation[0].name;
       // 重置动画数据
       Object.assign(config, {
-        visible: true,
+        visible: false,
         animationName, //动画名称
         loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
         timeScale: 1, // 播放速度
         weight: 1, // 动作幅度
+        rotationVisible: false, //轴动画开关
+        rotationType: "y", // 轴类型
+        rotationSpeed: 1, // 旋转速度
       });
     }
   });
@@ -147,8 +189,17 @@ const onUplateAnimation = () => {
   state.modelApi.onStartModelAnimaion(config);
 };
 
+// 设置模型轴动画
+const onRotationAnimation = () => {
+  state.modelApi.onSetRotation(config);
+};
+// 设置模型轴动画类型
+const onRotationType = () => {
+  state.modelApi.onSetRotationType(config);
+};
+
 defineExpose({
-  config
+  config,
 });
 </script>
 <style scoped lang="scss"></style>

@@ -3,7 +3,8 @@
     <router-view />
   </el-config-provider>
 </template>
-<script setup></script>
+<script setup>
+</script>
 <style lang="less">
 #mesh-txt {
   position: absolute;
@@ -17,9 +18,12 @@
   padding: 10px;
   border-radius: 10px;
   cursor: all-scroll;
-  -webkit-user-select: none; /* Safari 3.1+ */
-  -moz-user-select: none; /* Firefox 2+ */
-  -ms-user-select: none; /* IE 10+ */
-  user-select: none; /* Standard syntax */
-}
-</style>
+  -webkit-user-select: none;
+  /* Safari 3.1+ */
+  -moz-user-select: none;
+  /* Firefox 2+ */
+  -ms-user-select: none;
+  /* IE 10+ */
+  user-select: none;
+  /* Standard syntax */
+}</style>

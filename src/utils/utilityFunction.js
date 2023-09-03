@@ -104,3 +104,27 @@ export function onlyKey(len, radix) {
 	}
 	return uuid.join('');
 }
+
+/** 
+   @description 对象数组深拷贝方法 函数
+  * @param {Array | Object} source  需要拷贝的数据源
+  * @return {Array | Object}  拷贝后的新值
+*/
+
+export function deepCopy(source) {
+	if (typeof source !== 'object' || source == null) {
+		return source;
+	}
+	const target = Array.isArray(source) ? [] : {};
+	for (const key in source) {
+		// 检查属性是否存在对象中
+		if (Object.hasOwn(source, key)) {
+			if (typeof source[key] === 'object' && source[key] !== null) {
+				target[key] = deepCopy(source[key]);
+			} else {
+				target[key] = source[key];
+			}
+		}
+	}
+	return target;
+}
