@@ -965,7 +965,6 @@ class renderModel {
 	onSetModelPointLight(config) {
 		const { pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } = config
 		this.pointLight.visible = pointLight
-		console.log(pointLightHelper)
 		this.pointLightHelper.visible = pointLight && pointLightHelper
 		this.pointLight.intensity = pointLightIntensity
 		this.pointLight.color.set(pointLightColor)
