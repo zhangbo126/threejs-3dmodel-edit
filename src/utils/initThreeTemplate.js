@@ -87,7 +87,10 @@ class renderModel {
 		// 需要辉光的材质
 		this.glowMaterialList
 		this.materials = {}
-		// 拖拽对象控制器
+		// 窗口变化监听事件
+		this.onWindowResizesListener
+		// 鼠标移动
+		this.onMouseMoveListener
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -131,7 +134,7 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
-		this.renderer.outputEncoding = THREE.sRGBEncoding
+		// this.renderer.outputColorSpace = THREE.sRGBEncoding
 		//曝光
 		this.renderer.toneMappingExposure = 3
 		this.renderer.shadowMap.enabled = true
@@ -157,7 +160,13 @@ class renderModel {
 		this.scene = new THREE.Scene()
 	}
 	addEvenListMouseLisatener() {
-		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
+	   // 监听场景大小改变，跳转渲染尺寸
+		this.onWindowResizesListener = this.onWindowResize.bind(this)
+		window.addEventListener("resize", this.onWindowResizesListener)
+
+		// 鼠标移动
+		this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
+		this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -308,14 +317,72 @@ class renderModel {
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		cancelAnimationFrame(this.renderAnimation)
 		cancelAnimationFrame(this.animationFrame)
-		this.container.removeEventListener('click', this.onMouseClickModel)
-		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
 		this.scene.traverse((v) => {
 			if (v.type === 'Mesh') {
 				v.geometry.dispose();
 				v.material.dispose();
 			}
 		})
+		this.scene.clear()
+		this.renderer.clear()
+		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
+		window.removeEventListener("resize", this.onWindowResizesListener)
+		this.config = null
+		this.container = null
+		// 相机
+		this.camera= null
+		// 场景
+		this.scene= null
+		//渲染器
+		this.renderer= null
+		// 控制器
+		this.controls= null
+		// 模型
+		this.model= null
+		//文件加载器类型
+		this.fileLoaderMap = null
+		//模型动画列表
+		this.modelAnimation= null
+		//模型动画对象
+		this.animationMixer= null
+		this.animationColock = null
+		// 动画帧
+		this.animationFrame= null
+		// 轴动画帧
+		this.rotationAnimationFrame= null
+		// 动画构造器
+		this.animateClipAction = null
+		// 动画循环方式枚举
+		this.loopMap = null
+		// 模型骨架
+		this.skeletonHelper= null
+		// 网格辅助线
+		this.gridHelper= null
+		// 坐标轴辅助线
+		this.axesHelper= null
+		//模型平面
+		this.planeGeometry= null
+		//模型材质列表
+		this.modelMaterialList= null
+		// 效果合成器
+		this.effectComposer= null
+		this.outlinePass= null
+		// 动画渲染器
+		this.renderAnimation= null
+		// 碰撞检测
+		this.raycaster == null
+		// 鼠标位置
+		this.mouse = null
+		// 模型自带贴图
+		this.modelTextureMap= null
+		// 辉光效果合成器
+		this.glowComposer= null
+		// 辉光渲染器
+		this.unrealBloomPass= null
+		// 需要辉光的材质
+		this.glowMaterialList= null
+		this.materials = null
+	
 	}
 
 	// 设置模型定位缩放大小

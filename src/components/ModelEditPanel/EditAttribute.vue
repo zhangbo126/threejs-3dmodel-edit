@@ -18,9 +18,9 @@
         </el-button>
       </div>
       <div class="option">
-          <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
-          <el-button type="primary" link>X轴</el-button>
-          <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('x', 'left')" />
+        <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
+        <el-button type="primary" link>X轴</el-button>
+        <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('x', 'left')" />
       </div>
       <div class="option">
         <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('y', 'right')" />
@@ -208,13 +208,20 @@ onMounted(() => {
   $bus.on("model-update", () => {
     // 重置动画数据
     Object.assign(config, {
+      visible: true,
       skeletonHelper: false,
+      gridHelper: false,
       x: 0,
       y: -0.59,
       z: -0.1,
       positionX: 0,
       positionY: -0.5,
       positionZ: 0,
+      divisions: 10,
+      size: 4,
+      color: "rgb(193,193,193)",
+      axesHelper: false,
+      axesSize: 1.8,
     });
   });
 });

@@ -155,10 +155,11 @@ onMounted(() => {
   $bus.on("model-update", () => {
     if (state.modelAnimation.length) {
       const animationName = state.modelAnimation[0].name;
+      config.animationName = animationName
+    }
       // 重置动画数据
-      Object.assign(config, {
+       Object.assign(config, {
         visible: false,
-        animationName, //动画名称
         loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
         timeScale: 1, // 播放速度
         weight: 1, // 动作幅度
@@ -166,7 +167,6 @@ onMounted(() => {
         rotationType: "y", // 轴类型
         rotationSpeed: 1, // 旋转速度
       });
-    }
   });
 });
 

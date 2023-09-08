@@ -101,6 +101,14 @@ class renderModel {
 		this.dragControls
 		// 是否显示材质标签
 		this.hoverMeshTag = false
+		// 窗口变化监听事件
+		this.onWindowResizesListener
+		// 鼠标点击事件
+		this.onMouseClickListener
+		// 鼠标按下
+		this.onMouseDownListener
+		// 鼠标移动
+		this.onMouseMoveListener
 
 	}
 	init() {
@@ -121,8 +129,6 @@ class renderModel {
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
-			//监听场景大小改变，跳转渲染尺寸
-			window.addEventListener("resize", this.onWindowResize.bind(this))
 			//场景渲染
 			this.sceneAnimation()
 			this.addEvenListMouseLisatener()
@@ -154,7 +160,7 @@ class renderModel {
 		//色调映射
 		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
-		this.renderer.outputEncoding = THREE.sRGBEncoding
+		// this.renderer.outputColorSpace = THREE.sRGBEncoding
 		//曝光
 		this.renderer.toneMappingExposure = 3
 		// this.renderer.physicallyCorrectLights = true
@@ -194,9 +200,18 @@ class renderModel {
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
-		this.container.addEventListener('click', this.onMouseClickModel.bind(this))
-		this.container.addEventListener('mousedown', this.onMouseDownModel.bind(this))
-		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
+		//监听场景大小改变，跳转渲染尺寸
+		this.onWindowResizesListener = this.onWindowResizes.bind(this)
+		window.addEventListener("resize", this.onWindowResizesListener)
+		// 鼠标点击
+		this.onMouseClickListener = this.onMouseClickModel.bind(this)
+		this.container.addEventListener('click', this.onMouseClickListener)
+		// 鼠标按下
+		this.onMouseDownListener = this.onMouseDownModel.bind(this)
+		this.container.addEventListener('mousedown', this.onMouseDownListener)
+		// 鼠标移动
+		this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
+		this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -392,14 +407,42 @@ class renderModel {
 				//取消动画帧
 				cancelAnimationFrame(this.animationFrame)
 				cancelAnimationFrame(this.rotationAnimationFrame)
-				this.skeletonHelper.visible = false
-				this.modelTextureMap = []
-				const meshTxt = document.getElementById("mesh-txt");
 				this.scene.remove(this.model)
-				if (this.dragControls) this.dragControls.dispose()
+				this.modelTextureMap = []
+				// 重置"灯光"模块数据
+				this.onResettingLight()
+
+				// 重置"后期/操作"模块数据
+				const meshTxt = document.getElementById("mesh-txt");
 				document.body.style.cursor = '';
 				meshTxt.style.display = 'none'
+				if (this.dragControls) this.dragControls.dispose()
 				this.renderer.toneMappingExposure = 3
+				Object.assign(this.unrealBloomPass, {
+					threshold: 0,
+					strength: 0,
+					radius: 0,
+				})
+				// 重置"辅助线/轴配置"模块数据
+				this.skeletonHelper.visible = false
+				const config = {
+					gridHelper: false,
+					x: 0,
+					y: -0.59,
+					z: -0.1,
+					positionX: 0,
+					positionY: -0.5,
+					positionZ: 0,
+					divisions: 10,
+					size: 4,
+					color: "rgb(193,193,193)",
+					axesHelper: false,
+					axesSize: 1.8,
+				}
+				this.onSetModelGridHelper(config)
+				this.onSetModelGridHelperSize(config)
+				this.onSetModelAxesHelper(config)
+
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
@@ -410,7 +453,8 @@ class renderModel {
 		})
 	}
 	// 监听窗口变化
-	onWindowResize() {
+	onWindowResizes() {
+		if (!this.container) return false
 		const { clientHeight, clientWidth } = this.container
 		//调整屏幕大小
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
@@ -419,15 +463,95 @@ class renderModel {
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
-    // 清除模型数据
-	onClearModelData(){
+	// 清除模型数据
+	onClearModelData() {
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		cancelAnimationFrame(this.renderAnimation)
 		cancelAnimationFrame(this.animationFrame)
-		this.container.removeEventListener('click', this.onMouseClickModel)
-		this.container.removeEventListener('mousedown', this.onMouseDownModel)
-		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
-		window.removeEventListener("resize", this.onWindowResize)
+		this.container.removeEventListener('click', this.onMouseClickListener)
+		this.container.removeEventListener('mousedown', this.onMouseDownListener)
+		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
+		window.removeEventListener("resize", this.onWindowResizesListener)
+		this.scene.traverse((v) => {
+			if (v.type === 'Mesh') {
+				v.geometry.dispose();
+				v.material.dispose();
+			}
+		})
+		this.scene.clear()
+		this.renderer.clear()
+		this.container = null
+		// 相机
+		this.camera = null
+		// 场景
+		this.scene = null
+		//渲染器
+		this.renderer = null
+		// 控制器
+		this.controls = null
+		// 模型
+		this.model = null
+		//文件加载器类型
+		this.fileLoaderMap = null
+		//模型动画列表
+		this.modelAnimation = null
+		//模型动画对象
+		this.animationMixer = null
+		this.animationColock = null
+		//动画帧
+		this.animationFrame = null
+		// 轴动画帧
+		this.rotationAnimationFrame = null
+		// 动画构造器
+		this.animateClipAction = null
+		// 动画循环方式枚举
+		this.loopMap = null
+		// 模型骨架
+		this.skeletonHelper = null
+		// 网格辅助线
+		this.gridHelper = null
+		// 坐标轴辅助线
+		this.axesHelper = null
+		// 环境光
+		this.ambientLight = null
+		//平行光
+		this.directionalLight = null
+		// 平行光辅助线
+		this.directionalLightHelper = null
+		// 点光源
+		this.pointLight = null
+		//点光源辅助线
+		this.pointLightHelper = null
+		//聚光灯
+		this.spotLight = null
+		//聚光灯辅助线
+		this.spotLightHelper = null
+		//模型平面
+		this.planeGeometry = null
+		//模型材质列表
+		this.modelMaterialList = null
+		// 效果合成器
+		this.effectComposer = null
+		this.outlinePass = null
+		// 动画渲染器
+		this.renderAnimation = null
+		// 碰撞检测
+		this.raycaster == null
+		// 鼠标位置
+		this.mouse = null
+		// 模型自带贴图
+		this.modelTextureMap = null
+		// 辉光效果合成器
+		this.glowComposer = null
+		// 辉光渲染器
+		this.unrealBloomPass = null
+		// 需要辉光的材质
+		this.glowMaterialList = null
+		this.materials = null
+		// 拖拽对象控制器
+		this.dragControls = null
+		// 是否显示材质标签
+		this.hoverMeshTag = null
 	}
 
 
@@ -826,6 +950,7 @@ class renderModel {
 	 * @function onSetModelPointLight 设置点光源
 	 * @function onSetModelSpotLight 设置聚光灯
 	 * @function onSetModelPlaneGeometry 设置模型平面
+	 * @function onResettingLight 重置场景灯光
 	 */
 	// 设置环境光
 	onSetModelAmbientLight({ ambientLight, ambientLightColor, ambientLightIntensity }) {
@@ -858,7 +983,6 @@ class renderModel {
 	onSetModelPointLight(config) {
 		const { pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } = config
 		this.pointLight.visible = pointLight
-		console.log(pointLightHelper)
 		this.pointLightHelper.visible = pointLight && pointLightHelper
 		this.pointLight.intensity = pointLightIntensity
 		this.pointLight.color.set(pointLightColor)
@@ -889,7 +1013,54 @@ class renderModel {
 		this.planeGeometry.material.color.set(planeColor)
 		this.planeGeometry.geometry.verticesNeedUpdate = true
 	}
-
+	// 重置场景灯光
+	onResettingLight() {
+		const config = {
+			planeGeometry: false,
+			planeColor: "#939393",
+			planeWidth: 7,
+			planeHeight: 7,
+			//环境光
+			ambientLight: true,
+			ambientLightColor: "#fff",
+			ambientLightIntensity: 0.8,
+			//平行光
+			directionalLight: false,
+			directionalLightHelper: true,
+			directionalLightColor: "#1E90FF",
+			directionalLightIntensity: 1,
+			directionalHorizontal: -1.26,
+			directionalVertical: -3.85,
+			directionalSistance: 2.98,
+			directionaShadow: true,
+			//点光源
+			pointLight: false,
+			pointLightHelper: true,
+			pointLightColor: "#1E90FF",
+			pointLightIntensity: 1,
+			pointHorizontal: -4.21,
+			pointVertical: -4.1,
+			pointSistance: 2.53,
+			//聚光灯
+			spotLight: false,
+			spotLightColor: "#323636",
+			spotLightIntensity: 400,
+			spotHorizontal: -3.49,
+			spotVertical: -4.37,
+			spotSistance: 4.09,
+			spotAngle: 0.5,
+			spotPenumbra: 1,
+			spotFocus: 1,
+			spotCastShadow: true,
+			spotLightHelper: true,
+			spotDistance: 20
+		}
+		this.onSetModelAmbientLight(config)
+		this.onSetModelDirectionalLight(config)
+		this.onSetModelPointLight(config)
+		this.onSetModelSpotLight(config)
+		this.onSetModelPlaneGeometry(config)
+	}
 
 
 	/**
@@ -936,24 +1107,24 @@ class renderModel {
 	onSetRotation(config) {
 		const { rotationVisible, rotationType, rotationSpeed } = config
 		if (rotationVisible) {
-			 cancelAnimationFrame(this.rotationAnimationFrame)
-			 this.rotationAnimationFun(rotationType, rotationSpeed )
+			cancelAnimationFrame(this.rotationAnimationFrame)
+			this.rotationAnimationFun(rotationType, rotationSpeed)
 		} else {
 			cancelAnimationFrame(this.rotationAnimationFrame)
-			this.model.rotation.set(0,0,0)
+			this.model.rotation.set(0, 0, 0)
 		}
 	}
 	// 设置轴动画类型
-	onSetRotationType(config){
-		const {  rotationType, rotationSpeed } = config
-		this.model.rotation.set(0,0,0)
+	onSetRotationType(config) {
+		const { rotationType, rotationSpeed } = config
+		this.model.rotation.set(0, 0, 0)
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		this.rotationAnimationFun(rotationType, rotationSpeed)
 	}
 	// 轴动画帧
 	rotationAnimationFun(rotationType, rotationSpeed) {
 		this.rotationAnimationFrame = requestAnimationFrame(() => this.rotationAnimationFun(rotationType, rotationSpeed))
-		this.model.rotation[rotationType]+=rotationSpeed / 50
+		this.model.rotation[rotationType] += rotationSpeed / 50
 	}
 
 

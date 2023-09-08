@@ -21,14 +21,7 @@
           <el-button type="primary" link>强度</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            v-model="config.strength"
-            @change="onChangeFlow"
-            :step="0.01"
-            :min="0"
-            :max="3"
-          />
+          <el-slider show-input v-model="config.strength" @change="onChangeFlow" :step="0.01" :min="0" :max="3" />
         </div>
       </div>
       <div class="option">
@@ -36,14 +29,7 @@
           <el-button type="primary" link>半径</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            v-model="config.radius"
-            @change="onChangeFlow"
-            :step="0.01"
-            :min="0"
-            :max="2"
-          />
+          <el-slider show-input v-model="config.radius" @change="onChangeFlow" :step="0.01" :min="0" :max="2" />
         </div>
       </div>
       <div class="option">
@@ -51,14 +37,7 @@
           <el-button type="primary" link>阈值</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            v-model="config.threshold"
-            @change="onChangeFlow"
-            :step="0.01"
-            :min="0"
-            :max="1"
-          />
+          <el-slider show-input v-model="config.threshold" @change="onChangeFlow" :step="0.01" :min="0" :max="1" />
         </div>
       </div>
     </div>
@@ -72,26 +51,15 @@
           <span> 色调曝光度 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            v-model="config.toneMappingExposure"
-            @change="onChangeFlow"
-            :step="0.01"
-            :min="0.5"
-            :max="10"
-          />
+          <el-slider show-input v-model="config.toneMappingExposure" @change="onChangeFlow" :step="0.01" :min="0.5"
+            :max="10" />
         </div>
       </div>
     </div>
     <div class="header">
       <el-space>
         <span>模型操作</span>
-        <el-tooltip
-          v-if="decomposeDisable == 'disabled'"
-          effect="dark"
-          content="当前模型不可进行以下操作"
-          placement="top"
-        >
+        <el-tooltip v-if="decomposeDisable == 'disabled'" effect="dark" content="当前模型不可进行以下操作" placement="top">
           <el-icon>
             <WarnTriangleFilled :size="20" color="#ffb940" />
           </el-icon>
@@ -108,14 +76,7 @@
           <span> 模型分解 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            v-model="config.decompose"
-            @change="onChangeDecompose"
-            :step="0.01"
-            :min="0"
-            :max="20"
-          />
+          <el-slider show-input v-model="config.decompose" @change="onChangeDecompose" :step="0.01" :min="0" :max="20" />
         </div>
       </div>
       <div class="option" :class="moveDisable">
@@ -187,9 +148,13 @@ const config = reactive({
 onMounted(() => {
   $bus.on("model-update", () => {
     Object.assign(config, {
+      glow: false,
+      threshold: 0.05,
+      strength: 0.6,
+      radius: 1,
       decompose: 0,
-      toneMappingExposure: 3,
       modelDrag: false,
+      toneMappingExposure: 3,
       hoverMeshTag: false,
     });
   });

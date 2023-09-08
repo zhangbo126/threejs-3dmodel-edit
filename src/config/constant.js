@@ -97,8 +97,8 @@ export const MODEL_DEFAULT_CONFIG = {
 	"background": {
 		"visible": true,
 		"type": 3,
-		"image": "/static/img/model-bg-3.6c273dac.jpg",
-		"viewImg": "/static/img/view-4.46878642.png",
+		"image": require("@/assets/image/model-bg-3.jpg"),
+		"viewImg": require("@/assets/image/view-4.png"),
 		"color": "#000"
 	},
 	"material": {
