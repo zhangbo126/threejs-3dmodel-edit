@@ -87,6 +87,10 @@ class renderModel {
 		// 需要辉光的材质
 		this.glowMaterialList
 		this.materials = {}
+		// 窗口变化监听事件
+		this.onWindowResizesListener
+		// 鼠标移动
+		this.onMouseMoveListener
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -130,7 +134,7 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
-		this.renderer.outputEncoding = THREE.sRGBEncoding
+		// this.renderer.outputColorSpace = THREE.sRGBEncoding
 		//曝光
 		this.renderer.toneMappingExposure = 3
 		this.renderer.shadowMap.enabled = true
@@ -156,7 +160,13 @@ class renderModel {
 		this.scene = new THREE.Scene()
 	}
 	addEvenListMouseLisatener() {
-		this.container.addEventListener('mousemove', this.onMouseMoveModel.bind(this))
+	   // 监听场景大小改变，跳转渲染尺寸
+		this.onWindowResizesListener = this.onWindowResize.bind(this)
+		window.addEventListener("resize", this.onWindowResizesListener)
+
+		// 鼠标移动
+		this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
+		this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -315,8 +325,8 @@ class renderModel {
 		})
 		this.scene.clear()
 		this.renderer.clear()
-		this.container.removeEventListener('click', this.onMouseClickModel)
-		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
+		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
+		window.removeEventListener("resize", this.onWindowResizesListener)
 		this.config = null
 		this.container = null
 		// 相机
