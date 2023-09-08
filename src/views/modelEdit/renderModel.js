@@ -122,7 +122,7 @@ class renderModel {
 			// 创建效果合成器
 			this.createEffectComposer()
 			//监听场景大小改变，跳转渲染尺寸
-			window.addEventListener("resize", this.onWindowResize.bind(this))
+			window.addEventListener("resize", this.onWindowResizes.bind(this),{ passive: false })
 			//场景渲染
 			this.sceneAnimation()
 			this.addEvenListMouseLisatener()
@@ -436,7 +436,9 @@ class renderModel {
 		})
 	}
 	// 监听窗口变化
-	onWindowResize() {
+	onWindowResizes() {
+		console.log(this)
+		if(!this.container)return false
 		const { clientHeight, clientWidth } = this.container
 		//调整屏幕大小
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
@@ -450,6 +452,10 @@ class renderModel {
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		cancelAnimationFrame(this.renderAnimation)
 		cancelAnimationFrame(this.animationFrame)
+		this.container.removeEventListener('click', this.onMouseClickModel)
+		this.container.removeEventListener('mousedown', this.onMouseDownModel)
+		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
+		window.removeEventListener("resize",this.onWindowResizes.bind(this), { passive: false })
 		this.scene.traverse((v) => {
 			if (v.type === 'Mesh') {
 				v.geometry.dispose();
@@ -458,11 +464,7 @@ class renderModel {
 		})
 		this.scene.clear()
 		this.renderer.clear()
-		this.container.removeEventListener('click', this.onMouseClickModel)
-		this.container.removeEventListener('mousedown', this.onMouseDownModel)
-		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
-		window.removeEventListener("resize", this.onWindowResize)
-		this.container = null
+		this.container=null
 		// 相机
 		this.camera = null
 		// 场景
