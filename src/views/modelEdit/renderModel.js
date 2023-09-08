@@ -101,6 +101,8 @@ class renderModel {
 		this.dragControls
 		// 是否显示材质标签
 		this.hoverMeshTag = false
+		// 窗口变化监听事件
+		this.onWindowResizesListener
 
 	}
 	init() {
@@ -122,7 +124,8 @@ class renderModel {
 			// 创建效果合成器
 			this.createEffectComposer()
 			//监听场景大小改变，跳转渲染尺寸
-			window.addEventListener("resize", this.onWindowResizes.bind(this),{ passive: false })
+			this.onWindowResizesListener = this.onWindowResizes.bind(this)
+			window.addEventListener("resize",this.onWindowResizesListener)
 			//场景渲染
 			this.sceneAnimation()
 			this.addEvenListMouseLisatener()
@@ -426,6 +429,7 @@ class renderModel {
 				}
 				this.onSetModelGridHelper(config)
 				this.onSetModelGridHelperSize(config)
+	
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
@@ -455,7 +459,7 @@ class renderModel {
 		this.container.removeEventListener('click', this.onMouseClickModel)
 		this.container.removeEventListener('mousedown', this.onMouseDownModel)
 		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
-		window.removeEventListener("resize",this.onWindowResizes.bind(this), { passive: false })
+		window.removeEventListener("resize",this.onWindowResizesListener)
 		this.scene.traverse((v) => {
 			if (v.type === 'Mesh') {
 				v.geometry.dispose();
