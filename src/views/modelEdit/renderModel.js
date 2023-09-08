@@ -419,15 +419,95 @@ class renderModel {
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
-    // 清除模型数据
-	onClearModelData(){
+	// 清除模型数据
+	onClearModelData() {
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		cancelAnimationFrame(this.renderAnimation)
 		cancelAnimationFrame(this.animationFrame)
+		this.scene.traverse((v) => {
+			if (v.type === 'Mesh') {
+				v.geometry.dispose();
+				v.material.dispose();
+			}
+		})
+		this.scene.clear()
+		this.renderer.clear()
 		this.container.removeEventListener('click', this.onMouseClickModel)
 		this.container.removeEventListener('mousedown', this.onMouseDownModel)
 		this.container.removeEventListener('mousemove', this.onMouseMoveModel)
 		window.removeEventListener("resize", this.onWindowResize)
+		this.container = null
+		// 相机
+		this.camera = null
+		// 场景
+		this.scene = null
+		//渲染器
+		this.renderer = null
+		// 控制器
+		this.controls = null
+		// 模型
+		this.model = null
+		//文件加载器类型
+		this.fileLoaderMap = null
+		//模型动画列表
+		this.modelAnimation = null
+		//模型动画对象
+		this.animationMixer = null
+		this.animationColock = null
+		//动画帧
+		this.animationFrame = null
+		// 轴动画帧
+		this.rotationAnimationFrame = null
+		// 动画构造器
+		this.animateClipAction = null
+		// 动画循环方式枚举
+		this.loopMap = null
+		// 模型骨架
+		this.skeletonHelper = null
+		// 网格辅助线
+		this.gridHelper = null
+		// 坐标轴辅助线
+		this.axesHelper = null
+		// 环境光
+		this.ambientLight = null
+		//平行光
+		this.directionalLight = null
+		// 平行光辅助线
+		this.directionalLightHelper = null
+		// 点光源
+		this.pointLight = null
+		//点光源辅助线
+		this.pointLightHelper = null
+		//聚光灯
+		this.spotLight = null
+		//聚光灯辅助线
+		this.spotLightHelper = null
+		//模型平面
+		this.planeGeometry = null
+		//模型材质列表
+		this.modelMaterialList = null
+		// 效果合成器
+		this.effectComposer = null
+		this.outlinePass = null
+		// 动画渲染器
+		this.renderAnimation = null
+		// 碰撞检测
+		this.raycaster == null
+		// 鼠标位置
+		this.mouse = null
+		// 模型自带贴图
+		this.modelTextureMap = null
+		// 辉光效果合成器
+		this.glowComposer = null
+		// 辉光渲染器
+		this.unrealBloomPass = null
+		// 需要辉光的材质
+		this.glowMaterialList = null
+		this.materials = null
+		// 拖拽对象控制器
+		this.dragControls = null
+		// 是否显示材质标签
+		this.hoverMeshTag = null
 	}
 
 
@@ -936,24 +1016,24 @@ class renderModel {
 	onSetRotation(config) {
 		const { rotationVisible, rotationType, rotationSpeed } = config
 		if (rotationVisible) {
-			 cancelAnimationFrame(this.rotationAnimationFrame)
-			 this.rotationAnimationFun(rotationType, rotationSpeed )
+			cancelAnimationFrame(this.rotationAnimationFrame)
+			this.rotationAnimationFun(rotationType, rotationSpeed)
 		} else {
 			cancelAnimationFrame(this.rotationAnimationFrame)
-			this.model.rotation.set(0,0,0)
+			this.model.rotation.set(0, 0, 0)
 		}
 	}
 	// 设置轴动画类型
-	onSetRotationType(config){
-		const {  rotationType, rotationSpeed } = config
-		this.model.rotation.set(0,0,0)
+	onSetRotationType(config) {
+		const { rotationType, rotationSpeed } = config
+		this.model.rotation.set(0, 0, 0)
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		this.rotationAnimationFun(rotationType, rotationSpeed)
 	}
 	// 轴动画帧
 	rotationAnimationFun(rotationType, rotationSpeed) {
 		this.rotationAnimationFrame = requestAnimationFrame(() => this.rotationAnimationFun(rotationType, rotationSpeed))
-		this.model.rotation[rotationType]+=rotationSpeed / 50
+		this.model.rotation[rotationType] += rotationSpeed / 50
 	}
 
 
