@@ -392,14 +392,40 @@ class renderModel {
 				//取消动画帧
 				cancelAnimationFrame(this.animationFrame)
 				cancelAnimationFrame(this.rotationAnimationFrame)
-				this.skeletonHelper.visible = false
-				this.modelTextureMap = []
-				const meshTxt = document.getElementById("mesh-txt");
 				this.scene.remove(this.model)
-				if (this.dragControls) this.dragControls.dispose()
+				this.modelTextureMap = []
+				// 重置"灯光"模块数据
+				this.onResettingLight()
+
+				// 重置"后期/操作"模块数据
+				const meshTxt = document.getElementById("mesh-txt");
 				document.body.style.cursor = '';
 				meshTxt.style.display = 'none'
+				if (this.dragControls) this.dragControls.dispose()
 				this.renderer.toneMappingExposure = 3
+				Object.assign(this.unrealBloomPass, {
+					threshold: 0,
+					strength: 0,
+					radius: 0,
+				})
+				// 重置"辅助线/轴配置"模块数据
+				this.skeletonHelper.visible = false
+				const config = {
+					gridHelper: false,
+					x: 0,
+					y: -0.59,
+					z: -0.1,
+					positionX: 0,
+					positionY: -0.5,
+					positionZ: 0,
+					divisions: 10,
+					size: 4,
+					color: "rgb(193,193,193)",
+					axesHelper: false,
+					axesSize: 1.8,
+				}
+				this.onSetModelGridHelper(config)
+				this.onSetModelGridHelperSize(config)
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
@@ -906,6 +932,7 @@ class renderModel {
 	 * @function onSetModelPointLight 设置点光源
 	 * @function onSetModelSpotLight 设置聚光灯
 	 * @function onSetModelPlaneGeometry 设置模型平面
+	 * @function onResettingLight 重置场景灯光
 	 */
 	// 设置环境光
 	onSetModelAmbientLight({ ambientLight, ambientLightColor, ambientLightIntensity }) {
@@ -969,7 +996,54 @@ class renderModel {
 		this.planeGeometry.material.color.set(planeColor)
 		this.planeGeometry.geometry.verticesNeedUpdate = true
 	}
-
+	// 重置场景灯光
+	onResettingLight() {
+		const config = {
+			planeGeometry: false,
+			planeColor: "#939393",
+			planeWidth: 7,
+			planeHeight: 7,
+			//环境光
+			ambientLight: true,
+			ambientLightColor: "#fff",
+			ambientLightIntensity: 0.8,
+			//平行光
+			directionalLight: false,
+			directionalLightHelper: true,
+			directionalLightColor: "#1E90FF",
+			directionalLightIntensity: 1,
+			directionalHorizontal: -1.26,
+			directionalVertical: -3.85,
+			directionalSistance: 2.98,
+			directionaShadow: true,
+			//点光源
+			pointLight: false,
+			pointLightHelper: true,
+			pointLightColor: "#1E90FF",
+			pointLightIntensity: 1,
+			pointHorizontal: -4.21,
+			pointVertical: -4.1,
+			pointSistance: 2.53,
+			//聚光灯
+			spotLight: false,
+			spotLightColor: "#323636",
+			spotLightIntensity: 400,
+			spotHorizontal: -3.49,
+			spotVertical: -4.37,
+			spotSistance: 4.09,
+			spotAngle: 0.5,
+			spotPenumbra: 1,
+			spotFocus: 1,
+			spotCastShadow: true,
+			spotLightHelper: true,
+			spotDistance: 20
+		}
+		this.onSetModelAmbientLight(config)
+		this.onSetModelDirectionalLight(config)
+		this.onSetModelPointLight(config)
+		this.onSetModelSpotLight(config)
+		this.onSetModelPlaneGeometry(config)
+	}
 
 
 	/**
