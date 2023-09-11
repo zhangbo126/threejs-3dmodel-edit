@@ -75,7 +75,7 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
-const progress = ref(50);
+const progress = ref(0);
 const progressIndex = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
@@ -142,7 +142,7 @@ onMounted(async () => {
       const progressNum = (itemsLoaded / itemsTotal) * 100;
         progress.value = Number(progressNum.toFixed(2));
     }
-    console.log(progress.value,temsLoaded, itemsTotal)
+    console.log(progress.value,itemsLoaded, itemsTotal)
   };
 
   modelApi.loadingManager.onLoad = (e) => {
