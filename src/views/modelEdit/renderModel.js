@@ -9,6 +9,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
@@ -36,7 +37,7 @@ class renderModel {
 			'glb': new GLTFLoader(),
 			'fbx': new FBXLoader(),
 			'gltf': new GLTFLoader(),
-			'obj': new OBJLoader(),
+			'obj': new OBJLoader(new THREE.LoadingManager()),
 		}
 		//模型动画列表
 		this.modelAnimation
@@ -221,28 +222,32 @@ class renderModel {
 	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
-			const loader = this.fileLoaderMap[fileType]
+			const loader = this.fileLoaderMap[fileType]		
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
-						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
 						break;
 					case 'gltf':
 						this.model = result.scene
+						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+						this.modelAnimation = result.animations || []
 						break;
 					case 'obj':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						this.modelAnimation = result.animations || []
 						break;
 					default:
 						break;
 				}
+				this.model.decomposeName = decomposeName
+				this.getModelMeaterialList(map)
 				this.setModelPositionSize()
 				//	设置模型大小
 				if (scale) {

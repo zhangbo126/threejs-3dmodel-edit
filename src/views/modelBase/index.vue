@@ -180,7 +180,6 @@ const onSavaDragdata = () => {
 
 // 监听缓存数据变化
 onMounted(async () => {
-  console.log('页面加载')
   nextTick(() => {
     initModelBaseData();
     getDragDataList();

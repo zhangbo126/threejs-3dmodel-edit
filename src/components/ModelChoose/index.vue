@@ -16,19 +16,9 @@
       <!-- 模型列表 -->
       <el-scrollbar max-height="250px">
         <el-row>
-          <el-col
-            :style="{ textAlign: 'center' }"
-            :span="12"
-            v-for="model in ordinaryModelList"
-            :key="model.id"
-          >
-            <el-image
-              @click="onChangeModel(model)"
-              class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''"
-              :src="model.icon"
-              fit="cover"
-            />
+          <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in ordinaryModelList" :key="model.id">
+            <el-image @click="onChangeModel(model)" class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -46,19 +36,9 @@
       <!-- 模型列表 -->
       <el-scrollbar max-height="250px">
         <el-row>
-          <el-col
-            :style="{ textAlign: 'center' }"
-            :span="12"
-            v-for="model in animationModelList"
-            :key="model.id"
-          >
-            <el-image
-              @click="onChangeModel(model)"
-              class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''"
-              :src="model.icon"
-              fit="cover"
-            />
+          <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in animationModelList" :key="model.id">
+            <el-image @click="onChangeModel(model)" class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -81,18 +61,14 @@
         </el-tooltip>
       </div>
 
-      <el-upload
-        action=""
-        accept=".glb"
-        class="file-box"
-        :show-file-list="false"
-        :auto-upload="false"
-        :on-change="onUpload"
-      >
+      <el-upload action="" accept=".glb,.obj,.gltf" class="file-box" :show-file-list="false" :auto-upload="false"
+        :on-change="onUpload">
         <div class="upload">
           <div class="icon">
-            <el-icon :size="44"><Plus /></el-icon>
-            <div><span>请选择(目前仅支持.glb格式)</span></div>
+            <el-icon :size="44">
+              <Plus />
+            </el-icon>
+            <div><span>请选择(目前仅支持.glb, .obj, .gltf格式)</span></div>
           </div>
         </div>
       </el-upload>
@@ -104,6 +80,7 @@
 import { ref, computed, getCurrentInstance, reactive } from "vue";
 import { modelList } from "@/config/model.js";
 import { useStore } from "vuex";
+import { getFileType } from '@/utils/utilityFunction.js'
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const state = reactive({
@@ -161,7 +138,7 @@ const onUpload = async (file) => {
   const filePath = URL.createObjectURL(file.raw);
   const model = {
     filePath,
-    fileType: "glb",
+    fileType: getFileType(file.name),
   };
   $bus.emit("page-loading", true);
   try {
@@ -171,8 +148,8 @@ const onUpload = async (file) => {
     if (load) {
       $bus.emit("model-update");
       $bus.emit("page-loading", false);
-      activeModelId.value=null
-      activeModel.value={}
+      activeModelId.value = null
+      activeModel.value = {}
     }
   } catch (err) {
     localModelName.value = null;
@@ -204,6 +181,7 @@ defineExpose({
     border: 3px solid #18c174;
     opacity: 1;
   }
+
   .file-box {
     padding: 16px 20px;
     color: #8c939d;
@@ -214,6 +192,7 @@ defineExpose({
     overflow: hidden;
     display: flex;
     justify-content: center;
+
     .upload {
       width: 228px;
       height: 128px;
@@ -222,17 +201,20 @@ defineExpose({
       align-items: center;
       justify-content: center;
       border-radius: 6px;
+
       .icon {
         span {
           font-size: 14px;
         }
       }
+
       &:hover {
         border-color: #409eff;
         color: #409eff;
       }
     }
   }
+
   .file-name {
     color: #fff;
     text-align: center;
