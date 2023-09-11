@@ -32,12 +32,14 @@ class renderModel {
 		this.controls
 		// 模型
 		this.model
+	   // 加载进度监听
+	    this.loadingManager = new THREE.LoadingManager()
 		//文件加载器类型
 		this.fileLoaderMap = {
-			'glb': new GLTFLoader(),
+			'glb': new GLTFLoader(this.loadingManager),
 			'fbx': new FBXLoader(),
-			'gltf': new GLTFLoader(),
-			'obj': new OBJLoader(new THREE.LoadingManager()),
+			'gltf': new GLTFLoader(this.loadingManager),
+			'obj': new OBJLoader(this.loadingManager),
 		}
 		//模型动画列表
 		this.modelAnimation
@@ -113,6 +115,7 @@ class renderModel {
 		// 模型上传进度条回调函数
 		this.modelProgressCallback = (e) => e
 
+
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -128,13 +131,13 @@ class renderModel {
 			this.createHelper()
 			// 创建灯光
 			this.createLight()
+			this.addEvenListMouseLisatener()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
 			this.sceneAnimation()
-			this.addEvenListMouseLisatener()
 			reslove(load)
 		})
 	}
@@ -143,7 +146,6 @@ class renderModel {
 		this.scene = new THREE.Scene()
 		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
 		texture.mapping = THREE.EquirectangularReflectionMapping
-		// texture.colorSpace = THREE.SRGBColorSpace
 		this.scene.background = texture
 		this.scene.environment = texture
 	}
@@ -161,11 +163,11 @@ class renderModel {
 		const { clientHeight, clientWidth } = this.container
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
-		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-		this.renderer.toneMapping = THREE.ReinhardToneMapping
-		// this.renderer.outputColorSpace = THREE.sRGBEncoding
+		this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+		// this.renderer.toneMapping = THREE.ReinhardToneMapping
+		// this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
-		this.renderer.toneMappingExposure = 3
+		this.renderer.toneMappingExposure = 2
 		// this.renderer.physicallyCorrectLights = true
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
@@ -267,20 +269,14 @@ class renderModel {
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
-			}, this.modelProgress.bind(this), (err) => {
+			},()=>{}, (err) => {
 				ElMessage.error('文件错误')
 				console.log(err)
 				reject()
 			})
 		})
 	}
-	// 模型加载进度条
-	modelProgress(xhr) {
-		if (xhr.lengthComputable) {
-			const percentComplete = xhr.loaded / xhr.total * 100;
-			this.modelProgressCallback(percentComplete)
-		}
-	}
+   // 模型加载进度条回调函数
 	onProgress(callback) {
 		if (typeof callback == 'function') {
 			this.modelProgressCallback =callback
@@ -433,7 +429,7 @@ class renderModel {
 				document.body.style.cursor = '';
 				meshTxt.style.display = 'none'
 				if (this.dragControls) this.dragControls.dispose()
-				this.renderer.toneMappingExposure = 3
+				this.renderer.toneMappingExposure = 2
 				Object.assign(this.unrealBloomPass, {
 					threshold: 0,
 					strength: 0,

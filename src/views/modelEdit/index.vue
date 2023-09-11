@@ -3,14 +3,22 @@
     <!-- 头部操作栏 -->
     <header class="model-header">
       <div class="header-lf">
-        <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
+        <span>
+          基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
+        </span>
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
-        <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
+        <el-button
+          type="primary"
+          icon="Film"
+          @click="$router.push({ path: '/modelBase' })"
+        >
           模型库
         </el-button>
-        <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
+        <el-button type="primary" icon="Document" @click="onSaveConfig"
+          >保存数据</el-button
+        >
         <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
@@ -33,18 +41,26 @@
         <model-edit-panel ref="editPanel" v-if="state.modelApi.model"></model-edit-panel>
       </div>
     </div>
-    <page-loading v-model:loading="loading" v-model:percentage="progress"></page-loading>
+    <page-loading :loading="loading" :percentage="progress"></page-loading>
   </div>
 </template>
 
 <script setup name="modelEdit">
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount, onDeactivated } from "vue";
+import {
+  onMounted,
+  ref,
+  reactive,
+  computed,
+  getCurrentInstance,
+  onBeforeUnmount,
+  onDeactivated,
+} from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
-import PageLoading from '@/components/Loading/PageLoading'
+import PageLoading from "@/components/Loading/PageLoading";
 import {
   MODEL_PRIVEW_CONFIG,
   MODEL_BASE_DATA,
@@ -59,7 +75,8 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
-const progress = ref(100);
+const progress = ref(50);
+const progressIndex = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
 // 重置相机位置
@@ -104,7 +121,7 @@ const onSaveConfig = () => {
         ElMessage.warning("外部模型不支持“数据保存”");
       }
     })
-    .catch(() => { });
+    .catch(() => {});
 };
 
 onMounted(async () => {
@@ -114,20 +131,37 @@ onMounted(async () => {
   $bus.on("page-loading", (value) => {
     loading.value = value;
   });
-  const load = await modelApi.init();
-  // 模型加载进度条
-  state.modelApi.onProgress((progressNum) => {
-    progress.value = Number(progressNum.toFixed(2))
+  modelApi.loadingManager.onStart = (e) => {
+    loading.value = true;
+    progress.value = 0;
+    progressIndex.value = 0;
+  };
+  modelApi.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    progressIndex.value ++;
+    if (progressIndex.value > 1) {
+      const progressNum = (itemsLoaded / itemsTotal) * 100;
+        progress.value = Number(progressNum.toFixed(2));
+    }
 
-  })
-  if (load) {
+  };
+
+  modelApi.loadingManager.onLoad = (e) => {
     loading.value = false;
-  }
+  
+  };
+  const load = await modelApi.init();
+
+  // if (load) {
+  //   loading.value = false;
+  // }
+  //   // 模型加载进度条
+  //   state.modelApi.onProgress((progressNum) => {
+  //   progress.value = Number(progressNum.toFixed(2))
+  // })
 });
 onBeforeUnmount(() => {
-  state.modelApi.onClearModelData()
-})
-
+  state.modelApi.onClearModelData();
+});
 </script>
 
 <style lang="less" scoped>
