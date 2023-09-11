@@ -142,7 +142,7 @@ onMounted(async () => {
       const progressNum = (itemsLoaded / itemsTotal) * 100;
         progress.value = Number(progressNum.toFixed(2));
     }
-
+    console.log(progress.value,temsLoaded, itemsTotal)
   };
 
   modelApi.loadingManager.onLoad = (e) => {
