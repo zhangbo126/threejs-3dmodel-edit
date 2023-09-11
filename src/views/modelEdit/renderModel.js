@@ -110,6 +110,8 @@ class renderModel {
 		this.onMouseDownListener
 		// 鼠标移动
 		this.onMouseMoveListener
+		// 模型上传进度条回调函数
+		this.modelProgressCallback = (e) => e
 
 	}
 	init() {
@@ -222,7 +224,7 @@ class renderModel {
 	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
-			const loader = this.fileLoaderMap[fileType]		
+			const loader = this.fileLoaderMap[fileType]
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
@@ -265,16 +267,25 @@ class renderModel {
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
-			}, () => {
-
-			}, (err) => {
+			}, this.modelProgress.bind(this), (err) => {
 				ElMessage.error('文件错误')
 				console.log(err)
 				reject()
 			})
 		})
 	}
-
+	// 模型加载进度条
+	modelProgress(xhr) {
+		if (xhr.lengthComputable) {
+			const percentComplete = xhr.loaded / xhr.total * 100;
+			this.modelProgressCallback(percentComplete)
+		}
+	}
+	onProgress(callback) {
+		if (typeof callback == 'function') {
+			this.modelProgressCallback =callback
+		}
+	}
 	// 创建辅助线
 	createHelper() {
 		//网格辅助线

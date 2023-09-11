@@ -20,6 +20,7 @@ const directiveLoading = (Vue) => {
 			if (!value) {
 				el.style.position = ''
 				loadingNode.style.display = 'none'
+
 			} else {
 				el.style.position = 'relative'
 				loadingNode.style.display = 'block'

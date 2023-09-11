@@ -8,7 +8,9 @@
     </div>
   </div>
 </template>
-<script setup></script>
+<script setup>
+
+</script>
 <style scoped lang="less">
 #loading-mark {
   position: absolute;

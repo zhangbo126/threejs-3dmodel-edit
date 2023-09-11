@@ -14,7 +14,7 @@
         <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
-    <div class="model-container" v-zLoading="loading">
+    <div class="model-container">
       <!-- 模型列表 -->
       <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
@@ -33,16 +33,18 @@
         <model-edit-panel ref="editPanel" v-if="state.modelApi.model"></model-edit-panel>
       </div>
     </div>
+    <page-loading v-model:loading="loading" v-model:percentage="progress"></page-loading>
   </div>
 </template>
 
 <script setup name="modelEdit">
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount ,onDeactivated} from "vue";
+import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount, onDeactivated } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
+import PageLoading from '@/components/Loading/PageLoading'
 import {
   MODEL_PRIVEW_CONFIG,
   MODEL_BASE_DATA,
@@ -57,6 +59,7 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
+const progress = ref(100);
 const editPanel = ref(null);
 const choosePanel = ref(null);
 // 重置相机位置
@@ -101,7 +104,7 @@ const onSaveConfig = () => {
         ElMessage.warning("外部模型不支持“数据保存”");
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 onMounted(async () => {
@@ -112,11 +115,16 @@ onMounted(async () => {
     loading.value = value;
   });
   const load = await modelApi.init();
+  // 模型加载进度条
+  state.modelApi.onProgress((progressNum) => {
+    progress.value = Number(progressNum.toFixed(2))
+
+  })
   if (load) {
     loading.value = false;
   }
 });
-onBeforeUnmount(()=>{
+onBeforeUnmount(() => {
   state.modelApi.onClearModelData()
 })
 
