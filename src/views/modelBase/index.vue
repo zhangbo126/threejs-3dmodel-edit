@@ -67,7 +67,7 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup name="modelBase">
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from "@/components/DraggableResizableItem/index";
 import RightContextMenu from "@/components/RightContextMenu";
@@ -180,6 +180,7 @@ const onSavaDragdata = () => {
 
 // 监听缓存数据变化
 onMounted(async () => {
+  console.log('页面加载')
   nextTick(() => {
     initModelBaseData();
     getDragDataList();

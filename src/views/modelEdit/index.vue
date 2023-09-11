@@ -36,9 +36,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="modelEdit">
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount } from "vue";
+import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount ,onDeactivated} from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -119,6 +119,7 @@ onMounted(async () => {
 onBeforeUnmount(()=>{
   state.modelApi.onClearModelData()
 })
+
 </script>
 
 <style lang="less" scoped>
