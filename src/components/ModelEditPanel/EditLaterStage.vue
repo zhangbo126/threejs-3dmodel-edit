@@ -142,7 +142,7 @@ const config = reactive({
   radius: 1,
   decompose: 0,
   modelDrag: false,
-  toneMappingExposure: 2,
+  toneMappingExposure: 3,
   hoverMeshTag: false,
 });
 onMounted(() => {
@@ -154,7 +154,7 @@ onMounted(() => {
       radius: 1,
       decompose: 0,
       modelDrag: false,
-      toneMappingExposure: 2,
+      toneMappingExposure: 3,
       hoverMeshTag: false,
     });
   });

@@ -134,7 +134,6 @@ class renderModel {
 			this.addEvenListMouseLisatener()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
-			// const load = await this.setModel({ filePath: 'https://threejs.org/examples/models/gltf/Xbot.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
@@ -164,11 +163,10 @@ class renderModel {
 		const { clientHeight, clientWidth } = this.container
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
-		this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-		// this.renderer.toneMapping = THREE.ReinhardToneMapping
+		this.renderer.toneMapping = THREE.ReinhardToneMapping
 		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
-		this.renderer.toneMappingExposure = 2
+		this.renderer.toneMappingExposure = 3
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
@@ -377,7 +375,7 @@ class renderModel {
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
 		effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio))
-		effectFXAA.renderToScreen = true
+		effectFXAA.renderToScreen  = true
 		effectFXAA.needsSwap = true
 		this.effectComposer.addPass(effectFXAA)
 
@@ -436,7 +434,7 @@ class renderModel {
 				document.body.style.cursor = '';
 				meshTxt.style.display = 'none'
 				if (this.dragControls) this.dragControls.dispose()
-				this.renderer.toneMappingExposure = 2
+				this.renderer.toneMappingExposure = 3
 				Object.assign(this.unrealBloomPass, {
 					threshold: 0,
 					strength: 0,

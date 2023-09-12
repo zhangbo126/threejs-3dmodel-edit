@@ -4,7 +4,7 @@
       <div class="loading">
         <img :src="require('@/assets/image/loading.svg')" />
         <div class="progress-txt">
-           当前模型已加载{{ props.percentage }} M
+           当前模型已加载 <b>{{ props.percentage }}</b> M
         </div>
         <div class="loading-txt">
            模型文件首次加载时间较长请耐心等待.....
@@ -51,8 +51,14 @@ const props = defineProps({
       height: 120px;
       text-align: center;
     }
-
-    .loading-txt,.progress-txt {
+  .progress-txt{
+    font-size:18px;
+    color: #ffcb00;
+    b{
+       color: #f56c6c;
+    }
+  }
+    .loading-txt {
       text-align: center;
       font-size: 14px;
       color: #ff7c81;

@@ -48,17 +48,17 @@ import {
   computed,
   getCurrentInstance,
   onBeforeUnmount,
-  onDeactivated,
 } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
+import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading";
 import {
   MODEL_PRIVEW_CONFIG,
   MODEL_BASE_DATA,
-  MODEL_DEFAULT_CONFIG,
+  MODEL_DEFAULT_CONFIG
 } from "@/config/constant";
 const store = useStore();
 const router = useRouter();
@@ -76,7 +76,21 @@ const choosePanel = ref(null);
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
 };
-
+// 初始化模型库数据
+const initModelBaseData = () => {
+  const modelBase = $local.get(MODEL_BASE_DATA);
+  // 如果是首次加载需要设置模型库初始数据值
+  if (!Array.isArray(modelBase)) {
+    let modelBaseData = [];
+    modelList.forEach((v) => {
+      modelBaseData.push({
+        ...MODEL_DEFAULT_CONFIG,
+        fileInfo: { ...v },
+      });
+    });
+    $local.set(MODEL_BASE_DATA, modelBaseData);
+  }
+};
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
@@ -104,7 +118,7 @@ const onSaveConfig = () => {
       modelConfig.fileInfo = choosePanel.value.activeModel;
       // 判断是否是外部模型
       if (modelConfig.fileInfo.filePath) {
-        const modelBaseData = $local.get(MODEL_BASE_DATA);
+        const modelBaseData = $local.get(MODEL_BASE_DATA) || [];
         const { id } = modelConfig.fileInfo;
         // 更新缓存数据
         Object.assign(modelBaseData.filter((v) => id === v.fileInfo.id)[0], modelConfig);
@@ -124,34 +138,18 @@ onMounted(async () => {
   $bus.on("page-loading", (value) => {
     loading.value = value;
   });
-  // modelApi.loadingManager.onStart = (e) => {
-  //   loading.value = true;
-  //   progress.value = 0;
-  //   progressIndex.value = 0;
-  // };
-  // modelApi.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-  //   progressIndex.value ++;
-  //   if (progressIndex.value > 1) {
-  //     const progressNum = (itemsLoaded / itemsTotal) * 100;
-  //       progress.value = Number(progressNum.toFixed(2));
-  //   }
-  //   console.log(progress.value,itemsLoaded, itemsTotal)
-  // };
-
-  // modelApi.loadingManager.onLoad = (e) => {
-  //   loading.value = false;
-  // };
+  // 模型加载进度条
+  state.modelApi.onProgress((progressNum) => {
+    progress.value = Number((progressNum / 1024 / 1024).toFixed(2))
+    // console.log('模型已加载' + progress.value + 'M')
+  })
   const load = await modelApi.init();
-
   if (load) {
     loading.value = false;
     progress.value = 0
   }
-  // 模型加载进度条
-  state.modelApi.onProgress((progressNum) => {
-    progress.value =(progressNum / 1024 / 1024).toFixed(2)
-    console.log('模型已加载'+progress.value+'M')
-  })
+  // 初始化模型库数据
+  initModelBaseData();
 });
 onBeforeUnmount(() => {
   state.modelApi.onClearModelData();
