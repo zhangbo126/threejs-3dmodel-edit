@@ -47,9 +47,9 @@ class renderModel {
 		this.animationMixer
 		this.animationColock = new THREE.Clock()
 		//动画帧
-		this.animationFrame
+		this.animationFrame = null
 		// 轴动画帧
-		this.rotationAnimationFrame
+		this.rotationAnimationFrame =null
 		// 动画构造器
 		this.animateClipAction = null
 		// 动画循环方式枚举
@@ -86,7 +86,7 @@ class renderModel {
 		this.effectComposer
 		this.outlinePass
 		// 动画渲染器
-		this.renderAnimation
+		this.renderAnimation = null
 		// 碰撞检测
 		this.raycaster = new THREE.Raycaster()
 		// 鼠标位置
@@ -173,7 +173,8 @@ class renderModel {
 	}
 	// 更新场景
 	sceneAnimation() {
-		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
+		console.log(this.renderAnimation)
+		this.renderAnimation = window.requestAnimationFrame(()=>this.sceneAnimation())
 		this.controls.update()
 		// 将不需要处理辉光的材质进行存储备份
 		this.scene.traverse((v) => {
@@ -422,10 +423,14 @@ class renderModel {
 					}
 				})
 				//取消动画帧
-				cancelAnimationFrame(this.animationFrame)
+				window.cancelAnimationFrame(this.animationFrame)
+				// window.cancelAnimationFrame(this.renderAnimation)
+				// this.renderAnimation =null
 				cancelAnimationFrame(this.rotationAnimationFrame)
 				this.scene.remove(this.model)
 				this.modelTextureMap = []
+				this.glowMaterialList = []
+				this.materials={}
 				// 重置"灯光"模块数据
 				this.onResettingLight()
 
@@ -459,9 +464,9 @@ class renderModel {
 				this.onSetModelGridHelper(config)
 				this.onSetModelGridHelperSize(config)
 				this.onSetModelAxesHelper(config)
-
 				// 加载模型
 				const load = await this.setModel(model)
+
 				// 模型加载成功返回 true
 				reslove({ load, filePath: model.filePath })
 			} catch {
@@ -496,6 +501,7 @@ class renderModel {
 			}
 		})
 		this.scene.clear()
+		this.renderer.dispose()
 		this.renderer.clear()
 		this.container = null
 		// 相机
@@ -1092,7 +1098,7 @@ class renderModel {
 	// 开始执行动画
 	onStartModelAnimaion(config) {
 		this.onSetModelAnimaion(config)
-		cancelAnimationFrame(this.animationFrame)
+		window.cancelAnimationFrame(this.animationFrame)
 		this.animationFrameFun()
 	}
 	// 设置模型动画
@@ -1109,7 +1115,7 @@ class renderModel {
 	}
 	// 动画帧
 	animationFrameFun() {
-		this.animationFrame = requestAnimationFrame(() => this.animationFrameFun())
+		this.animationFrame = window.requestAnimationFrame(() => this.animationFrameFun())
 		if (this.animationMixer) {
 			this.animationMixer.update(this.animationColock.getDelta())
 		}

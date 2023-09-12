@@ -325,6 +325,9 @@ class renderModel {
 		})
 		this.scene.clear()
 		this.renderer.clear()
+		this.renderer.dispose()
+		this.effectComposer.dispose()
+		this.glowComposer.dispose()
 		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
 		window.removeEventListener("resize", this.onWindowResizesListener)
 		this.config = null

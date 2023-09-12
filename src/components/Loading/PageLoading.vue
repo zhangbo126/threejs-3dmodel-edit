@@ -14,7 +14,6 @@
   </div>
 </template>
 <script setup>
-import { ElProgress } from "element-plus";
 const props = defineProps({
   percentage: {
     type: Number,
