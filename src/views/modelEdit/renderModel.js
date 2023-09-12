@@ -32,13 +32,13 @@ class renderModel {
 		this.controls
 		// 模型
 		this.model
-	   // 加载进度监听
-	    this.loadingManager = new THREE.LoadingManager()
+		// 加载进度监听
+		this.loadingManager = new THREE.LoadingManager()
 		//文件加载器类型
 		this.fileLoaderMap = {
-			'glb': new GLTFLoader(this.loadingManager),
-			'fbx': new FBXLoader(),
-			'gltf': new GLTFLoader(this.loadingManager),
+			'glb': new GLTFLoader(),
+			'fbx': new FBXLoader(this.loadingManager),
+			'gltf': new GLTFLoader(),
 			'obj': new OBJLoader(this.loadingManager),
 		}
 		//模型动画列表
@@ -134,6 +134,7 @@ class renderModel {
 			this.addEvenListMouseLisatener()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
+			// const load = await this.setModel({ filePath: 'https://threejs.org/examples/models/gltf/Xbot.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
@@ -165,10 +166,9 @@ class renderModel {
 		//色调映射
 		this.renderer.toneMapping = THREE.ACESFilmicToneMapping
 		// this.renderer.toneMapping = THREE.ReinhardToneMapping
-		// this.renderer.outputColorSpace = THREE.SRGBColorSpace
+		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
 		this.renderer.toneMappingExposure = 2
-		// this.renderer.physicallyCorrectLights = true
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
@@ -227,6 +227,11 @@ class renderModel {
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
+			if (['glb', 'gltf'].includes(fileType)) {
+				const dracoLoader = new DRACOLoader()
+				dracoLoader.setDecoderPath('./threeFile/gltf/')
+				loader.setDRACOLoader(dracoLoader)
+			}
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
@@ -269,17 +274,23 @@ class renderModel {
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
-			},()=>{}, (err) => {
+			}, (xhr) => {
+				if (xhr.lengthComputable) {
+					const percentComplete = xhr.loaded / xhr.total * 100;
+					const progress = Math.round(percentComplete, 2)
+					this.modelProgressCallback(progress)
+				}
+			}, (err) => {
 				ElMessage.error('文件错误')
 				console.log(err)
 				reject()
 			})
 		})
 	}
-   // 模型加载进度条回调函数
+	// 模型加载进度条回调函数
 	onProgress(callback) {
 		if (typeof callback == 'function') {
-			this.modelProgressCallback =callback
+			this.modelProgressCallback = callback
 		}
 	}
 	// 创建辅助线

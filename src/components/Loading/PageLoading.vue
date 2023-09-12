@@ -4,15 +4,8 @@
       <div class="loading">
         <img :src="require('@/assets/image/loading.svg')" />
         <div>
-          <el-progress
-            id="loading-progress"
-            :percentage="props.percentage"
-            text-color="#ff7c81"
-            :text-inside="true"
-			:show-text="false"
-            :stroke-width="6"
-            color="#ff7c81"
-          ></el-progress>
+          <el-progress id="loading-progress" :percentage="props.percentage" text-color="#ff7c81" :text-inside="true"
+            :show-text="false" :stroke-width="6" color="#ff7c81"></el-progress>
         </div>
         <div class="loading-txt">
           {{ props.percentage }}% 模型文件首次加载时间较长请耐心等待.....

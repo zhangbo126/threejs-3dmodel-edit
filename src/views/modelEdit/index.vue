@@ -9,16 +9,10 @@
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
-        <el-button
-          type="primary"
-          icon="Film"
-          @click="$router.push({ path: '/modelBase' })"
-        >
+        <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
           模型库
         </el-button>
-        <el-button type="primary" icon="Document" @click="onSaveConfig"
-          >保存数据</el-button
-        >
+        <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
         <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
@@ -76,7 +70,6 @@ const state = reactive({
 });
 const loading = ref(false);
 const progress = ref(0);
-const progressIndex = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
 // 重置相机位置
@@ -121,7 +114,7 @@ const onSaveConfig = () => {
         ElMessage.warning("外部模型不支持“数据保存”");
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 onMounted(async () => {
@@ -131,33 +124,34 @@ onMounted(async () => {
   $bus.on("page-loading", (value) => {
     loading.value = value;
   });
-  modelApi.loadingManager.onStart = (e) => {
-    loading.value = true;
-    progress.value = 0;
-    progressIndex.value = 0;
-  };
-  modelApi.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-    progressIndex.value ++;
-    if (progressIndex.value > 1) {
-      const progressNum = (itemsLoaded / itemsTotal) * 100;
-        progress.value = Number(progressNum.toFixed(2));
-    }
-    console.log(progress.value,itemsLoaded, itemsTotal)
-  };
+  // modelApi.loadingManager.onStart = (e) => {
+  //   loading.value = true;
+  //   progress.value = 0;
+  //   progressIndex.value = 0;
+  // };
+  // modelApi.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  //   progressIndex.value ++;
+  //   if (progressIndex.value > 1) {
+  //     const progressNum = (itemsLoaded / itemsTotal) * 100;
+  //       progress.value = Number(progressNum.toFixed(2));
+  //   }
+  //   console.log(progress.value,itemsLoaded, itemsTotal)
+  // };
 
-  modelApi.loadingManager.onLoad = (e) => {
-    loading.value = false;
-  
-  };
+  // modelApi.loadingManager.onLoad = (e) => {
+  //   loading.value = false;
+  // };
   const load = await modelApi.init();
 
-  // if (load) {
-  //   loading.value = false;
-  // }
-  //   // 模型加载进度条
-  //   state.modelApi.onProgress((progressNum) => {
-  //   progress.value = Number(progressNum.toFixed(2))
-  // })
+  if (load) {
+    loading.value = false;
+    progress.value = 0
+  }
+  // 模型加载进度条
+  state.modelApi.onProgress((progressNum) => {
+    progress.value = Number(progressNum.toFixed(2))
+    console.log('模型加载'+progress.value+'%')
+  })
 });
 onBeforeUnmount(() => {
   state.modelApi.onClearModelData();
