@@ -128,3 +128,15 @@ export function deepCopy(source) {
 	}
 	return target;
 }
+
+
+/** 
+   @description 获取文件格式
+  * @param {String}  fileName 文件名称字符串 
+  * @return {String} fileType 文件格式
+*/
+
+export function getFileType(fileName) {
+	const fileExtension = fileName.split('.').pop().toLowerCase();
+	return fileExtension
+}

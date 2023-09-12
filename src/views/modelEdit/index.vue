@@ -3,7 +3,9 @@
     <!-- 头部操作栏 -->
     <header class="model-header">
       <div class="header-lf">
-        <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
+        <span>
+          基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
+        </span>
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
@@ -14,7 +16,7 @@
         <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
-    <div class="model-container" v-zLoading="loading">
+    <div class="model-container">
       <!-- 模型列表 -->
       <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
@@ -33,20 +35,30 @@
         <model-edit-panel ref="editPanel" v-if="state.modelApi.model"></model-edit-panel>
       </div>
     </div>
+    <page-loading :loading="loading" :percentage="progress"></page-loading>
   </div>
 </template>
 
-<script setup>
+<script setup name="modelEdit">
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount } from "vue";
+import {
+  onMounted,
+  ref,
+  reactive,
+  computed,
+  getCurrentInstance,
+  onBeforeUnmount,
+} from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
+import { modelList } from "@/config/model";
+import PageLoading from "@/components/Loading/PageLoading";
 import {
   MODEL_PRIVEW_CONFIG,
   MODEL_BASE_DATA,
-  MODEL_DEFAULT_CONFIG,
+  MODEL_DEFAULT_CONFIG
 } from "@/config/constant";
 const store = useStore();
 const router = useRouter();
@@ -57,13 +69,28 @@ const state = reactive({
   }),
 });
 const loading = ref(false);
+const progress = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
 };
-
+// 初始化模型库数据
+const initModelBaseData = () => {
+  const modelBase = $local.get(MODEL_BASE_DATA);
+  // 如果是首次加载需要设置模型库初始数据值
+  if (!Array.isArray(modelBase)) {
+    let modelBaseData = [];
+    modelList.forEach((v) => {
+      modelBaseData.push({
+        ...MODEL_DEFAULT_CONFIG,
+        fileInfo: { ...v },
+      });
+    });
+    $local.set(MODEL_BASE_DATA, modelBaseData);
+  }
+};
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
@@ -91,7 +118,7 @@ const onSaveConfig = () => {
       modelConfig.fileInfo = choosePanel.value.activeModel;
       // 判断是否是外部模型
       if (modelConfig.fileInfo.filePath) {
-        const modelBaseData = $local.get(MODEL_BASE_DATA);
+        const modelBaseData = $local.get(MODEL_BASE_DATA) || [];
         const { id } = modelConfig.fileInfo;
         // 更新缓存数据
         Object.assign(modelBaseData.filter((v) => id === v.fileInfo.id)[0], modelConfig);
@@ -101,7 +128,7 @@ const onSaveConfig = () => {
         ElMessage.warning("外部模型不支持“数据保存”");
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 onMounted(async () => {
@@ -111,14 +138,22 @@ onMounted(async () => {
   $bus.on("page-loading", (value) => {
     loading.value = value;
   });
+  // 模型加载进度条
+  state.modelApi.onProgress((progressNum) => {
+    progress.value = Number((progressNum / 1024 / 1024).toFixed(2))
+    // console.log('模型已加载' + progress.value + 'M')
+  })
   const load = await modelApi.init();
   if (load) {
     loading.value = false;
+    progress.value = 0
   }
+  // 初始化模型库数据
+  initModelBaseData();
 });
-onBeforeUnmount(()=>{
-  state.modelApi.onClearModelData()
-})
+onBeforeUnmount(() => {
+  state.modelApi.onClearModelData();
+});
 </script>
 
 <style lang="less" scoped>

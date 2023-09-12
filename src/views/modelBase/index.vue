@@ -67,22 +67,20 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup name="modelBase">
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from "@/components/DraggableResizableItem/index";
 import RightContextMenu from "@/components/RightContextMenu";
 import {
   MODEL_BASE_DATA,
-  MODEL_DEFAULT_CONFIG,
   MODEL_BASE_DRAGE_DATA,
 } from "@/config/constant";
-import { modelList } from "@/config/model";
 import { deepCopy, onlyKey } from "@/utils/utilityFunction";
 import { ref, getCurrentInstance, onMounted, nextTick } from "vue";
 import { ElMessage } from "element-plus";
-const { $local, $bus } = getCurrentInstance().proxy;
+const { $local} = getCurrentInstance().proxy;
 // 左侧模板库数据
-const modelBaseList = ref([]);
+const modelBaseList = ref($local.get(MODEL_BASE_DATA));
 //可拖拽模型列表
 const dragModelList = ref([]);
 // 当前选中的内容
@@ -150,22 +148,7 @@ const onDeleteDrag =(modelKey)=>{
    dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
 }
 
-// 初始化模型库数据
-const initModelBaseData = () => {
-  const modelBase = $local.get(MODEL_BASE_DATA);
-  // 如果是首次加载需要设置模型库初始数据值
-  if (!Array.isArray(modelBase)) {
-    let modelBaseData = [];
-    modelList.forEach((v) => {
-      modelBaseData.push({
-        ...MODEL_DEFAULT_CONFIG,
-        fileInfo: { ...v },
-      });
-    });
-    $local.set(MODEL_BASE_DATA, modelBaseData);
-  }
-  modelBaseList.value = $local.get(MODEL_BASE_DATA);
-};
+
 
 // 获取拖拽数据列表
 const getDragDataList = () => {
@@ -181,7 +164,6 @@ const onSavaDragdata = () => {
 // 监听缓存数据变化
 onMounted(async () => {
   nextTick(() => {
-    initModelBaseData();
     getDragDataList();
   });
   // 监听键盘按下 delete 键

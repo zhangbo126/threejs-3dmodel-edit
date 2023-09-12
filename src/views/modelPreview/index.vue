@@ -3,7 +3,7 @@
     <tree-component />
   </div>
 </template>
-<script setup lang="jsx">
+<script setup lang="jsx" name="modelBase">
 import { local } from "@/utils/storage";
 import { MODEL_PRIVEW_CONFIG } from "@/config/constant";
 const config = local.get(MODEL_PRIVEW_CONFIG);

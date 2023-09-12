@@ -9,6 +9,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
@@ -31,12 +32,14 @@ class renderModel {
 		this.controls
 		// 模型
 		this.model
+		// 加载进度监听
+		this.loadingManager = new THREE.LoadingManager()
 		//文件加载器类型
 		this.fileLoaderMap = {
 			'glb': new GLTFLoader(),
-			'fbx': new FBXLoader(),
+			'fbx': new FBXLoader(this.loadingManager),
 			'gltf': new GLTFLoader(),
-			'obj': new OBJLoader(),
+			'obj': new OBJLoader(this.loadingManager),
 		}
 		//模型动画列表
 		this.modelAnimation
@@ -109,6 +112,9 @@ class renderModel {
 		this.onMouseDownListener
 		// 鼠标移动
 		this.onMouseMoveListener
+		// 模型上传进度条回调函数
+		this.modelProgressCallback = (e) => e
+
 
 	}
 	init() {
@@ -125,13 +131,13 @@ class renderModel {
 			this.createHelper()
 			// 创建灯光
 			this.createLight()
+			this.addEvenListMouseLisatener()
 			// 添加物体模型 TODO：初始化时需要默认一个
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
 			this.sceneAnimation()
-			this.addEvenListMouseLisatener()
 			reslove(load)
 		})
 	}
@@ -140,7 +146,6 @@ class renderModel {
 		this.scene = new THREE.Scene()
 		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
 		texture.mapping = THREE.EquirectangularReflectionMapping
-		// texture.colorSpace = THREE.SRGBColorSpace
 		this.scene.background = texture
 		this.scene.environment = texture
 	}
@@ -158,12 +163,10 @@ class renderModel {
 		const { clientHeight, clientWidth } = this.container
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
-		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
-		// this.renderer.outputColorSpace = THREE.sRGBEncoding
+		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
 		this.renderer.toneMappingExposure = 3
-		// this.renderer.physicallyCorrectLights = true
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
@@ -222,27 +225,36 @@ class renderModel {
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
+			if (['glb', 'gltf'].includes(fileType)) {
+				const dracoLoader = new DRACOLoader()
+				dracoLoader.setDecoderPath('./threeFile/gltf/')
+				loader.setDRACOLoader(dracoLoader)
+			}
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						this.modelAnimation = result.animations || []
-						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
 						break;
 					case 'gltf':
 						this.model = result.scene
+						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+						this.modelAnimation = result.animations || []
 						break;
 					case 'obj':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						this.modelAnimation = result.animations || []
 						break;
 					default:
 						break;
 				}
+				this.model.decomposeName = decomposeName
+				this.getModelMeaterialList(map)
 				this.setModelPositionSize()
 				//	设置模型大小
 				if (scale) {
@@ -260,8 +272,8 @@ class renderModel {
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
-			}, () => {
-
+			}, (xhr) => {
+				this.modelProgressCallback(xhr.loaded)
 			}, (err) => {
 				ElMessage.error('文件错误')
 				console.log(err)
@@ -269,7 +281,12 @@ class renderModel {
 			})
 		})
 	}
-
+	// 模型加载进度条回调函数
+	onProgress(callback) {
+		if (typeof callback == 'function') {
+			this.modelProgressCallback = callback
+		}
+	}
 	// 创建辅助线
 	createHelper() {
 		//网格辅助线
@@ -358,7 +375,7 @@ class renderModel {
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
 		effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio))
-		effectFXAA.renderToScreen = true
+		effectFXAA.renderToScreen  = true
 		effectFXAA.needsSwap = true
 		this.effectComposer.addPass(effectFXAA)
 

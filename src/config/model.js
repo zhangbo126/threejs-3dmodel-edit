@@ -156,10 +156,10 @@ const modelList = [
 		map: require('@/assets/maps/4.png'),
 		id: 29,
 		animation: true,
-		scale: 1.2,
+		scale: 1,
 		position: {
 			x: 0,
-			y: -3.7,
+			y: -1,
 			z: 0
 		},
 		filePath: 'threeFile/glb/glb-29.glb',
