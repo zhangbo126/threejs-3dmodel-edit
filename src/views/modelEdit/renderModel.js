@@ -275,12 +275,7 @@ class renderModel {
 				this.scene.add(this.model)
 				resolve(true)
 			}, (xhr) => {
-				console.log(xhr)
-				if (xhr.lengthComputable) {
-					const percentComplete = xhr.loaded / xhr.total * 100;
-					const progress = Math.round(percentComplete, 2)
-					this.modelProgressCallback(progress)
-				}
+				this.modelProgressCallback(xhr.loaded)
 			}, (err) => {
 				ElMessage.error('文件错误')
 				console.log(err)

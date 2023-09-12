@@ -3,12 +3,11 @@
     <div class="loading-box">
       <div class="loading">
         <img :src="require('@/assets/image/loading.svg')" />
-        <div>
-          <el-progress id="loading-progress" :percentage="props.percentage" text-color="#ff7c81" :text-inside="true"
-            :show-text="false" :stroke-width="6" color="#ff7c81"></el-progress>
+        <div class="progress-txt">
+           当前模型已加载{{ props.percentage }} M
         </div>
         <div class="loading-txt">
-          {{ props.percentage }}% 模型文件首次加载时间较长请耐心等待.....
+           模型文件首次加载时间较长请耐心等待.....
         </div>
       </div>
     </div>
@@ -53,7 +52,7 @@ const props = defineProps({
       text-align: center;
     }
 
-    .loading-txt {
+    .loading-txt,.progress-txt {
       text-align: center;
       font-size: 14px;
       color: #ff7c81;

@@ -149,8 +149,8 @@ onMounted(async () => {
   }
   // 模型加载进度条
   state.modelApi.onProgress((progressNum) => {
-    progress.value = Number(progressNum.toFixed(2))
-    console.log('模型加载'+progress.value+'%')
+    progress.value =(progressNum / 1024 / 1024).toFixed(2)
+    console.log('模型已加载'+progress.value+'M')
   })
 });
 onBeforeUnmount(() => {
