@@ -108,8 +108,8 @@ const onDragEnd = (event) => {
   dragActive.value.modelKey = onlyKey(20, 2);
   dragModelList.value.push(dragActive.value);
   dragActive.value = null;
-  if(dragModelList.value.length>=8){
-    ElMessage.warning('请注意:当前面板模型组件加载过多!!!')
+  if(dragModelList.value.length>=4){
+    ElMessage.warning('请注意:模型组件加载过多会导致浏览器崩溃！！！')
   }
 };
 // 拖拽完成

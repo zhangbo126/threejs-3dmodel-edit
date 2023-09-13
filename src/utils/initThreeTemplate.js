@@ -134,6 +134,7 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
+		this.renderer.autoClear = true
 		// this.renderer.outputColorSpace = THREE.sRGBEncoding
 		//曝光
 		this.renderer.toneMappingExposure = 3
@@ -326,6 +327,11 @@ class renderModel {
 		this.scene.clear()
 		this.renderer.clear()
 		this.renderer.dispose()
+		this.camera.clear()
+		this.gridHelper.clear()
+		this.gridHelper.dispose()
+		this.axesHelper.clear()
+		this.axesHelper.dispose()
 		this.effectComposer.dispose()
 		this.glowComposer.dispose()
 		this.container.removeEventListener('mousemove', this.onMouseMoveListener)

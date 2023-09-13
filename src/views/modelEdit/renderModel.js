@@ -49,7 +49,7 @@ class renderModel {
 		//动画帧
 		this.animationFrame = null
 		// 轴动画帧
-		this.rotationAnimationFrame =null
+		this.rotationAnimationFrame = null
 		// 动画构造器
 		this.animateClipAction = null
 		// 动画循环方式枚举
@@ -164,6 +164,7 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
+		this.renderer.autoClear = true
 		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
 		this.renderer.toneMappingExposure = 3
@@ -173,34 +174,35 @@ class renderModel {
 	}
 	// 更新场景
 	sceneAnimation() {
-		console.log(this.renderAnimation)
-		this.renderAnimation = window.requestAnimationFrame(()=>this.sceneAnimation())
-		this.controls.update()
-		// 将不需要处理辉光的材质进行存储备份
-		this.scene.traverse((v) => {
-			if (v instanceof THREE.Scene) {
-				this.materials.scene = v.background
-				v.background = null
-			}
-			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
-				this.materials[v.uuid] = v.material
-				v.material = new THREE.MeshBasicMaterial({ color: 'black' })
-			}
-		})
-		this.glowComposer.render()
-		// 在辉光渲染器执行完之后在恢复材质原效果
-		this.scene.traverse((v) => {
-			if (this.materials[v.uuid]) {
-				v.material = this.materials[v.uuid]
-				delete this.materials[v.uuid]
-			}
-			if (v instanceof THREE.Scene) {
-				v.background = this.materials.scene
-				delete this.materials.scene
-			}
-		})
-		TWEEN.update();
-		this.effectComposer.render()
+		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
+		if (this.model) {
+			this.controls.update()
+			// // 将不需要处理辉光的材质进行存储备份
+			this.scene.traverse((v) => {
+				if (v instanceof THREE.Scene) {
+					this.materials.scene = v.background
+					v.background = null
+				}
+				if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
+					this.materials[v.uuid] = v.material
+					v.material = new THREE.MeshBasicMaterial({ color: 'black' })
+				}
+			})
+			this.glowComposer.render()
+			// 在辉光渲染器执行完之后在恢复材质原效果
+			this.scene.traverse((v) => {
+				if (this.materials[v.uuid]) {
+					v.material = this.materials[v.uuid]
+					delete this.materials[v.uuid]
+				}
+				if (v instanceof THREE.Scene) {
+					v.background = this.materials.scene
+					delete this.materials.scene
+				}
+			})
+			TWEEN.update();
+			this.effectComposer.render()
+		}
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
@@ -376,7 +378,7 @@ class renderModel {
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
 		effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio))
-		effectFXAA.renderToScreen  = true
+		effectFXAA.renderToScreen = true
 		effectFXAA.needsSwap = true
 		this.effectComposer.addPass(effectFXAA)
 
@@ -423,14 +425,13 @@ class renderModel {
 					}
 				})
 				//取消动画帧
-				window.cancelAnimationFrame(this.animationFrame)
-				// window.cancelAnimationFrame(this.renderAnimation)
-				// this.renderAnimation =null
+				cancelAnimationFrame(this.animationFrame)
 				cancelAnimationFrame(this.rotationAnimationFrame)
 				this.scene.remove(this.model)
+				this.model = null
 				this.modelTextureMap = []
 				this.glowMaterialList = []
-				this.materials={}
+				this.materials = {}
 				// 重置"灯光"模块数据
 				this.onResettingLight()
 
@@ -466,7 +467,6 @@ class renderModel {
 				this.onSetModelAxesHelper(config)
 				// 加载模型
 				const load = await this.setModel(model)
-
 				// 模型加载成功返回 true
 				reslove({ load, filePath: model.filePath })
 			} catch {
@@ -1098,7 +1098,7 @@ class renderModel {
 	// 开始执行动画
 	onStartModelAnimaion(config) {
 		this.onSetModelAnimaion(config)
-		window.cancelAnimationFrame(this.animationFrame)
+		cancelAnimationFrame(this.animationFrame)
 		this.animationFrameFun()
 	}
 	// 设置模型动画
@@ -1115,7 +1115,7 @@ class renderModel {
 	}
 	// 动画帧
 	animationFrameFun() {
-		this.animationFrame = window.requestAnimationFrame(() => this.animationFrameFun())
+		this.animationFrame = requestAnimationFrame(() => this.animationFrameFun())
 		if (this.animationMixer) {
 			this.animationMixer.update(this.animationColock.getDelta())
 		}
@@ -1125,6 +1125,7 @@ class renderModel {
 		if (!this.animateClipAction) return
 		this.animationMixer.stopAllAction();
 		this.animationMixer.update(0);
+		cancelAnimationFrame(this.animationFrame)
 	}
 	// 设置模型轴动画
 	onSetRotation(config) {

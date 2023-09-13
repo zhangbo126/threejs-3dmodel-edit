@@ -10,7 +10,7 @@ import GlobalComponent from '@/utils/globalComponent'
 // 自定义全局指令
 import Directive from "@/utils/directive.js";
 import 'element-plus/theme-chalk/src/index.scss'
-//import 'default-passive-events'
+import 'default-passive-events'
 import '@/style/index.less'
 const app = createApp(App)
 app.use(ElementPlus, { size: 'small', zIndex: 3000 })
