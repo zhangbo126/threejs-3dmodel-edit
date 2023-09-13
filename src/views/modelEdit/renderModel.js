@@ -242,6 +242,8 @@ class renderModel {
 						break;
 					case 'fbx':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						this.modelAnimation = result.animations || []
 						break;
 					case 'gltf':
 						this.model = result.scene
