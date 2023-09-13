@@ -90,7 +90,7 @@
           <el-switch v-model="config.modelDrag" @change="onChangeDrag" />
         </div>
       </div>
-      <div class="option" :class="meshTagDisable">
+      <!-- <div class="option" :class="meshTagDisable">
         <el-space>
           <el-icon>
             <Message :size="20" />
@@ -100,7 +100,7 @@
         <div class="grid-silder">
           <el-switch v-model="config.hoverMeshTag" @change="onChangeMeshTag" />
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

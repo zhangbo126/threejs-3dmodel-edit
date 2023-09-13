@@ -485,7 +485,7 @@ class renderModel {
 		const mapIdList = mapImageList.map(v => v.id)
 		material.meshList.forEach(v => {
 			const mesh = this.model.getObjectByProperty('name', v.meshName)
-			const { color, opacity, depthWrite, wireframe } = v
+			const { color, opacity, depthWrite, wireframe ,visible} = v
 			if (v.meshFrom) {
 				// 如果使用的是系统贴图
 				if (mapIdList.includes(v.meshFrom)) {
@@ -505,6 +505,8 @@ class renderModel {
 					})
 				}
 			}
+			// 设置材质显隐
+			mesh.material.visible = visible
 			//设置材质颜色
 			mesh.material.color.set(new THREE.Color(color))
 			//设置网格

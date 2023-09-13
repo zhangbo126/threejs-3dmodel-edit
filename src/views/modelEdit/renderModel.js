@@ -102,8 +102,8 @@ class renderModel {
 		this.materials = {}
 		// 拖拽对象控制器
 		this.dragControls
-		// 是否显示材质标签
-		this.hoverMeshTag = false
+		// 是否开启辉光
+		this.glowUnrealBloomPass = false
 		// 窗口变化监听事件
 		this.onWindowResizesListener
 		// 鼠标点击事件
@@ -177,7 +177,7 @@ class renderModel {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		if (this.model) {
 			this.controls.update()
-			// // 将不需要处理辉光的材质进行存储备份
+			// 将不需要处理辉光的材质进行存储备份
 			this.scene.traverse((v) => {
 				if (v instanceof THREE.Scene) {
 					this.materials.scene = v.background
@@ -200,6 +200,7 @@ class renderModel {
 					delete this.materials.scene
 				}
 			})
+
 			TWEEN.update();
 			this.effectComposer.render()
 		}
@@ -213,11 +214,11 @@ class renderModel {
 		this.onMouseClickListener = this.onMouseClickModel.bind(this)
 		this.container.addEventListener('click', this.onMouseClickListener)
 		// 鼠标按下
-		this.onMouseDownListener = this.onMouseDownModel.bind(this)
-		this.container.addEventListener('mousedown', this.onMouseDownListener)
+		// this.onMouseDownListener = this.onMouseDownModel.bind(this)
+		// this.container.addEventListener('mousedown', this.onMouseDownListener)
 		// 鼠标移动
-		this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
-		this.container.addEventListener('mousemove', this.onMouseMoveListener)
+		// this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
+		// this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -441,7 +442,10 @@ class renderModel {
 				const meshTxt = document.getElementById("mesh-txt");
 				document.body.style.cursor = '';
 				meshTxt.style.display = 'none'
-				if (this.dragControls) this.dragControls.dispose()
+				if (this.dragControls) {
+					// this.dragControls.removeEventListener()
+					this.dragControls.dispose()
+				}
 				this.renderer.toneMappingExposure = 3
 				Object.assign(this.unrealBloomPass, {
 					threshold: 0,
@@ -772,7 +776,7 @@ class renderModel {
 	}
 	// 鼠标选中材质
 	onMouseDownModel() {
-		if (this.modelAnimation.length) return false
+		// if (this.modelAnimation.length) return false
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -790,7 +794,7 @@ class renderModel {
 	}
 	// 模型点击事件
 	onMouseClickModel(event) {
-		if (!this.modelAnimation.length) return false
+		// if (!this.modelAnimation.length) return false
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -815,7 +819,8 @@ class renderModel {
 					meshName: v.name,
 					meshFrom: v.meshFrom,
 					color: color.getStyle(),
-					opacity, depthWrite, wireframe
+					opacity, depthWrite, wireframe,
+					visible: v.visible,
 				}
 				meshList.push(obj)
 			}
@@ -837,6 +842,7 @@ class renderModel {
 	// 设置辉光效果
 	onSetUnrealBloomPass(config) {
 		const { glow, threshold, strength, radius, toneMappingExposure } = config
+		this.glowUnrealBloomPass = glow
 		if (glow) {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
@@ -908,9 +914,13 @@ class renderModel {
 			this.dragControls.addEventListener('dragstart', () => {
 				this.controls.enabled = false
 			})
+		
 			this.dragControls.addEventListener('dragend', () => {
 				this.controls.enabled = true
 			})
+		
+
+
 		} else {
 			if (this.dragControls) this.dragControls.dispose()
 		}

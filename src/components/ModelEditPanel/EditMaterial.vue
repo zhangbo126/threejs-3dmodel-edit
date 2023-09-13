@@ -14,6 +14,8 @@
           :key="mesh.uuid"
         >
           <el-space>
+            <el-icon @click="onSetMeshVisibe(mesh)" size="18" color="#409eff" v-if="mesh.visible"><View /></el-icon>
+            <el-icon size="18" @click="onSetMeshVisibe(mesh)" v-else><Hide /></el-icon>
             <div class="icon-name">
               {{ mesh.name }}
             </div>
@@ -227,6 +229,10 @@ const onChangeMeaterial = () => {
   state.modelApi.onSetModelMaterial(config);
 };
 
+// 设置材质显隐
+const onSetMeshVisibe=(mesh)=>{
+    mesh.visible = !mesh.visible
+}
 //修改当前材质贴图
 const onChangeModelMap = (map) => {
   activeTextureMap.value = map.mapId;

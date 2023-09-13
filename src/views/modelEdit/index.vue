@@ -244,6 +244,7 @@ onBeforeUnmount(() => {
       .icon-name {
         display: flex;
         align-items: center;
+     
       }
     }
   }
