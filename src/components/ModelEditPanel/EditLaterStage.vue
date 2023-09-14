@@ -90,7 +90,7 @@
           <el-switch v-model="config.modelDrag" @change="onChangeDrag" />
         </div>
       </div>
-      <div class="option" :class="meshTagDisable">
+      <!-- <div class="option" :class="meshTagDisable">
         <el-space>
           <el-icon>
             <Message :size="20" />
@@ -100,7 +100,7 @@
         <div class="grid-silder">
           <el-switch v-model="config.hoverMeshTag" @change="onChangeMeshTag" />
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -122,17 +122,17 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1 || config.modelDrag ? "disabled" : "";
+  return (decomposeMesh.length <= 1) || decomposeMesh.length!=modelMaterialList.length || config.modelDrag ? "disabled" : "";
 });
 const moveDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1 ? "disabled" : "";
+  return decomposeMesh.length <= 1 || decomposeMesh.length!=modelMaterialList.length  ? "disabled" : "";
 });
 const meshTagDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1 && !config.hoverMeshTag ? "disabled" : "";
+  return decomposeMesh.length <= 1  && !config.hoverMeshTag ? "disabled" : "";
 });
 
 const config = reactive({

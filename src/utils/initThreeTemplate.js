@@ -134,6 +134,7 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
+		this.renderer.autoClear = true
 		// this.renderer.outputColorSpace = THREE.sRGBEncoding
 		//曝光
 		this.renderer.toneMappingExposure = 3
@@ -325,6 +326,14 @@ class renderModel {
 		})
 		this.scene.clear()
 		this.renderer.clear()
+		this.renderer.dispose()
+		this.camera.clear()
+		this.gridHelper.clear()
+		this.gridHelper.dispose()
+		this.axesHelper.clear()
+		this.axesHelper.dispose()
+		this.effectComposer.dispose()
+		this.glowComposer.dispose()
 		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
 		window.removeEventListener("resize", this.onWindowResizesListener)
 		this.config = null
@@ -476,7 +485,7 @@ class renderModel {
 		const mapIdList = mapImageList.map(v => v.id)
 		material.meshList.forEach(v => {
 			const mesh = this.model.getObjectByProperty('name', v.meshName)
-			const { color, opacity, depthWrite, wireframe } = v
+			const { color, opacity, depthWrite, wireframe ,visible} = v
 			if (v.meshFrom) {
 				// 如果使用的是系统贴图
 				if (mapIdList.includes(v.meshFrom)) {
@@ -496,6 +505,8 @@ class renderModel {
 					})
 				}
 			}
+			// 设置材质显隐
+			mesh.material.visible = visible
 			//设置材质颜色
 			mesh.material.color.set(new THREE.Color(color))
 			//设置网格

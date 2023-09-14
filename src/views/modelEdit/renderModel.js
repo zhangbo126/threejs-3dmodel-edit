@@ -47,9 +47,9 @@ class renderModel {
 		this.animationMixer
 		this.animationColock = new THREE.Clock()
 		//动画帧
-		this.animationFrame
+		this.animationFrame = null
 		// 轴动画帧
-		this.rotationAnimationFrame
+		this.rotationAnimationFrame = null
 		// 动画构造器
 		this.animateClipAction = null
 		// 动画循环方式枚举
@@ -86,7 +86,7 @@ class renderModel {
 		this.effectComposer
 		this.outlinePass
 		// 动画渲染器
-		this.renderAnimation
+		this.renderAnimation = null
 		// 碰撞检测
 		this.raycaster = new THREE.Raycaster()
 		// 鼠标位置
@@ -102,8 +102,8 @@ class renderModel {
 		this.materials = {}
 		// 拖拽对象控制器
 		this.dragControls
-		// 是否显示材质标签
-		this.hoverMeshTag = false
+		// 是否开启辉光
+		this.glowUnrealBloomPass = false
 		// 窗口变化监听事件
 		this.onWindowResizesListener
 		// 鼠标点击事件
@@ -156,7 +156,7 @@ class renderModel {
 	}
 	// 创建渲染器
 	initRender() {
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }) //设置抗锯齿
+		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }) //设置抗锯齿
 		//设置屏幕像素比
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 		//渲染的尺寸大小
@@ -164,6 +164,7 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
+		this.renderer.autoClear = true
 		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
 		this.renderer.toneMappingExposure = 3
@@ -174,7 +175,6 @@ class renderModel {
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		this.controls.update()
 		// 将不需要处理辉光的材质进行存储备份
 		this.scene.traverse((v) => {
 			if (v instanceof THREE.Scene) {
@@ -198,6 +198,7 @@ class renderModel {
 				delete this.materials.scene
 			}
 		})
+		this.controls.update()
 		TWEEN.update();
 		this.effectComposer.render()
 	}
@@ -210,11 +211,11 @@ class renderModel {
 		this.onMouseClickListener = this.onMouseClickModel.bind(this)
 		this.container.addEventListener('click', this.onMouseClickListener)
 		// 鼠标按下
-		this.onMouseDownListener = this.onMouseDownModel.bind(this)
-		this.container.addEventListener('mousedown', this.onMouseDownListener)
+		// this.onMouseDownListener = this.onMouseDownModel.bind(this)
+		// this.container.addEventListener('mousedown', this.onMouseDownListener)
 		// 鼠标移动
-		this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
-		this.container.addEventListener('mousemove', this.onMouseMoveListener)
+		// this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
+		// this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -239,6 +240,8 @@ class renderModel {
 						break;
 					case 'fbx':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						this.modelAnimation = result.animations || []
 						break;
 					case 'gltf':
 						this.model = result.scene
@@ -375,7 +378,7 @@ class renderModel {
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
 		effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio))
-		effectFXAA.renderToScreen  = true
+		effectFXAA.renderToScreen = true
 		effectFXAA.needsSwap = true
 		this.effectComposer.addPass(effectFXAA)
 
@@ -425,7 +428,10 @@ class renderModel {
 				cancelAnimationFrame(this.animationFrame)
 				cancelAnimationFrame(this.rotationAnimationFrame)
 				this.scene.remove(this.model)
+				this.model = null
 				this.modelTextureMap = []
+				this.glowMaterialList = []
+				this.materials = {}
 				// 重置"灯光"模块数据
 				this.onResettingLight()
 
@@ -433,7 +439,10 @@ class renderModel {
 				const meshTxt = document.getElementById("mesh-txt");
 				document.body.style.cursor = '';
 				meshTxt.style.display = 'none'
-				if (this.dragControls) this.dragControls.dispose()
+				if (this.dragControls) {
+					// this.dragControls.removeEventListener()
+					this.dragControls.dispose()
+				}
 				this.renderer.toneMappingExposure = 3
 				Object.assign(this.unrealBloomPass, {
 					threshold: 0,
@@ -459,7 +468,6 @@ class renderModel {
 				this.onSetModelGridHelper(config)
 				this.onSetModelGridHelperSize(config)
 				this.onSetModelAxesHelper(config)
-
 				// 加载模型
 				const load = await this.setModel(model)
 				// 模型加载成功返回 true
@@ -480,6 +488,14 @@ class renderModel {
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
+	// 下载场景封面
+	onDownloadScenCover() {
+		var link = document.createElement('a');
+		var canvas = this.renderer.domElement;
+		link.href = canvas.toDataURL("image/png");
+		link.download = `${new Date().toLocaleString()}.png`
+		link.click();
+	}
 	// 清除模型数据
 	onClearModelData() {
 		cancelAnimationFrame(this.rotationAnimationFrame)
@@ -496,6 +512,7 @@ class renderModel {
 			}
 		})
 		this.scene.clear()
+		this.renderer.dispose()
 		this.renderer.clear()
 		this.container = null
 		// 相机
@@ -764,7 +781,7 @@ class renderModel {
 	}
 	// 鼠标选中材质
 	onMouseDownModel() {
-		if (this.modelAnimation.length) return false
+		// if (this.modelAnimation.length) return false
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -782,7 +799,7 @@ class renderModel {
 	}
 	// 模型点击事件
 	onMouseClickModel(event) {
-		if (!this.modelAnimation.length) return false
+		// if (!this.modelAnimation.length) return false
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -807,7 +824,8 @@ class renderModel {
 					meshName: v.name,
 					meshFrom: v.meshFrom,
 					color: color.getStyle(),
-					opacity, depthWrite, wireframe
+					opacity, depthWrite, wireframe,
+					visible: v.visible,
 				}
 				meshList.push(obj)
 			}
@@ -829,6 +847,7 @@ class renderModel {
 	// 设置辉光效果
 	onSetUnrealBloomPass(config) {
 		const { glow, threshold, strength, radius, toneMappingExposure } = config
+		this.glowUnrealBloomPass = glow
 		if (glow) {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
@@ -900,9 +919,13 @@ class renderModel {
 			this.dragControls.addEventListener('dragstart', () => {
 				this.controls.enabled = false
 			})
+
 			this.dragControls.addEventListener('dragend', () => {
 				this.controls.enabled = true
 			})
+
+
+
 		} else {
 			if (this.dragControls) this.dragControls.dispose()
 		}
@@ -1119,6 +1142,7 @@ class renderModel {
 		if (!this.animateClipAction) return
 		this.animationMixer.stopAllAction();
 		this.animationMixer.update(0);
+		cancelAnimationFrame(this.animationFrame)
 	}
 	// 设置模型轴动画
 	onSetRotation(config) {
