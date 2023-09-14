@@ -13,6 +13,7 @@
           模型库
         </el-button>
         <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
+        <el-button type="primary" icon="Download" @click="onDownloadCover">下载封面</el-button>
         <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
       </div>
     </header>
@@ -131,6 +132,11 @@ const onSaveConfig = () => {
     })
     .catch(() => { });
 };
+
+// 下载封面
+const onDownloadCover = ()=>{
+  state.modelApi.onDownloadScenCover()
+}
 
 onMounted(async () => {
   loading.value = true;

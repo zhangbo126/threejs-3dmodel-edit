@@ -156,7 +156,7 @@ class renderModel {
 	}
 	// 创建渲染器
 	initRender() {
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }) //设置抗锯齿
+		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }) //设置抗锯齿
 		//设置屏幕像素比
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 		//渲染的尺寸大小
@@ -175,32 +175,32 @@ class renderModel {
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-			// 将不需要处理辉光的材质进行存储备份
-			this.scene.traverse((v) => {
-				if (v instanceof THREE.Scene) {
-					this.materials.scene = v.background
-					v.background = null
-				}
-				if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
-					this.materials[v.uuid] = v.material
-					v.material = new THREE.MeshBasicMaterial({ color: 'black' })
-				}
-			})
-			this.glowComposer.render()
-			// 在辉光渲染器执行完之后在恢复材质原效果
-			this.scene.traverse((v) => {
-				if (this.materials[v.uuid]) {
-					v.material = this.materials[v.uuid]
-					delete this.materials[v.uuid]
-				}
-				if (v instanceof THREE.Scene) {
-					v.background = this.materials.scene
-					delete this.materials.scene
-				}
-			})
-			this.controls.update()
-			TWEEN.update();
-			this.effectComposer.render()
+		// 将不需要处理辉光的材质进行存储备份
+		this.scene.traverse((v) => {
+			if (v instanceof THREE.Scene) {
+				this.materials.scene = v.background
+				v.background = null
+			}
+			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
+				this.materials[v.uuid] = v.material
+				v.material = new THREE.MeshBasicMaterial({ color: 'black' })
+			}
+		})
+		this.glowComposer.render()
+		// 在辉光渲染器执行完之后在恢复材质原效果
+		this.scene.traverse((v) => {
+			if (this.materials[v.uuid]) {
+				v.material = this.materials[v.uuid]
+				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.Scene) {
+				v.background = this.materials.scene
+				delete this.materials.scene
+			}
+		})
+		this.controls.update()
+		TWEEN.update();
+		this.effectComposer.render()
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
@@ -487,6 +487,14 @@ class renderModel {
 		this.renderer.setSize(clientWidth, clientHeight)
 		this.effectComposer.setSize(clientWidth, clientHeight)
 		this.glowComposer.setSize(clientWidth, clientHeight)
+	}
+	// 下载场景封面
+	onDownloadScenCover() {
+		var link = document.createElement('a');
+		var canvas = this.renderer.domElement;
+		link.href = canvas.toDataURL("image/png");
+		link.download = `${new Date().toLocaleString()}.png`
+		link.click();
 	}
 	// 清除模型数据
 	onClearModelData() {
@@ -911,11 +919,11 @@ class renderModel {
 			this.dragControls.addEventListener('dragstart', () => {
 				this.controls.enabled = false
 			})
-		
+
 			this.dragControls.addEventListener('dragend', () => {
 				this.controls.enabled = true
 			})
-		
+
 
 
 		} else {
