@@ -122,17 +122,17 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1 || config.modelDrag ? "disabled" : "";
+  return (decomposeMesh.length <= 1) || decomposeMesh.length!=modelMaterialList.length || config.modelDrag ? "disabled" : "";
 });
 const moveDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1 ? "disabled" : "";
+  return decomposeMesh.length <= 1 || decomposeMesh.length!=modelMaterialList.length  ? "disabled" : "";
 });
 const meshTagDisable = computed(() => {
   const modelMaterialList = state.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1 && !config.hoverMeshTag ? "disabled" : "";
+  return decomposeMesh.length <= 1  && !config.hoverMeshTag ? "disabled" : "";
 });
 
 const config = reactive({

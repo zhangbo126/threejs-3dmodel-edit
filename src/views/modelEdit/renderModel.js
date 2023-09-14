@@ -175,8 +175,6 @@ class renderModel {
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		if (this.model) {
-			this.controls.update()
 			// 将不需要处理辉光的材质进行存储备份
 			this.scene.traverse((v) => {
 				if (v instanceof THREE.Scene) {
@@ -200,10 +198,9 @@ class renderModel {
 					delete this.materials.scene
 				}
 			})
-
+			this.controls.update()
 			TWEEN.update();
 			this.effectComposer.render()
-		}
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
