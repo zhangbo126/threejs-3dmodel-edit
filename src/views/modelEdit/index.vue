@@ -72,6 +72,7 @@ const loading = ref(false);
 const progress = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
+
 // 重置相机位置
 const onResetCamera = () => {
   state.modelApi.onResetModelCamera();
