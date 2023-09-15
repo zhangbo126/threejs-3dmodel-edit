@@ -624,6 +624,7 @@ class renderModel {
 	 * @function onChangeModelMeaterial 选择材质
 	 * @function onMouseDownModel 鼠标选中材质
 	 * @function onGetEditMeshList 获取最新材质信息列表
+	 * @function onChangeModelMeshType 切换材质类型
 	 */
 	// 获取当前模型材质
 	getModelMeaterialList(map) {
@@ -826,13 +827,30 @@ class renderModel {
 					color: color.getStyle(),
 					opacity, depthWrite, wireframe,
 					visible: v.visible,
+					type:v.material.type
 				}
 				meshList.push(obj)
 			}
 		})
 		return meshList
 	}
-
+	// 设置材质类型
+	onChangeModelMeshType(activeMesh) {
+		this.model.traverse(v => {
+			if (v.isMesh && v.material) {
+				const { name, color, map, wireframe, depthWrite, opacity } = v.material
+				v.material = new THREE[activeMesh.type]({
+					map,
+					transparent: true,
+					color,
+					name,
+				})
+				depthWrite ? v.material.depthWrite = depthWrite : ''
+				opacity ? v.material.opacity = opacity : ''
+				wireframe ? v.material.wireframe = wireframe : ''
+			}
+		})
+	}
 
 
 	/**
