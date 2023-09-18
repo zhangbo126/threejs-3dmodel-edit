@@ -1,1 +1,31 @@
+name: Deploy to GitHub Pages
 
+on:
+  push:
+    branches:
+      - gh-pages # 这里的分支名可能根据实际情况调整
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Dependencies
+        run: npm install # 或者使用 yarn install
+
+      - name: Build Project
+        run: npm run build # 或者自定义的构建命令
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # 或者自定义的构建目录
