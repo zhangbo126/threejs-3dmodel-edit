@@ -110,8 +110,7 @@ class renderModel {
 		this.onMouseClickListener
 		// 鼠标按下
 		this.onMouseDownListener
-		// 鼠标移动
-		this.onMouseMoveListener
+	
 		// 模型上传进度条回调函数
 		this.modelProgressCallback = (e) => e
 
@@ -213,9 +212,6 @@ class renderModel {
 		// 鼠标按下
 		// this.onMouseDownListener = this.onMouseDownModel.bind(this)
 		// this.container.addEventListener('mousedown', this.onMouseDownListener)
-		// 鼠标移动
-		// this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
-		// this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -495,6 +491,7 @@ class renderModel {
 		link.href = canvas.toDataURL("image/png");
 		link.download = `${new Date().toLocaleString()}.png`
 		link.click();
+		ElMessage.success('下载成功')
 	}
 	// 导出模型
 	onExporterModel(type) {
@@ -539,6 +536,7 @@ class renderModel {
 				link.download = filename;
 				link.click();
 				URL.revokeObjectURL(url);
+				ElMessage.success('导出成功')
 			}
 			function saveString(text, filename) {
 				// 将字符串数据保存为文件
@@ -549,6 +547,7 @@ class renderModel {
 				link.download = filename;
 				link.click();
 				URL.revokeObjectURL(url);
+				ElMessage.success('导出成功')
 			}
 		}, (err) => {
 			ElMessage.error(err)
@@ -561,7 +560,6 @@ class renderModel {
 		cancelAnimationFrame(this.animationFrame)
 		this.container.removeEventListener('click', this.onMouseClickListener)
 		this.container.removeEventListener('mousedown', this.onMouseDownListener)
-		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
 		window.removeEventListener("resize", this.onWindowResizesListener)
 		this.scene.traverse((v) => {
 			if (v.type === 'Mesh') {
@@ -698,12 +696,15 @@ class renderModel {
 				i++;
 				if (v.material) {
 					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					const { name, color, map } = v.material
+					const { name, color, map ,depthWrite, wireframe,opacity} = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
 					v.material = new THREE.MeshStandardMaterial({
 						map,
 						transparent: true,
 						color,
+						wireframe,
+						depthWrite,
+						opacity,
 						name,
 					})
 					this.modelMaterialList.push(v)
@@ -722,12 +723,15 @@ class renderModel {
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
 					const mapTexture = new THREE.TextureLoader().load(map)
-					const { color, name } = v.material
+					const { color, name ,depthWrite, wireframe,opacity} = v.material
 					v.material = new THREE.MeshStandardMaterial({
 						map: mapTexture,
 						name,
 						transparent: true,
 						color,
+						wireframe,
+						depthWrite,
+						opacity,
 					})
 					v.mapId = uuid + '_' + i
 					this.modelTextureMap = [{
@@ -784,7 +788,7 @@ class renderModel {
 	}
 	// 设置材质属性
 	onSetModelMaterial(config) {
-		const { color, wireframe, depthWrite, opacity } = config
+		const { color, wireframe, depthWrite, opacity } = JSON.parse(JSON.stringify(config))
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
@@ -803,7 +807,9 @@ class renderModel {
 					name,
 					transparent: true,
 					color:new THREE.Color(color),
-					wireframe, depthWrite, opacity 
+					wireframe,
+				    depthWrite,
+				    opacity 
 				})
 		}
 	}
@@ -924,7 +930,6 @@ class renderModel {
 	 * @function setModelMeshDecompose 模型拆分
 	 * @function setModelMeshDrag 模型材质可拖拽
 	 * @function setModelMeshTag 是否显示模型材质标签
-	 * @function onMouseMoveModel 鼠标移入模型材质
 	 * @function getMeshDragPosition 获取模型材质位拖拽置
 	 */
 	// 设置辉光效果
@@ -1017,39 +1022,7 @@ class renderModel {
 	setModelMeshTag({ hoverMeshTag }) {
 		this.hoverMeshTag = hoverMeshTag
 	}
-	// 鼠标移入模型材质
-	onMouseMoveModel(event) {
-		if (this.modelAnimation.length) return false
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
-		if (intersects.length > 0) {
-			const meshTxt = document.getElementById("mesh-txt");
-			// TODO:动画模型不显示材质标签
-			if (this.modelAnimation.length) {
-				document.body.style.cursor = 'pointer';
-				return false
-			}
-			// 判断是否开启显示材质标签
-			if (this.hoverMeshTag) {
-				// 设置材质标签位置
-				const intersectedObject = intersects[0].object
-				meshTxt.innerHTML = intersectedObject.name
-				meshTxt.style.display = "block";
-				meshTxt.style.top = event.clientY - offsetTop + 'px';
-				meshTxt.style.left = event.clientX - offsetLeft + 20 + 'px';
-			}
-			document.body.style.cursor = 'pointer'
 
-		} else {
-			const meshTxt = document.getElementById("mesh-txt");
-			document.body.style.cursor = '';
-			meshTxt.style.display = "none";
-
-		}
-	}
 	// 获取模型材质位拖拽置
 	getMeshDragPosition() {
 		const positonList = []

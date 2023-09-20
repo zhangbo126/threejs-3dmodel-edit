@@ -49,15 +49,7 @@
     <div class="options" :class="optionDisabled">
       <div class="option space-between">
         <el-space>
-          <el-tooltip
-            effect="dark"
-            content="注意:部分模型因为原始材质特殊以及灯光等原因,修改材质颜色可能没有实际效果"
-            placement="top"
-          >
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
+
           <el-button type="primary" link>材质颜色</el-button>
           <el-color-picker
             color-format="hex"
@@ -73,29 +65,20 @@
         </el-space>
         <el-space>
           <el-tooltip
-            effect="dark"
-            content="注意:部分模型因为原始材质不支持网格,修改网格可能导致材质显示异常,或者没有实际效果"
-            placement="top"
-          >
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
+          effect="dark"
+          content="注意：设置了模型材质网格属性为true时在模型导出时会造成材质损坏"
+          placement="top"
+        >
+          <el-icon>
+            <WarnTriangleFilled :size="20" color="#ffb940" />
+          </el-icon>
+        </el-tooltip>
           <el-button type="primary" link>网格</el-button>
           <el-switch @change="onChangeMeaterial" v-model="config.wireframe"></el-switch>
         </el-space>
       </div>
       <div class="option">
         <div class="grid-txt">
-          <el-tooltip
-            effect="dark"
-            content="注意:部分模型因为原始材质不支持透明度,修改透明度可能导致材质显示异常,或者没有实际效果"
-            placement="top"
-          >
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
