@@ -9,12 +9,25 @@
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
-        <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
-          模型库
-        </el-button>
-        <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
-        <el-button type="primary" icon="Download" @click="onDownloadCover">下载封面</el-button>
-        <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
+         <el-space>
+          <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
+            模型库
+          </el-button>
+          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
+          <el-dropdown trigger="click">
+            <el-button type="primary" icon="Download">
+               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
+                <el-dropdown-item @click="onExportModleFile('glb')">导出模型(.glb)格式</el-dropdown-item>
+                <el-dropdown-item  @click="onExportModleFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
+         </el-space>
       </div>
     </header>
     <div class="model-container">
@@ -136,6 +149,10 @@ const onSaveConfig = () => {
 // 下载封面
 const onDownloadCover = ()=>{
   state.modelApi.onDownloadScenCover()
+}
+// 导出模型
+const onExportModleFile =(type)=>{
+  state.modelApi.onExporterModel(type)
 }
 
 onMounted(async () => {

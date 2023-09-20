@@ -1,11 +1,29 @@
 <template>
   <div class="edit-box">
     <div class="header">
+      <span>材质类型</span>
+    </div>
+    <div class="options">
+       <div class="option">
+        <el-space>
+        <span>当前材质类型：</span>
+          <el-select  v-model="activeMeshType" @change="onChangeMeshType"  placeholder="请选择" size="small">
+            <el-option
+              v-for="item in meshTypeList"
+              :key="item.type"
+              :label="`${item.type}(${item.describe})`"
+              :value="item.type"
+            />
+          </el-select>
+        </el-space>
+       </div>
+    </div>
+    <div class="header">
       <span>材质</span>
     </div>
     <!-- 材质列表 -->
     <div class="options">
-      <el-scrollbar max-height="240px">
+      <el-scrollbar max-height="200px">
         <div
           class="option"
           :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
@@ -31,15 +49,7 @@
     <div class="options" :class="optionDisabled">
       <div class="option space-between">
         <el-space>
-          <el-tooltip
-            effect="dark"
-            content="注意:部分模型因为原始材质特殊以及灯光等原因,修改材质颜色可能没有实际效果"
-            placement="top"
-          >
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
+
           <el-button type="primary" link>材质颜色</el-button>
           <el-color-picker
             color-format="hex"
@@ -55,29 +65,20 @@
         </el-space>
         <el-space>
           <el-tooltip
-            effect="dark"
-            content="注意:部分模型因为原始材质不支持网格,修改网格可能导致材质显示异常,或者没有实际效果"
-            placement="top"
-          >
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
+          effect="dark"
+          content="注意：设置了模型材质网格属性为true时在模型导出时会造成材质损坏"
+          placement="top"
+        >
+          <el-icon>
+            <WarnTriangleFilled :size="20" color="#ffb940" />
+          </el-icon>
+        </el-tooltip>
           <el-button type="primary" link>网格</el-button>
           <el-switch @change="onChangeMeaterial" v-model="config.wireframe"></el-switch>
         </el-space>
       </div>
       <div class="option">
         <div class="grid-txt">
-          <el-tooltip
-            effect="dark"
-            content="注意:部分模型因为原始材质不支持透明度,修改透明度可能导致材质显示异常,或者没有实际效果"
-            placement="top"
-          >
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
@@ -118,7 +119,7 @@
     </div>
     <div class="header">系统贴图</div>
     <div class="options" :class="optionDisabled">
-      <el-scrollbar max-height="240px">
+      <el-scrollbar max-height="230px">
         <el-row>
           <el-col
             :span="6"
@@ -145,7 +146,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
 import { useStore } from "vuex";
-import { PREDEFINE_COLORS } from "@/config/constant";
+import { PREDEFINE_COLORS ,meshTypeList} from "@/config/constant";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
@@ -159,6 +160,15 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
+const activeMeshType =ref('MeshStandardMaterial')
+const activeMesh = reactive({
+    type: 'MeshStandardMaterial',
+    describe:'标准网格材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+})
 const activeTextureMap = ref(null);
 
 const optionDisabled = computed(() => {
@@ -207,6 +217,13 @@ watch(
     }
   }
 );
+
+// 切换材质类型
+const onChangeMeshType =(e) =>{
+  const activeMesh =  meshTypeList.find(v=>v.type==e)
+  state.modelApi.onChangeModelMeshType(activeMesh);
+}
+
 // 选择材质
 const onChangeMaterialType = ({ name, id, material, mapId }) => {
   config.meaterialName = material.name;

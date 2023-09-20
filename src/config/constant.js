@@ -184,3 +184,72 @@ export const MODEL_DEFAULT_CONFIG = {
 	},
 
 }
+
+
+// 材质类型列表
+export const meshTypeList = [
+	{
+		type: 'MeshBasicMaterial',
+        describe:'基础网格材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+	// {
+	// 	type: 'MeshDepthMaterial',
+    //     describe:'深度网格材质',
+	// 	color: false,
+	// 	wireframe: true,
+	// 	depthWrite: true,
+	// 	opacity: true,
+	// },
+	{
+		type: 'MeshLambertMaterial',
+        describe:'Lambert网格材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+	{
+		type: 'MeshMatcapMaterial',
+        describe:'MeshMatcap材质',
+		color: true,
+		wireframe: false,
+		depthWrite: true,
+		opacity: true,
+	},
+	{
+		type: 'MeshPhongMaterial',
+        describe:'Phong网格材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+	{
+		type: 'MeshPhysicalMaterial',
+        describe:'物理网格材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+	{
+		type: 'MeshStandardMaterial',
+        describe:'标准网格材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+	{
+		type: 'MeshToonMaterial',
+        describe:'卡通着色的材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+]

@@ -161,7 +161,7 @@ class renderModel {
 		this.scene = new THREE.Scene()
 	}
 	addEvenListMouseLisatener() {
-	   // 监听场景大小改变，跳转渲染尺寸
+		// 监听场景大小改变，跳转渲染尺寸
 		this.onWindowResizesListener = this.onWindowResize.bind(this)
 		window.addEventListener("resize", this.onWindowResizesListener)
 
@@ -339,59 +339,59 @@ class renderModel {
 		this.config = null
 		this.container = null
 		// 相机
-		this.camera= null
+		this.camera = null
 		// 场景
-		this.scene= null
+		this.scene = null
 		//渲染器
-		this.renderer= null
+		this.renderer = null
 		// 控制器
-		this.controls= null
+		this.controls = null
 		// 模型
-		this.model= null
+		this.model = null
 		//文件加载器类型
 		this.fileLoaderMap = null
 		//模型动画列表
-		this.modelAnimation= null
+		this.modelAnimation = null
 		//模型动画对象
-		this.animationMixer= null
+		this.animationMixer = null
 		this.animationColock = null
 		// 动画帧
-		this.animationFrame= null
+		this.animationFrame = null
 		// 轴动画帧
-		this.rotationAnimationFrame= null
+		this.rotationAnimationFrame = null
 		// 动画构造器
 		this.animateClipAction = null
 		// 动画循环方式枚举
 		this.loopMap = null
 		// 模型骨架
-		this.skeletonHelper= null
+		this.skeletonHelper = null
 		// 网格辅助线
-		this.gridHelper= null
+		this.gridHelper = null
 		// 坐标轴辅助线
-		this.axesHelper= null
+		this.axesHelper = null
 		//模型平面
-		this.planeGeometry= null
+		this.planeGeometry = null
 		//模型材质列表
-		this.modelMaterialList= null
+		this.modelMaterialList = null
 		// 效果合成器
-		this.effectComposer= null
-		this.outlinePass= null
+		this.effectComposer = null
+		this.outlinePass = null
 		// 动画渲染器
-		this.renderAnimation= null
+		this.renderAnimation = null
 		// 碰撞检测
 		this.raycaster == null
 		// 鼠标位置
 		this.mouse = null
 		// 模型自带贴图
-		this.modelTextureMap= null
+		this.modelTextureMap = null
 		// 辉光效果合成器
-		this.glowComposer= null
+		this.glowComposer = null
 		// 辉光渲染器
-		this.unrealBloomPass= null
+		this.unrealBloomPass = null
 		// 需要辉光的材质
-		this.glowMaterialList= null
+		this.glowMaterialList = null
 		this.materials = null
-	
+
 	}
 
 	// 设置模型定位缩放大小
@@ -485,7 +485,12 @@ class renderModel {
 		const mapIdList = mapImageList.map(v => v.id)
 		material.meshList.forEach(v => {
 			const mesh = this.model.getObjectByProperty('name', v.meshName)
-			const { color, opacity, depthWrite, wireframe ,visible} = v
+			const { color, opacity, depthWrite, wireframe, visible, type } = v
+			const { map } = mesh.material
+			mesh.material = new THREE[type]({
+				map,
+			})
+	
 			if (v.meshFrom) {
 				// 如果使用的是系统贴图
 				if (mapIdList.includes(v.meshFrom)) {
@@ -493,17 +498,18 @@ class renderModel {
 					const mapInfo = mapImageList.find(m => m.id == v.meshFrom) || {}
 					// 加载系统材质贴图
 					const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
-					mesh.material = new THREE.MeshStandardMaterial({
+					mesh.material = new THREE[type]({
 						map: mapTexture,
 					})
 				} else {
 					// 如果是当前模型材质自身贴图
 					const meshFrom = this.model.getObjectByProperty('name', v.meshFrom)
 					const { map } = meshFrom.material
-					mesh.material = new THREE.MeshStandardMaterial({
+					mesh.material = new THREE[type]({
 						map,
 					})
 				}
+
 			}
 			// 设置材质显隐
 			mesh.material.visible = visible
