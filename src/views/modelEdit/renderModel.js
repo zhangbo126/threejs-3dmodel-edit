@@ -496,6 +496,64 @@ class renderModel {
 		link.download = `${new Date().toLocaleString()}.png`
 		link.click();
 	}
+	// 导出模型
+	onExporterModel(type) {
+		const exporter = new GLTFExporter();
+		const options = {
+			trs: true,      // 是否保留位置、旋转、缩放信息
+			animations: this.modelAnimation, // 导出的动画
+			binary: type == 'glb' ? true : false,  // 是否以二进制格式输出
+			embedImages: true,//是否嵌入贴图
+			onlyVisible: true, //是否只导出可见物体
+			forcePowerOfTwoTextures: true,
+			includeCustomMaterials: true, //指定是否包含自定义材质
+			includeCustomAttributes: true, //	指定是否包含自定义属性
+			includeCustomTextures: true, //	指定是否包含自定义纹理
+			includeCustomSamplers: true, //	指定是否包含自定义纹理
+			includeCustomImages: true, //	指定是否包含自定义纹理
+			includeCustomTechniques: true, //	指定是否包含自定义纹理
+			includeCustomMaterialsCommon: true,
+			includeCustomMeshes: true,
+			includeCustomSkins: true,
+			includeCustomNodes: true,
+			includeCustomGeometries: true,
+			includeCustomPrograms: true,
+			includeCustomShaders: true,
+			includeCustomExtensions: true, //指定是否包含自定义扩展。如果设置为true，则会包含在导出中定义的自定义GLTF扩展
+		}
+		exporter.parse(this.scene, function (result) {
+			console.log(result)
+			if (result instanceof ArrayBuffer) {
+				// 将结果保存为GLB二进制文件
+				saveArrayBuffer(result, `${new Date().toLocaleString()}.glb`);
+			} else {
+				// 将结果保存为GLTF JSON文件
+				saveString(JSON.stringify(result), `${new Date().toLocaleString()}.gltf`);
+			}
+			function saveArrayBuffer(buffer, filename) {
+				// 将二进制数据保存为文件
+				const blob = new Blob([buffer], { type: 'application/octet-stream' });
+				const url = URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = filename;
+				link.click();
+				URL.revokeObjectURL(url);
+			}
+			function saveString(text, filename) {
+				// 将字符串数据保存为文件
+				const blob = new Blob([text], { type: 'application/json' });
+				const url = URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = filename;
+				link.click();
+				URL.revokeObjectURL(url);
+			}
+		}, (err) => {
+			ElMessage.error(err)
+		}, options);
+	}
 	// 清除模型数据
 	onClearModelData() {
 		cancelAnimationFrame(this.rotationAnimationFrame)
@@ -731,16 +789,23 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
 			//设置材质颜色
-			mesh.material.color.set(new THREE.Color(color))
-			//设置网格
-			mesh.material.wireframe = wireframe
-			// 设置深度写入
-			mesh.material.depthWrite = depthWrite
-			//设置透明度
-			mesh.material.transparent = true
-			mesh.material.opacity = opacity
+			// mesh.material.color.set(new THREE.Color(color))
+			// //设置网格
+			// mesh.material.wireframe = wireframe
+			// // 设置深度写入
+			// mesh.material.depthWrite = depthWrite
+			// //设置透明度
+			// mesh.material.transparent = true
+			// mesh.material.opacity = opacity
+			  const { name, map } = mesh.material
+				mesh.material = new THREE.MeshStandardMaterial({
+					map,
+					name,
+					transparent: true,
+					color:new THREE.Color(color),
+					wireframe, depthWrite, opacity 
+				})
 		}
-
 	}
 	// 设置模型贴图（模型自带）
 	onSetModelMap({ material, mapId, meshName }) {
@@ -827,7 +892,7 @@ class renderModel {
 					color: color.getStyle(),
 					opacity, depthWrite, wireframe,
 					visible: v.visible,
-					type:v.material.type
+					type: v.material.type
 				}
 				meshList.push(obj)
 			}
