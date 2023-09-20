@@ -702,8 +702,8 @@ class renderModel {
 						map,
 						transparent: true,
 						color,
-						wireframe,
-						depthWrite,
+						// wireframe,
+						// depthWrite,
 						opacity,
 						name,
 					})
@@ -729,8 +729,8 @@ class renderModel {
 						name,
 						transparent: true,
 						color,
-						wireframe,
-						depthWrite,
+						// wireframe,
+						// depthWrite,
 						opacity,
 					})
 					v.mapId = uuid + '_' + i
