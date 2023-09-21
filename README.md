@@ -1,6 +1,9 @@
 
 
 ###  🌱基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
+[![star](https://img.shields.io/github/stars/hooray/vue-automation?style=social)](https://github.com/hooray/vue-automation/stargazers)
+
+[![star](https://gitee.com/eoner/vue-automation/badge/star.svg?theme=dark)](https://gitee.com/eoner/vue-automation/stargazers)
 
 ### 🎨预览
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
