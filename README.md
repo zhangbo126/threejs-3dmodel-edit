@@ -1,6 +1,7 @@
 
 
 ###  🌱基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
+[![答案/threejs3d模型可视化编辑系统](https://gitee.com/ZHANG_6666/Three.js3D/widgets/widget_card.svg?colors=393222,ebdfc1,fffae5,d8ca9f,393222,a28b40)](https://gitee.com/ZHANG_6666/Three.js3D)
 <a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a> <a href='https://gitee.com/ZHANG_6666/Three.js3D/members'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/fork.svg?theme=dark' alt='fork'></img></a>
 ### 🎨预览
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
