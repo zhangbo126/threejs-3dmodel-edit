@@ -60,13 +60,22 @@
           />
         </el-space>
         <el-space>
+          <el-tooltip
+          effect="dark"
+          content="注意：深度写入属性不支持模型“导出” "
+          placement="top"
+        >
+          <el-icon>
+            <WarnTriangleFilled :size="20" color="#ffb940" />
+          </el-icon>
+        </el-tooltip>
           <el-button type="primary" link>深度写入</el-button>
           <el-switch @change="onChangeMeaterial" v-model="config.depthWrite"></el-switch>
         </el-space>
         <el-space>
           <el-tooltip
           effect="dark"
-          content="注意：设置了模型材质网格属性为true时在模型导出时会造成材质损坏"
+          content="注意：网格属性不支持模型“导出” "
           placement="top"
         >
           <el-icon>
