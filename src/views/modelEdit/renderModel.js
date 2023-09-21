@@ -110,7 +110,7 @@ class renderModel {
 		this.onMouseClickListener
 		// 鼠标按下
 		this.onMouseDownListener
-	
+
 		// 模型上传进度条回调函数
 		this.modelProgressCallback = (e) => e
 
@@ -502,27 +502,29 @@ class renderModel {
 			binary: type == 'glb' ? true : false,  // 是否以二进制格式输出
 			embedImages: true,//是否嵌入贴图
 			onlyVisible: true, //是否只导出可见物体
-			forcePowerOfTwoTextures: true,
-			includeCustomMaterials: true, //指定是否包含自定义材质
-			includeCustomAttributes: true, //	指定是否包含自定义属性
-			includeCustomTextures: true, //	指定是否包含自定义纹理
-			includeCustomSamplers: true, //	指定是否包含自定义纹理
-			includeCustomImages: true, //	指定是否包含自定义纹理
-			includeCustomTechniques: true, //	指定是否包含自定义纹理
-			includeCustomMaterialsCommon: true,
-			includeCustomMeshes: true,
-			includeCustomSkins: true,
-			includeCustomNodes: true,
-			includeCustomGeometries: true,
-			includeCustomPrograms: true,
-			includeCustomShaders: true,
-			includeCustomExtensions: true, //指定是否包含自定义扩展。如果设置为true，则会包含在导出中定义的自定义GLTF扩展
+			includeCustomExtensions:true,
+			// forcePowerOfTwoTextures: true,
+			// includeCustomMaterials: true, //指定是否包含自定义材质
+			// includeCustomAttributes: true, //	指定是否包含自定义属性
+			// includeCustomTextures: true, //	指定是否包含自定义纹理
+			// includeCustomSamplers: true, //	指定是否包含自定义采样器
+			// includeCustomImages: true, //	指定是否包含自定义图像
+			// includeCustomTechniques: true, //	指定是否包含自定义技术
+			// includeCustomMaterialsCommon: true, //指定是否包含自定义 MaterialsCommon
+			// includeCustomMeshes: true,//指定是否包含自定义网格
+			// includeCustomSkins: true, //指定是否包含自定义皮肤
+			// includeCustomNodes: true, // 指定是否包含自定义节点
+			// includeCustomGeometries: true, //指定是否包含自定义几何体
+			// includeCustomPrograms: true, // 指定是否包含自定义程序
+			// includeCustomShaders: true, //指定是否包含自定义着色器
+			// includeCustomExtensions: true, //指定是否包含自定义扩展。如果设置为true，则会包含在导出中定义的自定义GLTF扩展
 		}
 		exporter.parse(this.scene, function (result) {
 			console.log(result)
 			if (result instanceof ArrayBuffer) {
 				// 将结果保存为GLB二进制文件
 				saveArrayBuffer(result, `${new Date().toLocaleString()}.glb`);
+
 			} else {
 				// 将结果保存为GLTF JSON文件
 				saveString(JSON.stringify(result), `${new Date().toLocaleString()}.gltf`);
@@ -640,8 +642,6 @@ class renderModel {
 		this.materials = null
 		// 拖拽对象控制器
 		this.dragControls = null
-		// 是否显示材质标签
-		this.hoverMeshTag = null
 	}
 
 
@@ -696,7 +696,7 @@ class renderModel {
 				i++;
 				if (v.material) {
 					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					const { name, color, map ,depthWrite, wireframe,opacity} = v.material
+					const { name, color, map, depthWrite, wireframe, opacity } = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
 					v.material = new THREE.MeshStandardMaterial({
 						map,
@@ -723,7 +723,7 @@ class renderModel {
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
 					const mapTexture = new THREE.TextureLoader().load(map)
-					const { color, name ,depthWrite, wireframe,opacity} = v.material
+					const { color, name, depthWrite, wireframe, opacity } = v.material
 					v.material = new THREE.MeshStandardMaterial({
 						map: mapTexture,
 						name,
@@ -801,16 +801,16 @@ class renderModel {
 			// //设置透明度
 			// mesh.material.transparent = true
 			// mesh.material.opacity = opacity
-			  const { name, map } = mesh.material
-				mesh.material = new THREE.MeshStandardMaterial({
-					map,
-					name,
-					transparent: true,
-					color:new THREE.Color(color),
-					wireframe,
-				    depthWrite,
-				    opacity 
-				})
+			const { name, map } = mesh.material
+			mesh.material = new THREE.MeshStandardMaterial({
+				map,
+				name,
+				transparent: true,
+				color: new THREE.Color(color),
+				wireframe,
+				depthWrite,
+				opacity
+			})
 		}
 	}
 	// 设置模型贴图（模型自带）
@@ -929,7 +929,6 @@ class renderModel {
 	 * @function onSetUnrealBloomPass 设置辉光效果
 	 * @function setModelMeshDecompose 模型拆分
 	 * @function setModelMeshDrag 模型材质可拖拽
-	 * @function setModelMeshTag 是否显示模型材质标签
 	 * @function getMeshDragPosition 获取模型材质位拖拽置
 	 */
 	// 设置辉光效果
@@ -1012,15 +1011,9 @@ class renderModel {
 				this.controls.enabled = true
 			})
 
-
-
 		} else {
 			if (this.dragControls) this.dragControls.dispose()
 		}
-	}
-	// 是否显示模型材质标签
-	setModelMeshTag({ hoverMeshTag }) {
-		this.hoverMeshTag = hoverMeshTag
 	}
 
 	// 获取模型材质位拖拽置
