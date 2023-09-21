@@ -1,6 +1,8 @@
 
 
 ###  🌱基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
+[![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=答案)](https://github.com/anuraghazra/github-readme-stats)
+
 ### 🎨预览
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
 - 2.线上访问:[https://zhang_6666.gitee.io/three.js3d](https://zhang_6666.gitee.io/three.js3d)
