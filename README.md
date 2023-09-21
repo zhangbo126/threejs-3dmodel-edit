@@ -1,7 +1,7 @@
 
 
 ###  🌱基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
-<a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a>
+<a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a><a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a>
 
 ### 🎨预览
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
