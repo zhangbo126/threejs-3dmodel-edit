@@ -4,14 +4,14 @@
       <span>模型灯光</span>
     </div>
     <el-scrollbar height="calc(100vh - 130px)">
-      <!-- 模型平面 -->
+      <!-- 光源平面 -->
       <div class="options">
         <div class="option space-between">
           <el-space>
             <el-icon>
               <Odometer />
             </el-icon>
-            <span>模型平面</span>
+            <span>光源平面</span>
           </el-space>
           <el-switch v-model="config.planeGeometry" @change="onChangePlaneGeometry" />
         </div>
@@ -293,7 +293,7 @@ import { PREDEFINE_COLORS } from "@/config/constant";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
-  //模型平面
+  //光源平面
   planeGeometry: false,
   planeColor: "#939393",
   planeWidth: 7,
@@ -365,7 +365,7 @@ const state = reactive({
 onMounted(() => {
   $bus.on("model-update", () => {
     Object.assign(config, {
-      //模型平面
+      //光源平面
       planeGeometry: false,
       planeColor: "#939393",
       planeWidth: 7,

@@ -14,7 +14,7 @@
         </el-space>
       </div>
       <!-- 模型列表 -->
-      <el-scrollbar max-height="250px">
+      <el-scrollbar max-height="210px">
         <el-row>
           <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in ordinaryModelList" :key="model.id">
             <el-image @click="onChangeModel(model)" class="el-img"
@@ -34,11 +34,36 @@
         </el-space>
       </div>
       <!-- 模型列表 -->
-      <el-scrollbar max-height="250px">
+      <el-scrollbar max-height="210px">
         <el-row>
           <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in animationModelList" :key="model.id">
             <el-image @click="onChangeModel(model)" class="el-img"
               :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
+          </el-col>
+        </el-row>
+      </el-scrollbar>
+    </div>
+    <!-- 几何体模型 -->
+    <div class="options">
+      <div class="option">
+        <el-space>
+          <el-icon>
+            <SwitchFilled />
+          </el-icon>
+          <span>几何体模型</span> 
+        </el-space>
+      </div>
+      <!-- 模型列表 -->
+      <el-scrollbar max-height="120px">
+        <el-row>
+          <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
+             <div class="geometry"   :class="activeModelId == model.id ? 'active-model' : ''"   @click="onChangeGeometryModel(model)">
+              <div class="geometry-name">
+                <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
+                  <b>  {{ model.name }}</b>
+                </el-tooltip>
+             </div>
+             </div>
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -78,7 +103,7 @@
 
 <script setup>
 import { ref, computed, getCurrentInstance, reactive } from "vue";
-import { modelList } from "@/config/model.js";
+import { modelList , geometryModelList} from "@/config/model.js";
 import { useStore } from "vuex";
 import { getFileType } from '@/utils/utilityFunction.js'
 const store = useStore();
@@ -132,6 +157,20 @@ const onChangeModel = async (model) => {
   }
 };
 
+// 选择几何模型
+const onChangeGeometryModel =async (model)=>{
+  if (model.id == activeModelId.value) return false;
+  activeModelId.value = model.id;
+  localModelName.value = null;
+  activeModel.value = model;
+  $bus.emit("page-loading", true);
+  const { load } = await state.modelApi.onSwitchModel(model);
+  if (load) {
+      $bus.emit("model-update");
+      $bus.emit("page-loading", false);
+    }
+}
+
 // 选择本地模型文件
 const onUpload = async (file) => {
   localModelName.value = file.name;
@@ -178,12 +217,24 @@ defineExpose({
   }
 
   .active-model {
-    border: 3px solid #18c174;
+    border: 3px solid #18c174 !important;
     opacity: 1;
   }
-
+  .geometry{
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid #dcdfe6;
+    margin: 2px 2px;
+  }
   .file-box {
-    padding: 16px 20px;
+    padding: 10px 20px;
     color: #8c939d;
     box-sizing: border-box;
     text-align: center;

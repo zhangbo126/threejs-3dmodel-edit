@@ -32,6 +32,8 @@ class renderModel {
 		this.controls
 		// 模型
 		this.model
+		// 几何体模型
+		this.geometryModel
 		// 加载进度监听
 		this.loadingManager = new THREE.LoadingManager()
 		//文件加载器类型
@@ -280,6 +282,30 @@ class renderModel {
 			})
 		})
 	}
+	// 加载几何体模型
+	setGeometryModel(model) {
+		return new Promise((reslove, reject) => {
+			const { type, id } = model
+			// 不需要赋值的key
+			const notGeometrykey = ['id', 'name', 'modelType', 'type']
+			const geometryData = Object.keys(model).filter(key => !notGeometrykey.includes(key)).map(v => model[v])
+			// 创建几何体
+			const geometry = new THREE[type](...geometryData)
+			const material = new THREE.MeshMatcapMaterial({ color: '#409eff' })
+			this.model = new THREE.Mesh(geometry, material)
+			this.model.name = type + '_' + id
+			this.getModelMeaterialList()
+			this.setModelPositionSize()
+			this.modelAnimation = []
+			this.skeletonHelper.visible = false
+			this.skeletonHelper.dispose()
+			this.glowMaterialList = this.modelMaterialList.map(v => v.name)
+			this.setModelMeshDrag({ modelDrag: true })
+			this.scene.add(this.model)
+			reslove(true)
+		})
+
+	}
 	// 模型加载进度条回调函数
 	onProgress(callback) {
 		if (typeof callback == 'function') {
@@ -428,15 +454,8 @@ class renderModel {
 				this.modelTextureMap = []
 				this.glowMaterialList = []
 				this.materials = {}
-				// 重置"灯光"模块数据
-				this.onResettingLight()
 
-				// 重置"后期/操作"模块数据
-				const meshTxt = document.getElementById("mesh-txt");
-				document.body.style.cursor = '';
-				meshTxt.style.display = 'none'
 				if (this.dragControls) {
-					// this.dragControls.removeEventListener()
 					this.dragControls.dispose()
 				}
 				this.renderer.toneMappingExposure = 3
@@ -445,6 +464,7 @@ class renderModel {
 					strength: 0,
 					radius: 0,
 				})
+		
 				// 重置"辅助线/轴配置"模块数据
 				this.skeletonHelper.visible = false
 				const config = {
@@ -464,10 +484,20 @@ class renderModel {
 				this.onSetModelGridHelper(config)
 				this.onSetModelGridHelperSize(config)
 				this.onSetModelAxesHelper(config)
-				// 加载模型
-				const load = await this.setModel(model)
-				// 模型加载成功返回 true
-				reslove({ load, filePath: model.filePath })
+				// 加载几何模型
+				if (model.modelType && model.modelType == 'geometry') {
+					// 重置"灯光"模块数据
+					this.onResettingLight({ ambientLight: false })
+					const load = await this.setGeometryModel(model)
+					reslove({ load })
+				} else {
+					// 重置"灯光"模块数据
+					this.onResettingLight({ ambientLight: true })
+					// 加载模型
+					const load = await this.setModel(model)
+					// 模型加载成功返回 true
+					reslove({ load, filePath: model.filePath })
+				}
 			} catch {
 				reject()
 			}
@@ -481,7 +511,7 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-		this.effectComposer.setSize(clientWidth, clientHeight)
+		this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
 		this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	// 下载场景封面
@@ -502,7 +532,7 @@ class renderModel {
 			binary: type == 'glb' ? true : false,  // 是否以二进制格式输出
 			embedImages: true,//是否嵌入贴图
 			onlyVisible: true, //是否只导出可见物体
-			includeCustomExtensions:true,
+			includeCustomExtensions: true,
 			// forcePowerOfTwoTextures: true,
 			// includeCustomMaterials: true, //指定是否包含自定义材质
 			// includeCustomAttributes: true, //	指定是否包含自定义属性
@@ -583,6 +613,8 @@ class renderModel {
 		this.controls = null
 		// 模型
 		this.model = null
+		//几何体模型
+		this.geometryModel = null
 		//文件加载器类型
 		this.fileLoaderMap = null
 		//模型动画列表
@@ -1103,14 +1135,14 @@ class renderModel {
 		this.planeGeometry.geometry.verticesNeedUpdate = true
 	}
 	// 重置场景灯光
-	onResettingLight() {
+	onResettingLight({ ambientLight }) {
 		const config = {
 			planeGeometry: false,
 			planeColor: "#939393",
 			planeWidth: 7,
 			planeHeight: 7,
 			//环境光
-			ambientLight: true,
+			ambientLight,
 			ambientLightColor: "#fff",
 			ambientLightIntensity: 0.8,
 			//平行光

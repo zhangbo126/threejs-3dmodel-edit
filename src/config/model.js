@@ -300,4 +300,157 @@ const mapImageList = [
 	...viewImageList
 ]
 
-export { modelList, backgrundList, viewImageList, mapImageList }
+// 几何体模型列表
+const geometryModelList = [
+	{
+		id: 30,
+		name: '立方缓冲几何体',
+		modelType: 'geometry',
+		type: 'BoxGeometry',
+		width: 15, // X轴上面的宽度
+		height: 15, // Y轴上面的高度
+		depth: 15, // 轴上面的深度
+		widthSegments: 1, //宽度的分段数
+		heightSegments: 1, //高度的分段数
+		depthSegments: 1, //深度的分段数
+	},
+	{
+		id: 31,
+		name: '胶囊几何体',
+		modelType: 'geometry',
+		type: 'CapsuleGeometry',
+		radius: 5, // 胶囊半径
+		length: 5, //中间区域的长度
+		capSegments: 10, // 构造盖子的曲线部分的个数 
+		radialSegments: 20, //覆盖胶囊圆周的分离的面的个数
+	},
+	{
+		id: 32,
+		name: '圆形缓冲几何体',
+		modelType: 'geometry',
+		type: 'CircleGeometry',
+		radius: 10, // 半径
+		segments: 32, //分段（三角面）的数量
+		thetaStart: 0, // 第一个分段的起始角度 
+		thetaLength: 6.283185307179586, //圆形扇区的中心角
+	},
+	{
+		id: 33,
+		name: '圆锥缓冲几何体',
+		modelType: 'geometry',
+		type: 'ConeGeometry',
+		radius: 5, // 半径
+		height: 10, //圆锥的高度
+		radialSegments: 8, // 圆锥侧面周围的分段数 
+		heightSegments: 1, //圆形扇区的中心角
+		openEnded: false, //指明该圆锥的底面是开放的还是封顶的
+		thetaStart: 0,
+		thetaLength: 6.283185307179586, //圆形扇区的中心角
+	},
+	{
+		id: 34,
+		name: '圆锥缓冲几何体',
+		modelType: 'geometry',
+		type: 'CylinderGeometry',
+		radiusTop: 5,
+		radiusBottom: 5,
+		height: 10,
+		radialSegments: 8,
+		heightSegments: 1,
+		openEnded: false,
+		thetaStart: 0,
+		thetaLength: 6.283185307179586, //圆形扇区的中心角
+	},
+	{
+		id: 35,
+		name: '十二面缓冲几何体',
+		modelType: 'geometry',
+		type: 'DodecahedronGeometry',
+		radius: 10,
+		detail: 0,
+	},
+	{
+		id: 36,
+		name: '二十面缓冲几何体',
+		modelType: 'geometry',
+		type: 'IcosahedronGeometry',
+		radius: 10,
+		detail: 0,
+	},
+	{
+		id: 37,
+		name: '八面缓冲几何体',
+		modelType: 'geometry',
+		type: 'OctahedronGeometry',
+		radius: 10,
+		detail: 0,
+	},
+	{
+		id: 38,
+		name: '平面缓冲几何体',
+		modelType: 'geometry',
+		type: 'PlaneGeometry',
+		width: 10, // X轴上面的宽度
+		height: 10, // Y轴上面的高度
+		widthSegments: 1, //宽度的分段数
+		heightSegments: 1, //高度的分段数
+	},
+	{
+		id: 39,
+		name: '圆环缓冲几何体',
+		modelType: 'geometry',
+		type: 'RingGeometry',
+		innerRadius: 5,
+		outerRadius: 10,
+		thetaSegments: 8,
+		phiSegments: 8,
+		thetaStart: 0,
+		thetaLength: 6.283185307179586,
+	},
+	{
+		id: 40,
+		name: '球缓冲几何体',
+		modelType: 'geometry',
+		type: 'SphereGeometry',
+		radius: 15,
+		widthSegments: 32,
+		heightSegments: 16,
+		phiStart: 0,
+		phiLength: 6.283185307179586,
+		thetaStart: 0,
+		thetaLength: 3.141592653589793,
+	},
+	{
+		id: 41,
+		name: '四面缓冲几何体',
+		modelType: 'geometry',
+		type: 'TetrahedronGeometry',
+		radius: 10,
+		detail: 0,
+	},
+	{
+		id: 42,
+		name: '圆环缓冲几何体',
+		modelType: 'geometry',
+		type: 'TorusGeometry',
+		radius: 10,
+		tube: 3,
+		radialSegments: 16,
+		tubularSegments: 100,
+		arc: 6.283185307179586,
+	},
+	{
+		id: 43,
+		name: '圆环缓冲扭结几何体',
+		modelType: 'geometry',
+		type: 'TorusKnotGeometry',
+		radius: 10,
+		tube: 3,
+		tubularSegments: 64,
+		radialSegments: 8,
+		P: 2,
+		q: 3,
+	},
+]
+
+export { modelList, backgrundList, viewImageList, mapImageList, geometryModelList }
