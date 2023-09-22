@@ -231,7 +231,7 @@ defineExpose({
     align-items: center;
     flex-direction: column;
     border: 1px solid #dcdfe6;
-    margin: 2px 2px;
+    margin:4px 2px;
   }
   .file-box {
     padding: 10px 20px;

@@ -117,7 +117,7 @@ const onPrivew = () => {
     const { href } = router.resolve({ path: "/preview" });
     window.open(href, "_blank");
   } else {
-    ElMessage.warning("外部模型不支持“效果预览”");
+    ElMessage.warning("当前模型暂不支持“效果预览”");
   }
 };
 // 保存配置
@@ -140,7 +140,7 @@ const onSaveConfig = () => {
         $local.set(MODEL_BASE_DATA, modelBaseData);
         ElMessage.success("更新成功");
       } else {
-        ElMessage.warning("外部模型不支持“数据保存”");
+        ElMessage.warning("当前模型暂不支持“数据保存”");
       }
     })
     .catch(() => { });

@@ -110,9 +110,6 @@ class renderModel {
 		this.onWindowResizesListener
 		// 鼠标点击事件
 		this.onMouseClickListener
-		// 鼠标按下
-		this.onMouseDownListener
-
 		// 模型上传进度条回调函数
 		this.modelProgressCallback = (e) => e
 
@@ -153,7 +150,7 @@ class renderModel {
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
-		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 1000)
+		this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 0.25, 2000)
 	}
 	// 创建渲染器
 	initRender() {
@@ -211,9 +208,6 @@ class renderModel {
 		// 鼠标点击
 		this.onMouseClickListener = this.onMouseClickModel.bind(this)
 		this.container.addEventListener('click', this.onMouseClickListener)
-		// 鼠标按下
-		// this.onMouseDownListener = this.onMouseDownModel.bind(this)
-		// this.container.addEventListener('mousedown', this.onMouseDownListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -295,7 +289,6 @@ class renderModel {
 			this.model = new THREE.Mesh(geometry, material)
 			this.model.name = type + '_' + id
 			this.getModelMeaterialList()
-			this.setModelPositionSize()
 			this.modelAnimation = []
 			this.skeletonHelper.visible = false
 			this.skeletonHelper.dispose()
@@ -533,24 +526,8 @@ class renderModel {
 			embedImages: true,//是否嵌入贴图
 			onlyVisible: true, //是否只导出可见物体
 			includeCustomExtensions: true,
-			// forcePowerOfTwoTextures: true,
-			// includeCustomMaterials: true, //指定是否包含自定义材质
-			// includeCustomAttributes: true, //	指定是否包含自定义属性
-			// includeCustomTextures: true, //	指定是否包含自定义纹理
-			// includeCustomSamplers: true, //	指定是否包含自定义采样器
-			// includeCustomImages: true, //	指定是否包含自定义图像
-			// includeCustomTechniques: true, //	指定是否包含自定义技术
-			// includeCustomMaterialsCommon: true, //指定是否包含自定义 MaterialsCommon
-			// includeCustomMeshes: true,//指定是否包含自定义网格
-			// includeCustomSkins: true, //指定是否包含自定义皮肤
-			// includeCustomNodes: true, // 指定是否包含自定义节点
-			// includeCustomGeometries: true, //指定是否包含自定义几何体
-			// includeCustomPrograms: true, // 指定是否包含自定义程序
-			// includeCustomShaders: true, //指定是否包含自定义着色器
-			// includeCustomExtensions: true, //指定是否包含自定义扩展。如果设置为true，则会包含在导出中定义的自定义GLTF扩展
 		}
 		exporter.parse(this.scene, function (result) {
-			console.log(result)
 			if (result instanceof ArrayBuffer) {
 				// 将结果保存为GLB二进制文件
 				saveArrayBuffer(result, `${new Date().toLocaleString()}.glb`);
@@ -591,7 +568,6 @@ class renderModel {
 		cancelAnimationFrame(this.renderAnimation)
 		cancelAnimationFrame(this.animationFrame)
 		this.container.removeEventListener('click', this.onMouseClickListener)
-		this.container.removeEventListener('mousedown', this.onMouseDownListener)
 		window.removeEventListener("resize", this.onWindowResizesListener)
 		this.scene.traverse((v) => {
 			if (v.type === 'Mesh') {
@@ -710,7 +686,6 @@ class renderModel {
 	 * @function onSetModelMap 设置模型贴图（模型自带）
 	 * @function onSetSystemModelMap 设置模型贴图（系统贴图）
 	 * @function onChangeModelMeaterial 选择材质
-	 * @function onMouseDownModel 鼠标选中材质
 	 * @function onGetEditMeshList 获取最新材质信息列表
 	 * @function onChangeModelMeshType 切换材质类型
 	 */
@@ -883,24 +858,7 @@ class renderModel {
 		store.commit('SELECT_MESH', mesh)
 		return mesh
 	}
-	// 鼠标选中材质
-	onMouseDownModel() {
-		// if (this.modelAnimation.length) return false
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
-		if (intersects.length > 0) {
-			const intersectedObject = intersects[0].object
-			// 设置当前选中的材质
-			this.outlinePass.selectedObjects = [intersectedObject]
-			store.commit('SELECT_MESH', intersectedObject)
-		} else {
-			this.outlinePass.selectedObjects = []
-			store.commit('SELECT_MESH', {})
-		}
-	}
+
 	// 模型点击事件
 	onMouseClickModel(event) {
 		// if (!this.modelAnimation.length) return false

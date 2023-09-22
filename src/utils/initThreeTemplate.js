@@ -328,10 +328,14 @@ class renderModel {
 		this.renderer.clear()
 		this.renderer.dispose()
 		this.camera.clear()
-		this.gridHelper.clear()
-		this.gridHelper.dispose()
-		this.axesHelper.clear()
-		this.axesHelper.dispose()
+		if (this.gridHelper) {
+			this.gridHelper.clear()
+			this.gridHelper.dispose()
+		}
+		if (this.axesHelper) {
+			this.axesHelper.clear()
+			this.axesHelper.dispose()
+		}
 		this.effectComposer.dispose()
 		this.glowComposer.dispose()
 		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
@@ -490,7 +494,7 @@ class renderModel {
 			mesh.material = new THREE[type]({
 				map,
 			})
-	
+
 			if (v.meshFrom) {
 				// 如果使用的是系统贴图
 				if (mapIdList.includes(v.meshFrom)) {
