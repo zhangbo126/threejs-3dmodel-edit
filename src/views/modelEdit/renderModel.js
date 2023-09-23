@@ -15,7 +15,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { ElMessage } from 'element-plus';
-import { lightPosition } from '@/utils/utilityFunction'
+import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import store from '@/store'
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
@@ -32,6 +32,8 @@ class renderModel {
 		this.controls
 		// 模型
 		this.model
+		// 几何体模型数组
+		this.geometryGroup = new THREE.Group()
 		// 几何体模型
 		this.geometryModel
 		// 加载进度监听
@@ -112,7 +114,8 @@ class renderModel {
 		this.onMouseClickListener
 		// 模型上传进度条回调函数
 		this.modelProgressCallback = (e) => e
-
+		// 当前拖拽的几何模型
+		this.dragGeometryModel = {}
 
 	}
 	init() {
@@ -276,26 +279,44 @@ class renderModel {
 			})
 		})
 	}
+
 	// 加载几何体模型
 	setGeometryModel(model) {
 		return new Promise((reslove, reject) => {
-			const { type, id } = model
-			// 不需要赋值的key
-			const notGeometrykey = ['id', 'name', 'modelType', 'type']
-			const geometryData = Object.keys(model).filter(key => !notGeometrykey.includes(key)).map(v => model[v])
-			// 创建几何体
-			const geometry = new THREE[type](...geometryData)
-			const material = new THREE.MeshMatcapMaterial({ color: '#409eff' })
-			this.model = new THREE.Mesh(geometry, material)
-			this.model.name = type + '_' + id
-			this.getModelMeaterialList()
-			this.modelAnimation = []
-			this.skeletonHelper.visible = false
-			this.skeletonHelper.dispose()
-			this.glowMaterialList = this.modelMaterialList.map(v => v.name)
-			this.setModelMeshDrag({ modelDrag: true })
-			this.scene.add(this.model)
-			reslove(true)
+			const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+			// 计算鼠标在屏幕上的坐标
+			this.mouse.x = ((model.clientX - offsetLeft) / clientWidth) * 2 - 1
+			this.mouse.y = -((model.clientY - offsetTop) / clientHeight) * 2 + 1
+			this.raycaster.setFromCamera(this.mouse, this.camera);
+			const intersects = this.raycaster.intersectObjects(this.scene.children);
+		  
+			if (intersects.length > 0) {
+			  	// 在控制台输出鼠标在场景中的位置
+				const { type } = model
+				// 不需要赋值的key
+				const notGeometrykey = ['id', 'name', 'modelType', 'type']
+				const geometryData = Object.keys(model).filter(key => !notGeometrykey.includes(key)).map(v => model[v])
+				// 创建几何体
+				const geometry = new THREE[type](...geometryData)
+				const colors = ['#FF4500', '#90EE90', '#00CED1', '#1E90FF', '#C71585', '#FF4500', '#FAD400', '#1F93FF', '#90F090']
+				const meshColor = colors[Math.ceil(Math.random() * 10)]
+				const material = new THREE.MeshMatcapMaterial({ color: new THREE.Color(meshColor) })
+				const mesh = new THREE.Mesh(geometry, material)
+				const {x,y,z} =intersects[0].point
+				console.log(x,y,0)
+				mesh.position.set(x,y,0)
+				mesh.name = type + '_' + onlyKey(4, 5)
+				this.geometryGroup.add(mesh)
+				this.model = this.geometryGroup
+				this.onSetGeometryMeshList(mesh)
+				this.skeletonHelper.visible = false
+				this.skeletonHelper.dispose()
+				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
+				this.setModelMeshDrag({ modelDrag: true })
+				this.scene.add(this.model)
+			}
+				reslove(true)
+
 		})
 
 	}
@@ -408,6 +429,7 @@ class renderModel {
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
+
 		// 着色器
 		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
@@ -432,60 +454,18 @@ class renderModel {
 	onSwitchModel(model) {
 		return new Promise(async (reslove, reject) => {
 			try {
-				//先移除模型 材质释放内存
-				this.scene.traverse((v) => {
-					if (v.type === 'Mesh') {
-						v.geometry.dispose();
-						v.material.dispose();
-					}
-				})
-				//取消动画帧
-				cancelAnimationFrame(this.animationFrame)
-				cancelAnimationFrame(this.rotationAnimationFrame)
-				this.scene.remove(this.model)
-				this.model = null
-				this.modelTextureMap = []
-				this.glowMaterialList = []
-				this.materials = {}
-
-				if (this.dragControls) {
-					this.dragControls.dispose()
-				}
-				this.renderer.toneMappingExposure = 3
-				Object.assign(this.unrealBloomPass, {
-					threshold: 0,
-					strength: 0,
-					radius: 0,
-				})
-		
-				// 重置"辅助线/轴配置"模块数据
-				this.skeletonHelper.visible = false
-				const config = {
-					gridHelper: false,
-					x: 0,
-					y: -0.59,
-					z: -0.1,
-					positionX: 0,
-					positionY: -0.5,
-					positionZ: 0,
-					divisions: 10,
-					size: 4,
-					color: "rgb(193,193,193)",
-					axesHelper: false,
-					axesSize: 1.8,
-				}
-				this.onSetModelGridHelper(config)
-				this.onSetModelGridHelperSize(config)
-				this.onSetModelAxesHelper(config)
+				this.clearSceneModel()
 				// 加载几何模型
 				if (model.modelType && model.modelType == 'geometry') {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: false })
+					this.modelAnimation = []
 					const load = await this.setGeometryModel(model)
-					reslove({ load })
+					reslove()
 				} else {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
+					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
 					// 模型加载成功返回 true
@@ -496,6 +476,7 @@ class renderModel {
 			}
 		})
 	}
+
 	// 监听窗口变化
 	onWindowResizes() {
 		if (!this.container) return false
@@ -650,8 +631,68 @@ class renderModel {
 		this.materials = null
 		// 拖拽对象控制器
 		this.dragControls = null
+		this.dragGeometryModel = null
 	}
 
+
+	/**
+	 * @describe 左侧面板操作方法
+	 * @function clearSceneModel 清除场景模型数据
+	 * @function setDragGeometryModel 设置当前被拖拽的几何模型
+	 */
+
+	// 清除场景模型数据
+	clearSceneModel() {
+		//先移除模型 材质释放内存
+		this.scene.traverse((v) => {
+			if (v.type === 'Mesh') {
+				v.geometry.dispose();
+				v.material.dispose();
+			}
+		})
+		this.dragGeometryModel = {}
+		//取消动画帧
+		cancelAnimationFrame(this.animationFrame)
+		cancelAnimationFrame(this.rotationAnimationFrame)
+		this.scene.remove(this.model)
+		this.model = null
+		this.modelTextureMap = []
+		this.glowMaterialList = []
+		this.materials = {}
+		if (this.dragControls) {
+			this.dragControls.dispose()
+		}
+		this.renderer.toneMappingExposure = 3
+		Object.assign(this.unrealBloomPass, {
+			threshold: 0,
+			strength: 0,
+			radius: 0,
+		})
+
+		// 重置"辅助线/轴配置"模块数据
+		this.skeletonHelper.visible = false
+		const config = {
+			gridHelper: false,
+			x: 0,
+			y: -0.59,
+			z: -0.1,
+			positionX: 0,
+			positionY: -0.5,
+			positionZ: 0,
+			divisions: 10,
+			size: 4,
+			color: "rgb(193,193,193)",
+			axesHelper: false,
+			axesSize: 1.8,
+		}
+		this.onSetModelGridHelper(config)
+		this.onSetModelGridHelperSize(config)
+		this.onSetModelAxesHelper(config)
+	}
+	// 设置当前被拖拽的几何模型
+	setDragGeometryModel(model) {
+		this.dragGeometryModel = model
+	}
 
 	/**
 	 * @describe 背景模块方法
@@ -688,6 +729,7 @@ class renderModel {
 	 * @function onChangeModelMeaterial 选择材质
 	 * @function onGetEditMeshList 获取最新材质信息列表
 	 * @function onChangeModelMeshType 切换材质类型
+	 * @function onSetGeometryMeshList 设置几何体模型材质
 	 */
 	// 获取当前模型材质
 	getModelMeaterialList(map) {
@@ -799,15 +841,6 @@ class renderModel {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
-			//设置材质颜色
-			// mesh.material.color.set(new THREE.Color(color))
-			// //设置网格
-			// mesh.material.wireframe = wireframe
-			// // 设置深度写入
-			// mesh.material.depthWrite = depthWrite
-			// //设置透明度
-			// mesh.material.transparent = true
-			// mesh.material.opacity = opacity
 			const { name, map } = mesh.material
 			mesh.material = new THREE.MeshStandardMaterial({
 				map,
@@ -861,7 +894,6 @@ class renderModel {
 
 	// 模型点击事件
 	onMouseClickModel(event) {
-		// if (!this.modelAnimation.length) return false
 		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
@@ -909,6 +941,30 @@ class renderModel {
 				depthWrite ? v.material.depthWrite = depthWrite : ''
 				opacity ? v.material.opacity = opacity : ''
 				wireframe ? v.material.wireframe = wireframe : ''
+			}
+		})
+	}
+	// 设置几何体材质
+	onSetGeometryMeshList(v) {
+		this.modelMaterialList = []
+		this.modelTextureMap = []
+		this.model.traverse((v) => {
+			const { uuid, name } = v
+			if (v.isMesh && v.material) {
+				const materials = Array.isArray(v.material) ? v.material : [v.material]
+				// 统一将模型材质 设置为 MeshLambertMaterial 类型
+				this.modelMaterialList.push(v)
+				// 获取模型自动材质贴图
+				const { url, mapId } = this.getModelMaps(materials, uuid)
+				const mesh = {
+					meshName: v.name,
+					material: v.material,
+					url,
+					mapId: name
+				}
+				// 获取当前模型材质
+				v.mapId = name
+				this.modelTextureMap.push(mesh)
 			}
 		})
 	}
