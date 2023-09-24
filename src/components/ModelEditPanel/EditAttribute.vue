@@ -286,13 +286,6 @@ defineExpose({
 });
 </script>
 
-<style lang="scss">
-.grid-style {
-  min-width: 110px;
-}
+<style lang="scss" scoped>
 
-.grid-silder {
-  flex: 5;
-  padding-left: 10px;
-}
 </style>

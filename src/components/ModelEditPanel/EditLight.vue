@@ -480,14 +480,9 @@ defineExpose({
   width: 270px;
 }
 
-.grid-style {
-  min-width: 110px;
-}
 
-.grid-silder {
-  flex: 5;
-  padding-left: 10px;
-}
+
+
 
 .anambient-img {
   padding: 0px 10px;

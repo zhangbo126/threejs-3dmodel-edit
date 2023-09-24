@@ -289,23 +289,24 @@ class renderModel {
 			this.mouse.y = -((model.clientY - offsetTop) / clientHeight) * 2 + 1
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 			const intersects = this.raycaster.intersectObjects(this.scene.children);
-		  
+
 			if (intersects.length > 0) {
-			  	// 在控制台输出鼠标在场景中的位置
+				// 在控制台输出鼠标在场景中的位置
 				const { type } = model
 				// 不需要赋值的key
 				const notGeometrykey = ['id', 'name', 'modelType', 'type']
 				const geometryData = Object.keys(model).filter(key => !notGeometrykey.includes(key)).map(v => model[v])
 				// 创建几何体
 				const geometry = new THREE[type](...geometryData)
-				const colors = ['#FF4500', '#90EE90', '#00CED1', '#1E90FF', '#C71585', '#FF4500', '#FAD400', '#1F93FF', '#90F090']
+				const colors = ['#FF4500', '#90EE90', '#00CED1', '#1E90FF', '#C71585', '#FF4500', '#FAD400', '#1F93FF', '#90F090', '#C71585']
+				// 随机颜色
 				const meshColor = colors[Math.ceil(Math.random() * 10)]
 				const material = new THREE.MeshMatcapMaterial({ color: new THREE.Color(meshColor) })
 				const mesh = new THREE.Mesh(geometry, material)
-				const {x,y,z} =intersects[0].point
-				console.log(x,y,0)
-				mesh.position.set(x,y,0)
+				const { x, y, z } = intersects[0].point
+				mesh.position.set(x, y, z)
 				mesh.name = type + '_' + onlyKey(4, 5)
+				mesh.userData.geometry=true
 				this.geometryGroup.add(mesh)
 				this.model = this.geometryGroup
 				this.onSetGeometryMeshList(mesh)
@@ -315,7 +316,7 @@ class renderModel {
 				this.setModelMeshDrag({ modelDrag: true })
 				this.scene.add(this.model)
 			}
-				reslove(true)
+			reslove(true)
 
 		})
 
@@ -460,11 +461,14 @@ class renderModel {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: false })
 					this.modelAnimation = []
+					this.camera.fov = 80
+					this.camera.updateProjectionMatrix()
 					const load = await this.setGeometryModel(model)
 					reslove()
 				} else {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
+					this.camera.fov = 50
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
@@ -1371,5 +1375,55 @@ class renderModel {
 		this.axesHelper.visible = axesHelper
 		this.scene.add(this.axesHelper);
 	}
+
+
+
+	/**
+	 * @describe 辅助线/轴配置模块方法
+	 * @function onDeleteGeometryMesh 删除几何体材质
+	 * @function onsetGeometryMesh 修改几何体材质信息
+	 */
+	onDeleteGeometryMesh(uuid) {
+		// 找到需要删除的材质
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		this.modelMaterialList = this.modelMaterialList.filter(v => v.uuid != uuid)
+		this.glowMaterialList = this.modelMaterialList.map(v => v.name)
+		mesh.clear()
+		this.geometryGroup.remove(mesh)
+		if (this.modelMaterialList.length == 0) {
+			this.setModelMeshDrag({ modelDrag: false })
+		}
+	}
+	onsetGeometryMesh(activeGeometry) {
+		const { color, x, y, z, type } = activeGeometry
+		const uuid = store.state.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		// // 不需要赋值的key
+		const notGeometrykey = ['color', 'type', 'x', 'y', 'z']
+		const geometryData = Object.keys(activeGeometry).filter(key => !notGeometrykey.includes(key)).map(v => activeGeometry[v])
+		// 创建几何体
+		const newGeometry = new THREE[type](...geometryData)
+		const newMaterial = new THREE.MeshMatcapMaterial({ color: new THREE.Color(color) })
+
+		mesh.geometry = newGeometry
+		mesh.material = newMaterial
+		mesh.position.set(x, y, z)
+		// const endPosition = {
+		// 	x, y, z
+		// }
+		// const Tween = new TWEEN.Tween(mesh.position)
+		// Tween.to(endPosition, 500)
+		// Tween.onUpdate((val) => {
+		// 	const { x, y, z } = val
+		
+		// })
+		// Tween.start();
+
+	}
+
+
 }
+
+
+
 export default renderModel
