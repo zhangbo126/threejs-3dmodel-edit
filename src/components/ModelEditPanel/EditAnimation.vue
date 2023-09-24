@@ -101,7 +101,7 @@
       </div>
       <div class="option" :class="optionRotation">
         <el-slider
-          @change="onRotationAnimation"
+          @input="onRotationAnimation"
           show-input
           v-model="config.rotationSpeed"
           :step="0.01"

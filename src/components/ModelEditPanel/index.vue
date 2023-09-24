@@ -41,17 +41,22 @@
       <div v-show="activeTab == 'EditAttribute'">
         <edit-attribute ref="attribute"></edit-attribute>
       </div>
+      <!-- 几何体配置 -->
+      <div v-show="activeTab == 'EditGeometry'">
+        <edit-geometry ref="geometry"></edit-geometry>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref,reactive } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
 import EditAttribute from "./EditAttribute.vue";
 import EditLight from "./EditLight.vue";
 import EditLaterStage from "./EditLaterStage.vue";
+import EditGeometry from "./EditGeometry.vue";
 const panelTabs = [
   {
     name: "背景",
@@ -83,6 +88,11 @@ const panelTabs = [
     key: "EditAttribute",
     icon: "Box",
   },
+  {
+    name: "几何体模型配置",
+    key: "EditGeometry",
+    icon: "Cellphone",
+  },
 ];
 const activeTab = ref("EditMaterial");
 const background = ref(null);
@@ -91,7 +101,7 @@ const animation = ref(null);
 const attribute = ref(null);
 const light = ref(null);
 const stage = ref(null);
-
+const geometry = ref(null)
 // 获取所有面板配置
 const getPanelConfig = () => {
   return {
@@ -131,4 +141,5 @@ defineExpose({
     }
   }
 }
+
 </style>

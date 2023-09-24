@@ -36,7 +36,7 @@
             @dragend="onDragEnd"
           >
             <div class="model-image">
-              <el-image fit="scale-down" :src="model.fileInfo.icon"></el-image>
+              <el-image  draggable="false" fit="scale-down" :src="model.fileInfo.icon"></el-image>
             </div>
             <div class="model-info">
               <div class="model-name">

@@ -14,11 +14,22 @@
         </el-space>
       </div>
       <!-- 模型列表 -->
-      <el-scrollbar max-height="250px">
+      <el-scrollbar max-height="210px">
         <el-row>
-          <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in ordinaryModelList" :key="model.id">
-            <el-image @click="onChangeModel(model)" class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
+          <el-col
+            :style="{ textAlign: 'center' }"
+            :span="12"
+            v-for="model in ordinaryModelList"
+            :key="model.id"
+          >
+            <el-image
+              draggable="false"
+              @click.prevent="onChangeModel(model)"
+              class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''"
+              :src="model.icon"
+              fit="cover"
+            />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -34,13 +45,77 @@
         </el-space>
       </div>
       <!-- 模型列表 -->
-      <el-scrollbar max-height="250px">
+      <el-scrollbar max-height="210px">
         <el-row>
-          <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in animationModelList" :key="model.id">
-            <el-image @click="onChangeModel(model)" class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
+          <el-col
+            :style="{ textAlign: 'center' }"
+            :span="12"
+            v-for="model in animationModelList"
+            :key="model.id"
+          >
+            <el-image
+              draggable="false"
+              @click="onChangeModel(model)"
+              class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''"
+              :src="model.icon"
+              fit="cover"
+            />
           </el-col>
         </el-row>
+      </el-scrollbar>
+    </div>
+    <!-- 几何体模型 -->
+    <div class="options">
+      <div class="option">
+        <el-space>
+          <el-icon>
+            <SwitchFilled />
+          </el-icon>
+          <span>几何体模型</span>
+          <span :style="{ color: '#18c174 ' }" v-if="geometryVisable"
+            >(可拖拽添加多个)</span
+          >
+        </el-space>
+      </div>
+      <!-- 模型列表 -->
+      <el-scrollbar max-height="120px">
+        <el-row v-if="geometryVisable">
+          <el-col
+            :style="{ textAlign: 'center' }"
+            :span="8"
+            v-for="model in geometryModelList"
+            :key="model.type"
+          >
+            <div
+              class="geometry"
+              :class="activeModelId == model.id ? 'active-model' : ''"
+              draggable="true"
+              @dragstart="(e) => onDragstart(e, model)"
+              @drag="(e) => onDrag(e)"
+            >
+              <div class="geometry-name">
+                <el-tooltip
+                  effect="dark"
+                  :content="`${model.name}:${model.type}`"
+                  placement="top"
+                >
+                  <b> {{ model.name }}</b>
+                </el-tooltip>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+        <div class="geometry-box" v-else>
+          <div class="geometry-add" @click="onAddGeometry">
+            <div class="icon">
+              <el-icon :size="44">
+                <Plus />
+              </el-icon>
+              <div><span>添加几何模型</span></div>
+            </div>
+          </div>
+        </div>
       </el-scrollbar>
     </div>
     <!-- 外部模型 -->
@@ -60,9 +135,14 @@
           <b>{{ localModelName }}</b>
         </el-tooltip>
       </div>
-
-      <el-upload action="" accept=".glb,.obj,.gltf,.fbx" class="file-box" :show-file-list="false" :auto-upload="false"
-        :on-change="onUpload">
+      <el-upload
+        action=""
+        accept=".glb,.obj,.gltf,.fbx"
+        class="file-box"
+        :show-file-list="false"
+        :auto-upload="false"
+        :on-change="onUpload"
+      >
         <div class="upload">
           <div class="icon">
             <el-icon :size="44">
@@ -78,9 +158,9 @@
 
 <script setup>
 import { ref, computed, getCurrentInstance, reactive } from "vue";
-import { modelList } from "@/config/model.js";
+import { modelList, geometryModelList } from "@/config/model.js";
 import { useStore } from "vuex";
-import { getFileType } from '@/utils/utilityFunction.js'
+import { getFileType } from "@/utils/utilityFunction.js";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const state = reactive({
@@ -100,6 +180,7 @@ const animationModelList = computed(() => {
 
 //当前模型id
 const activeModelId = ref(9);
+const geometryVisable = ref(false);
 // 当前模型信息
 const activeModel = ref({
   name: "变形金刚（3）",
@@ -117,6 +198,7 @@ const localModelName = ref(null);
 //选择模型
 const onChangeModel = async (model) => {
   if (model.id == activeModelId.value) return false;
+  geometryVisable.value = false;
   activeModelId.value = model.id;
   localModelName.value = null;
   activeModel.value = model;
@@ -130,6 +212,33 @@ const onChangeModel = async (model) => {
   } catch (err) {
     $bus.emit("page-loading", false);
   }
+};
+
+// 添加几何模型
+const onAddGeometry = async () => {
+  geometryVisable.value = true;
+  localModelName.value = null;
+  activeModelId.value = null;
+  state.modelApi.clearSceneModel();
+};
+
+// 选择几何模型
+const onChangeGeometryModel = async (model) => {
+  if (model.id == activeModelId.value) return false;
+  activeModelId.value = model.id;
+  localModelName.value = null;
+  activeModel.value = model;
+  const { load } = await state.modelApi.onSwitchModel(model);
+  $bus.emit("model-update");
+};
+
+// 拖拽几何模型开始
+const onDragstart = (e, model) => {
+  state.modelApi.setDragGeometryModel(model);
+};
+// 拖拽中
+const onDrag = (event) => {
+  event.preventDefault();
 };
 
 // 选择本地模型文件
@@ -148,8 +257,9 @@ const onUpload = async (file) => {
     if (load) {
       $bus.emit("model-update");
       $bus.emit("page-loading", false);
-      activeModelId.value = null
-      activeModel.value = {}
+      activeModelId.value = null;
+      geometryVisable.value = false;
+      activeModel.value = {};
     }
   } catch (err) {
     localModelName.value = null;
@@ -178,12 +288,54 @@ defineExpose({
   }
 
   .active-model {
-    border: 3px solid #18c174;
+    border: 3px solid #18c174 !important;
     opacity: 1;
   }
+  .geometry {
+    color: #fff;
+    cursor: all-scroll;
+    font-size: 12px;
+    text-align: center;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid #dcdfe6;
+    margin: 4px 2px;
+  }
+  .geometry-box {
+    padding: 0px 20px;
+    color: #8c939d;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    .geometry-add {
+      width: 228px;
+      height: 108px;
+      border: 1px dashed #dcdfe6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      .icon {
+        span {
+          font-size: 14px;
+        }
+      }
 
+      &:hover {
+        border-color: #409eff;
+        color: #409eff;
+      }
+    }
+  }
   .file-box {
-    padding: 16px 20px;
+    padding: 10px 20px;
     color: #8c939d;
     box-sizing: border-box;
     text-align: center;
@@ -192,7 +344,6 @@ defineExpose({
     overflow: hidden;
     display: flex;
     justify-content: center;
-
     .upload {
       width: 228px;
       height: 128px;

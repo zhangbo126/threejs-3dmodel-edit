@@ -196,14 +196,6 @@ export const meshTypeList = [
 		depthWrite: true,
 		opacity: true,
 	},
-	// {
-	// 	type: 'MeshDepthMaterial',
-    //     describe:'深度网格材质',
-	// 	color: false,
-	// 	wireframe: true,
-	// 	depthWrite: true,
-	// 	opacity: true,
-	// },
 	{
 		type: 'MeshLambertMaterial',
         describe:'Lambert网格材质',

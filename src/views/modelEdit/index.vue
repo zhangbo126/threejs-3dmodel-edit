@@ -3,38 +3,46 @@
     <!-- 头部操作栏 -->
     <header class="model-header">
       <div class="header-lf">
-        <span>
-          基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
-        </span>
+        <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
         <span>作者:answer</span>
       </div>
       <div class="header-lr">
-         <el-space>
-          <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
+        <el-space>
+          <el-button
+            type="primary"
+            icon="Film"
+            @click="$router.push({ path: '/modelBase' })"
+          >
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
+          <el-button type="primary" icon="Document" @click="onSaveConfig"
+            >保存数据</el-button
+          >
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
-               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
-                <el-dropdown-item @click="onExportModleFile('glb')">导出模型(.glb)格式</el-dropdown-item>
-                <el-dropdown-item  @click="onExportModleFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModleFile('glb')"
+                  >导出模型(.glb)格式</el-dropdown-item
+                >
+                <el-dropdown-item @click="onExportModleFile('gltf')"
+                  >导出模型(.gltf)格式</el-dropdown-item
+                >
               </el-dropdown-menu>
             </template>
           </el-dropdown>
           <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
-         </el-space>
+        </el-space>
       </div>
     </header>
     <div class="model-container">
       <!-- 模型列表 -->
       <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
-      <div id="model" ref="model">
+      <div id="model" @drop="onGeometryDrop" ref="model" @dragover.prevent>
         <div class="camera-icon">
           <el-tooltip effect="dark" content="居中" placement="top">
             <el-icon :size="18" color="#fff" @click="onResetCamera">
@@ -72,7 +80,7 @@ import PageLoading from "@/components/Loading/PageLoading";
 import {
   MODEL_PRIVEW_CONFIG,
   MODEL_BASE_DATA,
-  MODEL_DEFAULT_CONFIG
+  MODEL_DEFAULT_CONFIG,
 } from "@/config/constant";
 const store = useStore();
 const router = useRouter();
@@ -106,6 +114,16 @@ const initModelBaseData = () => {
     $local.set(MODEL_BASE_DATA, modelBaseData);
   }
 };
+
+// 几何体模型拖拽结束
+const onGeometryDrop = (e) => {
+  const dragGeometryModel= state.modelApi.dragGeometryModel;
+  if (dragGeometryModel.id) {
+    dragGeometryModel.clientX = e.clientX
+    dragGeometryModel.clientY = e.clientY
+    state.modelApi.onSwitchModel(dragGeometryModel);
+  }
+};
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
@@ -117,7 +135,7 @@ const onPrivew = () => {
     const { href } = router.resolve({ path: "/preview" });
     window.open(href, "_blank");
   } else {
-    ElMessage.warning("外部模型不支持“效果预览”");
+    ElMessage.warning("当前模型暂不支持“效果预览”");
   }
 };
 // 保存配置
@@ -140,20 +158,20 @@ const onSaveConfig = () => {
         $local.set(MODEL_BASE_DATA, modelBaseData);
         ElMessage.success("更新成功");
       } else {
-        ElMessage.warning("外部模型不支持“数据保存”");
+        ElMessage.warning("当前模型暂不支持“数据保存”");
       }
     })
-    .catch(() => { });
+    .catch(() => {});
 };
 
 // 下载封面
-const onDownloadCover = ()=>{
-  state.modelApi.onDownloadScenCover()
-}
+const onDownloadCover = () => {
+  state.modelApi.onDownloadScenCover();
+};
 // 导出模型
-const onExportModleFile =(type)=>{
-  state.modelApi.onExporterModel(type)
-}
+const onExportModleFile = (type) => {
+  state.modelApi.onExporterModel(type);
+};
 
 onMounted(async () => {
   loading.value = true;
@@ -164,13 +182,13 @@ onMounted(async () => {
   });
   // 模型加载进度条
   state.modelApi.onProgress((progressNum) => {
-    progress.value = Number((progressNum / 1024 / 1024).toFixed(2))
+    progress.value = Number((progressNum / 1024 / 1024).toFixed(2));
     // console.log('模型已加载' + progress.value + 'M')
-  })
+  });
   const load = await modelApi.init();
   if (load) {
     loading.value = false;
-    progress.value = 0
+    progress.value = 0;
   }
   // 初始化模型库数据
   initModelBaseData();
@@ -262,13 +280,12 @@ onBeforeUnmount(() => {
       color: #ccc;
       display: flex;
       align-items: center;
-      height: 40px;
+      height: 35px;
       font-size: 14px;
 
       .icon-name {
         display: flex;
         align-items: center;
-     
       }
     }
   }

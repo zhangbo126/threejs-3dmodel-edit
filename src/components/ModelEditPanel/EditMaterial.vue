@@ -86,14 +86,14 @@
           <el-switch @change="onChangeMeaterial" v-model="config.wireframe"></el-switch>
         </el-space>
       </div>
-      <div class="option">
+      <div class="option" >
         <div class="grid-txt">
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
           <el-slider
             show-input
-            @change="onChangeMeaterial"
+            @input="onChangeMeaterial"
             v-model="config.opacity"
             :min="0"
             :max="1"
@@ -215,6 +215,7 @@ watch(
   (val) => {
     const map = state.modelMaterialList.find((v) => v.uuid == val) || {};
     activeTextureMap.value = map.mapId;
+
     if (map.mapId) {
       const { color, wireframe, depthWrite, opacity } = map.material;
       Object.assign(config, {
@@ -293,11 +294,7 @@ defineExpose({
 });
 </script>
 <style scoped lang="scss">
-.grid-txt {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
+
 .options {
   max-width: 380px;
 }
