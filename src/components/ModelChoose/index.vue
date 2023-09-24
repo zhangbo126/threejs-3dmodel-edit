@@ -73,25 +73,37 @@
             <SwitchFilled />
           </el-icon>
           <span>几何体模型</span>
-          <span :style="{color:'#18c174 '}" v-if="geometryVisable">(可拖拽添加多个)</span>
+          <span :style="{ color: '#18c174 ' }" v-if="geometryVisable"
+            >(可拖拽添加多个)</span
+          >
         </el-space>
       </div>
       <!-- 模型列表 -->
       <el-scrollbar max-height="120px">
         <el-row v-if="geometryVisable">
-          <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
-             <div class="geometry"  
-              :class="activeModelId == model.id ? 'active-model' : ''" 
+          <el-col
+            :style="{ textAlign: 'center' }"
+            :span="8"
+            v-for="model in geometryModelList"
+            :key="model.type"
+          >
+            <div
+              class="geometry"
+              :class="activeModelId == model.id ? 'active-model' : ''"
               draggable="true"
-              @dragstart="(e)=>onDragstart(e,model)"
+              @dragstart="(e) => onDragstart(e, model)"
               @drag="(e) => onDrag(e)"
-              >
+            >
               <div class="geometry-name">
-                <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
-                  <b>  {{ model.name }}</b>
+                <el-tooltip
+                  effect="dark"
+                  :content="`${model.name}:${model.type}`"
+                  placement="top"
+                >
+                  <b> {{ model.name }}</b>
                 </el-tooltip>
-             </div>
-             </div>
+              </div>
+            </div>
           </el-col>
         </el-row>
         <div class="geometry-box" v-else>
@@ -186,7 +198,7 @@ const localModelName = ref(null);
 //选择模型
 const onChangeModel = async (model) => {
   if (model.id == activeModelId.value) return false;
-  geometryVisable.value=false
+  geometryVisable.value = false;
   activeModelId.value = model.id;
   localModelName.value = null;
   activeModel.value = model;
@@ -203,10 +215,12 @@ const onChangeModel = async (model) => {
 };
 
 // 添加几何模型
-const onAddGeometry= async ()=>{
-    geometryVisable.value= true
-    state.modelApi.clearSceneModel()
-}
+const onAddGeometry = async () => {
+  geometryVisable.value = true;
+  localModelName.value = null;
+  activeModelId.value = null;
+  state.modelApi.clearSceneModel();
+};
 
 // 选择几何模型
 const onChangeGeometryModel = async (model) => {
@@ -218,10 +232,9 @@ const onChangeGeometryModel = async (model) => {
   $bus.emit("model-update");
 };
 
-
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
-    state.modelApi.setDragGeometryModel(model)
+  state.modelApi.setDragGeometryModel(model);
 };
 // 拖拽中
 const onDrag = (event) => {
@@ -245,7 +258,7 @@ const onUpload = async (file) => {
       $bus.emit("model-update");
       $bus.emit("page-loading", false);
       activeModelId.value = null;
-      geometryVisable.value=false
+      geometryVisable.value = false;
       activeModel.value = {};
     }
   } catch (err) {

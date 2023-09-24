@@ -21,7 +21,7 @@
           <el-button type="primary" link>强度</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.strength" @change="onChangeFlow" :step="0.01" :min="0" :max="3" />
+          <el-slider show-input v-model="config.strength" @input="onChangeFlow" :step="0.01" :min="0" :max="3" />
         </div>
       </div>
       <div class="option">
@@ -29,7 +29,7 @@
           <el-button type="primary" link>半径</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.radius" @change="onChangeFlow" :step="0.01" :min="0" :max="2" />
+          <el-slider show-input v-model="config.radius" @input="onChangeFlow" :step="0.01" :min="0" :max="2" />
         </div>
       </div>
       <div class="option">
@@ -37,7 +37,7 @@
           <el-button type="primary" link>阈值</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.threshold" @change="onChangeFlow" :step="0.01" :min="0" :max="1" />
+          <el-slider show-input v-model="config.threshold" @input="onChangeFlow" :step="0.01" :min="0" :max="1" />
         </div>
       </div>
     </div>
@@ -51,7 +51,7 @@
           <span> 色调曝光度 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.toneMappingExposure" @change="onChangeFlow" :step="0.01" :min="0.5"
+          <el-slider show-input v-model="config.toneMappingExposure" @input="onChangeFlow" :step="0.01" :min="0.5"
             :max="10" />
         </div>
       </div>
@@ -76,7 +76,7 @@
           <span> 模型分解 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.decompose" @change="onChangeDecompose" :step="0.01" :min="0" :max="20" />
+          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="20" />
         </div>
       </div>
       <div class="option" :class="moveDisable">
@@ -90,17 +90,6 @@
           <el-switch v-model="config.modelDrag" @change="onChangeDrag" />
         </div>
       </div>
-      <!-- <div class="option" :class="meshTagDisable">
-        <el-space>
-          <el-icon>
-            <Message :size="20" />
-          </el-icon>
-          <span> hover是否显示材质标签 </span>
-        </el-space>
-        <div class="grid-silder">
-          <el-switch v-model="config.hoverMeshTag" @change="onChangeMeshTag" />
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -129,11 +118,7 @@ const moveDisable = computed(() => {
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
   return decomposeMesh.length <= 1 || decomposeMesh.length!=modelMaterialList.length  ? "disabled" : "";
 });
-const meshTagDisable = computed(() => {
-  const modelMaterialList = state.modelApi.modelMaterialList;
-  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return decomposeMesh.length <= 1  && !config.hoverMeshTag ? "disabled" : "";
-});
+
 
 const config = reactive({
   glow: false,
@@ -143,7 +128,6 @@ const config = reactive({
   decompose: 0,
   modelDrag: false,
   toneMappingExposure: 3,
-  hoverMeshTag: false,
 });
 onMounted(() => {
   $bus.on("model-update", () => {
@@ -155,7 +139,6 @@ onMounted(() => {
       decompose: 0,
       modelDrag: false,
       toneMappingExposure: 3,
-      hoverMeshTag: false,
     });
   });
 });
@@ -164,9 +147,6 @@ const onChangeFlow = () => {
 };
 const onChangeDecompose = () => {
   state.modelApi.setModelMeshDecompose(config);
-};
-const onChangeMeshTag = () => {
-  state.modelApi.setModelMeshTag(config);
 };
 const onChangeDrag = () => {
   config.decompose = 0;

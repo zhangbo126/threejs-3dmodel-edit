@@ -93,7 +93,7 @@
         <div class="grid-silder">
           <el-slider
             show-input
-            @change="onChangeMeaterial"
+            @input="onChangeMeaterial"
             v-model="config.opacity"
             :min="0"
             :max="1"

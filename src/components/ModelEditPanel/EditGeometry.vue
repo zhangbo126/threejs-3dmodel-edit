@@ -1,6 +1,6 @@
 <template>
   <div class="edit-box">
-    <template v-if="optionDisabled">
+    <template v-if="disabled">
       <div class="header">
         <span>几何体模型材质列表</span>
       </div>
@@ -43,10 +43,10 @@
               show-input
               v-if="typeof activeGeometry[key] == 'number'"
               v-model="activeGeometry[key]"
-              :min="0.1"
-              :max="10"
-              :step="0.01"
-              @change="onSetGeometry"
+              :min="inputRange(key).min"
+              :max="inputRange(key).max"
+              :step="inputRange(key).step"
+              @input="onSetGeometry"
             />
             <div v-else-if="typeof activeGeometry[key] == 'string'">
               {{ activeGeometry[key] }}
@@ -60,11 +60,19 @@
         </div>
       </div>
     </template>
-	<el-empty v-else description="当前模型不支持该操作项" :image-size="120" />
+    <el-empty v-else description="当前模型不支持使用该功能" :image-size="120" />
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  onMounted,
+  getCurrentInstance,
+  watch,
+  toRaw,
+} from "vue";
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 import * as THREE from "three";
@@ -73,18 +81,15 @@ const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   meaterialName: null,
-  color: null,
-  wireframe: false,
-  depthWrite: true,
-  opacity: 1,
+  type: null,
 });
 
 const activeGeometry = ref(null);
 const geometryConfigList = ref([]);
 
-const optionDisabled = computed(() => {
-  const geometryList = state.modelMaterialList.filter((v) => v.userData.geometry);
-  return geometryList.length ? true : false;
+const disabled = computed(() => {
+  const geometrylen = state.modelMaterialList.filter((v) => v.userData.geometry);
+  return geometrylen == 0 ? false : true;
 });
 
 const state = reactive({
@@ -96,7 +101,6 @@ const state = reactive({
   }),
   selectMeshUuid: computed(() => store.getters.selectMeshUuid),
 });
-
 watch(
   () => store.getters.selectMeshUuid,
   (val) => {
@@ -107,13 +111,9 @@ watch(
       const { type } = geometry;
       const { color } = material;
       activeGeometry.value = {
-        type,
-        color: new THREE.Color(color).getStyle(),
-        x,
-        y,
-        z,
         ...geometry.parameters,
       };
+      config.type = type;
       geometryConfigList.value = Object.keys(activeGeometry.value);
     } else {
       geometryConfigList.value = [];
@@ -129,13 +129,56 @@ const onChangeMaterialType = ({ name, material, geometry }) => {
 
 //修改材质信息
 const onSetGeometry = () => {
-  state.modelApi.onsetGeometryMesh(activeGeometry.value);
+  state.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
 };
 
 // 删除材质
 const onDeleteGeometry = (uuid) => {
   state.modelApi.onDeleteGeometryMesh(uuid);
   ElMessage.success("删除成功");
+};
+
+const inputRange = (key) => {
+  let range = {
+    min: 1,
+    max: 80,
+    step: 0.01,
+  };
+  if (
+    [
+      "width",
+      "height",
+      "radius",
+      "length",
+      "thetaLength",
+      "radiusTop",
+      "innerRadius",
+      "radiusBottom",
+      "q",
+      "outerRadius",
+      "arc",
+      "tube",
+      "p",
+    ].includes(key)
+  ) {
+    range = {
+      min: 0.1,
+      max: 10,
+      step: 0.01,
+    };
+  }
+  if (
+    ["detail",'capSegments','radialSegments', "thetaStart", "depthSegments", "widthSegments", "heightSegments"].includes(
+      key
+    )
+  ) {
+    range = {
+      min: 0,
+      max: 10,
+      step: 1,
+    };
+  }
+  return range;
 };
 </script>
 <style scoped lang="scss">

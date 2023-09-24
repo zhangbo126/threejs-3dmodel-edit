@@ -94,7 +94,7 @@ const panelTabs = [
     icon: "Cellphone",
   },
 ];
-const activeTab = ref("EditGeometry");
+const activeTab = ref("EditMaterial");
 const background = ref(null);
 const material = ref(null);
 const animation = ref(null);

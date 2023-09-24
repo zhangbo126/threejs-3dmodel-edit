@@ -306,7 +306,7 @@ class renderModel {
 				const { x, y, z } = intersects[0].point
 				mesh.position.set(x, y, z)
 				mesh.name = type + '_' + onlyKey(4, 5)
-				mesh.userData.geometry=true
+				mesh.userData.geometry = true
 				this.geometryGroup.add(mesh)
 				this.model = this.geometryGroup
 				this.onSetGeometryMeshList(mesh)
@@ -1062,6 +1062,7 @@ class renderModel {
 			})
 
 		} else {
+			
 			if (this.dragControls) this.dragControls.dispose()
 		}
 	}
@@ -1381,7 +1382,7 @@ class renderModel {
 	/**
 	 * @describe 辅助线/轴配置模块方法
 	 * @function onDeleteGeometryMesh 删除几何体材质
-	 * @function onsetGeometryMesh 修改几何体材质信息
+	 * @function onSetGeometryMesh 修改几何体材质信息
 	 */
 	onDeleteGeometryMesh(uuid) {
 		// 找到需要删除的材质
@@ -1390,32 +1391,32 @@ class renderModel {
 		this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 		mesh.clear()
 		this.geometryGroup.remove(mesh)
+		this.dragControls.dispose()
+        // 更新拖拽函数的材质对象
 		if (this.modelMaterialList.length == 0) {
 			this.setModelMeshDrag({ modelDrag: false })
+		} else {
+			this.setModelMeshDrag({ modelDrag: true })
 		}
 	}
-	onsetGeometryMesh(activeGeometry) {
-		const { color, x, y, z, type } = activeGeometry
+	onSetGeometryMesh(activeGeometry, type) {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		// // 不需要赋值的key
-		const notGeometrykey = ['color', 'type', 'x', 'y', 'z']
-		const geometryData = Object.keys(activeGeometry).filter(key => !notGeometrykey.includes(key)).map(v => activeGeometry[v])
+		const geometryData = Object.keys(activeGeometry).map(v => activeGeometry[v])
 		// 创建几何体
 		const newGeometry = new THREE[type](...geometryData)
-		const newMaterial = new THREE.MeshMatcapMaterial({ color: new THREE.Color(color) })
-
 		mesh.geometry = newGeometry
-		mesh.material = newMaterial
-		mesh.position.set(x, y, z)
+		// mesh.material = newMaterial
+		// mesh.position.set(x, y, z,)
 		// const endPosition = {
 		// 	x, y, z
 		// }
-		// const Tween = new TWEEN.Tween(mesh.position)
-		// Tween.to(endPosition, 500)
+		// console.log(startGeometry)
+		// const Tween = new TWEEN.Tween(startGeometry)
+		// Tween.to(newGeometry, 500)
 		// Tween.onUpdate((val) => {
-		// 	const { x, y, z } = val
-		
+		// 	mesh.geometry = val
+
 		// })
 		// Tween.start();
 

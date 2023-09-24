@@ -322,7 +322,7 @@ const geometryModelList = [
 		radius: .5, // 胶囊半径
 		length: .5, //中间区域的长度
 		capSegments: 10, // 构造盖子的曲线部分的个数 
-		radialSegments: 20, //覆盖胶囊圆周的分离的面的个数
+		radialSegments: 10, //覆盖胶囊圆周的分离的面的个数
 	},
 	{
 		id: 32,
@@ -332,7 +332,7 @@ const geometryModelList = [
 		radius: .5, // 半径
 		segments: 32, //分段（三角面）的数量
 		thetaStart: 0, // 第一个分段的起始角度 
-		thetaLength: 6.283185307179586, //圆形扇区的中心角
+		thetaLength: 6.44, //圆形扇区的中心角
 	},
 	{
 		id: 33,
@@ -345,7 +345,7 @@ const geometryModelList = [
 		heightSegments: 1, //圆形扇区的中心角
 		openEnded: false, //指明该圆锥的底面是开放的还是封顶的
 		thetaStart: 0,
-		thetaLength: 6.283185307179586, //圆形扇区的中心角
+		thetaLength: 6.44, //圆形扇区的中心角
 	},
 	{
 		id: 34,
@@ -359,7 +359,7 @@ const geometryModelList = [
 		heightSegments: 1,
 		openEnded: false,
 		thetaStart: 0,
-		thetaLength: 6.283185307179586, //圆形扇区的中心角
+		thetaLength: 6.44, //圆形扇区的中心角
 	},
 	{
 		id: 35,
@@ -400,12 +400,12 @@ const geometryModelList = [
 		name: '圆环缓冲几何体',
 		modelType: 'geometry',
 		type: 'RingGeometry',
-		innerRadius: .5,
-		outerRadius: 1,
+		innerRadius: .44,
+		outerRadius: 0.67,
 		thetaSegments: 8,
 		phiSegments: 1,
 		thetaStart: 0,
-		thetaLength: 6.283185307179586,
+		thetaLength: 6.29,
 	},
 	{
 		id: 40,
@@ -416,9 +416,9 @@ const geometryModelList = [
 		widthSegments: 32,
 		heightSegments: 16,
 		phiStart: 0,
-		phiLength: 6.283185307179586,
+		phiLength: 6,
 		thetaStart: 0,
-		thetaLength: 3.141592653589793,
+		thetaLength: 7,
 	},
 	{
 		id: 41,
@@ -437,7 +437,7 @@ const geometryModelList = [
 		tube: .1,
 		radialSegments: 15,
 		tubularSegments: 15,
-		arc: 6.283185307179586,
+		arc: 6.32
 	},
 	{
 		id: 43,
