@@ -184,7 +184,7 @@ class renderModel {
 			}
 			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
 				this.materials[v.uuid] = v.material
-				v.material = new THREE.MeshBasicMaterial({ color: 'black' })
+				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
 			}
 		})
 		this.glowComposer.render()
@@ -301,7 +301,7 @@ class renderModel {
 				const colors = ['#FF4500', '#90EE90', '#00CED1', '#1E90FF', '#C71585', '#FF4500', '#FAD400', '#1F93FF', '#90F090', '#C71585']
 				// 随机颜色
 				const meshColor = colors[Math.ceil(Math.random() * 10)]
-				const material = new THREE.MeshMatcapMaterial({ color: new THREE.Color(meshColor) })
+				const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(meshColor),side: THREE.DoubleSide })
 				const mesh = new THREE.Mesh(geometry, material)
 				const { x, y, z } = intersects[0].point
 				mesh.position.set(x, y, z)
@@ -420,13 +420,20 @@ class renderModel {
 		this.effectComposer.addPass(effectFXAA)
 
 		//创建辉光效果
-		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0)
-		this.unrealBloomPass.threshold = 0
-		this.unrealBloomPass.strength = 0
-		this.unrealBloomPass.radius = 0
-		this.unrealBloomPass.renderToScreen = false
+		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight),1.5, 0.4, 0.85)
+		// this.unrealBloomPass.threshold = 0
+		// this.unrealBloomPass.strength = 0
+		// this.unrealBloomPass.radius = 0
+		// this.unrealBloomPass.renderToScreen = true
 		// 辉光合成器
-		this.glowComposer = new EffectComposer(this.renderer)
+		const renderTargetParameters = {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBAFormat,
+			stencilBuffer: false,
+		};
+		const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters)
+		this.glowComposer = new EffectComposer(this.renderer,glowRender)
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
@@ -954,6 +961,8 @@ class renderModel {
 		this.modelTextureMap = []
 		this.model.traverse((v) => {
 			const { uuid, name } = v
+			v.castShadow = true
+			v.frustumCulled = false
 			if (v.isMesh && v.material) {
 				const materials = Array.isArray(v.material) ? v.material : [v.material]
 				// 统一将模型材质 设置为 MeshLambertMaterial 类型
@@ -1406,23 +1415,7 @@ class renderModel {
 		// 创建几何体
 		const newGeometry = new THREE[type](...geometryData)
 		mesh.geometry = newGeometry
-		// mesh.material = newMaterial
-		// mesh.position.set(x, y, z,)
-		// const endPosition = {
-		// 	x, y, z
-		// }
-		// console.log(startGeometry)
-		// const Tween = new TWEEN.Tween(startGeometry)
-		// Tween.to(newGeometry, 500)
-		// Tween.onUpdate((val) => {
-		// 	mesh.geometry = val
-
-		// })
-		// Tween.start();
-
 	}
-
-
 }
 
 
