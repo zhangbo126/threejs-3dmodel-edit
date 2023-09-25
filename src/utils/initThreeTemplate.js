@@ -228,12 +228,19 @@ class renderModel {
 
 		//创建辉光效果
 		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0)
-		this.unrealBloomPass.threshold = 0
-		this.unrealBloomPass.strength = 0
-		this.unrealBloomPass.radius = 0
-		this.unrealBloomPass.renderToScreen = false
+		// this.unrealBloomPass.threshold = 0
+		// this.unrealBloomPass.strength = 0
+		// this.unrealBloomPass.radius = 0
+		// this.unrealBloomPass.renderToScreen = false
 		// 辉光合成器
-		this.glowComposer = new EffectComposer(this.renderer)
+		const renderTargetParameters = {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBAFormat,
+			stencilBuffer: false,
+		};
+		const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters)
+		this.glowComposer = new EffectComposer(this.renderer,glowRender)
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
