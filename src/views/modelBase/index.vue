@@ -49,8 +49,8 @@
         </ul>
       </el-scrollbar>
       <div id="drag-content">
-        <div class="content" @drop="onDrop" @dragover.prevent>
-          <draggable-container :adsorbParent="true" :disabled="true">
+        <div class="content"   @drop="onDrop" @dragover.prevent>
+          <draggable-container  :adsorbParent="true" :disabled="true" v-if="dragModelList.length">
             <draggable-resizable-item
               @onDragActived="onDragActived"
               @onDragDeactivated="onDragDeactivated"
@@ -60,9 +60,11 @@
               :config="drag"
             ></draggable-resizable-item>
           </draggable-container>
+          <div class="empty-tip" v-else> 请拖拽添加多个!!!</div>
            <!-- 右键菜单 -->
           <right-context-menu :rightMenuPositon="rightMenuPositon" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
+        <!-- <el-empty description="拖拽添加多个" /> -->
       </div>
     </div>
   </div>
@@ -260,6 +262,16 @@ onMounted(async () => {
         background-size: 15px 15px, 15px 15px;
         background-image: linear-gradient(#18181c 14px, transparent 0),
           linear-gradient(90deg, transparent 14px, #86909c 0);
+        .empty-tip{
+          width: 100%;
+          height: 100%;
+          font-size: 20px;
+          color:#18c174;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          letter-spacing: 10px;
+        }
 
         .drag-box {
           .drag-image {
