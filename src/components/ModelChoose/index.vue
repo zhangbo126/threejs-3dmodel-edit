@@ -112,7 +112,7 @@
               <el-icon :size="44">
                 <Plus />
               </el-icon>
-              <div><span>添加几何模型</span></div>
+              <div><span>添加几何体模型</span></div>
             </div>
           </div>
         </div>

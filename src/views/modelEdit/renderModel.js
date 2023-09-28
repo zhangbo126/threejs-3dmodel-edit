@@ -466,7 +466,6 @@ class renderModel {
 				// 加载几何模型
 				if (model.modelType && model.modelType == 'geometry') {
 					// 重置"灯光"模块数据
-					this.onResettingLight({ ambientLight: false })
 					this.modelAnimation = []
 					this.camera.fov = 80
 					this.camera.updateProjectionMatrix()
@@ -696,6 +695,7 @@ class renderModel {
 			axesHelper: false,
 			axesSize: 1.8,
 		}
+		this.onResettingLight({ ambientLight: false })
 		this.onSetModelGridHelper(config)
 		this.onSetModelGridHelperSize(config)
 		this.onSetModelAxesHelper(config)
