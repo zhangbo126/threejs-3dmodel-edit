@@ -219,17 +219,8 @@ const onAddGeometry = async () => {
   geometryVisable.value = true;
   localModelName.value = null;
   activeModelId.value = null;
+  activeModel.value = {};
   state.modelApi.clearSceneModel();
-};
-
-// 选择几何模型
-const onChangeGeometryModel = async (model) => {
-  if (model.id == activeModelId.value) return false;
-  activeModelId.value = model.id;
-  localModelName.value = null;
-  activeModel.value = model;
-  const { load } = await state.modelApi.onSwitchModel(model);
-  $bus.emit("model-update");
 };
 
 // 拖拽几何模型开始

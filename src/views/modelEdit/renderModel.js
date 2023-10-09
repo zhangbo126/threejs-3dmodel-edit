@@ -279,7 +279,6 @@ class renderModel {
 			})
 		})
 	}
-
 	// 加载几何体模型
 	setGeometryModel(model) {
 		return new Promise((reslove, reject) => {
@@ -288,8 +287,7 @@ class renderModel {
 			this.mouse.x = ((model.clientX - offsetLeft) / clientWidth) * 2 - 1
 			this.mouse.y = -((model.clientY - offsetTop) / clientHeight) * 2 + 1
 			this.raycaster.setFromCamera(this.mouse, this.camera);
-			const intersects = this.raycaster.intersectObjects(this.scene.children);
-
+			const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 			if (intersects.length > 0) {
 				// 在控制台输出鼠标在场景中的位置
 				const { type } = model
@@ -301,7 +299,7 @@ class renderModel {
 				const colors = ['#FF4500', '#90EE90', '#00CED1', '#1E90FF', '#C71585', '#FF4500', '#FAD400', '#1F93FF', '#90F090', '#C71585']
 				// 随机颜色
 				const meshColor = colors[Math.ceil(Math.random() * 10)]
-				const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(meshColor),side: THREE.DoubleSide })
+				const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(meshColor), side: THREE.DoubleSide })
 				const mesh = new THREE.Mesh(geometry, material)
 				const { x, y, z } = intersects[0].point
 				mesh.position.set(x, y, z)
@@ -315,8 +313,14 @@ class renderModel {
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.setModelMeshDrag({ modelDrag: true })
 				this.scene.add(this.model)
+				//计算控制器缩放大小
+				const box = new THREE.Box3().setFromObject(this.model);
+				const size = box.getSize(new THREE.Vector3());
+				this.controls.maxDistance = size.length() * 10
+				reslove(true)
+			} else {
+				ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
 			}
-			reslove(true)
 
 		})
 
@@ -420,7 +424,7 @@ class renderModel {
 		this.effectComposer.addPass(effectFXAA)
 
 		//创建辉光效果
-		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight),1.5, 0.4, 0.85)
+		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 1.5, 0.4, 0.85)
 		// this.unrealBloomPass.threshold = 0
 		// this.unrealBloomPass.strength = 0
 		// this.unrealBloomPass.radius = 0
@@ -433,7 +437,7 @@ class renderModel {
 			stencilBuffer: false,
 		};
 		const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters)
-		this.glowComposer = new EffectComposer(this.renderer,glowRender)
+		this.glowComposer = new EffectComposer(this.renderer, glowRender)
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
@@ -462,7 +466,6 @@ class renderModel {
 	onSwitchModel(model) {
 		return new Promise(async (reslove, reject) => {
 			try {
-				this.clearSceneModel()
 				// 加载几何模型
 				if (model.modelType && model.modelType == 'geometry') {
 					// 重置"灯光"模块数据
@@ -472,6 +475,7 @@ class renderModel {
 					const load = await this.setGeometryModel(model)
 					reslove()
 				} else {
+					this.clearSceneModel()
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
@@ -668,6 +672,7 @@ class renderModel {
 		this.model = null
 		this.modelTextureMap = []
 		this.glowMaterialList = []
+		this.modelMaterialList = []
 		this.materials = {}
 		if (this.dragControls) {
 			this.dragControls.dispose()
@@ -1059,6 +1064,8 @@ class renderModel {
 	}
 	// 模型材质可拖拽
 	setModelMeshDrag({ modelDrag }) {
+		// 先把之前的拖拽信息给清除掉
+		if (this.dragControls) this.dragControls.dispose()
 		if (modelDrag) {
 			this.dragControls = new DragControls(this.modelMaterialList, this.camera, this.renderer.domElement);
 			// 拖拽事件监听
@@ -1069,10 +1076,6 @@ class renderModel {
 			this.dragControls.addEventListener('dragend', () => {
 				this.controls.enabled = true
 			})
-
-		} else {
-			
-			if (this.dragControls) this.dragControls.dispose()
 		}
 	}
 
@@ -1401,7 +1404,7 @@ class renderModel {
 		mesh.clear()
 		this.geometryGroup.remove(mesh)
 		this.dragControls.dispose()
-        // 更新拖拽函数的材质对象
+		// 更新拖拽函数的材质对象
 		if (this.modelMaterialList.length == 0) {
 			this.setModelMeshDrag({ modelDrag: false })
 		} else {
