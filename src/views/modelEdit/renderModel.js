@@ -1,11 +1,12 @@
 import * as THREE from 'three' //导入整个 three.js核心库
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -164,11 +165,12 @@ class renderModel {
 		const { clientHeight, clientWidth } = this.container
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
+		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
 		this.renderer.autoClear = true
 		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
-		this.renderer.toneMappingExposure = 3
+		this.renderer.toneMappingExposure = 2
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
@@ -353,18 +355,18 @@ class renderModel {
 		this.scene.add(this.ambientLight)
 
 		// 创建平行光
-		this.directionalLight = new THREE.DirectionalLight('#1E90FF', 1)
+		this.directionalLight = new THREE.DirectionalLight('#fff', 5)
 		this.directionalLight.position.set(-1.44, 2.2, 1)
 		this.directionalLight.castShadow = true
 		this.directionalLight.visible = false
 		this.scene.add(this.directionalLight)
 		// 创建平行光辅助线
-		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .5)
+		this.directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, .3)
 		this.directionalLightHelper.visible = false
 		this.scene.add(this.directionalLightHelper)
 
 		// 创建点光源
-		this.pointLight = new THREE.PointLight(0xff0000, 1, 100)
+		this.pointLight = new THREE.PointLight(0xff0000, 5, 100)
 		this.pointLight.visible = false
 		this.scene.add(this.pointLight)
 		// 创建点光源辅助线
@@ -373,7 +375,7 @@ class renderModel {
 		this.scene.add(this.pointLightHelper)
 
 		//  创建聚光灯
-		this.spotLight = new THREE.SpotLight('#323636', 440);
+		this.spotLight = new THREE.SpotLight('#00BABD', 900);
 		this.spotLight.visible = false
 		this.spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
 		this.spotLight.decay = 2;
@@ -389,7 +391,7 @@ class renderModel {
 
 		// 模型平面
 		const geometry = new THREE.PlaneGeometry(4, 4);
-		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#939393' });
+		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#000000' });
 		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
 		this.planeGeometry.name = 'planeGeometry'
 		this.planeGeometry.rotation.x = -Math.PI / 2
@@ -410,11 +412,13 @@ class renderModel {
 		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
 		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
 		this.outlinePass.edgeGlow = 2.0 // 发光强度
-		//this.outlinePass.usePatternTexture = false // 是否使用纹理图案
+		this.outlinePass.usePatternTexture = false // 是否使用纹理图案
 		this.outlinePass.edgeThickness = 1 // 边缘浓度
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
 		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
+        let outputPass = new OutputPass()
+		this.effectComposer.addPass(outputPass)
 
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
@@ -425,14 +429,9 @@ class renderModel {
 
 		//创建辉光效果
 		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 1.5, 0.4, 0.85)
-		// this.unrealBloomPass.threshold = 0
-		// this.unrealBloomPass.strength = 0
-		// this.unrealBloomPass.radius = 0
-		// this.unrealBloomPass.renderToScreen = true
 		// 辉光合成器
 		const renderTargetParameters = {
 			minFilter: THREE.LinearFilter,
-			magFilter: THREE.LinearFilter,
 			format: THREE.RGBAFormat,
 			stencilBuffer: false,
 		};
@@ -442,7 +441,7 @@ class renderModel {
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
 
-		// 着色器
+		// // 着色器
 		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
@@ -460,6 +459,7 @@ class renderModel {
 		shaderPass.needsSwap = true
 		this.effectComposer.addPass(shaderPass)
 
+		
 
 	}
 	// 切换模型
@@ -677,7 +677,7 @@ class renderModel {
 		if (this.dragControls) {
 			this.dragControls.dispose()
 		}
-		this.renderer.toneMappingExposure = 3
+		this.renderer.toneMappingExposure = 2
 		Object.assign(this.unrealBloomPass, {
 			threshold: 0,
 			strength: 0,

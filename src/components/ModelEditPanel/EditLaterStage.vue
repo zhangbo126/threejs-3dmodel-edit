@@ -21,7 +21,7 @@
           <el-button type="primary" link>强度</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.strength" @input="onChangeFlow" :step="0.01" :min="0" :max="3" />
+          <el-slider show-input v-model="config.strength" @input="onChangeFlow" :step="0.01" :min="0" :max="8" />
         </div>
       </div>
       <div class="option">
@@ -29,7 +29,7 @@
           <el-button type="primary" link>半径</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.radius" @input="onChangeFlow" :step="0.01" :min="0" :max="2" />
+          <el-slider show-input v-model="config.radius" @input="onChangeFlow" :step="0.01" :min="0" :max="5" />
         </div>
       </div>
       <div class="option">
@@ -127,7 +127,7 @@ const config = reactive({
   radius: 1,
   decompose: 0,
   modelDrag: false,
-  toneMappingExposure: 3,
+  toneMappingExposure: 2,
 });
 onMounted(() => {
   $bus.on("model-update", () => {
@@ -138,7 +138,7 @@ onMounted(() => {
       radius: 1,
       decompose: 0,
       modelDrag: false,
-      toneMappingExposure: 3,
+      toneMappingExposure: 2,
     });
   });
 });
