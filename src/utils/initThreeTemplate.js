@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF�
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
@@ -218,6 +219,8 @@ class renderModel {
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
 		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
+		let outputPass = new OutputPass()
+		this.effectComposer.addPass(outputPass)
 
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
@@ -632,7 +635,7 @@ class renderModel {
 		}
 		// 聚光灯
 		if (light.spotLight) {
-			const spotLight = new THREE.SpotLight(light.spotLightColor, 440);
+			const spotLight = new THREE.SpotLight(light.spotLightColor, 900);
 			spotLight.visible = light.spotLight
 			spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
 			spotLight.decay = 2;

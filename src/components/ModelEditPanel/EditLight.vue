@@ -74,7 +74,7 @@
             <el-color-picker color-format="hex" v-model="config.directionalLightColor" :predefine="predefineColors" @change="onChangeDirectionalLight" @active-change="changeDirectionalLightColor" />
           </div>
           <div class="silder">
-            <el-slider show-input @input="onChangeDirectionalLight" v-model="config.directionalLightIntensity" :min="-5" :max="5" :step="0.01" />
+            <el-slider show-input @input="onChangeDirectionalLight" v-model="config.directionalLightIntensity" :min="-5" :max="15" :step="0.01" />
           </div>
         </div>
         <div class="option" :class="directionaDisabled">
@@ -150,7 +150,7 @@
             <el-color-picker color-format="hex" v-model="config.pointLightColor" :predefine="predefineColors" @change="onChangePointLight" @active-change="changePointLightColor" />
           </div>
           <div class="silder">
-            <el-slider show-input @input="onChangePointLight" v-model="config.pointLightIntensity" :min="-15" :max="15" :step="0.1" />
+            <el-slider show-input @input="onChangePointLight" v-model="config.pointLightIntensity" :min="-20" :max="60" :step="0.1" />
           </div>
         </div>
         <!-- 水平方向 -->
@@ -197,7 +197,7 @@
             <el-color-picker color-format="hex" v-model="config.spotLightColor" :predefine="predefineColors" @change="onChangeSpotLight" @active-change="changeSpotLightColor" />
           </div>
           <div class="silder">
-            <el-slider show-input @input="onChangeSpotLight" v-model="config.spotLightIntensity" :min="0" :max="600" :step="0.1" />
+            <el-slider show-input @input="onChangeSpotLight" v-model="config.spotLightIntensity" :min="0" :max="2000" :step="0.1" />
           </div>
         </div>
         <!-- 阴影 -->
@@ -295,7 +295,7 @@ const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   //光源平面
   planeGeometry: false,
-  planeColor: "#939393",
+  planeColor: "#000000",
   planeWidth: 7,
   planeHeight: 7,
   //环境光
@@ -305,8 +305,8 @@ const config = reactive({
   //平行光
   directionalLight: false,
   directionalLightHelper: true,
-  directionalLightColor: "#1E90FF",
-  directionalLightIntensity: 1,
+  directionalLightColor: "#fff",
+  directionalLightIntensity: 5,
   directionalHorizontal: -1.26,
   directionalVertical: -3.85,
   directionalSistance: 2.98,
@@ -315,14 +315,14 @@ const config = reactive({
   pointLight: false,
   pointLightHelper: true,
   pointLightColor: "#1E90FF",
-  pointLightIntensity: 1,
+  pointLightIntensity: 10,
   pointHorizontal: -4.21,
   pointVertical: -4.1,
   pointSistance: 2.53,
   //聚光灯
   spotLight: false,
-  spotLightColor: "#323636",
-  spotLightIntensity: 400,
+  spotLightColor: "#00BABD",
+  spotLightIntensity: 900,
   spotHorizontal: -3.49,
   spotVertical: -4.37,
   spotSistance: 4.09,
@@ -367,7 +367,7 @@ onMounted(() => {
     Object.assign(config, {
       //光源平面
       planeGeometry: false,
-      planeColor: "#939393",
+      planeColor: "#000000",
       planeWidth: 7,
       planeHeight: 7,
       //环境光
@@ -377,8 +377,8 @@ onMounted(() => {
       //平行光
       directionalLight: false,
       directionalLightHelper: true,
-      directionalLightColor: "#1E90FF",
-      directionalLightIntensity: 1,
+      directionalLightColor: "#fff",
+      directionalLightIntensity: 5,
       directionalHorizontal: -1.26,
       directionalVertical: -3.85,
       directionalSistance: 2.98,
@@ -387,14 +387,14 @@ onMounted(() => {
       pointLight: false,
       pointLightHelper: true,
       pointLightColor: "#1E90FF",
-      pointLightIntensity: 1,
+      pointLightIntensity: 10,
       pointHorizontal: -4.21,
       pointVertical: -4.1,
       pointSistance: 2.53,
       //聚光灯
       spotLight: false,
-      spotLightColor: "#323636",
-      spotLightIntensity: 400,
+      spotLightColor: "#00BABD",
+      spotLightIntensity: 900,
       spotHorizontal: -3.49,
       spotVertical: -4.37,
       spotSistance: 4.09,
