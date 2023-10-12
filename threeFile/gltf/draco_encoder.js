@@ -1,4 +1,3 @@
-/* eslint-disable */
 var DracoEncoderModule = function(DracoEncoderModule) {
   DracoEncoderModule = DracoEncoderModule || {};
 
