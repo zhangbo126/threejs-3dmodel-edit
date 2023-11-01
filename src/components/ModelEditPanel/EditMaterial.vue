@@ -49,10 +49,9 @@
     <div class="options" :class="optionDisabled">
       <div class="option space-between">
         <el-space>
-
           <el-button type="primary" link>材质颜色</el-button>
           <el-color-picker
-            color-format="hex"
+             color-format="hex"
             :predefine="PREDEFINE_COLORS"
             @change="onChangeMeaterial"
             @active-change="activeChangeColor"
@@ -169,9 +168,9 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
-const activeMeshType =ref('MeshStandardMaterial')
+const activeMeshType =ref('MeshBasicMaterial')
 const activeMesh = reactive({
-    type: 'MeshStandardMaterial',
+    type: 'MeshBasicMaterial',
     describe:'标准网格材质',
 		color: true,
 		wireframe: true,
@@ -249,6 +248,7 @@ const onChangeMaterialType = ({ name, id, material, mapId }) => {
 
 const activeChangeColor = (color) => {
   config.color = color;
+ 
   state.modelApi.onSetModelMaterial(config);
 };
 

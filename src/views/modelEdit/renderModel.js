@@ -763,7 +763,7 @@ class renderModel {
 					const materials = Array.isArray(v.material) ? v.material : [v.material]
 					const { name, color, map, depthWrite, wireframe, opacity } = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					v.material = new THREE.MeshStandardMaterial({
+					v.material = new THREE.MeshBasicMaterial({
 						map,
 						transparent: true,
 						color,
@@ -789,7 +789,7 @@ class renderModel {
 				if (v.material && isMap) {
 					const mapTexture = new THREE.TextureLoader().load(map)
 					const { color, name, depthWrite, wireframe, opacity } = v.material
-					v.material = new THREE.MeshStandardMaterial({
+					v.material = new THREE.MeshBasicMaterial({
 						map: mapTexture,
 						name,
 						transparent: true,
@@ -1420,7 +1420,5 @@ class renderModel {
 		mesh.geometry = newGeometry
 	}
 }
-
-
 
 export default renderModel
