@@ -762,16 +762,18 @@ class renderModel {
 				if (v.material) {
 					const materials = Array.isArray(v.material) ? v.material : [v.material]
 					const { name, color, map, depthWrite, wireframe, opacity } = v.material
+					const newMaterial = v.material.clone()
+					v.material = newMaterial
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					v.material = new THREE.MeshBasicMaterial({
-						map,
-						transparent: true,
-						color,
-						// wireframe,
-						// depthWrite,
-						opacity,
-						name,
-					})
+					// v.material = new THREE.MeshBasicMaterial({
+					// 	map,
+					// 	transparent: true,
+					// 	color,
+					// 	wireframe,
+					// 	depthWrite,
+					// 	opacity,
+					// 	name,
+					// })
 					this.modelMaterialList.push(v)
 					// 获取模型自动材质贴图
 					const { url, mapId } = this.getModelMaps(materials, uuid)
@@ -788,16 +790,9 @@ class renderModel {
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
 					const mapTexture = new THREE.TextureLoader().load(map)
-					const { color, name, depthWrite, wireframe, opacity } = v.material
-					v.material = new THREE.MeshBasicMaterial({
-						map: mapTexture,
-						name,
-						transparent: true,
-						color,
-						// wireframe,
-						// depthWrite,
-						opacity,
-					})
+					const newMaterial = v.material.clone()
+					v.material = newMaterial
+					v.material.map = mapTexture
 					v.mapId = uuid + '_' + i
 					this.modelTextureMap = [{
 						meshName: v.name,
@@ -858,7 +853,7 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
 			const { name, map } = mesh.material
-			mesh.material = new THREE.MeshStandardMaterial({
+			Object.assign(mesh.material,{
 				map,
 				name,
 				transparent: true,
@@ -874,7 +869,8 @@ class renderModel {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
-		mesh.material = new THREE.MeshStandardMaterial({
+
+		Object.assign(mesh.material,{
 			map: material.map,
 			transparent: true,
 			color,
@@ -890,7 +886,7 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
 		const mapTexture = new THREE.TextureLoader().load(url)
-		mesh.material = new THREE.MeshStandardMaterial({
+		Object.assign(mesh.material,{
 			map: mapTexture,
 			transparent: true,
 			color,

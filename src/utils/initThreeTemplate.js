@@ -243,7 +243,7 @@ class renderModel {
 			stencilBuffer: false,
 		};
 		const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters)
-		this.glowComposer = new EffectComposer(this.renderer,glowRender)
+		this.glowComposer = new EffectComposer(this.renderer, glowRender)
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
@@ -442,24 +442,29 @@ class renderModel {
 				if (v.material) {
 					const { name, color, map } = v.material
 					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					v.material = new THREE.MeshBasicMaterial({
-						map,
-						transparent: true,
-						color,
-						name,
-					})
+					// v.material = new THREE.MeshBasicMaterial({
+					// 	map,
+					// 	transparent: true,
+					// 	color,
+					// 	name,
+					// })
+					const newMaterial = v.material.clone()
+					v.material = newMaterial
 					this.modelMaterialList.push(v)
 				}
 				// 部分模型本身没有贴图需 要单独处理
 				if (v.material && isMap) {
 					const mapTexture = new THREE.TextureLoader().load(map)
-					const { color, name } = v.material
-					v.material = new THREE.MeshBasicMaterial({
-						map: mapTexture,
-						name,
-						transparent: true,
-						color,
-					})
+					const newMaterial = v.material.clone()
+					v.material = newMaterial
+					v.material.map = mapTexture
+					// const { color, name } = v.material
+					// v.material = new THREE.MeshBasicMaterial({
+					// 	map: mapTexture,
+					// 	name,
+					// 	transparent: true,
+					// 	color,
+					// })
 				}
 			}
 		})
@@ -501,10 +506,14 @@ class renderModel {
 			const mesh = this.model.getObjectByProperty('name', v.meshName)
 			const { color, opacity, depthWrite, wireframe, visible, type } = v
 			const { map } = mesh.material
-			mesh.material = new THREE[type]({
-				map,
-			})
-
+			if (material.materialType) {
+				mesh.material = new THREE[type]({
+					map,
+				})
+			} else {
+				mesh.material.map = map
+			}
+			// 处理修改了贴图的材质
 			if (v.meshFrom) {
 				// 如果使用的是系统贴图
 				if (mapIdList.includes(v.meshFrom)) {
@@ -512,18 +521,27 @@ class renderModel {
 					const mapInfo = mapImageList.find(m => m.id == v.meshFrom) || {}
 					// 加载系统材质贴图
 					const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
-					mesh.material = new THREE[type]({
-						map: mapTexture,
-					})
+					// 如果当前模型的材质类型被修改了，则使用用新的材质type
+					if (material.materialType) {
+						mesh.material = new THREE[type]({
+							map: mapTexture,
+						})
+					} else {
+						mesh.material.map = mapTexture
+					}
 				} else {
 					// 如果是当前模型材质自身贴图
 					const meshFrom = this.model.getObjectByProperty('name', v.meshFrom)
 					const { map } = meshFrom.material
-					mesh.material = new THREE[type]({
-						map,
-					})
+					// 如果当前模型的材质类型被修改了，则使用用新的材质type
+					if (material.materialType) {
+						mesh.material = new THREE[type]({
+							map,
+						})
+					} else {
+						mesh.material.map = map
+					}
 				}
-
 			}
 			// 设置材质显隐
 			mesh.material.visible = visible

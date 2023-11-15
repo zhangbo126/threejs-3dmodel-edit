@@ -168,7 +168,7 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
-const activeMeshType =ref('MeshBasicMaterial')
+const activeMeshType =ref(null)
 const activeMesh = reactive({
     type: 'MeshBasicMaterial',
     describe:'标准网格材质',
@@ -286,6 +286,7 @@ const onChangeSystemModelMap = (map) => {
 };
 const getMeshConfig = () => {
   return {
+    materialType:activeMeshType.value,
     meshList: state.modelApi.onGetEditMeshList(),
   };
 };
