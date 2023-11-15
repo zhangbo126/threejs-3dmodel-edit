@@ -224,11 +224,12 @@ class renderModel {
 		return new Promise((resolve, reject) => {
 
 			const loader = this.fileLoaderMap[fileType]
-
+			const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
+			const DRACO_LOADER = new DRACOLoader(new THREE.LoadingManager()).setDecoderPath(`${THREE_PATH}/examples/jsm/libs/draco/gltf/`)			
 			if (['glb', 'gltf'].includes(fileType)) {
-				const dracoLoader = new DRACOLoader()
-				dracoLoader.setDecoderPath('./threeFile/gltf/')
-				loader.setDRACOLoader(dracoLoader)
+				// const dracoLoader = new DRACOLoader()
+				// dracoLoader.setDecoderPath('./threeFile/gltf/')
+				loader.setDRACOLoader(DRACO_LOADER)
 
 			}
 			loader.load(filePath, (result) => {
