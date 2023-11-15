@@ -222,11 +222,14 @@ class renderModel {
 	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
+
 			const loader = this.fileLoaderMap[fileType]
+
 			if (['glb', 'gltf'].includes(fileType)) {
 				const dracoLoader = new DRACOLoader()
 				dracoLoader.setDecoderPath('./threeFile/gltf/')
 				loader.setDRACOLoader(dracoLoader)
+
 			}
 			loader.load(filePath, (result) => {
 				switch (fileType) {
@@ -279,6 +282,7 @@ class renderModel {
 				console.log(err)
 				reject()
 			})
+
 		})
 	}
 	// 加载几何体模型
@@ -417,7 +421,7 @@ class renderModel {
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
 		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
-        let outputPass = new OutputPass()
+		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
 
 		let effectFXAA = new ShaderPass(FXAAShader)
@@ -459,7 +463,7 @@ class renderModel {
 		shaderPass.needsSwap = true
 		this.effectComposer.addPass(shaderPass)
 
-		
+
 
 	}
 	// 切换模型
@@ -761,19 +765,9 @@ class renderModel {
 				i++;
 				if (v.material) {
 					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					const { name, color, map, depthWrite, wireframe, opacity } = v.material
+					// const { name, color, map, depthWrite, wireframe, opacity } = v.material
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
-					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					// v.material = new THREE.MeshBasicMaterial({
-					// 	map,
-					// 	transparent: true,
-					// 	color,
-					// 	wireframe,
-					// 	depthWrite,
-					// 	opacity,
-					// 	name,
-					// })
 					this.modelMaterialList.push(v)
 					// 获取模型自动材质贴图
 					const { url, mapId } = this.getModelMaps(materials, uuid)
@@ -853,7 +847,7 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
 			const { name, map } = mesh.material
-			Object.assign(mesh.material,{
+			Object.assign(mesh.material, {
 				map,
 				name,
 				transparent: true,
@@ -870,7 +864,7 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
 
-		Object.assign(mesh.material,{
+		Object.assign(mesh.material, {
 			map: material.map,
 			transparent: true,
 			color,
@@ -886,7 +880,7 @@ class renderModel {
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const { name, color } = mesh.material
 		const mapTexture = new THREE.TextureLoader().load(url)
-		Object.assign(mesh.material,{
+		Object.assign(mesh.material, {
 			map: mapTexture,
 			transparent: true,
 			color,
