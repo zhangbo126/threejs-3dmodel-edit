@@ -24,14 +24,6 @@ module.exports = defineConfig({
     },
   },
   devServer: {
-    proxy: {
-      '/api': {
-        target: 'https://zhang_6666.gitee.io/',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
-      },
-    }
+
   },
 })

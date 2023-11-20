@@ -133,7 +133,6 @@ const modelList = [
 		name: '牛头酋长',
 		key: 'taurenchieftain',
 		fileType: 'glb',
-		map: require('@/assets/maps/1.png'),
 		id: 25,
 		animation: true,
 		filePath: 'threeFile/glb/glb-25.glb',

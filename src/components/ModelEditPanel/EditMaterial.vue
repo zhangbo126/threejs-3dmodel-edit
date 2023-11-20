@@ -45,7 +45,9 @@
       </el-scrollbar>
     </div>
     <!-- 材质属性 -->
-    <div class="header">材质属性</div>
+    <div class="header">
+      材质属性 
+    </div>
     <div class="options" :class="optionDisabled">
       <div class="option space-between">
         <el-space>
@@ -163,7 +165,7 @@ const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   meaterialName: null,
-  color: null,
+  color: '#fff',
   wireframe: false,
   depthWrite: true,
   opacity: 1,
@@ -197,6 +199,8 @@ const state = reactive({
     return store.state.modelApi.modelTextureMap;
   }),
 });
+
+
 onMounted(() => {
   $bus.on("model-update", () => {
     // 重置动画数据
@@ -206,6 +210,8 @@ onMounted(() => {
       depthWrite: true,
       opacity: 1,
     });
+    // state.modelApi.getModelMeaterialMaps();
+
   });
 });
 
@@ -248,7 +254,6 @@ const onChangeMaterialType = ({ name, id, material, mapId }) => {
 
 const activeChangeColor = (color) => {
   config.color = color;
- 
   state.modelApi.onSetModelMaterial(config);
 };
 

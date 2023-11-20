@@ -135,6 +135,8 @@ class renderModel {
 			this.createLight()
 			this.addEvenListMouseLisatener()
 			// 添加物体模型 TODO：初始化时需要默认一个
+			// https://images.wanjunshijie.com/demo/threeDemo2/glb/city.glb
+			//  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
@@ -222,15 +224,16 @@ class renderModel {
 	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
-
-			const loader = this.fileLoaderMap[fileType]
 			const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
-			const DRACO_LOADER = new DRACOLoader(new THREE.LoadingManager()).setDecoderPath(`${THREE_PATH}/examples/jsm/libs/draco/gltf/`)			
+			const dracoLoader = new DRACOLoader()
+			dracoLoader.setDecoderPath(`draco/gltf/`)
+			dracoLoader.setDecoderConfig({ type: 'js' })
+			dracoLoader.preload()
+			let loader
 			if (['glb', 'gltf'].includes(fileType)) {
-				// const dracoLoader = new DRACOLoader()
-				// dracoLoader.setDecoderPath('./threeFile/gltf/')
-				loader.setDRACOLoader(DRACO_LOADER)
-
+				loader = new GLTFLoader().setDRACOLoader(dracoLoader)
+			} else {
+				loader = this.fileLoaderMap[fileType]
 			}
 			loader.load(filePath, (result) => {
 				switch (fileType) {
@@ -272,6 +275,7 @@ class renderModel {
 				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
+				
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
@@ -281,7 +285,7 @@ class renderModel {
 			}, (err) => {
 				ElMessage.error('文件错误')
 				console.log(err)
-				reject()
+				resolve(true)
 			})
 
 		})
@@ -753,24 +757,31 @@ class renderModel {
 	 * @function onSetGeometryMeshList 设置几何体模型材质
 	 */
 	// 获取当前模型材质
-	getModelMeaterialList(map) {
-		const isMap = map ? true : false
+	getModelMeaterialList() {
 		this.modelMaterialList = []
-		this.modelTextureMap = []
-		let i = 0;
 		this.model.traverse((v) => {
-			const { uuid } = v
 			if (v.isMesh) {
 				v.castShadow = true
 				v.frustumCulled = false
-				i++;
 				if (v.material) {
-					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					// const { name, color, map, depthWrite, wireframe, opacity } = v.material
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					this.modelMaterialList.push(v)
-					// 获取模型自动材质贴图
+				}
+			}
+		})
+	}
+	// 获取当前模型材质贴图
+	getModelMeaterialMaps(start = 0, end = 4, map) {
+		return new Promise((reslove, reject) => {
+			const isMap = map ? true : false
+			this.modelTextureMap = []
+			let i = 0;
+			this.model.traverse((v) => {
+				const { uuid } = v
+				if (v.isMesh && v.material) {
+					i++;
+					const materials = Array.isArray(v.material) ? v.material : [v.material]
 					const { url, mapId } = this.getModelMaps(materials, uuid)
 					const mesh = {
 						meshName: v.name,
@@ -781,22 +792,23 @@ class renderModel {
 					// 获取当前模型材质
 					v.mapId = mapId + '_' + i
 					this.modelTextureMap.push(mesh)
+					// 部分模型本身没有贴图需 要单独处理
+					if (isMap) {
+						const mapTexture = new THREE.TextureLoader().load(map)
+						const newMaterial = v.material.clone()
+						v.material = newMaterial
+						v.material.map = mapTexture
+						v.mapId = uuid + '_' + i
+						this.modelTextureMap = [{
+							meshName: v.name,
+							material: v.material,
+							url: map,
+							mapId: uuid + '_' + i
+						}]
+					}
 				}
-				// 部分模型本身没有贴图需 要单独处理
-				if (v.material && isMap) {
-					const mapTexture = new THREE.TextureLoader().load(map)
-					const newMaterial = v.material.clone()
-					v.material = newMaterial
-					v.material.map = mapTexture
-					v.mapId = uuid + '_' + i
-					this.modelTextureMap = [{
-						meshName: v.name,
-						material: v.material,
-						url: map,
-						mapId: uuid + '_' + i
-					}]
-				}
-			}
+			})
+			reslove()
 		})
 	}
 	// 设置模型定位缩放大小

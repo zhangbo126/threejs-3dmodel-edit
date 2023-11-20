@@ -117,10 +117,10 @@ const initModelBaseData = () => {
 
 // 几何体模型拖拽结束
 const onGeometryDrop = (e) => {
-  const dragGeometryModel= state.modelApi.dragGeometryModel;
+  const dragGeometryModel = state.modelApi.dragGeometryModel;
   if (dragGeometryModel.id) {
-    dragGeometryModel.clientX = e.clientX
-    dragGeometryModel.clientY = e.clientY
+    dragGeometryModel.clientX = e.clientX;
+    dragGeometryModel.clientY = e.clientY;
     state.modelApi.onSwitchModel(dragGeometryModel);
   }
 };
@@ -189,6 +189,8 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
     progress.value = 0;
+    // 获取当前模型材质贴图
+    state.modelApi.getModelMeaterialMaps();
   }
   // 初始化模型库数据
   initModelBaseData();

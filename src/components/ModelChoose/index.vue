@@ -236,6 +236,7 @@ const onDrag = (event) => {
 const onUpload = async (file) => {
   localModelName.value = file.name;
   const filePath = URL.createObjectURL(file.raw);
+
   const model = {
     filePath,
     fileType: getFileType(file.name),
@@ -251,6 +252,9 @@ const onUpload = async (file) => {
       activeModelId.value = null;
       geometryVisable.value = false;
       activeModel.value = {};
+      // console.log(load,'模型加载完成')
+      //   获取当前模型材质贴图
+      //  state.modelApi.getModelMeaterialMaps();
     }
   } catch (err) {
     localModelName.value = null;

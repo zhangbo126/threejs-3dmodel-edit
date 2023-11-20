@@ -441,13 +441,6 @@ class renderModel {
 				v.frustumCulled = false
 				if (v.material) {
 					const { name, color, map } = v.material
-					// 统一将模型材质 设置为 MeshLambertMaterial 类型
-					// v.material = new THREE.MeshBasicMaterial({
-					// 	map,
-					// 	transparent: true,
-					// 	color,
-					// 	name,
-					// })
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					this.modelMaterialList.push(v)
@@ -458,13 +451,6 @@ class renderModel {
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					v.material.map = mapTexture
-					// const { color, name } = v.material
-					// v.material = new THREE.MeshBasicMaterial({
-					// 	map: mapTexture,
-					// 	name,
-					// 	transparent: true,
-					// 	color,
-					// })
 				}
 			}
 		})
