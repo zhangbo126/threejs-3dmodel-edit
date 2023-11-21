@@ -11,11 +11,9 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
-import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
-import { ElMessage } from 'element-plus';
+import { ElMessage ,ElMessageBox} from 'element-plus';
 import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import store from '@/store'
 import TWEEN from "@tweenjs/tween.js";
@@ -225,12 +223,12 @@ class renderModel {
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
-			const dracoLoader = new DRACOLoader()
-			dracoLoader.setDecoderPath(`draco/gltf/`)
-			dracoLoader.setDecoderConfig({ type: 'js' })
-			dracoLoader.preload()
 			let loader
 			if (['glb', 'gltf'].includes(fileType)) {
+				const dracoLoader = new DRACOLoader()
+				dracoLoader.setDecoderPath(`draco/gltf/`)
+				dracoLoader.setDecoderConfig({ type: 'js' })
+				dracoLoader.preload()
 				loader = new GLTFLoader().setDRACOLoader(dracoLoader)
 			} else {
 				loader = this.fileLoaderMap[fileType]
@@ -261,7 +259,7 @@ class renderModel {
 						break;
 				}
 				this.model.decomposeName = decomposeName
-				this.getModelMeaterialList(map)
+				this.getModelMeaterialList()
 				this.setModelPositionSize()
 				//	设置模型大小
 				if (scale) {
@@ -275,11 +273,14 @@ class renderModel {
 				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
-				
+
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
+				// 获取模型材质贴图
+				this.getModelMeaterialMaps(map)
 				resolve(true)
+
 			}, (xhr) => {
 				this.modelProgressCallback(xhr.loaded)
 			}, (err) => {
@@ -772,44 +773,59 @@ class renderModel {
 		})
 	}
 	// 获取当前模型材质贴图
-	getModelMeaterialMaps(start = 0, end = 4, map) {
-		return new Promise((reslove, reject) => {
-			const isMap = map ? true : false
-			this.modelTextureMap = []
-			let i = 0;
-			this.model.traverse((v) => {
-				const { uuid } = v
-				if (v.isMesh && v.material) {
-					i++;
-					const materials = Array.isArray(v.material) ? v.material : [v.material]
-					const { url, mapId } = this.getModelMaps(materials, uuid)
-					const mesh = {
+	getModelMeaterialMaps(map) {
+		this.modelTextureMap = []
+		// TODO 获取当前模型材质数量如果超过100个 则不加载模型自带贴图
+		const materials = new Set();
+		this.model.traverse((node) => {
+			if (node.isMesh) {
+				const meshMaterials = Array.isArray(node.material) ? node.material : [node.material];
+				meshMaterials.forEach((material) => materials.add(material));
+			}
+		});
+
+		const numMaterials = materials.size;
+		if (numMaterials > 100) {
+			ElMessageBox.alert(`当前模型材质数量过大“${numMaterials}个”，编辑器页面可能有卡顿`, '提示', {
+				confirmButtonText: '确认',
+			})
+			return this.modelTextureMap = null
+		}
+
+		const isMap = map ? true : false
+		let i = 0;
+		this.model.traverse((v) => {
+			const { uuid } = v
+			if (v.isMesh && v.material) {
+				i++;
+				const materials = Array.isArray(v.material) ? v.material : [v.material]
+				const { url, mapId } = this.getModelMaps(materials, uuid)
+				const mesh = {
+					meshName: v.name,
+					material: v.material,
+					url,
+					mapId: mapId + '_' + i
+				}
+				// 获取当前模型材质
+				v.mapId = mapId + '_' + i
+				this.modelTextureMap.push(mesh)
+				// 部分模型本身没有贴图需 要单独处理
+				if (isMap) {
+					const mapTexture = new THREE.TextureLoader().load(map)
+					const newMaterial = v.material.clone()
+					v.material = newMaterial
+					v.material.map = mapTexture
+					v.mapId = uuid + '_' + i
+					this.modelTextureMap = [{
 						meshName: v.name,
 						material: v.material,
-						url,
-						mapId: mapId + '_' + i
-					}
-					// 获取当前模型材质
-					v.mapId = mapId + '_' + i
-					this.modelTextureMap.push(mesh)
-					// 部分模型本身没有贴图需 要单独处理
-					if (isMap) {
-						const mapTexture = new THREE.TextureLoader().load(map)
-						const newMaterial = v.material.clone()
-						v.material = newMaterial
-						v.material.map = mapTexture
-						v.mapId = uuid + '_' + i
-						this.modelTextureMap = [{
-							meshName: v.name,
-							material: v.material,
-							url: map,
-							mapId: uuid + '_' + i
-						}]
-					}
+						url: map,
+						mapId: uuid + '_' + i
+					}]
 				}
-			})
-			reslove()
+			}
 		})
+
 	}
 	// 设置模型定位缩放大小
 	setModelPositionSize() {
@@ -841,14 +857,14 @@ class renderModel {
 			if (texture.map && texture.map.image) {
 				const canvas = document.createElement('canvas')
 				const { width, height } = texture.map.image
-				canvas.width = width
-				canvas.height = height
+				canvas.width = 75
+				canvas.height = 75
 				const context = canvas.getContext('2d')
 				context.drawImage(texture.map.image, 0, 0)
 				textureMap = {
-					url: canvas.toDataURL('image/png'),
-					mapId: texture.uuid
+					url: canvas.toDataURL('image/png', .5),
 				}
+				canvas.remove()
 			}
 		})
 		return textureMap
@@ -875,14 +891,7 @@ class renderModel {
 	onSetModelMap({ material, mapId, meshName }) {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		const { name, color } = mesh.material
-
-		Object.assign(mesh.material, {
-			map: material.map,
-			transparent: true,
-			color,
-			name,
-		})
+		mesh.material = material.clone()
 		mesh.mapId = mapId
 		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
 		mesh.meshFrom = meshName
@@ -891,14 +900,10 @@ class renderModel {
 	onSetSystemModelMap({ id, url }) {
 		const uuid = store.state.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
-		const { name, color } = mesh.material
 		const mapTexture = new THREE.TextureLoader().load(url)
-		Object.assign(mesh.material, {
-			map: mapTexture,
-			transparent: true,
-			color,
-			name,
-		})
+		const newMaterial = mesh.material.clone()
+		newMaterial.map = mapTexture
+		mesh.material = newMaterial
 		mesh.mapId = id
 		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
 		mesh.meshFrom = id
@@ -976,7 +981,7 @@ class renderModel {
 				// 统一将模型材质 设置为 MeshLambertMaterial 类型
 				this.modelMaterialList.push(v)
 				// 获取模型自动材质贴图
-				const { url, mapId } = this.getModelMaps(materials, uuid)
+				const { url } = this.getModelMaps(materials, uuid)
 				const mesh = {
 					meshName: v.name,
 					material: v.material,

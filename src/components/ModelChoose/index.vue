@@ -252,9 +252,7 @@ const onUpload = async (file) => {
       activeModelId.value = null;
       geometryVisable.value = false;
       activeModel.value = {};
-      // console.log(load,'模型加载完成')
-      //   获取当前模型材质贴图
-      //  state.modelApi.getModelMeaterialMaps();
+
     }
   } catch (err) {
     localModelName.value = null;

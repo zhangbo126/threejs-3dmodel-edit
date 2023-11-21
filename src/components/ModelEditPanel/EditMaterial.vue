@@ -4,10 +4,15 @@
       <span>材质类型</span>
     </div>
     <div class="options">
-       <div class="option">
+      <div class="option">
         <el-space>
-        <span>当前材质类型：</span>
-          <el-select  v-model="activeMeshType" @change="onChangeMeshType"  placeholder="请选择" size="small">
+          <span>当前材质类型：</span>
+          <el-select
+            v-model="activeMeshType"
+            @change="onChangeMeshType"
+            placeholder="请选择"
+            size="small"
+          >
             <el-option
               v-for="item in meshTypeList"
               :key="item.type"
@@ -16,7 +21,7 @@
             />
           </el-select>
         </el-space>
-       </div>
+      </div>
     </div>
     <div class="header">
       <span>材质</span>
@@ -32,7 +37,13 @@
           :key="mesh.uuid"
         >
           <el-space>
-            <el-icon @click="onSetMeshVisibe(mesh)" size="18" color="#409eff" v-if="mesh.visible"><View /></el-icon>
+            <el-icon
+              @click="onSetMeshVisibe(mesh)"
+              size="18"
+              color="#409eff"
+              v-if="mesh.visible"
+              ><View
+            /></el-icon>
             <el-icon size="18" @click="onSetMeshVisibe(mesh)" v-else><Hide /></el-icon>
             <div class="icon-name">
               {{ mesh.name }}
@@ -45,15 +56,13 @@
       </el-scrollbar>
     </div>
     <!-- 材质属性 -->
-    <div class="header">
-      材质属性 
-    </div>
+    <div class="header">材质属性</div>
     <div class="options" :class="optionDisabled">
       <div class="option space-between">
         <el-space>
           <el-button type="primary" link>材质颜色</el-button>
           <el-color-picker
-             color-format="hex"
+            color-format="hex"
             :predefine="PREDEFINE_COLORS"
             @change="onChangeMeaterial"
             @active-change="activeChangeColor"
@@ -62,32 +71,32 @@
         </el-space>
         <el-space>
           <el-tooltip
-          effect="dark"
-          content="注意：深度写入属性不支持模型“导出” "
-          placement="top"
-        >
-          <el-icon>
-            <WarnTriangleFilled :size="20" color="#ffb940" />
-          </el-icon>
-        </el-tooltip>
+            effect="dark"
+            content="注意：深度写入属性不支持模型“导出” "
+            placement="top"
+          >
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+          </el-tooltip>
           <el-button type="primary" link>深度写入</el-button>
           <el-switch @change="onChangeMeaterial" v-model="config.depthWrite"></el-switch>
         </el-space>
         <el-space>
           <el-tooltip
-          effect="dark"
-          content="注意：网格属性不支持模型“导出” "
-          placement="top"
-        >
-          <el-icon>
-            <WarnTriangleFilled :size="20" color="#ffb940" />
-          </el-icon>
-        </el-tooltip>
+            effect="dark"
+            content="注意：网格属性不支持模型“导出” "
+            placement="top"
+          >
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+          </el-tooltip>
           <el-button type="primary" link>网格</el-button>
           <el-switch @change="onChangeMeaterial" v-model="config.wireframe"></el-switch>
         </el-space>
       </div>
-      <div class="option" >
+      <div class="option">
         <div class="grid-txt">
           <el-button type="primary" link>透明度 </el-button>
         </div>
@@ -106,7 +115,7 @@
     <div class="header">模型自带贴图</div>
     <div class="options" :class="optionDisabled">
       <el-scrollbar max-height="100px">
-        <el-row>
+        <el-row v-if="state.modelTextureMap">
           <el-col
             :span="6"
             :style="{ textAlign: 'center' }"
@@ -123,6 +132,11 @@
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
               </div>
             </div>
+          </el-col>
+        </el-row>
+        <el-row justify="center" v-else>
+          <el-col>
+            <div class="not-load">当前模型材质数量过大,暂不支持贴图加载</div>
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -156,7 +170,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
 import { useStore } from "vuex";
-import { PREDEFINE_COLORS ,meshTypeList} from "@/config/constant";
+import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
@@ -165,20 +179,20 @@ const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   meaterialName: null,
-  color: '#fff',
+  color: "#fff",
   wireframe: false,
   depthWrite: true,
   opacity: 1,
 });
-const activeMeshType =ref(null)
+const activeMeshType = ref(null);
 const activeMesh = reactive({
-    type: 'MeshBasicMaterial',
-    describe:'标准网格材质',
-		color: true,
-		wireframe: true,
-		depthWrite: true,
-		opacity: true,
-})
+  type: "MeshBasicMaterial",
+  describe: "标准网格材质",
+  color: true,
+  wireframe: true,
+  depthWrite: true,
+  opacity: true,
+});
 const activeTextureMap = ref(null);
 
 const optionDisabled = computed(() => {
@@ -200,7 +214,6 @@ const state = reactive({
   }),
 });
 
-
 onMounted(() => {
   $bus.on("model-update", () => {
     // 重置动画数据
@@ -210,8 +223,6 @@ onMounted(() => {
       depthWrite: true,
       opacity: 1,
     });
-    // state.modelApi.getModelMeaterialMaps();
-
   });
 });
 
@@ -234,10 +245,10 @@ watch(
 );
 
 // 切换材质类型
-const onChangeMeshType =(e) =>{
-  const activeMesh =  meshTypeList.find(v=>v.type==e)
+const onChangeMeshType = (e) => {
+  const activeMesh = meshTypeList.find((v) => v.type == e);
   state.modelApi.onChangeModelMeshType(activeMesh);
-}
+};
 
 // 选择材质
 const onChangeMaterialType = ({ name, id, material, mapId }) => {
@@ -262,9 +273,9 @@ const onChangeMeaterial = () => {
 };
 
 // 设置材质显隐
-const onSetMeshVisibe=(mesh)=>{
-    mesh.visible = !mesh.visible
-}
+const onSetMeshVisibe = (mesh) => {
+  mesh.visible = !mesh.visible;
+};
 //修改当前材质贴图
 const onChangeModelMap = (map) => {
   activeTextureMap.value = map.mapId;
@@ -291,7 +302,7 @@ const onChangeSystemModelMap = (map) => {
 };
 const getMeshConfig = () => {
   return {
-    materialType:activeMeshType.value,
+    materialType: activeMeshType.value,
     meshList: state.modelApi.onGetEditMeshList(),
   };
 };
@@ -300,7 +311,6 @@ defineExpose({
 });
 </script>
 <style scoped lang="scss">
-
 .options {
   max-width: 380px;
 }
@@ -321,7 +331,12 @@ defineExpose({
     position: absolute;
   }
 }
-
+.not-load {
+  padding: 20px 0px;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+}
 .active {
   border: 2px solid #18c174;
   opacity: 1;

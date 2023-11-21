@@ -179,6 +179,7 @@ onMounted(async () => {
   store.commit("SET_MODEL_API", modelApi);
   $bus.on("page-loading", (value) => {
     loading.value = value;
+
   });
   // 模型加载进度条
   state.modelApi.onProgress((progressNum) => {
@@ -189,8 +190,7 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
     progress.value = 0;
-    // 获取当前模型材质贴图
-    state.modelApi.getModelMeaterialMaps();
+   
   }
   // 初始化模型库数据
   initModelBaseData();
