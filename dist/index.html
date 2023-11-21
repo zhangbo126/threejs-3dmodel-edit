@@ -1,0 +1,100 @@
+<!doctype html><html lang=""><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta http-equiv="cache-control" content="no-transform"><meta name="viewport" content="width=device-width,user-scalable=yes,initial-scale=0.3,minimum-scale=0.3"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="shortcut icon" type="image/x-icon" href="/three.js3d/favicon.ico"/><title>3D模型可视化编辑器</title><meta name="description" content="基于Three.js开发的3d模型可视化编辑器，包括模型材质，场景背景，灯光，辅助线，模型位置，模型辉光，模型材质边缘发光，模型拆分，外部模型上传等功能"><meta name="keyword" content="three.js,three,3d模型编辑器,模型编辑,three.js材质,材质,three.js背景图,three.js全景图,背景图,全景图,发光,辉光,模型拆分,辅助线,灯光,平行光,点光源,聚光灯,环境光,灯光辅助线,three.js材质贴图,,模型拖拽, 材质高亮,局部辉光,three.js模型加载"><style>#loading-mask {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background: #fff;
+            user-select: none;
+            z-index: 9999;
+            overflow: hidden
+        }
+
+        .loading-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%)
+        }
+
+        .loading-dot {
+            animation: antRotate 1.2s infinite linear;
+            transform: rotate(45deg);
+            position: relative;
+            display: inline-block;
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            box-sizing: border-box
+        }
+
+        .loading-dot i {
+            width: 22px;
+            height: 22px;
+            position: absolute;
+            display: block;
+            background-color: #1890ff;
+            border-radius: 100%;
+            transform: scale(.75);
+            transform-origin: 50% 50%;
+            opacity: .3;
+            animation: antSpinMove 1s infinite linear alternate
+        }
+
+        .loading-dot i:nth-child(1) {
+            top: 0;
+            left: 0
+        }
+
+        .loading-dot i:nth-child(2) {
+            top: 0;
+            right: 0;
+            -webkit-animation-delay: .4s;
+            animation-delay: .4s
+        }
+
+        .loading-dot i:nth-child(3) {
+            right: 0;
+            bottom: 0;
+            -webkit-animation-delay: .8s;
+            animation-delay: .8s
+        }
+
+        .loading-dot i:nth-child(4) {
+            bottom: 0;
+            left: 0;
+            -webkit-animation-delay: 1.2s;
+            animation-delay: 1.2s
+        }
+
+        @keyframes antRotate {
+            to {
+                -webkit-transform: rotate(405deg);
+                transform: rotate(405deg)
+            }
+        }
+
+        @-webkit-keyframes antRotate {
+            to {
+                -webkit-transform: rotate(405deg);
+                transform: rotate(405deg)
+            }
+        }
+
+        @keyframes antSpinMove {
+            to {
+                opacity: 1
+            }
+        }
+
+        @-webkit-keyframes antSpinMove {
+            to {
+                opacity: 1
+            }
+        }</style><script>var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?606a102b298cb00317d5a96037729e23";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();</script><script defer="defer" src="/three.js3d/static/js/chunk-vendors.048dbd75.js"></script><script defer="defer" src="/three.js3d/static/js/index.3c977b55.js"></script><link href="/three.js3d/static/css/chunk-vendors.ba0a39c9.css" rel="stylesheet"><link href="/three.js3d/static/css/index.1495ef4b.css" rel="stylesheet"><!--[if IE]><link rel="icon" type="image/svg+xml" href="/three.js3d/img/icons/favicon.svg"><![endif]--><link rel="icon" type="image/png" sizes="32x32" href="/three.js3d/img/icons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/three.js3d/img/icons/favicon-16x16.png"><link rel="manifest" href="/three.js3d/manifest.json"><meta name="theme-color" content="#4DBA87"><meta name="apple-mobile-web-app-capable" content="no"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="prodect"><link rel="apple-touch-icon" href="/three.js3d/img/icons/apple-touch-icon-152x152.png"><link rel="mask-icon" href="/three.js3d/img/icons/safari-pinned-tab.svg" color="#4DBA87"><meta name="msapplication-TileImage" content="/three.js3d/img/icons/msapplication-icon-144x144.png"><meta name="msapplication-TileColor" content="#000000"></head><body><noscript><strong>We're sorry but prodect doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"><div id="loading-mask"><div class="loading-wrapper"><span class="loading-dot loading-dot-spin"><i></i><i></i><i></i><i></i></span></div></div></div></body></html>
