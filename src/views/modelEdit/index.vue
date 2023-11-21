@@ -117,10 +117,10 @@ const initModelBaseData = () => {
 
 // 几何体模型拖拽结束
 const onGeometryDrop = (e) => {
-  const dragGeometryModel= state.modelApi.dragGeometryModel;
+  const dragGeometryModel = state.modelApi.dragGeometryModel;
   if (dragGeometryModel.id) {
-    dragGeometryModel.clientX = e.clientX
-    dragGeometryModel.clientY = e.clientY
+    dragGeometryModel.clientX = e.clientX;
+    dragGeometryModel.clientY = e.clientY;
     state.modelApi.onSwitchModel(dragGeometryModel);
   }
 };
@@ -179,6 +179,7 @@ onMounted(async () => {
   store.commit("SET_MODEL_API", modelApi);
   $bus.on("page-loading", (value) => {
     loading.value = value;
+
   });
   // 模型加载进度条
   state.modelApi.onProgress((progressNum) => {
@@ -189,6 +190,7 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
     progress.value = 0;
+   
   }
   // 初始化模型库数据
   initModelBaseData();

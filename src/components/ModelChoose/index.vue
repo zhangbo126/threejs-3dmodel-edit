@@ -236,6 +236,7 @@ const onDrag = (event) => {
 const onUpload = async (file) => {
   localModelName.value = file.name;
   const filePath = URL.createObjectURL(file.raw);
+
   const model = {
     filePath,
     fileType: getFileType(file.name),
@@ -251,6 +252,7 @@ const onUpload = async (file) => {
       activeModelId.value = null;
       geometryVisable.value = false;
       activeModel.value = {};
+
     }
   } catch (err) {
     localModelName.value = null;
