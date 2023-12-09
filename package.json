@@ -9,12 +9,19 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "register-service-worker": "^1.7.2",
+    "@element-plus/icons-vue": "^2.4.1",
+    "@tweenjs/tween.js": "^18.5.0",
+    "default-passive-events": "^2.0.0",
+    "element-plus": "^2.4.2",
+    "mitt": "^3.0.0",
+    "three": "^0.158.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
+    "vue3-draggable-resizable": "^1.6.5",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
@@ -27,22 +34,9 @@
     "@vue/eslint-config-typescript": "^9.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "typescript": "~4.5.5"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended",
-      "@vue/typescript/recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2020
-    },
-    "rules": {}
+    "typescript": "~4.5.5",
+    "sass": "^1.63.6",
+    "sass-loader": "^13.3.2"
   },
   "browserslist": [
     "> 1%",
