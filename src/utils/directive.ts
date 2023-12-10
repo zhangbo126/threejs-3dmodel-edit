@@ -1,4 +1,4 @@
-import { createApp, DirectiveBinding, App, VNode } from "vue"
+import { createApp, DirectiveBinding, App } from "vue"
 import Loading from '@/components/Loading/index.vue'
 
 

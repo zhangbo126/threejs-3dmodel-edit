@@ -2,7 +2,9 @@ import { createStore } from 'vuex'
 
 interface StoreOption {
   modelApi: any;
-  selectMesh: any
+  selectMesh: {
+    [key:string]: any
+  }
 }
 
 export default createStore<StoreOption>({
@@ -16,10 +18,10 @@ export default createStore<StoreOption>({
     selectMeshUuid: (state: any) => state.selectMesh?.uuid
   },
   mutations: {
-    SET_MODEL_API: (state: any, modelApi: any) => {
+    SET_MODEL_API: (state: any, modelApi: Object) => {
       state.modelApi = modelApi
     },
-    SELECT_MESH: (state: any, selectMesh: any) => {
+    SELECT_MESH: (state: any, selectMesh: Object) => {
       state.selectMesh = selectMesh
     }
   },

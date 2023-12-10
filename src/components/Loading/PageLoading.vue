@@ -4,16 +4,14 @@
       <div class="loading">
         <img :src="require('@/assets/image/loading.svg')" />
         <div class="progress-txt">
-           当前模型已加载 <b>{{ props.percentage }}</b> M
+          当前模型已加载 <b>{{ props.percentage }}</b> M
         </div>
-        <div class="loading-txt">
-           模型文件首次加载时间较长请耐心等待.....
-        </div>
+        <div class="loading-txt">模型文件首次加载时间较长请耐心等待.....</div>
       </div>
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   percentage: {
     type: Number,
@@ -25,7 +23,7 @@ const props = defineProps({
   },
 });
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 #loading-mark {
   position: absolute;
   width: 100%;
@@ -50,13 +48,13 @@ const props = defineProps({
       height: 120px;
       text-align: center;
     }
-  .progress-txt{
-    font-size:18px;
-    color: #ffcb00;
-    b{
-       color: #f56c6c;
+    .progress-txt {
+      font-size: 18px;
+      color: #ffcb00;
+      b {
+        color: #f56c6c;
+      }
     }
-  }
     .loading-txt {
       text-align: center;
       font-size: 14px;

@@ -8,6 +8,7 @@ const globalProperties = {
 		Vue.config.globalProperties.$local = local
 		Vue.config.globalProperties.$session = session
 		Vue.config.globalProperties.$bus = mitt()
+		
 	}
 }
 

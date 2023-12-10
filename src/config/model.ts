@@ -301,7 +301,7 @@ const mapImageList: Array<any> = [
 
 
 // 几何体模型列表
-const geometryModelList: Array<{}> = [
+const geometryModelList: Array<{[key: string]: string | number |boolean }> = [
 	{
 		id: 30,
 		name: '立方缓冲几何体',

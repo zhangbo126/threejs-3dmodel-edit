@@ -27,7 +27,7 @@
 <script setup>
 import DraggableResizable from "vue3-draggable-resizable";
 import createThreeDComponent from "@/utils/initThreeTemplate";
-import { ref   } from "vue";
+import { ref } from "vue";
 const props = defineProps({
   config: {
     type: Object,
@@ -58,10 +58,9 @@ const deactivatedHandle = (e) => {
 };
 
 const treeComponent = createThreeDComponent(props.config);
-
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .draggable-resizable {
   cursor: pointer;
   display: flex;

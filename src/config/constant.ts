@@ -41,8 +41,12 @@ export const fragmentShader = '\t\t\tuniform sampler2D baseTexture;\n' +
 	'\t\t\t}'
 
 // 模型拆解材质的位移参数
-export const MODEL_DECOMPOSE = {
-	transformers_1: {
+interface ModelDecompose {
+	transformers_1: { [key: string]: any };
+	transformers_3: { [key: string]: any };
+}
+export const MODEL_DECOMPOSE: ModelDecompose = {
+	"transformers_1": {
 		'Mesh_0311_Tex_0310_0dds_0': { x: 0, y: 'straight', z: 0 },
 		'Mesh_0314_Tex_0313_0dds_0': { x: 'straight', y: 'burden', z: 'burden' },
 		'Mesh_0317_Tex_0313_0dd1_0': { x: 0, y: 0, z: 0 },
@@ -62,7 +66,7 @@ export const MODEL_DECOMPOSE = {
 		'Mesh_0317011_Tex_0313_0dd1_0': { x: 'burden', y: 'straight', z: 0 },
 		'Mesh_0317012_Tex_0313_0dd1_0': { x: 'burden', y: 0, z: 'burden' },
 	},
-	transformers_3: {
+	"transformers_3": {
 		'Mesh_0254_Tex_0253_0dds_0': { x: 'straight', y: 0, z: 0 },
 		'Mesh_0258_Tex_0253_0dd1_0': { x: 'straight', y: 0, z: 0 },
 		'Mesh_0260_Tex_0253_0dd2_0': { x: 0, y: 'straight', z: 0 },
@@ -190,7 +194,7 @@ export const MODEL_DEFAULT_CONFIG = {
 export const meshTypeList = [
 	{
 		type: 'MeshBasicMaterial',
-        describe:'基础网格材质',
+		describe: '基础网格材质',
 		color: true,
 		wireframe: true,
 		depthWrite: true,
@@ -198,7 +202,7 @@ export const meshTypeList = [
 	},
 	{
 		type: 'MeshLambertMaterial',
-        describe:'Lambert网格材质',
+		describe: 'Lambert网格材质',
 		color: true,
 		wireframe: true,
 		depthWrite: true,
@@ -206,7 +210,7 @@ export const meshTypeList = [
 	},
 	{
 		type: 'MeshMatcapMaterial',
-        describe:'MeshMatcap材质',
+		describe: 'MeshMatcap材质',
 		color: true,
 		wireframe: false,
 		depthWrite: true,
@@ -214,7 +218,7 @@ export const meshTypeList = [
 	},
 	{
 		type: 'MeshPhongMaterial',
-        describe:'Phong网格材质',
+		describe: 'Phong网格材质',
 		color: true,
 		wireframe: true,
 		depthWrite: true,
@@ -222,7 +226,7 @@ export const meshTypeList = [
 	},
 	{
 		type: 'MeshPhysicalMaterial',
-        describe:'物理网格材质',
+		describe: '物理网格材质',
 		color: true,
 		wireframe: true,
 		depthWrite: true,
@@ -230,7 +234,7 @@ export const meshTypeList = [
 	},
 	{
 		type: 'MeshStandardMaterial',
-        describe:'标准网格材质',
+		describe: '标准网格材质',
 		color: true,
 		wireframe: true,
 		depthWrite: true,
@@ -238,7 +242,7 @@ export const meshTypeList = [
 	},
 	{
 		type: 'MeshToonMaterial',
-        describe:'卡通着色的材质',
+		describe: '卡通着色的材质',
 		color: true,
 		wireframe: true,
 		depthWrite: true,

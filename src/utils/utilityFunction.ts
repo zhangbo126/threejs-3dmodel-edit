@@ -123,7 +123,7 @@ export function deepCopy(source: any) {
 
 	for (const key in source) {
 		// 检查属性是否存在对象中
-		if (Object.hasOwnProperty(key)) {
+		if (Object.prototype.hasOwnProperty.call(source, 'key')) {
 			if (typeof source[key] === 'object' && source[key] !== null) {
 				target[key] = deepCopy(source[key]);
 			} else {
@@ -146,3 +146,7 @@ export function getFileType(fileName: string): string {
 	const fileExtension = fileArr.pop().toLowerCase();
 	return fileExtension
 }
+
+
+
+

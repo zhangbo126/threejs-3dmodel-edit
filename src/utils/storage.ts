@@ -19,7 +19,7 @@
    @param {String} key
 */
 
-type valueOptions = [] | any | string | number | null | undefined
+type valueOptions = any
 const session = {
 	set: (key: string, value: valueOptions) => {
 		if (!key || !value) { return null }
@@ -27,7 +27,7 @@ const session = {
 	},
 	get: (key: string) => {
 		if (!key) { return null }
-		const storageStr: string = sessionStorage.getItem(key) || ''
+		const storageStr: any = sessionStorage.getItem(key)
 		const obj: valueOptions = JSON.parse(storageStr)
 		return obj
 	},
@@ -46,7 +46,7 @@ const local = {
 	},
 	get: (key: string) => {
 		if (!key) { return null }
-		const storageStr: string = sessionStorage.getItem(key) || ''
+		const storageStr: any = sessionStorage.getItem(key)
 		const obj: valueOptions = JSON.parse(storageStr)
 		return obj
 	},
