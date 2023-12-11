@@ -19,7 +19,6 @@ import TWEEN from "@tweenjs/tween.js";
 import store from '@/store'
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant'
 import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/config/renderOptions'
-import { resolve } from 'path'
 
 
 
@@ -173,7 +172,7 @@ class renderModel {
 	}
 
 	init() {
-		return new Promise(async (reslove)=>{
+		return new Promise(async (reslove) => {
 			this.initRender()
 			//初始化相机
 			this.initCamera()
@@ -239,7 +238,7 @@ class renderModel {
 				this.materials.scene = v.background
 				v.background = null
 			}
-		
+
 			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
 				this.materials[v.uuid] = v.material
 				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
@@ -528,12 +527,11 @@ class renderModel {
 		shaderPass.needsSwap = true
 		this.effectComposer.addPass(shaderPass)
 
-
-
 	}
+	
 	// 切换模型
 	onSwitchModel(model: OnSwitchModelType) {
-		return (async (reslove: (arg0: unknown) => void, reject: () => void) => {
+		return new Promise(async (reslove, reject) => {
 			try {
 				// 加载几何模型
 				if (model.modelType && model.modelType == 'geometry') {

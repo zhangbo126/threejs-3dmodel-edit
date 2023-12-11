@@ -61,7 +61,7 @@
   </div>
 </template>
 <script setup lang="ts" name="modelEdit">
-// import { ModelEditPanel, ModelChoose } from "@/components/index";
+import { ModelChoose, ModelEditPanel } from "@/components/index";
 import {
   onMounted,
   ref,
@@ -88,7 +88,6 @@ interface getCurrentInstanceOptions {
   $bus: BusType;
   $local: StorageType;
 }
-type PanelType = Ref<null | any>;
 
 const store = useStore();
 const router = useRouter();
@@ -102,8 +101,8 @@ const state = reactive({
 });
 const loading = ref(false);
 const progress = ref(0);
-const editPanel: PanelType = ref(null);
-const choosePanel: PanelType = ref(null);
+const editPanel: Ref<any> = ref(null);
+const choosePanel: Ref<any> = ref(null);
 
 // 重置相机位置
 const onResetCamera = () => {

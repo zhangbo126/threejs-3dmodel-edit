@@ -24,7 +24,7 @@
     <div :class="dragMask" class="mask"></div>
   </draggable-resizable>
 </template>
-<script setup>
+<script setup lang="ts">
 import DraggableResizable from "vue3-draggable-resizable";
 import createThreeDComponent from "@/utils/initThreeTemplate";
 import { ref } from "vue";
