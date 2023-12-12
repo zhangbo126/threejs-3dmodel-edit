@@ -3,6 +3,13 @@
 ###  🌱基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统
 
 <a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a> <a href='https://gitee.com/ZHANG_6666/Three.js3D/members'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/fork.svg?theme=dark' alt='fork'></img></a>
+
+### 📦️分支介绍
+1. master: Vue3+Vuex+Javascript (最新的功能issues和修复的bug都在这个分支)
+2. ts-master: Vue3+Vuex+Typescript (master分支的typescript版本,ps:目前正在努力开发中...)
+3. develop: Vue3+Vuex+Javascript (一些不确定的功能和代码重构会在这个分支开发)
+4. gh-pages: git-pages 线上包分支 (忽略即可)
+
 ### 🎨预览
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
 - 2.线上访问:[https://zhang_6666.gitee.io/three.js3d](https://zhang_6666.gitee.io/three.js3d)
@@ -28,7 +35,7 @@
 
 ```
 ### 注意
-1. node版本>=16.0.0,当前three.js版本158
+1. 当前node版本v16.17.0,当前three.js版本158.0
 2. 部分功能的使用对电脑的内存依赖较高，如有卡顿等场景请确保有足够的内存使用空间
 3. 建议使用谷歌浏览器（chrome）
 4. 模型数据编辑配置存储在localStorage如有数据相关报错清除本地数据缓存重新进入即可
@@ -39,11 +46,9 @@
 ### 💚如果觉得该项目对你有帮助留个star也是不错的⭐
 ### 👷 界面
 ![输入图片说明](public/image/7.png)
-![输入图片说明](public/image/1.png)
 ![输入图片说明](public/image/2.png)
 ![输入图片说明](public/image/3.png)
 ![输入图片说明](public/image/4.png)
-![输入图片说明](public/image/5.png)
 ![输入图片说明](public/image/6.png)
 
 ### 🍻 相关链接
