@@ -18,9 +18,7 @@ import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import TWEEN from "@tweenjs/tween.js";
 import store from '@/store'
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant'
-import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/config/renderOptions'
-
-
+import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/types/renderOptions'
 
 
 class renderModel {
@@ -845,6 +843,7 @@ class renderModel {
 		if (numMaterials > 100) {
 			ElMessageBox.alert(`当前模型材质数量过大“${numMaterials}个”，编辑器页面可能有卡顿`, '提示', {
 				confirmButtonText: '确认',
+				type: 'warning'
 			})
 			return this.modelTextureMap = null
 		}

@@ -45,8 +45,9 @@ const local = {
 		localStorage.setItem(key, JSON.stringify(value))
 	},
 	get: (key: string) => {
+		
 		if (!key) { return null }
-		const storageStr: any = sessionStorage.getItem(key)
+		const storageStr: any = localStorage.getItem(key)
 		const obj: valueOptions = JSON.parse(storageStr)
 		return obj
 	},

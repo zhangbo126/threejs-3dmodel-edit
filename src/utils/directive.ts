@@ -17,6 +17,7 @@ const directiveLoading = (Vue: App) => {
 			el.appendChild(vNode.$el)
 		},
 		updated(el: HTMLElement, binding: DirectiveBinding) {
+
 			const loadingNode: HTMLElement | null | undefined = el.parentElement?.querySelector('#loading-mark')
 			const { value } = binding
 			if (!value) {

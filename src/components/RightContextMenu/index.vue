@@ -1,10 +1,10 @@
 <script lang="jsx">
-import { defineComponent, h, watch } from "vue";
+import { defineComponent, h } from "vue";
 export default defineComponent({
   props: {
     rightMenuPositon: {
       type: Object,
-      default: {},
+      default: () => { },
     },
   },
   data() {
@@ -54,7 +54,7 @@ export default defineComponent({
         <li class="right-menu-item" onClick={this.onDelete}>
           <el-space>
             <el-icon size={14} color={"#6bacf2"}>
-              <Delete></Delete>
+              <delete></delete>
             </el-icon>
             <el-text type="primary" >
               删除
@@ -66,7 +66,7 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .right-menu {
   background-color: #fff;
   border-radius: 4px;
@@ -79,6 +79,7 @@ export default defineComponent({
   position: fixed;
   display: none;
   z-index: 1000;
+
   .right-menu-item {
     box-sizing: border-box;
     border-radius: 4px;
@@ -91,6 +92,7 @@ export default defineComponent({
     justify-content: center;
     padding: 5px 8px;
   }
+
   .right-menu-item:hover {
     background-color: #ebf5ff;
     color: #6bacf2;

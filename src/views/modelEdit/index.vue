@@ -8,16 +8,10 @@
       </div>
       <div class="header-lr">
         <el-space>
-          <el-button
-            type="primary"
-            icon="Film"
-            @click="$router.push({ path: '/modelBase' })"
-          >
+          <el-button type="primary" icon="Film" @click="$router.push({ path: pageEnums.MODEL_BASE })">
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" @click="onSaveConfig"
-            >保存数据</el-button
-          >
+          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -25,12 +19,8 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
-                <el-dropdown-item @click="onExportModleFile('glb')"
-                  >导出模型(.glb)格式</el-dropdown-item
-                >
-                <el-dropdown-item @click="onExportModleFile('gltf')"
-                  >导出模型(.gltf)格式</el-dropdown-item
-                >
+                <el-dropdown-item @click="onExportModleFile('glb')">导出模型(.glb)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModleFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -76,13 +66,14 @@ import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
 import { modelList } from "@/config/model";
+import { pageEnums } from '@/enums/pageEnums'
 import PageLoading from "@/components/Loading/PageLoading.vue";
 import {
   MODEL_PRIVEW_CONFIG,
   MODEL_BASE_DATA,
   MODEL_DEFAULT_CONFIG,
 } from "@/config/constant";
-import { StorageType, BusType } from "@/config/typeOptions";
+import { StorageType, BusType } from "@/types/typeOptions";
 
 interface getCurrentInstanceOptions {
   $bus: BusType;
@@ -142,7 +133,7 @@ const onPrivew = () => {
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
     $local.set(MODEL_PRIVEW_CONFIG, modelConfig);
-    const { href } = router.resolve({ path: "/preview" });
+    const { href } = router.resolve({ path: pageEnums.MODEL_PREIVEW });
     window.open(href, "_blank");
   } else {
     ElMessage.warning("当前模型暂不支持“效果预览”");
@@ -175,7 +166,7 @@ const onSaveConfig = () => {
         ElMessage.warning("当前模型暂不支持“数据保存”");
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 // 下载封面
@@ -215,6 +206,7 @@ onBeforeUnmount(() => {
 .model-page {
   width: 100%;
   background-color: #1b1c23;
+
   .model-header {
     height: 35px;
     width: 100%;

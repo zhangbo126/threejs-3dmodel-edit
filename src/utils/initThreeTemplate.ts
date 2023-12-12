@@ -1,5 +1,5 @@
 
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, withDirectives, resolveDirective } from 'vue'
 import * as THREE from 'three' //导入整个 three.js核心库
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
@@ -12,10 +12,10 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { vertexShader, fragmentShader } from '@/config/constant.js'
+import { vertexShader, fragmentShader } from '@/config/constant'
 import { mapImageList } from "@/config/model";
 import { lightPosition, onlyKey, debounce } from '@/utils/utilityFunction'
-import { SetModelType } from '@/config/renderOptions'
+import { SetModelType } from '@/types/renderOptions'
 import { ElMessage } from 'element-plus'
 
 /**
@@ -58,7 +58,6 @@ class renderModel {
 	onMouseMoveListener: any
 	constructor(config: any, elementId: string) {
 		this.config = config
-
 		this.container = document.querySelector('#' + elementId)
 		// 相机
 		this.camera
@@ -494,10 +493,12 @@ class renderModel {
 	// 处理背景数据回填
 	setSceneBackground() {
 		const { background } = this.config
+
 		if (!background) return false
+		const { color, image, viewImg } = background
+
 		// 设置背景
 		if (background.visible) {
-			const { color, image, viewImg } = background
 			switch (background.type) {
 				case 1:
 					this.scene.background = new THREE.Color(color)
@@ -818,29 +819,29 @@ function createThreeDComponent(config: any) {
 			}
 		},
 		render() {
+			const zLoading = resolveDirective('zLoading')
 			if (this.width && this.height) {
-				return h('div', {
-					vBind: {
-						zLoading: this.loading,
-					},
+				return withDirectives(h('div', {
 					style: {
 						width: this.width - 10 + 'px',
 						height: this.height - 10 + 'px',
 						pointerEvents: 'none',
 					},
 					id: elementId,
-				});
+				}), [
+					[zLoading, this.loading]
+				])
 			} else {
-				return h('div', {
-					vBind: {
-						zLoading: this.loading,
-					},
+				return withDirectives(h('div', {
 					style: {
 						width: '100%',
 						height: '100%',
 					},
 					id: elementId,
-				});
+				}), [
+					[zLoading, this.loading]
+				])
+
 			}
 		},
 		async mounted() {
@@ -856,6 +857,8 @@ function createThreeDComponent(config: any) {
 		}
 	})
 }
+
+
 
 
 export default createThreeDComponent

@@ -31,7 +31,7 @@ import { ref } from "vue";
 const props = defineProps({
   config: {
     type: Object,
-    default: {},
+    default: ()=>{},
   },
 });
 
@@ -39,20 +39,20 @@ const emit = defineEmits(["onDragActived", "onDragDeactivated"]);
 
 const dragMask = ref("");
 // 开始拖拽
-const dragHandle = (e) => {
+const dragHandle = () => {
   dragMask.value = "mask-dragging";
 };
 // 拖拽结束
-const dragEndHandle = (e) => {
+const dragEndHandle = () => {
   dragMask.value = "mask-dragactive";
 };
 // 选中
-const activatedHandle = (e) => {
+const activatedHandle = () => {
   dragMask.value = "mask-dragactive";
   emit("onDragActived", props.config);
 };
 // 取消选中
-const deactivatedHandle = (e) => {
+const deactivatedHandle = () => {
   dragMask.value = "";
   emit("onDragDeactivated", props.config.modelKey);
 };
