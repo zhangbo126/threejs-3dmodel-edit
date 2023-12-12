@@ -51,13 +51,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {
-  ref,
-  reactive,
-  computed,
-  watch,
-  Ref
-} from "vue";
+import { ref, reactive, computed, watch, Ref } from "vue";
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 
@@ -71,7 +65,7 @@ const activeGeometry: Ref<any> = ref(null);
 const geometryConfigList: Ref<any> = ref([]);
 
 const disabled = computed(() => {
-  const geometrylen = state.modelMaterialList.filter((v) => v.userData.geometry);
+  const geometrylen = state.modelMaterialList.filter((v: { userData: { geometry: any; }; }) => v.userData.geometry);
   return geometrylen == 0 ? false : true;
 });
 
@@ -87,7 +81,7 @@ const state = reactive({
 watch(
   () => store.getters.selectMeshUuid,
   (val) => {
-    const { geometry } = state.modelMaterialList.find((v) => v.uuid == val) || {};
+    const { geometry } = state.modelMaterialList.find((v: { uuid: any; }) => v.uuid == val) || {};
     if (geometry) {
       const { type } = geometry;
       activeGeometry.value = {
@@ -102,7 +96,8 @@ watch(
 );
 
 // 选择材质
-const onChangeMaterialType = ({ name, material }) => {
+const onChangeMaterialType = (mesh: { name: string, material: any }) => {
+  const { name, material } = mesh
   config.meaterialName = material.name;
   state.modelApi.onChangeModelMeaterial(name);
 };

@@ -430,7 +430,7 @@ onMounted(() => {
   });
 });
 
-const changeAmbientLightColor = ambientLightColor => {
+const changeAmbientLightColor = (ambientLightColor: string) => {
   config.ambientLightColor = ambientLightColor;
   state.modelApi.onSetModelAmbientLight(config);
 };
@@ -454,7 +454,7 @@ const onChangeDirectionalLight = () => {
   state.modelApi.onSetModelDirectionalLight(config);
 };
 
-const changePointLightColor = pointLightColor => {
+const changePointLightColor = (pointLightColor: string) => {
   config.pointLightColor = pointLightColor;
   state.modelApi.onSetModelPointLight(config);
 };
@@ -465,7 +465,7 @@ const onChangePointLight = () => {
 };
 
 // 设置聚颜色
-const changeSpotLightColor = spotLightColor => {
+const changeSpotLightColor = (spotLightColor: string) => {
   config.spotLightColor = spotLightColor;
   state.modelApi.onSetModelSpotLight(config);
 };
@@ -478,7 +478,7 @@ const onChangeSpotLight = () => {
   state.modelApi.onSetModelSpotLight(config);
 };
 
-const changePlaneGeometryColor = planeColor => {
+const changePlaneGeometryColor = (planeColor: string) => {
   config.planeColor = planeColor;
   state.modelApi.onSetModelPlaneGeometry(config);
 };

@@ -20,7 +20,7 @@
       </div>
     </header>
     <!-- 内容区 -->
-    <div class="base-container" >
+    <div class="base-container">
       <el-scrollbar :max-height="'calc(100vh - 45px)'" class="base-menu">
         <ul class="menu-list">
           <li v-for="model in modelBaseList" :key="model.fileInfo.id" draggable="true"
@@ -56,9 +56,9 @@
 </template>
 <script setup lang="ts" name="modelBase">
 import { DraggableContainer } from "vue3-draggable-resizable";
-import DraggableResizableItem from "@/components/DraggableResizableItem/index";
-import RightContextMenu from "@/components/RightContextMenu";
-import { MODEL_BASE_DATA, MODEL_BASE_DRAGE_DATA } from "@/config/constant";
+import DraggableResizableItem from "@/components/DraggableResizableItem/index.vue";
+import RightContextMenu from "@/components/RightContextMenu/index.vue";
+import { MODEL_BASE_DATA, MODEL_BASE_DRAGE_DATA } from '@/config/constant'
 import { deepCopy, onlyKey } from "@/utils/utilityFunction";
 import { ref, Ref, getCurrentInstance, onMounted, nextTick } from "vue";
 import { ElMessage } from "element-plus";
@@ -132,7 +132,7 @@ const onContextmenu = (e: { clientX: any; clientY: any; preventDefault: () => vo
 
 // 删除
 const onDeleteDrag = (modelKey: any) => {
-  dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
+  dragModelList.value = dragModelList.value.filter((v: { modelKey: any; }) => v.modelKey != modelKey);
 }
 
 
@@ -157,7 +157,7 @@ onMounted(async () => {
   window.addEventListener("keydown", (event) => {
     if (event.keyCode === 46 && event.key == "Delete" && dragActive.value) {
       const { modelKey } = dragActive.value;
-      dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
+      dragModelList.value = dragModelList.value.filter((v: { modelKey: any; }) => v.modelKey != modelKey);
       dragActive.value = null;
     }
   });

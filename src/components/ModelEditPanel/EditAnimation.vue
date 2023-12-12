@@ -7,19 +7,16 @@
     <!-- 动画列表 -->
     <div class="options" :class="optionDisabled">
       <el-scrollbar max-height="250px" v-if="state.modelAnimation.length">
-        <div
-          class="option"
-          :class="config.animationName == animation.name ? 'option-active' : ''"
-          @click="onChangeAnimationType(animation)"
-          v-for="animation in state.modelAnimation"
-          :key="animation.name"
-        >
+        <div class="option" :class="config.animationName == animation.name ? 'option-active' : ''"
+          @click="onChangeAnimationType(animation)" v-for="animation in state.modelAnimation" :key="animation.name">
           <el-space>
             <div class="icon-name">
               {{ animation.name }}
             </div>
             <div class="check" v-show="config.animationName == animation.name">
-              <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
+              <el-icon size="20px" color="#2a3ff6">
+                <Check />
+              </el-icon>
             </div>
           </el-space>
         </div>
@@ -33,7 +30,9 @@
     <div class="options" :class="optionDisabled">
       <div class="option">
         <el-space>
-          <el-icon><Switch /></el-icon>
+          <el-icon>
+            <Switch />
+          </el-icon>
           <span> 循环方式 </span>
         </el-space>
       </div>
@@ -46,35 +45,25 @@
       </div>
       <div class="option">
         <el-space>
-          <el-icon><VideoPlay /></el-icon>
+          <el-icon>
+            <VideoPlay />
+          </el-icon>
           <span> 播放速度 </span>
         </el-space>
       </div>
       <div class="option">
-        <el-slider
-          show-input
-          v-model="config.timeScale"
-          @change="onUplateAnimation"
-          :step="0.01"
-          :min="0"
-          :max="1"
-        />
+        <el-slider show-input v-model="config.timeScale" @change="onUplateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
       <div class="option">
         <el-space>
-          <el-icon><Sort /></el-icon>
+          <el-icon>
+            <Sort />
+          </el-icon>
           <span> 动作幅度 </span>
         </el-space>
       </div>
       <div class="option">
-        <el-slider
-          show-input
-          v-model="config.weight"
-          @change="onUplateAnimation"
-          :step="0.01"
-          :min="0"
-          :max="1"
-        />
+        <el-slider show-input v-model="config.weight" @change="onUplateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
     </div>
     <!-- 轴动画 -->
@@ -95,19 +84,15 @@
       </div>
       <div class="option" :class="optionRotation">
         <el-space>
-          <el-icon><VideoPlay /></el-icon>
+          <el-icon>
+            <VideoPlay />
+          </el-icon>
           <span> 播放速度 </span>
         </el-space>
       </div>
       <div class="option" :class="optionRotation">
-        <el-slider
-          @input="onRotationAnimation"
-          show-input
-          v-model="config.rotationSpeed"
-          :step="0.01"
-          :min="1"
-          :max="10"
-        />
+        <el-slider @input="onRotationAnimation" show-input v-model="config.rotationSpeed" :step="0.01" :min="1"
+          :max="10" />
       </div>
     </div>
   </div>
@@ -180,7 +165,8 @@ const onChangeAnimationSwitch = () => {
   }
 };
 // 选择动画
-const onChangeAnimationType = ({ name }) => {
+const onChangeAnimationType = (animation: { name: any; }) => {
+  const { name } = animation
   config.animationName = name;
   state.modelApi.onStartModelAnimaion(config);
 };

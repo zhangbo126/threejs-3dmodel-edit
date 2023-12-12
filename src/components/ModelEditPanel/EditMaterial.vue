@@ -200,7 +200,8 @@ const onChangeMeshType = (e: string) => {
 };
 
 // 选择材质
-const onChangeMaterialType = ({ name, material }) => {
+const onChangeMaterialType = (mesh: { name: string; material: any; }) => {
+  const { name, material } = mesh
   config.meaterialName = material.name;
   const activeMesh = state.modelApi.onChangeModelMeaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
@@ -212,7 +213,7 @@ const onChangeMaterialType = ({ name, material }) => {
   });
 };
 
-const activeChangeColor = (color:string) => {
+const activeChangeColor = (color: string) => {
   config.color = color;
   state.modelApi.onSetModelMaterial(config);
 };
@@ -222,7 +223,7 @@ const onChangeMeaterial = () => {
 };
 
 // 设置材质显隐
-const onSetMeshVisibe = (mesh:any) => {
+const onSetMeshVisibe = (mesh: any) => {
   mesh.visible = !mesh.visible;
 };
 //修改当前材质贴图

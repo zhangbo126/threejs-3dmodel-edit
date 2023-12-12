@@ -118,7 +118,7 @@ const optionsDisable = computed(() => {
 });
 const predefineColors = PREDEFINE_COLORS;
 //切换类型
-const onChangeType = (type) => {
+const onChangeType = (type: number) => {
   config.type = type;
   switch (type) {
     case 1:
@@ -135,19 +135,21 @@ const onChangeType = (type) => {
   }
 };
 //选择图片
-const onChangeImage = ({ id, url }) => {
+const onChangeImage = (image: { id: number, url: string }) => {
+  const { id, url } = image
   config.image = url;
   activeBackgroundId.value = id;
   state.modelApi.onSetSceneImage(url);
 };
 //选择全景图
-const onChangeViewImage = ({ id, url }) => {
+const onChangeViewImage = (image: { id: number, url: string }) => {
+  const { id, url } = image
   config.viewImg = url;
   activeViewImageId.value = id;
   state.modelApi.onSetSceneViewImage(url);
 };
 // 颜色面板值发生变化
-const activeChangeColor = (color) => {
+const activeChangeColor = (color: string) => {
   config.color = color;
   state.modelApi.onSetSceneColor(config.color);
 };

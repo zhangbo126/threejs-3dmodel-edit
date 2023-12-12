@@ -151,35 +151,3 @@ export function getFileType(fileName: string): string {
 
 
 
-// /**
-//  * @describe 创建jsx 自定义指令方法
-// */
-
-
-// export const createDirectiveLoading: any = {
-// 	mounted(el: HTMLElement) {
-// 		const app = createApp(Loading)
-// 		const vNode = app.mount(document.createElement('div'))
-// 		el.style.position = 'relative'
-// 		vNode.$el.style.display = 'none'
-// 		el.appendChild(vNode.$el)
-// 	},
-// 	updated(el: HTMLElement, binding: DirectiveBinding) {
-// 		console.log(binding)
-
-// 		const loadingNode: HTMLElement | null | undefined = el.parentElement?.querySelector('#loading-mark')
-// 		const { value } = binding
-// 		if (!value) {
-// 			el.style.position = ''
-// 			if (loadingNode) loadingNode.style.display = 'none'
-
-// 		} else {
-// 			el.style.position = 'relative'
-// 			if (loadingNode) loadingNode.style.display = 'block'
-// 		}
-// 	},
-// 	unmounted(el: HTMLElement) {
-// 		const loadingNode = el.children[0]
-// 		el.removeChild(loadingNode)
-// 	},
-// }

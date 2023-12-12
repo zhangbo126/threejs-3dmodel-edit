@@ -1,12 +1,8 @@
 <template>
   <div class="model-panel">
     <ul class="panel-tabs">
-      <li
-        v-for="tab in panelTabs"
-        :key="tab.key"
-        :class="activeTab == tab.key ? 'active' : ''"
-        @click="activeTab = tab.key"
-      >
+      <li v-for="tab in panelTabs" :key="tab.key" :class="activeTab == tab.key ? 'active' : ''"
+        @click="activeTab = tab.key">
         <el-tooltip effect="light" :content="tab.name" placement="top">
           <div class="tab">
             <el-icon size="20px" :color="activeTab == tab.key ? '#fff' : ''">
@@ -49,7 +45,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref,reactive } from "vue";
+import { ref, Ref } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
@@ -95,13 +91,13 @@ const panelTabs = [
   },
 ];
 const activeTab = ref("EditMaterial");
-const background = ref(null);
-const material = ref(null);
-const animation = ref(null);
-const attribute = ref(null);
-const light = ref(null);
-const stage = ref(null);
-const geometry = ref(null)
+const background: Ref<any> = ref(null);
+const material: Ref<any> = ref(null);
+const animation: Ref<any> = ref(null);
+const attribute: Ref<any> = ref(null);
+const light: Ref<any> = ref(null);
+const stage: Ref<any> = ref(null);
+const geometry: Ref<any> = ref(null)
 // 获取所有面板配置
 const getPanelConfig = () => {
   return {
@@ -122,11 +118,14 @@ defineExpose({
   background-color: #1b1c23;
   min-width: 380px;
   height: calc(100vh - 35px);
+
   .panel-tabs {
     display: flex;
+
     .active {
       background-color: #4d57fd;
     }
+
     li {
       cursor: pointer;
       color: #888;
@@ -135,11 +134,11 @@ defineExpose({
       border-right: 1px solid #0a0a0a;
       display: flex;
       align-items: center;
+
       .tab {
         line-height: initial;
       }
     }
   }
 }
-
 </style>

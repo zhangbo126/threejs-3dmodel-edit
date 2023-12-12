@@ -226,7 +226,7 @@ onMounted(() => {
 });
 const onChangeAttributeSwitch = () => { };
 // 设置模型轴角度
-const onSetRotateOnAxis = (type, direction) => {
+const onSetRotateOnAxis = (type: any, direction: string) => {
   const flag = direction == "right" ? true : false;
   state.modelApi.onSetModelRotateOnAxis(type, flag)
 };
@@ -250,7 +250,7 @@ const onResultPosition = () => {
 const onSetModelHelper = () => {
   state.modelApi.onSetModelHelper(config.skeletonHelper);
 };
-const activeChangeColor = (color) => {
+const activeChangeColor = (color: string) => {
   config.color = color;
   state.modelApi.onSetModelGridHelper(config);
 };
