@@ -238,27 +238,24 @@ class renderModel {
 					case 'glb':
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'fbx':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'gltf':
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'obj':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
-						this.modelAnimation = result.animations || []
 						break;
 					default:
 						break;
 				}
 				this.model.decomposeName = decomposeName
+				this.modelAnimation = result.animations || []
 				this.getModelMeaterialList()
 				this.setModelPositionSize()
 				//	设置模型大小
