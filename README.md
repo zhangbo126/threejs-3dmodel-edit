@@ -25,6 +25,7 @@
 | Vue                 | 3.2.x | TypeScript4 | 4.5.x  |
 | Vite                | 4.3.x | Element-plus | 2.4.x |
 | Three               | 0.158.x | Vuex       | 4.0.x  |
+| Vue3-Draggable-Resizable | 1.6.x | Mitt | 3.0.x |
 | 详见 `package.json` | 😁    | 🥰         | 🤗    |
 
 ### 🌺 开发环境:
