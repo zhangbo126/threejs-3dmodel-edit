@@ -267,30 +267,32 @@ class renderModel {
 
 	}
 	// 加载模型
-	loadModel({ filePath, fileType, scale, map, position, decomposeName }) {
+	loadModel({ filePath, fileType, scale, map, position }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
-						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'gltf':
 						this.model = result.scene
+						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						break;
 					case 'obj':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					default:
 						break;
 				}
+				this.getModelMeaterialList(map)
+				this.modelAnimation = result.animations || []
 				this.setModelPositionSize()
 				//	设置模型大小
 				if (scale) {
@@ -302,6 +304,9 @@ class renderModel {
 					const { x, y, z } = position
 					this.model.position.set(x, y, z)
 				}
+				this.skeletonHelper.visible = false
+				this.scene.add(this.skeletonHelper)
+				
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
@@ -737,8 +742,8 @@ class renderModel {
 		// 开启阴影
 		this.renderer.shadowMap.enabled = true;
 		// 骨骼辅助线
-		this.skeletonHelper = new THREE.SkeletonHelper(this.model)
-		this.skeletonHelper = skeletonHelper
+		// 骨骼辅助线
+		this.skeletonHelper.visible = skeletonHelper
 	}
 
 }
