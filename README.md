@@ -6,7 +6,7 @@
 
 ### 📦️ 分支介绍
 1. master: `Vue3+Vuex+Javascript` (最新的功能issues和修复的bug都在这个分支)
-2. ts-master: `Vue3+Vuex+Typescrip`t (master分支的typescript版本)
+2. ts-master: `Vue3+Vuex+Typescript` (master分支的typescript版本)
 3. develop: `Vue3+Vuex+Javascript` (一些不确定的功能和代码重构会在这个分支开发)
 4. gh-pages: `git-pages 线上包分支` (忽略即可)
 

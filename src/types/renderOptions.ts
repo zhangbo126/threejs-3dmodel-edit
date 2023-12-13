@@ -85,3 +85,7 @@ export type OnSetModelDirectionalLightType = {
 	spotLightHelper?: boolean;
 	spotDistance?: number
 }
+export type FileLoadType = {
+	scene: THREE.Object3D<THREE.Object3DEventMap> | THREE.SkinnedMesh<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.Material | THREE.Material[]>;
+	animations: never[]
+}

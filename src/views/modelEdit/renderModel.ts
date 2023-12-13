@@ -18,7 +18,7 @@ import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import TWEEN from "@tweenjs/tween.js";
 import store from '@/store'
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant'
-import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/types/renderOptions'
+import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType ,FileLoadType} from '@/types/renderOptions'
 
 
 class renderModel {
@@ -291,26 +291,23 @@ class renderModel {
 					case 'glb':
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'fbx':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'gltf':
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'obj':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
-						this.modelAnimation = result.animations || []
 						break;
 					default:
 						break;
 				}
+				this.modelAnimation = result.animations || []
 				this.model.decomposeName = decomposeName
 				this.getModelMeaterialList()
 				this.setModelPositionSize()

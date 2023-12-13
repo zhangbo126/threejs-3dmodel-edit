@@ -301,30 +301,32 @@ class renderModel {
 	}
 	// 加载模型
 	loadModel(modelFile: SetModelType) {
-		const { filePath, fileType, scale, map, position, decomposeName } = modelFile
+		const { filePath, fileType, scale, map, position } = modelFile
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
-			loader.load(filePath, (result: { scene: THREE.Object3D<THREE.Object3DEventMap> | THREE.SkinnedMesh<THREE.BufferGeometry<THREE.NormalBufferAttributes>, THREE.Material | THREE.Material[]>; animations: never[] }) => {
+			loader.load(filePath, (result: any) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
-						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'gltf':
 						this.model = result.scene
+						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						break;
 					case 'obj':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					default:
 						break;
 				}
+				this.getModelMeaterialList(map)
+				this.modelAnimation = result.animations || []
 				this.setModelPositionSize()
 				//	设置模型大小
 				if (scale) {
@@ -336,6 +338,9 @@ class renderModel {
 					const { x, y, z } = position
 					this.model.position.set(x, y, z)
 				}
+				this.skeletonHelper.visible = false
+				this.scene.add(this.skeletonHelper)
+
 				this.glowMaterialList = this.modelMaterialList.map((v: { name: any }) => v.name)
 				this.scene.add(this.model)
 				resolve(true)
@@ -767,15 +772,17 @@ class renderModel {
 		this.axesHelper.visible = axesHelper
 		this.axesHelper.position.set(0, -.50, 0)
 		this.scene.add(this.axesHelper);
+
+		// 骨骼辅助线
+		this.skeletonHelper.visible = skeletonHelper
+
 		// 设置模型位置
 		this.model.position.set(positionX, positionY, positionZ)
 		// 设置模型轴位置
 		this.model.rotation.set(rotationX, rotationY, rotationZ)
 		// 开启阴影
 		this.renderer.shadowMap.enabled = true;
-		// 骨骼辅助线
-		this.skeletonHelper = new THREE.SkeletonHelper(this.model)
-		this.skeletonHelper = skeletonHelper
+
 	}
 
 }
