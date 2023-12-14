@@ -18,7 +18,7 @@ import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import TWEEN from "@tweenjs/tween.js";
 import store from '@/store'
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant'
-import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType ,FileLoadType} from '@/types/renderOptions'
+import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/types/renderOptions'
 
 
 class renderModel {
@@ -61,6 +61,7 @@ class renderModel {
 	modelTextureMap: any
 	glowComposer: any
 	unrealBloomPass: any
+	shaderPass: any
 	glowMaterialList: any
 	materials: { [key: string]: any }
 	dragControls: any
@@ -138,6 +139,7 @@ class renderModel {
 		this.modelMaterialList
 		// 效果合成器
 		this.effectComposer
+
 		this.outlinePass
 		// 动画渲染器
 		this.renderAnimation = null
@@ -149,6 +151,8 @@ class renderModel {
 		this.modelTextureMap
 		// 辉光效果合成器
 		this.glowComposer
+		// 辉光着色器
+		this.shaderPass
 		// 辉光渲染器
 		this.unrealBloomPass
 		// 需要辉光的材质
@@ -505,25 +509,25 @@ class renderModel {
 		this.glowComposer.addPass(this.unrealBloomPass)
 
 		// // 着色器
-		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
+		this.shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
 				bloomTexture: { value: this.glowComposer.renderTarget2.texture },
-				tDiffuse: {
-					value: null
-				}
+				tDiffuse: { value: null },
+				glowColor: { value: null }
 			},
 			vertexShader,
 			fragmentShader,
 			defines: {}
 		}), 'baseTexture')
 
-		shaderPass.renderToScreen = true
-		shaderPass.needsSwap = true
-		this.effectComposer.addPass(shaderPass)
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
+		this.shaderPass.renderToScreen = true
+		this.shaderPass.needsSwap = true
+		this.effectComposer.addPass(this.shaderPass)
 
 	}
-	
+
 	// 切换模型
 	onSwitchModel(model: OnSwitchModelType) {
 		return new Promise(async (reslove, reject) => {
@@ -702,6 +706,8 @@ class renderModel {
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
+		// 辉光着色器
+		this.shaderPass = null
 		// 需要辉光的材质
 		this.glowMaterialList = []
 		this.materials = {}
@@ -1058,22 +1064,25 @@ class renderModel {
 	 * @function setModelMeshDecompose 模型拆分
 	 * @function setModelMeshDrag 模型材质可拖拽
 	 * @function getMeshDragPosition 获取模型材质位拖拽置
+	 * @function onSetFlowColor 修改辉光颜色
 	 */
 	// 设置辉光效果
-	onSetUnrealBloomPass(config: { glow: any; threshold: any; strength: any; radius: any; toneMappingExposure: any }) {
-		const { glow, threshold, strength, radius, toneMappingExposure } = config
+	onSetUnrealBloomPass(config: { glow: any; threshold: any; strength: any; radius: any; toneMappingExposure: any, color: string }) {
+		const { glow, threshold, strength, radius, toneMappingExposure, color } = config
 		this.glowUnrealBloomPass = glow
 		if (glow) {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
 			this.unrealBloomPass.radius = radius
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
 
 		} else {
 			this.unrealBloomPass.threshold = 0
 			this.unrealBloomPass.strength = 0
 			this.unrealBloomPass.radius = 0
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		}
 	}
 	// 模型拆分
@@ -1158,7 +1167,10 @@ class renderModel {
 		})
 		return positonList
 	}
-
+	// 修改辉光颜色
+	onSetFlowColor(color: string) {
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
+	}
 
 
 	/**

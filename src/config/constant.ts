@@ -19,26 +19,30 @@ export const PREDEFINE_COLORS = [
 	"#c7158577",
 ]
 // 着色器配置
-export const vertexShader = '\t\t\tvarying vec2 vUv;\n' +
-	'\n' +
-	'\t\t\tvoid main() {\n' +
-	'\n' +
-	'\t\t\t\tvUv = uv;\n' +
-	'\n' +
-	'\t\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n' +
-	'\n' +
-	'\t\t\t}'
-//着色器配置
-export const fragmentShader = '\t\t\tuniform sampler2D baseTexture;\n' +
-	'\t\t\tuniform sampler2D bloomTexture;\n' +
-	'\n' +
-	'\t\t\tvarying vec2 vUv;\n' +
-	'\n' +
-	'\t\t\tvoid main() {\n' +
-	'\n' +
-	'\t\t\t\tgl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );\n' +
-	'\n' +
-	'\t\t\t}'
+export const vertexShader = `
+     varying vec2 vUv;
+	 void main() {
+		vUv = uv;
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	 }
+`
+// 着色器配置
+export const fragmentShader = `
+		uniform sampler2D baseTexture;
+		uniform sampler2D bloomTexture;
+		uniform vec3 glowColor; 
+
+		varying vec2 vUv;
+
+		void main() {
+			vec4 baseColor = texture2D(baseTexture, vUv);
+			vec4 bloomColor = texture2D(bloomTexture, vUv);
+
+			// 调整辉光颜色
+			vec4 glow = vec4(glowColor, 1.0);
+
+			gl_FragColor = baseColor + glow * bloomColor;
+	}`
 
 // 模型拆解材质的位移参数
 interface ModelDecompose {

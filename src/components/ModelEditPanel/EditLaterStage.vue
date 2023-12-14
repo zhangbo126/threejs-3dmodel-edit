@@ -18,6 +18,15 @@
     <div class="options" :class="optionsDisable">
       <div class="option">
         <div class="grid-txt">
+          <el-button type="primary" link>颜色</el-button>
+        </div>
+        <div class="grid-silder">
+          <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="onChangeColor"
+            @active-change="activeChangeColor" v-model="config.color" />
+        </div>
+      </div>
+      <div class="option">
+        <div class="grid-txt">
           <el-button type="primary" link>强度</el-button>
         </div>
         <div class="grid-silder">
@@ -96,6 +105,8 @@
 <script setup lang="ts">
 import { reactive, computed, getCurrentInstance, onMounted } from "vue";
 import { useStore } from "vuex";
+import { PREDEFINE_COLORS } from "@/config/constant";
+
 const store = useStore();
 const { $bus } = (getCurrentInstance() as any).proxy;
 const state = reactive({
@@ -128,7 +139,9 @@ const config = reactive({
   decompose: 0,
   modelDrag: false,
   toneMappingExposure: 2,
+  color: ''
 });
+
 onMounted(() => {
   $bus.on("model-update", () => {
     Object.assign(config, {
@@ -142,17 +155,29 @@ onMounted(() => {
     });
   });
 });
+
+const onChangeColor = () => {
+  state.modelApi.onSetFlowColor(config.color);
+};
+const activeChangeColor = (color: string) => {
+  config.color = color
+  state.modelApi.onSetFlowColor(config.color);
+};
+
 const onChangeFlow = () => {
   state.modelApi.onSetUnrealBloomPass(config);
 };
+
 const onChangeDecompose = () => {
   state.modelApi.setModelMeshDecompose(config);
 };
+
 const onChangeDrag = () => {
   config.decompose = 0;
   state.modelApi.setModelMeshDecompose(config);
   state.modelApi.setModelMeshDrag(config);
 };
+
 const getStageConfig = () => {
   return {
     meshPositonList: state.modelApi.getMeshDragPosition(),
