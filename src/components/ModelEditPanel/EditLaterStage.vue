@@ -21,7 +21,7 @@
           <el-button type="primary" link>颜色</el-button>
         </div>
         <div class="grid-silder">
-          <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="activeChangeColor"
+          <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="onChangeColor"
             @active-change="activeChangeColor" v-model="config.color" />
         </div>
       </div>
@@ -139,7 +139,7 @@ const config = reactive({
   decompose: 0,
   modelDrag: false,
   toneMappingExposure: 2,
-  color:null
+  color:''
 });
 onMounted(() => {
   $bus.on("model-update", () => {
@@ -155,10 +155,13 @@ onMounted(() => {
   });
 });
 
-const activeChangeColor = (color) => {
-  state.modelApi.onSetFlowColor(color);
+const onChangeColor = () => {
+  state.modelApi.onSetFlowColor(config.color);
 };
-
+const activeChangeColor = (color) => {
+  config.color = color
+  state.modelApi.onSetFlowColor(config.color);
+};
 const onChangeFlow = () => {
   state.modelApi.onSetUnrealBloomPass(config);
 };
