@@ -11,7 +11,7 @@ import createThreeDComponent from "@/utils/initThreeTemplate";
 const treeComponent = createThreeDComponent(config);
 
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 #preview {
   width: 100%;
   height: 100vh;

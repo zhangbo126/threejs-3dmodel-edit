@@ -16,20 +16,9 @@
       <!-- 模型列表 -->
       <el-scrollbar max-height="210px">
         <el-row>
-          <el-col
-            :style="{ textAlign: 'center' }"
-            :span="12"
-            v-for="model in ordinaryModelList"
-            :key="model.id"
-          >
-            <el-image
-              draggable="false"
-              @click.prevent="onChangeModel(model)"
-              class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''"
-              :src="model.icon"
-              fit="cover"
-            />
+          <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in ordinaryModelList" :key="model.id">
+            <el-image draggable="false" @click.prevent="onChangeModel(model)" class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -47,20 +36,9 @@
       <!-- 模型列表 -->
       <el-scrollbar max-height="210px">
         <el-row>
-          <el-col
-            :style="{ textAlign: 'center' }"
-            :span="12"
-            v-for="model in animationModelList"
-            :key="model.id"
-          >
-            <el-image
-              draggable="false"
-              @click="onChangeModel(model)"
-              class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''"
-              :src="model.icon"
-              fit="cover"
-            />
+          <el-col :style="{ textAlign: 'center' }" :span="12" v-for="model in animationModelList" :key="model.id">
+            <el-image draggable="false" @click="onChangeModel(model)" class="el-img"
+              :class="activeModelId == model.id ? 'active-model' : ''" :src="model.icon" fit="cover" />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -73,33 +51,17 @@
             <SwitchFilled />
           </el-icon>
           <span>几何体模型</span>
-          <span :style="{ color: '#18c174 ' }" v-if="geometryVisable"
-            >(可拖拽添加多个)</span
-          >
+          <span :style="{ color: '#18c174 ' }" v-if="geometryVisable">(可拖拽添加多个)</span>
         </el-space>
       </div>
       <!-- 模型列表 -->
       <el-scrollbar max-height="120px">
         <el-row v-if="geometryVisable">
-          <el-col
-            :style="{ textAlign: 'center' }"
-            :span="8"
-            v-for="model in geometryModelList"
-            :key="model.type"
-          >
-            <div
-              class="geometry"
-              :class="activeModelId == model.id ? 'active-model' : ''"
-              draggable="true"
-              @dragstart="(e) => onDragstart(e, model)"
-              @drag="(e) => onDrag(e)"
-            >
+          <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
+            <div class="geometry" :class="activeModelId == model.id ? 'active-model' : ''" draggable="true"
+              @dragstart="(e) => onDragstart(e, model)" @drag="(e) => onDrag(e)">
               <div class="geometry-name">
-                <el-tooltip
-                  effect="dark"
-                  :content="`${model.name}:${model.type}`"
-                  placement="top"
-                >
+                <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
                   <b> {{ model.name }}</b>
                 </el-tooltip>
               </div>
@@ -135,14 +97,8 @@
           <b>{{ localModelName }}</b>
         </el-tooltip>
       </div>
-      <el-upload
-        action=""
-        accept=".glb,.obj,.gltf,.fbx"
-        class="file-box"
-        :show-file-list="false"
-        :auto-upload="false"
-        :on-change="onUpload"
-      >
+      <el-upload action="" accept=".glb,.obj,.gltf,.fbx" class="file-box" :show-file-list="false" :auto-upload="false"
+        :on-change="onUpload">
         <div class="upload">
           <div class="icon">
             <el-icon :size="44">
@@ -157,17 +113,12 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance, reactive } from "vue";
+import { ref, computed, getCurrentInstance } from "vue";
 import { modelList, geometryModelList } from "@/config/model.js";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { getFileType } from "@/utils/utilityFunction.js";
-const store = useStore();
+const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-});
 
 //普通模型
 const ordinaryModelList = computed(() => {
@@ -204,7 +155,7 @@ const onChangeModel = async (model) => {
   activeModel.value = model;
   $bus.emit("page-loading", true);
   try {
-    const { load } = await state.modelApi.onSwitchModel(model);
+    const { load } = await store.modelApi.onSwitchModel(model);
     if (load) {
       $bus.emit("model-update");
       $bus.emit("page-loading", false);
@@ -220,12 +171,12 @@ const onAddGeometry = async () => {
   localModelName.value = null;
   activeModelId.value = null;
   activeModel.value = {};
-  state.modelApi.clearSceneModel();
+  store.modelApi.clearSceneModel();
 };
 
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
-  state.modelApi.setDragGeometryModel(model);
+  store.modelApi.setDragGeometryModel(model);
 };
 // 拖拽中
 const onDrag = (event) => {
@@ -243,7 +194,7 @@ const onUpload = async (file) => {
   };
   $bus.emit("page-loading", true);
   try {
-    const { load, filePath } = await state.modelApi.onSwitchModel(model);
+    const { load, filePath } = await store.modelApi.onSwitchModel(model);
     // TODO: 加载成功之后手动释放 否则会造成内存浪费
     URL.revokeObjectURL(filePath);
     if (load) {
@@ -284,6 +235,7 @@ defineExpose({
     border: 3px solid #18c174 !important;
     opacity: 1;
   }
+
   .geometry {
     color: #fff;
     cursor: all-scroll;
@@ -297,6 +249,7 @@ defineExpose({
     border: 1px solid #dcdfe6;
     margin: 4px 2px;
   }
+
   .geometry-box {
     padding: 0px 20px;
     color: #8c939d;
@@ -306,6 +259,7 @@ defineExpose({
     overflow: hidden;
     display: flex;
     justify-content: center;
+
     .geometry-add {
       width: 228px;
       height: 108px;
@@ -315,6 +269,7 @@ defineExpose({
       justify-content: center;
       border-radius: 6px;
       cursor: pointer;
+
       .icon {
         span {
           font-size: 14px;
@@ -327,6 +282,7 @@ defineExpose({
       }
     }
   }
+
   .file-box {
     padding: 10px 20px;
     color: #8c939d;
@@ -337,6 +293,7 @@ defineExpose({
     overflow: hidden;
     display: flex;
     justify-content: center;
+
     .upload {
       width: 228px;
       height: 128px;

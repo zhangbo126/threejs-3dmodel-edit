@@ -15,9 +15,11 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { lightPosition, onlyKey } from '@/utils/utilityFunction'
-import store from '@/store'
+import { useMeshEditStore } from '@/store/meshEditStore'
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant.js'
+const store = useMeshEditStore()
+
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -182,6 +184,10 @@ class renderModel {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		// 将不需要处理辉光的材质进行存储备份
 		this.scene.traverse((v) => {
+			if (v instanceof THREE.GridHelper) {
+				this.materials.gridHelper = v.material
+				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
+			}
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
 				v.background = null
@@ -197,6 +203,10 @@ class renderModel {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
 				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.GridHelper) {
+				v.material = this.materials.gridHelper
+				delete this.materials.gridHelper
 			}
 			if (v instanceof THREE.Scene) {
 				v.background = this.materials.scene
@@ -484,6 +494,7 @@ class renderModel {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
+					this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
@@ -869,7 +880,7 @@ class renderModel {
 	// 设置材质属性
 	onSetModelMaterial(config) {
 		const { color, wireframe, depthWrite, opacity } = JSON.parse(JSON.stringify(config))
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
 			const { name, map } = mesh.material
@@ -886,7 +897,7 @@ class renderModel {
 	}
 	// 设置模型贴图（模型自带）
 	onSetModelMap({ material, mapId, meshName }) {
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		mesh.material = material.clone()
 		mesh.mapId = mapId
@@ -895,7 +906,7 @@ class renderModel {
 	}
 	// 设置模型贴图（系统贴图）
 	onSetSystemModelMap({ id, url }) {
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const mapTexture = new THREE.TextureLoader().load(url)
 		const newMaterial = mesh.material.clone()
@@ -909,7 +920,7 @@ class renderModel {
 	onChangeModelMeaterial(name) {
 		const mesh = this.model.getObjectByName(name)
 		this.outlinePass.selectedObjects = [mesh]
-		store.commit('SELECT_MESH', mesh)
+		store.selectMeshAction(mesh)
 		return mesh
 	}
 
@@ -923,10 +934,11 @@ class renderModel {
 		if (intersects.length > 0) {
 			const intersectedObject = intersects[0].object
 			this.outlinePass.selectedObjects = [intersectedObject]
-			store.commit('SELECT_MESH', intersectedObject)
+			store.selectMeshAction(intersectedObject)
+
 		} else {
 			this.outlinePass.selectedObjects = []
-			store.commit('SELECT_MESH', {})
+			store.selectMeshAction({})
 		}
 	}
 	// 获取最新材质信息列表
@@ -1381,6 +1393,7 @@ class renderModel {
 		this.gridHelper.geometry.dispose()
 		this.gridHelper.material.dispose()
 		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
+		console.log(this.gridHelper)
 		this.gridHelper.position.set(x, y, z)
 		this.gridHelper.material.linewidth = 0.1
 		this.gridHelper.material.color.set(color);
@@ -1422,7 +1435,8 @@ class renderModel {
 		}
 	}
 	onSetGeometryMesh(activeGeometry, type) {
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
+
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const geometryData = Object.keys(activeGeometry).map(v => activeGeometry[v])
 		// 创建几何体
