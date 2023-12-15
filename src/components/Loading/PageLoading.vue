@@ -25,7 +25,7 @@ const props = defineProps({
   },
 });
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 #loading-mark {
   position: absolute;
   width: 100%;

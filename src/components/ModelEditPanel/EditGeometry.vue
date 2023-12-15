@@ -7,19 +7,16 @@
       <!-- 材质列表 -->
       <div class="options">
         <el-scrollbar max-height="300px">
-          <div
-            class="option"
-            :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
-            @click="onChangeMaterialType(mesh)"
-            v-for="mesh in state.modelMaterialList"
-            :key="mesh.uuid"
-          >
+          <div class="option" :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
+            @click="onChangeMaterialType(mesh)" v-for="mesh in state.modelMaterialList" :key="mesh.uuid">
             <div class="icon-name">
               {{ mesh.name }}
             </div>
             <el-space>
               <div class="check" v-show="state.selectMeshUuid == mesh.uuid">
-                <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
+                <el-icon size="20px" color="#2a3ff6">
+                  <Check />
+                </el-icon>
               </div>
               <div class="icon-delete">
                 <el-icon size="18px" color="#2a3ff6">
@@ -39,23 +36,13 @@
             <el-button type="primary" link>{{ key }} </el-button>
           </div>
           <div class="grid-silder">
-            <el-slider
-              show-input
-              v-if="typeof activeGeometry[key] == 'number'"
-              v-model="activeGeometry[key]"
-              :min="inputRange(key).min"
-              :max="inputRange(key).max"
-              :step="inputRange(key).step"
-              @input="onSetGeometry"
-            />
+            <el-slider show-input v-if="typeof activeGeometry[key] == 'number'" v-model="activeGeometry[key]"
+              :min="inputRange(key).min" :max="inputRange(key).max" :step="inputRange(key).step" @input="onSetGeometry" />
             <div v-else-if="typeof activeGeometry[key] == 'string'">
               {{ activeGeometry[key] }}
             </div>
-            <el-switch
-              @change="onSetGeometry"
-              v-else-if="typeof activeGeometry[key] == 'boolean'"
-              v-model="activeGeometry[key]"
-            />
+            <el-switch @change="onSetGeometry" v-else-if="typeof activeGeometry[key] == 'boolean'"
+              v-model="activeGeometry[key]" />
           </div>
         </div>
       </div>
@@ -64,21 +51,11 @@
   </div>
 </template>
 <script setup>
-import {
-  ref,
-  reactive,
-  computed,
-  onMounted,
-  getCurrentInstance,
-  watch,
-  toRaw,
-} from "vue";
-import { useStore } from "vuex";
+import { ref, reactive,computed, watch} from "vue";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { ElMessage } from "element-plus";
-import * as THREE from "three";
 
-const store = useStore();
-const { $bus } = getCurrentInstance().proxy;
+const store = useMeshEditStore();
 const config = reactive({
   meaterialName: null,
   type: null,
@@ -93,23 +70,15 @@ const disabled = computed(() => {
 });
 
 const state = reactive({
-  modelMaterialList: computed(() => {
-    return store.state.modelApi.modelMaterialList;
-  }),
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-  selectMeshUuid: computed(() => store.getters.selectMeshUuid),
+  modelMaterialList: computed(() => store.modelApi.modelMaterialList),
+  selectMeshUuid: computed(() => store.selectMeshUuid),
 });
 watch(
-  () => store.getters.selectMeshUuid,
+  () => store.selectMeshUuid,
   (val) => {
-    const { geometry, position, material } =
-      state.modelMaterialList.find((v) => v.uuid == val) || {};
+    const { geometry } = state.modelMaterialList.find((v) => v.uuid == val) || {};
     if (geometry) {
-      const { x, y, z } = position;
       const { type } = geometry;
-      const { color } = material;
       activeGeometry.value = {
         ...geometry.parameters,
       };
@@ -124,17 +93,18 @@ watch(
 // 选择材质
 const onChangeMaterialType = ({ name, material, geometry }) => {
   config.meaterialName = material.name;
-  state.modelApi.onChangeModelMeaterial(name);
+  store.modelApi.onChangeModelMeaterial(name);
 };
 
 //修改材质信息
 const onSetGeometry = () => {
-  state.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
+  store.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
 };
 
 // 删除材质
 const onDeleteGeometry = (uuid) => {
-  state.modelApi.onDeleteGeometryMesh(uuid);
+  store.modelApi.onDeleteGeometryMesh(uuid);
+  store.selectMeshAction({})
   ElMessage.success("删除成功");
 };
 
@@ -168,7 +138,7 @@ const inputRange = (key) => {
     };
   }
   if (
-    ["detail",'capSegments','radialSegments', "thetaStart", "depthSegments", "widthSegments", "heightSegments"].includes(
+    ["detail", 'capSegments', 'radialSegments', "thetaStart", "depthSegments", "widthSegments", "heightSegments"].includes(
       key
     )
   ) {
@@ -193,6 +163,7 @@ const inputRange = (key) => {
 .option {
   justify-content: space-between;
 }
+
 .grid-txt {
   display: flex;
   flex-wrap: wrap;

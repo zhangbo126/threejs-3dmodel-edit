@@ -66,7 +66,7 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .right-menu {
   background-color: #fff;
   border-radius: 4px;
