@@ -8,16 +8,10 @@
       </div>
       <div class="header-lr">
         <el-space>
-          <el-button
-            type="primary"
-            icon="Film"
-            @click="$router.push({ path: '/modelBase' })"
-          >
+          <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" @click="onSaveConfig"
-            >保存数据</el-button
-          >
+          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -25,12 +19,8 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
-                <el-dropdown-item @click="onExportModleFile('glb')"
-                  >导出模型(.glb)格式</el-dropdown-item
-                >
-                <el-dropdown-item @click="onExportModleFile('gltf')"
-                  >导出模型(.gltf)格式</el-dropdown-item
-                >
+                <el-dropdown-item @click="onExportModleFile('glb')">导出模型(.glb)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModleFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -54,7 +44,7 @@
       </div>
       <!-- 右侧编辑栏 -->
       <div class="edit-panel" :style="{ minWidth: '380px' }">
-        <model-edit-panel ref="editPanel" v-if="state.modelApi.model"></model-edit-panel>
+        <model-edit-panel ref="editPanel" v-if="store.modelApi.model"></model-edit-panel>
       </div>
     </div>
     <page-loading :loading="loading" :percentage="progress"></page-loading>
@@ -63,33 +53,20 @@
 
 <script setup name="modelEdit">
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import {
-  onMounted,
-  ref,
-  reactive,
-  computed,
-  getCurrentInstance,
-  onBeforeUnmount,
-} from "vue";
-import { useStore } from "vuex";
+import { onMounted, ref, getCurrentInstance, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
 import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading";
-import {
-  MODEL_PRIVEW_CONFIG,
-  MODEL_BASE_DATA,
-  MODEL_DEFAULT_CONFIG,
-} from "@/config/constant";
-const store = useStore();
+import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
+import { useMeshEditStore } from '@/store/meshEditStore'
+
+const store = useMeshEditStore();
 const router = useRouter();
 const { $bus, $local } = getCurrentInstance().proxy;
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-});
+
+
 const loading = ref(false);
 const progress = ref(0);
 const editPanel = ref(null);
@@ -97,7 +74,7 @@ const choosePanel = ref(null);
 
 // 重置相机位置
 const onResetCamera = () => {
-  state.modelApi.onResetModelCamera();
+  store.modelApi.onResetModelCamera();
 };
 // 初始化模型库数据
 const initModelBaseData = () => {
@@ -117,17 +94,17 @@ const initModelBaseData = () => {
 
 // 几何体模型拖拽结束
 const onGeometryDrop = (e) => {
-  const dragGeometryModel = state.modelApi.dragGeometryModel;
+  const dragGeometryModel = store.modelApi.dragGeometryModel;
   if (dragGeometryModel.id) {
     dragGeometryModel.clientX = e.clientX;
     dragGeometryModel.clientY = e.clientY;
-    state.modelApi.onSwitchModel(dragGeometryModel);
+    store.modelApi.onSwitchModel(dragGeometryModel);
   }
 };
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
-  modelConfig.camera = state.modelApi.onGetModelCamera();
+  modelConfig.camera = store.modelApi.onGetModelCamera();
   modelConfig.fileInfo = choosePanel.value.activeModel;
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
@@ -147,7 +124,7 @@ const onSaveConfig = () => {
   })
     .then(() => {
       const modelConfig = editPanel.value.getPanelConfig();
-      modelConfig.camera = state.modelApi.onGetModelCamera();
+      modelConfig.camera = store.modelApi.onGetModelCamera();
       modelConfig.fileInfo = choosePanel.value.activeModel;
       // 判断是否是外部模型
       if (modelConfig.fileInfo.filePath) {
@@ -161,28 +138,29 @@ const onSaveConfig = () => {
         ElMessage.warning("当前模型暂不支持“数据保存”");
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 // 下载封面
 const onDownloadCover = () => {
-  state.modelApi.onDownloadScenCover();
+  store.modelApi.onDownloadScenCover();
 };
 // 导出模型
 const onExportModleFile = (type) => {
-  state.modelApi.onExporterModel(type);
+  store.modelApi.onExporterModel(type);
 };
 
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
-  store.commit("SET_MODEL_API", modelApi);
+  store.setModelApi(modelApi)
+
   $bus.on("page-loading", (value) => {
     loading.value = value;
 
   });
   // 模型加载进度条
-  state.modelApi.onProgress((progressNum) => {
+  store.modelApi.onProgress((progressNum) => {
     progress.value = Number((progressNum / 1024 / 1024).toFixed(2));
     // console.log('模型已加载' + progress.value + 'M')
   });
@@ -190,17 +168,17 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
     progress.value = 0;
-   
+
   }
   // 初始化模型库数据
   initModelBaseData();
 });
 onBeforeUnmount(() => {
-  state.modelApi.onClearModelData();
+  store.modelApi.onClearModelData();
 });
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .model-page {
   width: 100%;
   background-color: #1b1c23;

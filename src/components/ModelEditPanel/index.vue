@@ -49,7 +49,7 @@
   </div>
 </template>
 <script setup>
-import { ref,reactive } from "vue";
+import { ref } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";

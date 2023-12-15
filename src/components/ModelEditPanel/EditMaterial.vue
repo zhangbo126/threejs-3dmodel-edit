@@ -7,18 +7,9 @@
       <div class="option">
         <el-space>
           <span>当前材质类型：</span>
-          <el-select
-            v-model="activeMeshType"
-            @change="onChangeMeshType"
-            placeholder="请选择"
-            size="small"
-          >
-            <el-option
-              v-for="item in meshTypeList"
-              :key="item.type"
-              :label="`${item.type}(${item.describe})`"
-              :value="item.type"
-            />
+          <el-select v-model="activeMeshType" @change="onChangeMeshType" placeholder="请选择" size="small">
+            <el-option v-for="item in meshTypeList" :key="item.type" :label="`${item.type}(${item.describe})`"
+              :value="item.type" />
           </el-select>
         </el-space>
       </div>
@@ -29,27 +20,22 @@
     <!-- 材质列表 -->
     <div class="options">
       <el-scrollbar max-height="200px">
-        <div
-          class="option"
-          :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
-          @click="onChangeMaterialType(mesh)"
-          v-for="mesh in state.modelMaterialList"
-          :key="mesh.uuid"
-        >
+        <div class="option" :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
+          @click="onChangeMaterialType(mesh)" v-for="mesh in state.modelMaterialList" :key="mesh.uuid">
           <el-space>
-            <el-icon
-              @click="onSetMeshVisibe(mesh)"
-              size="18"
-              color="#409eff"
-              v-if="mesh.visible"
-              ><View
-            /></el-icon>
-            <el-icon size="18" @click="onSetMeshVisibe(mesh)" v-else><Hide /></el-icon>
+            <el-icon @click="onSetMeshVisibe(mesh)" size="18" color="#409eff" v-if="mesh.visible">
+              <View />
+            </el-icon>
+            <el-icon size="18" @click="onSetMeshVisibe(mesh)" v-else>
+              <Hide />
+            </el-icon>
             <div class="icon-name">
               {{ mesh.name }}
             </div>
             <div class="check" v-show="state.selectMeshUuid == mesh.uuid">
-              <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
+              <el-icon size="20px" color="#2a3ff6">
+                <Check />
+              </el-icon>
             </div>
           </el-space>
         </div>
@@ -61,20 +47,11 @@
       <div class="option space-between">
         <el-space>
           <el-button type="primary" link>材质颜色</el-button>
-          <el-color-picker
-            color-format="hex"
-            :predefine="PREDEFINE_COLORS"
-            @change="onChangeMeaterial"
-            @active-change="activeChangeColor"
-            v-model="config.color"
-          />
+          <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="onChangeMeaterial"
+            @active-change="activeChangeColor" v-model="config.color" />
         </el-space>
         <el-space>
-          <el-tooltip
-            effect="dark"
-            content="注意：深度写入属性不支持模型“导出” "
-            placement="top"
-          >
+          <el-tooltip effect="dark" content="注意：深度写入属性不支持模型“导出” " placement="top">
             <el-icon>
               <WarnTriangleFilled :size="20" color="#ffb940" />
             </el-icon>
@@ -83,11 +60,7 @@
           <el-switch @change="onChangeMeaterial" v-model="config.depthWrite"></el-switch>
         </el-space>
         <el-space>
-          <el-tooltip
-            effect="dark"
-            content="注意：网格属性不支持模型“导出” "
-            placement="top"
-          >
+          <el-tooltip effect="dark" content="注意：网格属性不支持模型“导出” " placement="top">
             <el-icon>
               <WarnTriangleFilled :size="20" color="#ffb940" />
             </el-icon>
@@ -101,14 +74,7 @@
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            show-input
-            @input="onChangeMeaterial"
-            v-model="config.opacity"
-            :min="0"
-            :max="1"
-            :step="0.01"
-          />
+          <el-slider show-input @input="onChangeMeaterial" v-model="config.opacity" :min="0" :max="1" :step="0.01" />
         </div>
       </div>
     </div>
@@ -116,17 +82,8 @@
     <div class="options" :class="optionDisabled">
       <el-scrollbar max-height="100px">
         <el-row v-if="state.modelTextureMap">
-          <el-col
-            :span="6"
-            :style="{ textAlign: 'center' }"
-            v-for="map in state.modelTextureMap"
-            :key="map.mapId"
-          >
-            <div
-              @click="onChangeModelMap(map)"
-              class="image-box"
-              :class="activeTextureMap == map.mapId ? 'active' : ''"
-            >
+          <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in state.modelTextureMap" :key="map.mapId">
+            <div @click="onChangeModelMap(map)" class="image-box" :class="activeTextureMap == map.mapId ? 'active' : ''">
               <el-image :src="map.url" class="el-map" fit="cover" />
               <div class="select" v-if="activeTextureMap == map.mapId">
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
@@ -145,17 +102,9 @@
     <div class="options" :class="optionDisabled">
       <el-scrollbar max-height="230px">
         <el-row>
-          <el-col
-            :span="6"
-            :style="{ textAlign: 'center' }"
-            v-for="map in mapImageList"
-            :key="map.id"
-          >
-            <div
-              @click="onChangeSystemModelMap(map)"
-              class="image-box"
-              :class="activeTextureMap == map.id ? 'active' : ''"
-            >
+          <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in mapImageList" :key="map.id">
+            <div @click="onChangeSystemModelMap(map)" class="image-box"
+              :class="activeTextureMap == map.id ? 'active' : ''">
               <el-image :src="map.url" class="el-map" fit="cover" />
               <div class="select" v-if="activeTextureMap == map.id">
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
@@ -169,13 +118,13 @@
 </template>
 <script setup>
 import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
 
-const store = useStore();
+const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   meaterialName: null,
@@ -196,22 +145,14 @@ const activeMesh = reactive({
 const activeTextureMap = ref(null);
 
 const optionDisabled = computed(() => {
-  const activeMesh =
-    state.modelMaterialList.find((v) => v.uuid == state.selectMeshUuid) || {};
+  const activeMesh = state.modelMaterialList.find((v) => v.uuid == state.selectMeshUuid) || {};
   return activeMesh.uuid ? "" : "disabled";
 });
-
 const state = reactive({
-  modelMaterialList: computed(() => {
-    return store.state.modelApi.modelMaterialList;
-  }),
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-  selectMeshUuid: computed(() => store.getters.selectMeshUuid),
-  modelTextureMap: computed(() => {
-    return store.state.modelApi.modelTextureMap;
-  }),
+  modelMaterialList: computed(() => store.modelApi.modelMaterialList),
+  modelApi: computed(() => store.modelApi),
+  selectMeshUuid: computed(() => store.selectMeshUuid),
+  modelTextureMap: computed(() => store.modelApi.modelTextureMap)
 });
 
 onMounted(() => {
@@ -227,7 +168,7 @@ onMounted(() => {
 });
 
 watch(
-  () => store.getters.selectMeshUuid,
+  () => store.selectMeshUuid,
   (val) => {
     const map = state.modelMaterialList.find((v) => v.uuid == val) || {};
     activeTextureMap.value = map.mapId;
@@ -314,6 +255,7 @@ defineExpose({
 .options {
   max-width: 380px;
 }
+
 .image-box {
   width: 90px;
   height: 90px;
@@ -324,19 +266,23 @@ defineExpose({
   cursor: pointer;
   opacity: 0.6;
   position: relative;
+
   .el-map {
     padding: 6px;
   }
+
   .select {
     position: absolute;
   }
 }
+
 .not-load {
   padding: 20px 0px;
   font-size: 16px;
   color: #fff;
   text-align: center;
 }
+
 .active {
   border: 2px solid #18c174;
   opacity: 1;
