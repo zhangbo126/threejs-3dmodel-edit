@@ -13,7 +13,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
-import { ElMessage ,ElMessageBox} from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import store from '@/store'
 import TWEEN from "@tweenjs/tween.js";
@@ -100,6 +100,8 @@ class renderModel {
 		this.glowComposer
 		// 辉光渲染器
 		this.unrealBloomPass
+		// 辉光着色器
+		this.shaderPass
 		// 需要辉光的材质
 		this.glowMaterialList
 		this.materials = {}
@@ -238,27 +240,24 @@ class renderModel {
 					case 'glb':
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'fbx':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'gltf':
 						this.model = result.scene
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
 						break;
 					case 'obj':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
-						this.modelAnimation = result.animations || []
 						break;
 					default:
 						break;
 				}
 				this.model.decomposeName = decomposeName
+				this.modelAnimation = result.animations || []
 				this.getModelMeaterialList()
 				this.setModelPositionSize()
 				//	设置模型大小
@@ -450,27 +449,23 @@ class renderModel {
 		this.glowComposer.renderToScreen = false
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
-
-		// // 着色器
-		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
+		// 着色器
+		this.shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
 				bloomTexture: { value: this.glowComposer.renderTarget2.texture },
-				tDiffuse: {
-					value: null
-				}
+				tDiffuse: { value: null },
+				glowColor: { value: null }
 			},
 			vertexShader,
 			fragmentShader,
 			defines: {}
 		}), 'baseTexture')
 
-		shaderPass.renderToScreen = true
-		shaderPass.needsSwap = true
-		this.effectComposer.addPass(shaderPass)
-
-
-
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
+		this.shaderPass.renderToScreen = true
+		this.shaderPass.needsSwap = true
+		this.effectComposer.addPass(this.shaderPass)
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -650,6 +645,8 @@ class renderModel {
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
+		//辉光着色器
+		this.shaderPass = null
 		// 需要辉光的材质
 		this.glowMaterialList = null
 		this.materials = null
@@ -1002,22 +999,25 @@ class renderModel {
 	 * @function setModelMeshDecompose 模型拆分
 	 * @function setModelMeshDrag 模型材质可拖拽
 	 * @function getMeshDragPosition 获取模型材质位拖拽置
+	 * @function onSetFlowColor() 修改辉光颜色
 	 */
 	// 设置辉光效果
 	onSetUnrealBloomPass(config) {
-		const { glow, threshold, strength, radius, toneMappingExposure } = config
+		const { glow, threshold, strength, radius, toneMappingExposure, color } = config
 		this.glowUnrealBloomPass = glow
 		if (glow) {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
 			this.unrealBloomPass.radius = radius
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
 
 		} else {
 			this.unrealBloomPass.threshold = 0
 			this.unrealBloomPass.strength = 0
 			this.unrealBloomPass.radius = 0
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		}
 	}
 	// 模型拆分
@@ -1086,7 +1086,6 @@ class renderModel {
 			})
 		}
 	}
-
 	// 获取模型材质位拖拽置
 	getMeshDragPosition() {
 		const positonList = []
@@ -1100,7 +1099,10 @@ class renderModel {
 		})
 		return positonList
 	}
-
+	// 修改辉光颜色
+	onSetFlowColor(color) {
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
+	}
 
 
 	/**

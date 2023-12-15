@@ -85,6 +85,8 @@ class renderModel {
 		this.glowComposer
 		// 辉光渲染器
 		this.unrealBloomPass
+		// 辉光着色器
+		this.shaderPass
 		// 需要辉光的材质
 		this.glowMaterialList
 		this.materials = {}
@@ -231,10 +233,6 @@ class renderModel {
 
 		//创建辉光效果
 		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0)
-		// this.unrealBloomPass.threshold = 0
-		// this.unrealBloomPass.strength = 0
-		// this.unrealBloomPass.radius = 0
-		// this.unrealBloomPass.renderToScreen = false
 		// 辉光合成器
 		const renderTargetParameters = {
 			minFilter: THREE.LinearFilter,
@@ -248,49 +246,51 @@ class renderModel {
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
 		// 着色器
-		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
+		this.shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
 				bloomTexture: { value: this.glowComposer.renderTarget2.texture },
-				tDiffuse: {
-					value: null
-				}
+				tDiffuse: { value: null },
+				glowColor: { value: null }
 			},
 			vertexShader,
 			fragmentShader,
 			defines: {}
 		}), 'baseTexture')
 
-		shaderPass.renderToScreen = true
-		shaderPass.needsSwap = true
-		this.effectComposer.addPass(shaderPass)
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
+		this.shaderPass.renderToScreen = true
+		this.shaderPass.needsSwap = true
+		this.effectComposer.addPass(this.shaderPass)
 
 	}
 	// 加载模型
-	loadModel({ filePath, fileType, scale, map, position, decomposeName }) {
+	loadModel({ filePath, fileType, scale, map, position }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.model.decomposeName = decomposeName
 						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
-						this.modelAnimation = result.animations || []
-						this.getModelMeaterialList(map)
 						break;
 					case 'fbx':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'gltf':
 						this.model = result.scene
+						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						break;
 					case 'obj':
 						this.model = result
+						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					default:
 						break;
 				}
+				this.getModelMeaterialList(map)
+				this.modelAnimation = result.animations || []
 				this.setModelPositionSize()
 				//	设置模型大小
 				if (scale) {
@@ -302,6 +302,9 @@ class renderModel {
 					const { x, y, z } = position
 					this.model.position.set(x, y, z)
 				}
+				this.skeletonHelper.visible = false
+				this.scene.add(this.skeletonHelper)
+
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
@@ -402,6 +405,8 @@ class renderModel {
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
+		// 辉光合成器
+		this.shaderPass = null
 		// 需要辉光的材质
 		this.glowMaterialList = null
 		this.materials = null
@@ -547,19 +552,21 @@ class renderModel {
 	setModelLaterStage() {
 		const { stage } = this.config
 		if (!stage) return false
-		const { threshold, strength, radius, toneMappingExposure, meshPositonList } = stage
+		const { threshold, strength, radius, toneMappingExposure, meshPositonList ,color} = stage
 		// 设置辉光效果
 		if (stage.glow) {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
 			this.unrealBloomPass.radius = radius
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
 
 		} else {
 			this.unrealBloomPass.threshold = 0
 			this.unrealBloomPass.strength = 0
 			this.unrealBloomPass.radius = 0
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		}
 		// 模型材质位置
 		meshPositonList.forEach(v => {
@@ -737,8 +744,8 @@ class renderModel {
 		// 开启阴影
 		this.renderer.shadowMap.enabled = true;
 		// 骨骼辅助线
-		this.skeletonHelper = new THREE.SkeletonHelper(this.model)
-		this.skeletonHelper = skeletonHelper
+		// 骨骼辅助线
+		this.skeletonHelper.visible = skeletonHelper
 	}
 
 }
