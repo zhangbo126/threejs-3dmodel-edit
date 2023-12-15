@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+import piniaStore from './store/pinia'
 import ElementPlus from 'element-plus'
 // 自定义封装全局方法
 import GlobalProperties from "@/utils/globalProperties.js";
@@ -17,6 +17,6 @@ app.use(ElementPlus, { size: 'small', zIndex: 3000 })
 app.use(GlobalProperties)
 app.use(GlobalComponent)
 app.use(Directive)
-app.use(store)
+app.use(piniaStore)
 app.use(router)
 app.mount('#app')

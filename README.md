@@ -5,9 +5,9 @@
 <a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a> <a href='https://gitee.com/ZHANG_6666/Three.js3D/members'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/fork.svg?theme=dark' alt='fork'></img></a>
 
 ### 📦️ 分支介绍
-1. master: `Vue3+Vuex+Javascript` (最新的功能issues和修复的bug都在这个分支)
-2. ts-master: `Vue3+Vuex+Typescript` (master分支的typescript版本)
-3. develop: `Vue3+Vuex+Javascript` (一些不确定的功能和代码重构会在这个分支开发)
+1. master: `Vue3+Pinia+Javascript` (最新的功能issues和修复的bug都在这个分支)
+2. ts-master: `Vue3+Pinia+Typescript` (master分支的typescript版本)
+3. develop: `Vue3+Pinia+Javascript` (一些不确定的功能和代码重构会在这个分支开发)
 4. gh-pages: `git-pages 线上包分支` (忽略即可)
 
 ### 🌐 安装/启动/打包
@@ -24,7 +24,7 @@
 | ------------------- | ----- | ----------- | ------ |
 | Vue                 | 3.2.x | Axios | 1.5.0  |
 | Vite                | 4.3.x | Element-plus | 2.4.x |
-| Three               | 0.158.x | Vuex       | 4.0.x  |
+| Three               | 0.158.x | Pinia       | 2.1.x  |
 | Vue3-Draggable-Resizable| 1.6.x | Mitt     | 3.0.x |
 | 详见 `package.json` | 😁    | 🥰         | 🤗    |
 

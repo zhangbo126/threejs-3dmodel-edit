@@ -51,12 +51,11 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive,computed, getCurrentInstance, watch,} from "vue";
-import { useStore } from "vuex";
+import { ref, reactive,computed, watch} from "vue";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { ElMessage } from "element-plus";
 
-const store = useStore();
-const { $bus } = getCurrentInstance().proxy;
+const store = useMeshEditStore();
 const config = reactive({
   meaterialName: null,
   type: null,
@@ -71,23 +70,15 @@ const disabled = computed(() => {
 });
 
 const state = reactive({
-  modelMaterialList: computed(() => {
-    return store.state.modelApi.modelMaterialList;
-  }),
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-  selectMeshUuid: computed(() => store.getters.selectMeshUuid),
+  modelMaterialList: computed(() => store.modelApi.modelMaterialList),
+  selectMeshUuid: computed(() => store.selectMeshUuid),
 });
 watch(
-  () => store.getters.selectMeshUuid,
+  () => store.selectMeshUuid,
   (val) => {
-    const { geometry, position, material } =
-      state.modelMaterialList.find((v) => v.uuid == val) || {};
+    const { geometry } = state.modelMaterialList.find((v) => v.uuid == val) || {};
     if (geometry) {
-      const { x, y, z } = position;
       const { type } = geometry;
-      const { color } = material;
       activeGeometry.value = {
         ...geometry.parameters,
       };
@@ -102,17 +93,18 @@ watch(
 // 选择材质
 const onChangeMaterialType = ({ name, material, geometry }) => {
   config.meaterialName = material.name;
-  state.modelApi.onChangeModelMeaterial(name);
+  store.modelApi.onChangeModelMeaterial(name);
 };
 
 //修改材质信息
 const onSetGeometry = () => {
-  state.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
+  store.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
 };
 
 // 删除材质
 const onDeleteGeometry = (uuid) => {
-  state.modelApi.onDeleteGeometryMesh(uuid);
+  store.modelApi.onDeleteGeometryMesh(uuid);
+  store.selectMeshAction({})
   ElMessage.success("删除成功");
 };
 

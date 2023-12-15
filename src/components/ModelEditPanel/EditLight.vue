@@ -310,9 +310,9 @@
 
 <script setup>
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
-const store = useStore();
+const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   //光源平面
@@ -379,9 +379,7 @@ const planetDisabled = computed(() => {
 });
 
 const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  })
+  modelApi: computed(() => store.modelApi)
 });
 
 onMounted(() => {

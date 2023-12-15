@@ -104,28 +104,24 @@
 </template>
 <script setup>
 import { reactive, computed, getCurrentInstance, onMounted } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
 
-const store = useStore();
+const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-});
+
 const optionsDisable = computed(() => {
   const { glow } = config;
   return glow ? "" : "disabled";
 });
 
 const decomposeDisable = computed(() => {
-  const modelMaterialList = state.modelApi.modelMaterialList;
+  const modelMaterialList = store.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
   return (decomposeMesh.length <= 1) || decomposeMesh.length != modelMaterialList.length || config.modelDrag ? "disabled" : "";
 });
 const moveDisable = computed(() => {
-  const modelMaterialList = state.modelApi.modelMaterialList;
+  const modelMaterialList = store.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
   return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length ? "disabled" : "";
 });
@@ -156,26 +152,26 @@ onMounted(() => {
 });
 
 const onChangeColor = () => {
-  state.modelApi.onSetFlowColor(config.color);
+  store.modelApi.onSetFlowColor(config.color);
 };
 const activeChangeColor = (color) => {
   config.color = color
-  state.modelApi.onSetFlowColor(config.color);
+  store.modelApi.onSetFlowColor(config.color);
 };
 const onChangeFlow = () => {
-  state.modelApi.onSetUnrealBloomPass(config);
+  store.modelApi.onSetUnrealBloomPass(config);
 };
 const onChangeDecompose = () => {
-  state.modelApi.setModelMeshDecompose(config);
+  store.modelApi.setModelMeshDecompose(config);
 };
 const onChangeDrag = () => {
   config.decompose = 0;
-  state.modelApi.setModelMeshDecompose(config);
-  state.modelApi.setModelMeshDrag(config);
+  store.modelApi.setModelMeshDecompose(config);
+  store.modelApi.setModelMeshDrag(config);
 };
 const getStageConfig = () => {
   return {
-    meshPositonList: state.modelApi.getMeshDragPosition(),
+    meshPositonList: store.modelApi.getMeshDragPosition(),
     ...config,
   };
 };
