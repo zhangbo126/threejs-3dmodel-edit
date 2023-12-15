@@ -5,7 +5,7 @@
 </template>
 <script setup>
 </script>
-<style lang="less">
+<style lang="scss">
 #mesh-txt {
   position: absolute;
   display: none;

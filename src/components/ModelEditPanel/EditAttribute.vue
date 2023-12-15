@@ -164,8 +164,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, getCurrentInstance } from "vue";
-import { throttle } from "@/utils/utilityFunction";
+import { reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { PREDEFINE_COLORS } from "@/config/constant";
 import { useStore } from "vuex";
 const store = useStore();
@@ -286,6 +285,4 @@ defineExpose({
 });
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

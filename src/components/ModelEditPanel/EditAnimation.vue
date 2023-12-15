@@ -7,19 +7,16 @@
     <!-- 动画列表 -->
     <div class="options" :class="optionDisabled">
       <el-scrollbar max-height="250px" v-if="state.modelAnimation.length">
-        <div
-          class="option"
-          :class="config.animationName == animation.name ? 'option-active' : ''"
-          @click="onChangeAnimationType(animation)"
-          v-for="animation in state.modelAnimation"
-          :key="animation.name"
-        >
+        <div class="option" :class="config.animationName == animation.name ? 'option-active' : ''"
+          @click="onChangeAnimationType(animation)" v-for="animation in state.modelAnimation" :key="animation.name">
           <el-space>
             <div class="icon-name">
               {{ animation.name }}
             </div>
             <div class="check" v-show="config.animationName == animation.name">
-              <el-icon size="20px" color="#2a3ff6"><Check /></el-icon>
+              <el-icon size="20px" color="#2a3ff6">
+                <Check />
+              </el-icon>
             </div>
           </el-space>
         </div>
@@ -33,7 +30,9 @@
     <div class="options" :class="optionDisabled">
       <div class="option">
         <el-space>
-          <el-icon><Switch /></el-icon>
+          <el-icon>
+            <Switch />
+          </el-icon>
           <span> 循环方式 </span>
         </el-space>
       </div>
@@ -46,35 +45,25 @@
       </div>
       <div class="option">
         <el-space>
-          <el-icon><VideoPlay /></el-icon>
+          <el-icon>
+            <VideoPlay />
+          </el-icon>
           <span> 播放速度 </span>
         </el-space>
       </div>
       <div class="option">
-        <el-slider
-          show-input
-          v-model="config.timeScale"
-          @change="onUplateAnimation"
-          :step="0.01"
-          :min="0"
-          :max="1"
-        />
+        <el-slider show-input v-model="config.timeScale" @change="onUplateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
       <div class="option">
         <el-space>
-          <el-icon><Sort /></el-icon>
+          <el-icon>
+            <Sort />
+          </el-icon>
           <span> 动作幅度 </span>
         </el-space>
       </div>
       <div class="option">
-        <el-slider
-          show-input
-          v-model="config.weight"
-          @change="onUplateAnimation"
-          :step="0.01"
-          :min="0"
-          :max="1"
-        />
+        <el-slider show-input v-model="config.weight" @change="onUplateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
     </div>
     <!-- 轴动画 -->
@@ -95,25 +84,21 @@
       </div>
       <div class="option" :class="optionRotation">
         <el-space>
-          <el-icon><VideoPlay /></el-icon>
+          <el-icon>
+            <VideoPlay />
+          </el-icon>
           <span> 播放速度 </span>
         </el-space>
       </div>
       <div class="option" :class="optionRotation">
-        <el-slider
-          @input="onRotationAnimation"
-          show-input
-          v-model="config.rotationSpeed"
-          :step="0.01"
-          :min="1"
-          :max="10"
-        />
+        <el-slider @input="onRotationAnimation" show-input v-model="config.rotationSpeed" :step="0.01" :min="1"
+          :max="10" />
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, onMounted, getCurrentInstance } from "vue";
+import { reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -157,16 +142,16 @@ onMounted(() => {
       const animationName = state.modelAnimation[0].name;
       config.animationName = animationName
     }
-      // 重置动画数据
-       Object.assign(config, {
-        visible: false,
-        loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
-        timeScale: 1, // 播放速度
-        weight: 1, // 动作幅度
-        rotationVisible: false, //轴动画开关
-        rotationType: "y", // 轴类型
-        rotationSpeed: 1, // 旋转速度
-      });
+    // 重置动画数据
+    Object.assign(config, {
+      visible: false,
+      loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
+      timeScale: 1, // 播放速度
+      weight: 1, // 动作幅度
+      rotationVisible: false, //轴动画开关
+      rotationType: "y", // 轴类型
+      rotationSpeed: 1, // 旋转速度
+    });
   });
 });
 

@@ -8,16 +8,10 @@
       </div>
       <div class="header-lr">
         <el-space>
-          <el-button
-            type="primary"
-            icon="Film"
-            @click="$router.push({ path: '/modelBase' })"
-          >
+          <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" @click="onSaveConfig"
-            >保存数据</el-button
-          >
+          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -25,12 +19,8 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
-                <el-dropdown-item @click="onExportModleFile('glb')"
-                  >导出模型(.glb)格式</el-dropdown-item
-                >
-                <el-dropdown-item @click="onExportModleFile('gltf')"
-                  >导出模型(.gltf)格式</el-dropdown-item
-                >
+                <el-dropdown-item @click="onExportModleFile('glb')">导出模型(.glb)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModleFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -63,14 +53,7 @@
 
 <script setup name="modelEdit">
 import { ModelEditPanel, ModelChoose } from "@/components/index";
-import {
-  onMounted,
-  ref,
-  reactive,
-  computed,
-  getCurrentInstance,
-  onBeforeUnmount,
-} from "vue";
+import { onMounted, ref, reactive, computed, getCurrentInstance, onBeforeUnmount, } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -161,7 +144,7 @@ const onSaveConfig = () => {
         ElMessage.warning("当前模型暂不支持“数据保存”");
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 // 下载封面
@@ -190,7 +173,7 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
     progress.value = 0;
-   
+
   }
   // 初始化模型库数据
   initModelBaseData();
@@ -200,7 +183,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .model-page {
   width: 100%;
   background-color: #1b1c23;

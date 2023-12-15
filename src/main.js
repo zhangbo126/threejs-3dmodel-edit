@@ -11,7 +11,7 @@ import GlobalComponent from '@/utils/globalComponent'
 import Directive from "@/utils/directive.js";
 import 'element-plus/theme-chalk/src/index.scss'
 import 'default-passive-events'	
-import '@/style/index.less'
+import '@/style/index.scss'
 const app = createApp(App)
 app.use(ElementPlus, { size: 'small', zIndex: 3000 })
 app.use(GlobalProperties)

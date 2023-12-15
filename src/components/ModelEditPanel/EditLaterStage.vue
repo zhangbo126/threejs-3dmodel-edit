@@ -103,7 +103,7 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, getCurrentInstance, onMounted } from "vue";
+import { reactive, computed, getCurrentInstance, onMounted } from "vue";
 import { useStore } from "vuex";
 import { PREDEFINE_COLORS } from "@/config/constant";
 
@@ -139,7 +139,7 @@ const config = reactive({
   decompose: 0,
   modelDrag: false,
   toneMappingExposure: 2,
-  color:''
+  color: ''
 });
 onMounted(() => {
   $bus.on("model-update", () => {
