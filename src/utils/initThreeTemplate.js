@@ -184,6 +184,10 @@ class renderModel {
 		this.controls.update()
 		// 将不需要处理辉光的材质进行存储备份
 		this.scene.traverse((v) => {
+			if (v instanceof THREE.GridHelper) {
+				this.materials.gridHelper = v.material
+				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
+			}
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
 				v.background = null
@@ -199,6 +203,10 @@ class renderModel {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
 				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.GridHelper) {
+				v.material = this.materials.gridHelper
+				delete this.materials.gridHelper
 			}
 			if (v instanceof THREE.Scene) {
 				v.background = this.materials.scene
@@ -552,7 +560,7 @@ class renderModel {
 	setModelLaterStage() {
 		const { stage } = this.config
 		if (!stage) return false
-		const { threshold, strength, radius, toneMappingExposure, meshPositonList ,color} = stage
+		const { threshold, strength, radius, toneMappingExposure, meshPositonList, color } = stage
 		// 设置辉光效果
 		if (stage.glow) {
 			this.unrealBloomPass.threshold = threshold
