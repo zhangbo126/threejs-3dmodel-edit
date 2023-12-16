@@ -1393,7 +1393,6 @@ class renderModel {
 		this.gridHelper.geometry.dispose()
 		this.gridHelper.material.dispose()
 		this.gridHelper = new THREE.GridHelper(size, divisions, color, color);
-		console.log(this.gridHelper)
 		this.gridHelper.position.set(x, y, z)
 		this.gridHelper.material.linewidth = 0.1
 		this.gridHelper.material.color.set(color);
