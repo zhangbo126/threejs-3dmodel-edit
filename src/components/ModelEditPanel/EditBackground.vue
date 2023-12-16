@@ -94,10 +94,10 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
 import { backgrundList, viewImageList } from "@/config/model";
-const store = useStore();
+const store = useMeshEditStore();
 const config = reactive({
   visible: true,
   type: 3, //1 颜色 2 图片  3全景图
@@ -105,30 +105,28 @@ const config = reactive({
   viewImg: require("@/assets/image/view-4.png"),
   color: "#000",
 });
+
 const activeBackgroundId = ref(3);
 const activeViewImageId = ref(3);
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-});
+
 const optionsDisable = computed(() => {
   const { visible } = config;
   return visible ? "" : "disabled";
 });
+
 const predefineColors = PREDEFINE_COLORS;
 //切换类型
 const onChangeType = (type: number) => {
   config.type = type;
   switch (type) {
     case 1:
-      state.modelApi.onSetSceneColor(config.color);
+      store.modelApi.onSetSceneColor(config.color);
       break;
     case 2:
-      state.modelApi.onSetSceneImage(config.image);
+      store.modelApi.onSetSceneImage(config.image);
       break;
     case 3:
-      state.modelApi.onSetSceneViewImage(config.viewImg);
+      store.modelApi.onSetSceneViewImage(config.viewImg);
       break;
     default:
       break;
@@ -139,37 +137,37 @@ const onChangeImage = (image: { id: number, url: string }) => {
   const { id, url } = image
   config.image = url;
   activeBackgroundId.value = id;
-  state.modelApi.onSetSceneImage(url);
+  store.modelApi.onSetSceneImage(url);
 };
 //选择全景图
 const onChangeViewImage = (image: { id: number, url: string }) => {
   const { id, url } = image
   config.viewImg = url;
   activeViewImageId.value = id;
-  state.modelApi.onSetSceneViewImage(url);
+  store.modelApi.onSetSceneViewImage(url);
 };
 // 颜色面板值发生变化
 const activeChangeColor = (color: string) => {
   config.color = color;
-  state.modelApi.onSetSceneColor(config.color);
+  store.modelApi.onSetSceneColor(config.color);
 };
 //选择颜色
 const onChangeColor = () => {
-  state.modelApi.onSetSceneColor(config.color);
+  store.modelApi.onSetSceneColor(config.color);
 };
 
 const onChangeBgSwitch = () => {
   const { type, visible, image, viewImg } = config;
-  if (!visible) return state.modelApi.onSetSceneColor("#000");
+  if (!visible) return store.modelApi.onSetSceneColor("#000");
   switch (type) {
     case 1:
-      state.modelApi.onSetSceneColor(config.color);
+      store.modelApi.onSetSceneColor(config.color);
       break;
     case 2:
-      state.modelApi.onSetSceneImage(image);
+      store.modelApi.onSetSceneImage(image);
       break;
     case 3:
-      state.modelApi.onSetSceneViewImage(viewImg);
+      store.modelApi.onSetSceneViewImage(viewImg);
       break;
     default:
       break;

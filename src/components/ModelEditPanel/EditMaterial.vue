@@ -118,13 +118,13 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
 
-const store = useStore();
+const store = useMeshEditStore();
 const { $bus } = (getCurrentInstance() as any).proxy;
 const config = reactive({
   meaterialName: null,
@@ -145,23 +145,17 @@ const activeMesh = reactive({
 const activeTextureMap = ref(null);
 
 const optionDisabled = computed(() => {
-  const activeMesh =
-    state.modelMaterialList.find((v: { uuid: any; }) => v.uuid == state.selectMeshUuid) || {};
+  const activeMesh = state.modelMaterialList.find((v: any) => v.uuid == state.selectMeshUuid) || {};
   return activeMesh.uuid ? "" : "disabled";
 });
 
 const state = reactive({
-  modelMaterialList: computed(() => {
-    return store.state.modelApi.modelMaterialList;
-  }),
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-  selectMeshUuid: computed(() => store.getters.selectMeshUuid),
-  modelTextureMap: computed(() => {
-    return store.state.modelApi.modelTextureMap;
-  }),
+  modelMaterialList: computed(() => store.modelApi.modelMaterialList),
+  modelApi: computed(() => store.modelApi),
+  selectMeshUuid: computed(() => store.selectMeshUuid),
+  modelTextureMap: computed(() => store.modelApi.modelTextureMap)
 });
+
 
 onMounted(() => {
   $bus.on("model-update", () => {
@@ -175,10 +169,9 @@ onMounted(() => {
   });
 });
 
-watch(
-  () => store.getters.selectMeshUuid,
+watch(() => store.selectMeshUuid,
   (val) => {
-    const map = state.modelMaterialList.find((v: { uuid: any; }) => v.uuid == val) || {};
+    const map = state.modelMaterialList.find((v: any) => v.uuid == val) || {};
     activeTextureMap.value = map.mapId;
 
     if (map.mapId) {
@@ -195,7 +188,7 @@ watch(
 
 // 切换材质类型
 const onChangeMeshType = (e: string) => {
-  const activeMesh = meshTypeList.find((v: any) => v.type == e);
+  const activeMesh = meshTypeList.find((v: string) => v.type == e);
   state.modelApi.onChangeModelMeshType(activeMesh);
 };
 

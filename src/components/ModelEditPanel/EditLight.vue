@@ -310,9 +310,9 @@
 
 <script setup lang="ts">
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
-const store = useStore();
+const store = useMeshEditStore();
 const { $bus } = (getCurrentInstance() as any).proxy;
 const config = reactive({
   //光源平面
@@ -378,11 +378,7 @@ const planetDisabled = computed(() => {
   return planeGeometry ? "" : "disabled";
 });
 
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  })
-});
+
 
 onMounted(() => {
   $bus.on("model-update", () => {
@@ -432,59 +428,59 @@ onMounted(() => {
 
 const changeAmbientLightColor = (ambientLightColor: string) => {
   config.ambientLightColor = ambientLightColor;
-  state.modelApi.onSetModelAmbientLight(config);
+  store.modelApi.onSetModelAmbientLight(config);
 };
 
 // 设置环境光
 const onChangeAmbientLight = () => {
-  state.modelApi.onSetModelAmbientLight(config);
+  store.modelApi.onSetModelAmbientLight(config);
 };
 
 const changeDirectionalLightColor = (directionalLightColor: string) => {
   config.directionalLightColor = directionalLightColor;
-  state.modelApi.onSetModelDirectionalLight(config);
+  store.modelApi.onSetModelDirectionalLight(config);
 };
 
 // 设置平行光
 const onChangeDirectionalLight = () => {
   if (config.directionalLight) {
     config.planeGeometry = true;
-    state.modelApi.onSetModelPlaneGeometry(config);
+    store.modelApi.onSetModelPlaneGeometry(config);
   }
-  state.modelApi.onSetModelDirectionalLight(config);
+  store.modelApi.onSetModelDirectionalLight(config);
 };
 
 const changePointLightColor = (pointLightColor: string) => {
   config.pointLightColor = pointLightColor;
-  state.modelApi.onSetModelPointLight(config);
+  store.modelApi.onSetModelPointLight(config);
 };
 
 // 设置点光源
 const onChangePointLight = () => {
-  state.modelApi.onSetModelPointLight(config);
+  store.modelApi.onSetModelPointLight(config);
 };
 
 // 设置聚颜色
 const changeSpotLightColor = (spotLightColor: string) => {
   config.spotLightColor = spotLightColor;
-  state.modelApi.onSetModelSpotLight(config);
+  store.modelApi.onSetModelSpotLight(config);
 };
 // 设置聚光灯
 const onChangeSpotLight = () => {
   if (config.spotLight) {
     config.planeGeometry = true;
-    state.modelApi.onSetModelPlaneGeometry(config);
+    store.modelApi.onSetModelPlaneGeometry(config);
   }
-  state.modelApi.onSetModelSpotLight(config);
+  store.modelApi.onSetModelSpotLight(config);
 };
 
 const changePlaneGeometryColor = (planeColor: string) => {
   config.planeColor = planeColor;
-  state.modelApi.onSetModelPlaneGeometry(config);
+  store.modelApi.onSetModelPlaneGeometry(config);
 };
 // 设置模型平面
 const onChangePlaneGeometry = () => {
-  state.modelApi.onSetModelPlaneGeometry(config);
+  store.modelApi.onSetModelPlaneGeometry(config);
 };
 
 defineExpose({

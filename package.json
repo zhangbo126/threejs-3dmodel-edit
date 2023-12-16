@@ -8,12 +8,13 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.4.1",
+    "@element-plus/icons-vue": "^2.3.1",
     "@tweenjs/tween.js": "^18.5.0",
     "core-js": "^3.8.3",
     "default-passive-events": "^2.0.0",
     "element-plus": "^2.4.2",
     "mitt": "^3.0.0",
+    "pinia": "^2.1.7",
     "three": "^0.158.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",

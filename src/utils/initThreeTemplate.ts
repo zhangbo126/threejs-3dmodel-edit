@@ -56,6 +56,7 @@ class renderModel {
 	materials: { [key: string]: any }
 	onWindowResizesListener: any
 	onMouseMoveListener: any
+	shaderPass: any
 	constructor(config: any, elementId: string) {
 		this.config = config
 		this.container = document.querySelector('#' + elementId)
@@ -118,6 +119,8 @@ class renderModel {
 		this.glowComposer
 		// 辉光渲染器
 		this.unrealBloomPass
+		// 辉光着色器
+		this.shaderPass
 		// 需要辉光的材质
 		this.glowMaterialList
 		this.materials = {}
@@ -214,7 +217,12 @@ class renderModel {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		this.controls.update()
 		// 将不需要处理辉光的材质进行存储备份
-		this.scene.traverse((v: { background: null; name: any; isMesh: any; uuid: string | number; material: THREE.MeshBasicMaterial }) => {
+		this.scene.traverse((v: any) => {
+			if (v instanceof THREE.GridHelper) {
+				this.materials.gridHelper = v.material
+				v.material = new THREE.LineBasicMaterial({ color: 'black' })
+			}
+
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
 				v.background = null
@@ -230,6 +238,10 @@ class renderModel {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
 				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.GridHelper) {
+				v.material = this.materials.gridHelper
+				delete this.materials.gridHelper
 			}
 			if (v instanceof THREE.Scene) {
 				v.background = this.materials.scene
@@ -264,10 +276,6 @@ class renderModel {
 
 		//创建辉光效果
 		this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0)
-		// this.unrealBloomPass.threshold = 0
-		// this.unrealBloomPass.strength = 0
-		// this.unrealBloomPass.radius = 0
-		// this.unrealBloomPass.renderToScreen = false
 		// 辉光合成器
 		const renderTargetParameters = {
 			minFilter: THREE.LinearFilter,
@@ -281,23 +289,22 @@ class renderModel {
 		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
 		this.glowComposer.addPass(this.unrealBloomPass)
 		// 着色器
-		let shaderPass = new ShaderPass(new THREE.ShaderMaterial({
+		this.shaderPass = new ShaderPass(new THREE.ShaderMaterial({
 			uniforms: {
 				baseTexture: { value: null },
 				bloomTexture: { value: this.glowComposer.renderTarget2.texture },
-				tDiffuse: {
-					value: null
-				}
+				tDiffuse: { value: null },
+				glowColor: { value: null }
 			},
 			vertexShader,
 			fragmentShader,
 			defines: {}
 		}), 'baseTexture')
 
-		shaderPass.renderToScreen = true
-		shaderPass.needsSwap = true
-		this.effectComposer.addPass(shaderPass)
-
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
+		this.shaderPass.renderToScreen = true
+		this.shaderPass.needsSwap = true
+		this.effectComposer.addPass(this.shaderPass)
 	}
 	// 加载模型
 	loadModel(modelFile: SetModelType) {
@@ -441,6 +448,8 @@ class renderModel {
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
+		// 辉光合成器
+		this.shaderPass = null
 		// 需要辉光的材质
 		this.glowMaterialList = null
 		this.materials = {}
@@ -586,21 +595,23 @@ class renderModel {
 	}
 	// 设置辉光和模型操作数据回填
 	setModelLaterStage() {
-		const { stage } = this.config
+		const { stage } = this.config as any
 		if (!stage) return false
-		const { threshold, strength, radius, toneMappingExposure, meshPositonList } = stage
+		const { threshold, strength, radius, toneMappingExposure, meshPositonList, color } = stage
 		// 设置辉光效果
 		if (stage.glow) {
 			this.unrealBloomPass.threshold = threshold
 			this.unrealBloomPass.strength = strength
 			this.unrealBloomPass.radius = radius
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
 
 		} else {
 			this.unrealBloomPass.threshold = 0
 			this.unrealBloomPass.strength = 0
 			this.unrealBloomPass.radius = 0
 			this.renderer.toneMappingExposure = toneMappingExposure
+			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		}
 		// 模型材质位置
 		meshPositonList.forEach((v: { name?: any; x?: any; y?: any; z?: any }) => {

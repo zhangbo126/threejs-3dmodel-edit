@@ -13,13 +13,13 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox, MessageParamsWithType } from 'element-plus';
 import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import TWEEN from "@tweenjs/tween.js";
-import store from '@/store'
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant'
 import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/types/renderOptions'
-
+const store = useMeshEditStore();
 
 class renderModel {
 	container: any
@@ -236,6 +236,11 @@ class renderModel {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		// 将不需要处理辉光的材质进行存储备份
 		this.scene.traverse((v: any) => {
+			if (v instanceof THREE.GridHelper) {
+				this.materials.gridHelper = v.material
+				v.material = new THREE.LineBasicMaterial({ color: 'black' })
+			}
+	
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
 				v.background = null
@@ -252,6 +257,10 @@ class renderModel {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
 				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.GridHelper) {
+				v.material = this.materials.gridHelper
+				delete this.materials.gridHelper
 			}
 			if (v instanceof THREE.Scene) {
 				v.background = this.materials.scene
@@ -545,6 +554,7 @@ class renderModel {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
+					this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
@@ -588,7 +598,7 @@ class renderModel {
 			onlyVisible: true, //是否只导出可见物体
 			includeCustomExtensions: true,
 		}
-		exporter.parse(this.scene, function (result) {
+		exporter.parse(this.scene, function (result: any) {
 			if (result instanceof ArrayBuffer) {
 				// 将结果保存为GLB二进制文件
 				saveArrayBuffer(result, `${new Date().toLocaleString()}.glb`);
@@ -619,7 +629,7 @@ class renderModel {
 				URL.revokeObjectURL(url);
 				ElMessage.success('导出成功')
 			}
-		}, (err) => {
+		}, (err: MessageParamsWithType) => {
 			ElMessage.error(err)
 		}, options);
 	}
@@ -930,7 +940,7 @@ class renderModel {
 	// 设置材质属性
 	onSetModelMaterial(config: any) {
 		const { color, wireframe, depthWrite, opacity } = JSON.parse(JSON.stringify(config))
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		if (mesh && mesh.material) {
 			const { name, map } = mesh.material
@@ -948,7 +958,7 @@ class renderModel {
 	// 设置模型贴图（模型自带）
 	onSetModelMap(modelMap: OnSetModelMapType) {
 		const { material, mapId, meshName } = modelMap
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		mesh.material = material.clone()
 		mesh.mapId = mapId
@@ -958,7 +968,7 @@ class renderModel {
 	// 设置模型贴图（系统贴图）
 	onSetSystemModelMap(map: OnSetSystemModelMapType) {
 		const { id, url } = map
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const mapTexture = new THREE.TextureLoader().load(url)
 		const newMaterial = mesh.material.clone()
@@ -972,7 +982,7 @@ class renderModel {
 	onChangeModelMeaterial(name: any) {
 		const mesh = this.model.getObjectByName(name)
 		this.outlinePass.selectedObjects = [mesh]
-		store.commit('SELECT_MESH', mesh)
+		store.selectMeshAction(mesh)
 		return mesh
 	}
 
@@ -983,14 +993,14 @@ class renderModel {
 		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
 		this.raycaster.setFromCamera(this.mouse, this.camera)
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => (item.object as THREE.Mesh).type == 'Mesh')
+		const intersects = this.raycaster.intersectObjects(this.scene.children).filter((item: { object: any }) => item.object.isMesh)
 		if (intersects.length > 0) {
 			const intersectedObject = intersects[0].object
 			this.outlinePass.selectedObjects = [intersectedObject]
-			store.commit('SELECT_MESH', intersectedObject)
+			store.selectMeshAction(intersectedObject)
 		} else {
 			this.outlinePass.selectedObjects = []
-			store.commit('SELECT_MESH', {})
+			store.selectMeshAction({})
 		}
 	}
 	// 获取最新材质信息列表
@@ -1501,7 +1511,7 @@ class renderModel {
 		}
 	}
 	onSetGeometryMesh(activeGeometry: { [x: string]: any }, type: string | number) {
-		const uuid = store.state.selectMesh.uuid
+		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const geometryData = Object.keys(activeGeometry).map(v => activeGeometry[v])
 		// 创建几何体

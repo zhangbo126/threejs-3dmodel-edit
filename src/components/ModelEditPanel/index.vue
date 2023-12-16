@@ -25,13 +25,13 @@
       <div v-show="activeTab == 'EditLaterStage'">
         <edit-later-stage ref="stage"></edit-later-stage>
       </div>
-      <!-- 动画 -->
-      <div v-show="activeTab == 'EditAnimation'">
-        <edit-animation ref="animation"></edit-animation>
-      </div>
       <!-- 灯光 -->
       <div v-show="activeTab == 'EditLight'">
         <edit-light ref="light"></edit-light>
+      </div>
+      <!-- 动画 -->
+      <div v-show="activeTab == 'EditAnimation'">
+        <edit-animation ref="animation"></edit-animation>
       </div>
       <!-- 属性 -->
       <div v-show="activeTab == 'EditAttribute'">

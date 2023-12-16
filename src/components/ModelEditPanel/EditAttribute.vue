@@ -166,8 +166,8 @@
 <script setup lang="ts">
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { PREDEFINE_COLORS } from "@/config/constant";
-import { useStore } from "vuex";
-const store = useStore();
+import { useMeshEditStore } from '@/store/meshEditStore'
+const store = useMeshEditStore()
 const { $bus } = (getCurrentInstance() as any).proxy;
 const config = reactive({
   visible: true,
@@ -198,11 +198,7 @@ const axesDisabled = computed(() => {
   const { visible, axesHelper } = config;
   return axesHelper && visible ? "" : "disabled";
 });
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-});
+
 onMounted(() => {
   $bus.on("model-update", () => {
     // 重置动画数据
@@ -228,47 +224,47 @@ const onChangeAttributeSwitch = () => { };
 // 设置模型轴角度
 const onSetRotateOnAxis = (type: any, direction: string) => {
   const flag = direction == "right" ? true : false;
-  state.modelApi.onSetModelRotateOnAxis(type, flag)
+  store.modelApi.onSetModelRotateOnAxis(type, flag)
 };
 // 重置模型角度
 const onResultRotate = () => {
-  state.modelApi.onResultModelRotateOnAxis();
+  store.modelApi.onResultModelRotateOnAxis();
 };
 
 // 设置模型位置
 const onSetPosition = () => {
-  state.modelApi.onSetModelPosition(config);
+  store.modelApi.onSetModelPosition(config);
 };
 // 重置模型位置
 const onResultPosition = () => {
   config.positionX = 0;
   config.positionY = -0.5;
   config.positionZ = 0;
-  state.modelApi.onResultModelPosition(config);
+  store.modelApi.onResultModelPosition(config);
 };
 
 const onSetModelHelper = () => {
-  state.modelApi.onSetModelHelper(config.skeletonHelper);
+  store.modelApi.onSetModelHelper(config.skeletonHelper);
 };
 const activeChangeColor = (color: string) => {
   config.color = color;
-  state.modelApi.onSetModelGridHelper(config);
+  store.modelApi.onSetModelGridHelper(config);
 };
 // 设置网格辅助线位置/颜色
 const onChangeGridHelper = () => {
-  state.modelApi.onSetModelGridHelper(config);
+  store.modelApi.onSetModelGridHelper(config);
 };
 // 设置网格数量大小
 const onChangeGridHelperSize = () => {
-  state.modelApi.onSetModelGridHelperSize(config);
+  store.modelApi.onSetModelGridHelperSize(config);
 };
 
 //设置坐标轴辅助线
 const onChangeAxesHelper = () => {
-  state.modelApi.onSetModelAxesHelper(config);
+  store.modelApi.onSetModelAxesHelper(config);
 };
 const getAttrbuteConfig = () => {
-  const { x, y, z } = state.modelApi.model.rotation
+  const { x, y, z } = store.modelApi.model.rotation
   let rotationX = x
   let rotationY = y
   let rotationZ = z
@@ -277,7 +273,6 @@ const getAttrbuteConfig = () => {
     rotationX,
     rotationY,
     rotationZ,
-
   }
 }
 defineExpose({

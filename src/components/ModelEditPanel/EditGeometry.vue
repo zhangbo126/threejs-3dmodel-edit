@@ -52,10 +52,10 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, computed, watch, Ref } from "vue";
-import { useStore } from "vuex";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { ElMessage } from "element-plus";
 
-const store = useStore();
+const store = useMeshEditStore();
 const config = reactive({
   meaterialName: null,
   type: null,
@@ -71,15 +71,12 @@ const disabled = computed(() => {
 
 const state = reactive({
   modelMaterialList: computed(() => {
-    return store.state.modelApi.modelMaterialList;
+    return store.modelApi.modelMaterialList;
   }),
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-  selectMeshUuid: computed(() => store.getters.selectMeshUuid),
+  selectMeshUuid: computed(() => store.selectMeshUuid),
 });
 watch(
-  () => store.getters.selectMeshUuid,
+  () => store.selectMeshUuid,
   (val) => {
     const { geometry } = state.modelMaterialList.find((v: { uuid: any; }) => v.uuid == val) || {};
     if (geometry) {
@@ -99,17 +96,18 @@ watch(
 const onChangeMaterialType = (mesh: { name: string, material: any }) => {
   const { name, material } = mesh
   config.meaterialName = material.name;
-  state.modelApi.onChangeModelMeaterial(name);
+  store.modelApi.onChangeModelMeaterial(name);
 };
 
 //修改材质信息
 const onSetGeometry = () => {
-  state.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
+  store.modelApi.onSetGeometryMesh(activeGeometry.value, config.type);
 };
 
 // 删除材质
 const onDeleteGeometry = (uuid: string) => {
-  state.modelApi.onDeleteGeometryMesh(uuid);
+  store.modelApi.onDeleteGeometryMesh(uuid);
+  store.selectMeshAction({})
   ElMessage.success("删除成功");
 };
 
@@ -120,20 +118,8 @@ const inputRange = (key: string) => {
     step: 0.01,
   };
   if (
-    [
-      "width",
-      "height",
-      "radius",
-      "length",
-      "thetaLength",
-      "radiusTop",
-      "innerRadius",
-      "radiusBottom",
-      "q",
-      "outerRadius",
-      "arc",
-      "tube",
-      "p",
+    ["width", "height", "radius", "length", "thetaLength", "radiusTop", "innerRadius", 
+      "radiusBottom", "q",  "outerRadius", "arc","tube",  "p", 
     ].includes(key)
   ) {
     range = {

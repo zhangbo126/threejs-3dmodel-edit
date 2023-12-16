@@ -99,8 +99,8 @@
 </template>
 <script setup lang="ts">
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
-import { useStore } from "vuex";
-const store = useStore();
+import { useMeshEditStore } from '@/store/meshEditStore'
+const store = useMeshEditStore();
 const { $bus } = (getCurrentInstance() as any).proxy;
 const config = reactive({
   visible: false,
@@ -120,13 +120,10 @@ const optionRotation = computed(() => {
 });
 
 const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
   // 模型动画
   modelAnimation: computed(() => {
-    if (store.state.modelApi) {
-      return store.state.modelApi.modelAnimation;
+    if (store.modelApi) {
+      return store.modelApi.modelAnimation;
     }
     return [];
   }),
@@ -161,27 +158,27 @@ const onChangeAnimationSwitch = () => {
   if (visible) {
     onUplateAnimation();
   } else {
-    state.modelApi.onClearAnimation();
+    store.modelApi.onClearAnimation();
   }
 };
 // 选择动画
 const onChangeAnimationType = (animation: { name: any; }) => {
   const { name } = animation
   config.animationName = name;
-  state.modelApi.onStartModelAnimaion(config);
+  store.modelApi.onStartModelAnimaion(config);
 };
 // 更新模型状态
 const onUplateAnimation = () => {
-  state.modelApi.onStartModelAnimaion(config);
+  store.modelApi.onStartModelAnimaion(config);
 };
 
 // 设置模型轴动画
 const onRotationAnimation = () => {
-  state.modelApi.onSetRotation(config);
+  store.modelApi.onSetRotation(config);
 };
 // 设置模型轴动画类型
 const onRotationType = () => {
-  state.modelApi.onSetRotationType(config);
+  store.modelApi.onSetRotationType(config);
 };
 
 defineExpose({

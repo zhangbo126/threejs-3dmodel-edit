@@ -44,7 +44,7 @@
       </div>
       <!-- 右侧编辑栏 -->
       <div class="edit-panel" :style="{ minWidth: '380px' }">
-        <model-edit-panel ref="editPanel" v-if="state.modelApi.model"></model-edit-panel>
+        <model-edit-panel ref="editPanel" v-if="store.modelApi.model"></model-edit-panel>
       </div>
     </div>
     <page-loading :loading="loading" :percentage="progress"></page-loading>
@@ -52,27 +52,15 @@
 </template>
 <script setup lang="ts" name="modelEdit">
 import { ModelChoose, ModelEditPanel } from "@/components/index";
-import {
-  onMounted,
-  ref,
-  Ref,
-  reactive,
-  computed,
-  getCurrentInstance,
-  onBeforeUnmount,
-} from "vue";
-import { useStore } from "vuex";
+import { onMounted, ref, Ref, getCurrentInstance, onBeforeUnmount, } from "vue";
+import { useMeshEditStore } from '@/store/meshEditStore'
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "./renderModel";
 import { modelList } from "@/config/model";
 import { pageEnums } from '@/enums/pageEnums'
 import PageLoading from "@/components/Loading/PageLoading.vue";
-import {
-  MODEL_PRIVEW_CONFIG,
-  MODEL_BASE_DATA,
-  MODEL_DEFAULT_CONFIG,
-} from "@/config/constant";
+import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
 import { StorageType, BusType } from "@/types/typeOptions";
 
 interface getCurrentInstanceOptions {
@@ -80,16 +68,11 @@ interface getCurrentInstanceOptions {
   $local: StorageType;
 }
 
-const store = useStore();
+const store = useMeshEditStore();
 const router = useRouter();
-const { $bus, $local } = (getCurrentInstance()!
-  .proxy as unknown) as getCurrentInstanceOptions;
+const { $bus, $local } = (getCurrentInstance()!.proxy as unknown) as getCurrentInstanceOptions;
 
-const state = reactive({
-  modelApi: computed(() => {
-    return store.state.modelApi;
-  }),
-});
+
 const loading = ref(false);
 const progress = ref(0);
 const editPanel: Ref<any> = ref(null);
@@ -97,7 +80,7 @@ const choosePanel: Ref<any> = ref(null);
 
 // 重置相机位置
 const onResetCamera = () => {
-  state.modelApi.onResetModelCamera();
+  store.modelApi.onResetModelCamera();
 };
 // 初始化模型库数据
 const initModelBaseData = () => {
@@ -117,18 +100,18 @@ const initModelBaseData = () => {
 
 // 几何体模型拖拽结束
 const onGeometryDrop = (e: any) => {
-  const dragGeometryModel = state.modelApi.dragGeometryModel;
+  const dragGeometryModel = store.modelApi.dragGeometryModel;
   if (dragGeometryModel.id) {
     dragGeometryModel.clientX = e.clientX;
     dragGeometryModel.clientY = e.clientY;
-    state.modelApi.onSwitchModel(dragGeometryModel);
+    store.modelApi.onSwitchModel(dragGeometryModel);
   }
 };
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
 
-  modelConfig.camera = state.modelApi.onGetModelCamera();
+  modelConfig.camera = store.modelApi.onGetModelCamera();
   modelConfig.fileInfo = choosePanel.value.activeModel;
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
@@ -149,7 +132,7 @@ const onSaveConfig = () => {
     .then(() => {
       const modelConfig = editPanel.value.getPanelConfig();
 
-      modelConfig.camera = state.modelApi.onGetModelCamera();
+      modelConfig.camera = store.modelApi.onGetModelCamera();
       modelConfig.fileInfo = choosePanel.value.activeModel;
       // 判断是否是外部模型
       if (modelConfig.fileInfo.filePath) {
@@ -171,22 +154,23 @@ const onSaveConfig = () => {
 
 // 下载封面
 const onDownloadCover = () => {
-  state.modelApi.onDownloadScenCover();
+  store.modelApi.onDownloadScenCover();
 };
 // 导出模型
 const onExportModleFile = (type: string) => {
-  state.modelApi.onExporterModel(type);
+  store.modelApi.onExporterModel(type);
 };
 
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
-  store.commit("SET_MODEL_API", modelApi);
+  store.setModelApi(modelApi)
+
   $bus.on("page-loading", (value: any) => {
     loading.value = value;
   });
   // 模型加载进度条
-  state.modelApi.onProgress((progressNum: number) => {
+  store.modelApi.onProgress((progressNum: number) => {
     progress.value = Number((progressNum / 1024 / 1024).toFixed(2));
     // console.log('模型已加载' + progress.value + 'M')
   });
@@ -199,7 +183,7 @@ onMounted(async () => {
   initModelBaseData();
 });
 onBeforeUnmount(() => {
-  state.modelApi.onClearModelData();
+  store.modelApi.onClearModelData();
 });
 </script>
 <style lang="scss" scoped>
