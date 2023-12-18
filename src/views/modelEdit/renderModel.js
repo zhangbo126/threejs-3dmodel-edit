@@ -512,7 +512,7 @@ class renderModel {
 		if (!this.container) return false
 		const { clientHeight, clientWidth } = this.container
 		//调整屏幕大小
-		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
+		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
 		this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
@@ -1435,7 +1435,6 @@ class renderModel {
 	}
 	onSetGeometryMesh(activeGeometry, type) {
 		const uuid = store.selectMesh.uuid
-
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const geometryData = Object.keys(activeGeometry).map(v => activeGeometry[v])
 		// 创建几何体
