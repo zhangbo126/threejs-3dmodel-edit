@@ -97,14 +97,14 @@
           <b>{{ localModelName }}</b>
         </el-tooltip>
       </div>
-      <el-upload action="" accept=".glb,.obj,.gltf,.fbx" class="file-box" :show-file-list="false" :auto-upload="false"
+      <el-upload action="" accept=".glb,.obj,.gltf,.fbx,.stl" class="file-box" :show-file-list="false" :auto-upload="false"
         :on-change="onUpload">
         <div class="upload">
           <div class="icon">
             <el-icon :size="44">
               <Plus />
             </el-icon>
-            <div><span>请选择(目前仅支持.glb, .obj, .gltf, .fbx格式)</span></div>
+            <div><span>请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
           </div>
         </div>
       </el-upload>
