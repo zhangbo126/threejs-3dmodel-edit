@@ -260,7 +260,7 @@ onBeforeUnmount(() => {
       color: #ccc;
       display: flex;
       align-items: center;
-      height: 35px;
+      height: 33px;
       font-size: 14px;
 
       .icon-name {
