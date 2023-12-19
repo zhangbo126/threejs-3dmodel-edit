@@ -12,6 +12,8 @@
             模型库
           </el-button>
           <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
+          <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
+
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -24,7 +26,9 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
+          <el-button type="primary" icon="FullScreen" @click="onFullScreen">
+            {{ fullscreenStatus ? '取消全屏' : '全屏' }}
+          </el-button>
         </el-space>
       </div>
     </header>
@@ -77,6 +81,7 @@ const loading = ref(false);
 const progress = ref(0);
 const editPanel: Ref<any> = ref(null);
 const choosePanel: Ref<any> = ref(null);
+const fullscreenStatus = ref(false)
 
 // 重置相机位置
 const onResetCamera = () => {
@@ -122,6 +127,27 @@ const onPrivew = () => {
     ElMessage.warning("当前模型暂不支持“效果预览”");
   }
 };
+
+// 全屏
+const onFullScreen = () => {
+  const element = document.documentElement;
+  if (!fullscreenStatus.value) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+      // 适用于旧版WebKit浏览器
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
+
 // 保存配置
 const onSaveConfig = () => {
   ElMessageBox.confirm(" 确认要更新当前模型数据至“模板库”?", "提示", {
@@ -161,6 +187,12 @@ const onExportModleFile = (type: string) => {
   store.modelApi.onExporterModel(type);
 };
 
+// 全屏监听事件
+const addEventListenerFllscreen = (e) => {
+  const status = document.fullscreenElement || document.webkitFullscreenElement;
+  fullscreenStatus.value = !!status
+}
+
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
@@ -181,9 +213,12 @@ onMounted(async () => {
   }
   // 初始化模型库数据
   initModelBaseData();
+  // 全屏监听事件
+  document.addEventListener('fullscreenchange', addEventListenerFllscreen)
 });
 onBeforeUnmount(() => {
   store.modelApi.onClearModelData();
+  document.removeEventListener('fullscreenchange', addEventListenerFllscreen)
 });
 </script>
 <style lang="scss" scoped>
@@ -203,7 +238,7 @@ onBeforeUnmount(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 20px;
+    padding: 0px 10px;
     box-sizing: border-box;
   }
 
