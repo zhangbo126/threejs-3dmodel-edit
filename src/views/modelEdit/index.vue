@@ -60,7 +60,7 @@ import { ModelEditPanel, ModelChoose } from "@/components/index";
 import { onMounted, ref, getCurrentInstance, onBeforeUnmount, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
-import renderModel from "./renderModel";
+import renderModel from "@/utils/renderModel";
 import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading";
 import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
@@ -184,7 +184,6 @@ onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi)
-
   $bus.on("page-loading", (value) => {
     loading.value = value;
 
@@ -198,7 +197,6 @@ onMounted(async () => {
   if (load) {
     loading.value = false;
     progress.value = 0;
-
   }
   // 初始化模型库数据
   initModelBaseData();
