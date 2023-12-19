@@ -10,6 +10,7 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
@@ -95,6 +96,7 @@ class renderModel {
 			'fbx': new FBXLoader(this.loadingManager),
 			'gltf': new GLTFLoader(),
 			'obj': new OBJLoader(this.loadingManager),
+			'stl': new STLLoader()
 		}
 		//模型动画列表
 		this.modelAnimation
@@ -240,7 +242,7 @@ class renderModel {
 				this.materials.gridHelper = v.material
 				v.material = new THREE.LineBasicMaterial({ color: 'black' })
 			}
-	
+
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
 				v.background = null
@@ -316,6 +318,11 @@ class renderModel {
 					case 'obj':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						break;
+					case 'stl':
+						const material = new THREE.MeshStandardMaterial();
+						const mesh = new THREE.Mesh(result, material);
+						this.model = mesh
 						break;
 					default:
 						break;
