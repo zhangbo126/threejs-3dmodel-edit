@@ -12,9 +12,10 @@
 	 * @function onSetGeometryMeshList 设置几何体模型材质
 	 */
 
-import * as THREE from 'three' 
-import {  ElMessageBox } from 'element-plus';
+import * as THREE from 'three'
+import { ElMessageBox } from 'element-plus';
 import { useMeshEditStore } from '@/store/meshEditStore'
+
 const store = useMeshEditStore()
 
 // 获取当前模型材质
@@ -28,6 +29,8 @@ function getModelMeaterialList() {
 				const newMaterial = v.material.clone()
 				v.material = newMaterial
 				this.modelMaterialList.push(v)
+
+				this.originalMaterials.set(v.uuid, v.material);
 			}
 		}
 	})
@@ -176,7 +179,6 @@ function onChangeModelMeaterial(name) {
 	store.selectMeshAction(mesh)
 	return mesh
 }
-
 // 模型点击事件
 function onMouseClickModel(event) {
 	const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
@@ -213,17 +215,25 @@ function onGetEditMeshList() {
 	})
 	return meshList
 }
+
 // 设置材质类型
 function onChangeModelMeshType(activeMesh) {
 	this.model.traverse(v => {
 		if (v.isMesh && v.material) {
 			const { name, color, map, wireframe, depthWrite, opacity } = v.material
-			v.material = new THREE[activeMesh.type]({
-				map,
-				transparent: true,
-				color,
-				name,
-			})
+			if (activeMesh.type) {
+				v.material = new THREE[activeMesh.type]({
+					map,
+					transparent: true,
+					color,
+					name,
+				})
+
+			} else {
+				const originalMaterial = this.originalMaterials.get(v.uuid);
+				v.material = originalMaterial;
+
+			}
 			depthWrite ? v.material.depthWrite = depthWrite : ''
 			opacity ? v.material.opacity = opacity : ''
 			wireframe ? v.material.wireframe = wireframe : ''
@@ -257,6 +267,26 @@ function onSetGeometryMeshList(v) {
 	})
 }
 
+
+function initMaterial() {
+	this.model.traverse(v => {
+		if (v.isMesh && v.material) {
+			// 获取原始材质类型
+			const originalMaterial = this.originalMaterials.get(v.uuid);
+			// 恢复原始材质类型
+			originalMaterial.wireframe = false
+			originalMaterial.visible = true
+			originalMaterial.depthWrite = true
+			originalMaterial.opacity = 1
+			originalMaterial.color = new THREE.Color('#fff')
+			v.material = originalMaterial;
+		}
+	});
+}
+
+
+
+
 export default {
 	getModelMeaterialList,
 	getModelMeaterialMaps,
@@ -269,5 +299,6 @@ export default {
 	onMouseClickModel,
 	onGetEditMeshList,
 	onChangeModelMeshType,
-	onSetGeometryMeshList
+	onSetGeometryMeshList,
+	initMaterial
 }

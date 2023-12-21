@@ -70,7 +70,6 @@ const store = useMeshEditStore();
 const router = useRouter();
 const { $bus, $local } = getCurrentInstance().proxy;
 
-
 const loading = ref(false);
 const progress = ref(0);
 const editPanel = ref(null);
@@ -183,6 +182,7 @@ const addEventListenerFllscreen = (e) => {
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
+
   store.setModelApi(modelApi)
   $bus.on("page-loading", (value) => {
     loading.value = value;

@@ -19,7 +19,6 @@ import modulesPrototype from './modelEditClass/index'
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 
-
 class renderModel {
 	constructor(selector) {
 		this.container = document.querySelector(selector)
@@ -88,6 +87,8 @@ class renderModel {
 		this.planeGeometry
 		//模型材质列表
 		this.modelMaterialList
+		// 模型材质原始数据缓存
+		this.originalMaterials = new Map()
 		// 效果合成器
 		this.effectComposer
 		this.outlinePass
@@ -120,6 +121,7 @@ class renderModel {
 		this.modelProgressCallback = (e) => e
 		// 当前拖拽的几何模型
 		this.dragGeometryModel = {}
+
 
 	}
 	init() {
@@ -647,6 +649,7 @@ class renderModel {
 		this.planeGeometry = null
 		//模型材质列表
 		this.modelMaterialList = null
+		this.originalMaterials.clear()
 		// 效果合成器
 		this.effectComposer = null
 		this.outlinePass = null
@@ -697,6 +700,7 @@ class renderModel {
 		this.modelTextureMap = []
 		this.glowMaterialList = []
 		this.modelMaterialList = []
+		this.originalMaterials.clear()
 		this.materials = {}
 		if (this.dragControls) {
 			this.dragControls.dispose()
@@ -738,8 +742,8 @@ class renderModel {
 
 }
 
-Object.assign(renderModel.prototype,{
-	 ...modulesPrototype
+Object.assign(renderModel.prototype, {
+	...modulesPrototype
 })
 
 

@@ -97,8 +97,8 @@
           <b>{{ localModelName }}</b>
         </el-tooltip>
       </div>
-      <el-upload action="" accept=".glb,.obj,.gltf,.fbx,.stl" class="file-box" :show-file-list="false" :auto-upload="false"
-        :on-change="onUpload">
+      <el-upload action="" accept=".glb,.obj,.gltf,.fbx,.stl" class="file-box" :show-file-list="false"
+        :auto-upload="false" :on-change="onUpload">
         <div class="upload">
           <div class="icon">
             <el-icon :size="44">
