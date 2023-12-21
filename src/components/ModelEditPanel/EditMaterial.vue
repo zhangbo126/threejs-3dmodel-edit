@@ -8,8 +8,8 @@
         <el-space>
           <span>当前材质类型：</span>
           <el-select v-model="activeMeshType" @change="onChangeMeshType" placeholder="请选择" size="small">
-            <el-option v-for="item in meshTypeList" :key="item.type" :label="`${item.type}(${item.describe})`"
-              :value="item.type" />
+            <el-option v-for="item in meshTypeList" :key="item.type"
+              :label="`${item.type ? item.type : ''}(${item.describe})`" :value="item.type" />
           </el-select>
         </el-space>
       </div>
@@ -74,8 +74,8 @@
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input @input="onChangeMeaterial" @change="onChangeMeaterial" v-model="config.opacity"
-            :min="0" :max="1" :step="0.01" />
+          <el-slider show-input @input="onChangeMeaterial" @change="onChangeMeaterial" v-model="config.opacity" :min="0"
+            :max="1" :step="0.01" />
         </div>
       </div>
     </div>
@@ -209,7 +209,7 @@ const activeChangeColor = (color) => {
 
 const onChangeMeaterial = (type) => {
   state.modelApi.onSetModelMaterial(config);
-  
+
 };
 
 // 设置材质显隐

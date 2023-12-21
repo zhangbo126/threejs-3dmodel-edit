@@ -15,7 +15,7 @@
 import * as THREE from 'three'
 import { ElMessageBox } from 'element-plus';
 import { useMeshEditStore } from '@/store/meshEditStore'
-import { mapImageList } from "@/config/model";
+
 const store = useMeshEditStore()
 
 // 获取当前模型材质
@@ -221,12 +221,19 @@ function onChangeModelMeshType(activeMesh) {
 	this.model.traverse(v => {
 		if (v.isMesh && v.material) {
 			const { name, color, map, wireframe, depthWrite, opacity } = v.material
-			v.material = new THREE[activeMesh.type]({
-				map,
-				transparent: true,
-				color,
-				name,
-			})
+			if (activeMesh.type) {
+				v.material = new THREE[activeMesh.type]({
+					map,
+					transparent: true,
+					color,
+					name,
+				})
+
+			} else {
+				const originalMaterial = this.originalMaterials.get(v.uuid);
+				v.material = originalMaterial;
+
+			}
 			depthWrite ? v.material.depthWrite = depthWrite : ''
 			opacity ? v.material.opacity = opacity : ''
 			wireframe ? v.material.wireframe = wireframe : ''
@@ -261,11 +268,7 @@ function onSetGeometryMeshList(v) {
 }
 
 
-
-
-
 function initMaterial() {
-	console.log('重置模型数据')
 	this.model.traverse(v => {
 		if (v.isMesh && v.material) {
 			// 获取原始材质类型

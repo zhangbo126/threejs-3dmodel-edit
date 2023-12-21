@@ -206,6 +206,14 @@ export const MODEL_DEFAULT_CONFIG = {
 // 材质类型列表
 export const meshTypeList = [
 	{
+		type: null,
+		describe: '默认材质',
+		color: true,
+		wireframe: true,
+		depthWrite: true,
+		opacity: true,
+	},
+	{
 		type: 'MeshBasicMaterial',
 		describe: '基础网格材质',
 		color: true,
