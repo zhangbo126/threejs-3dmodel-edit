@@ -259,85 +259,8 @@ function onSetGeometryMeshList(v) {
 		}
 	})
 }
-// 获取当前修改的材质信息
-function getActiveMesh() {
-	const uuid = store.selectMesh.uuid
-	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	if (!mesh) return {}
-	const { color, opacity, depthWrite, wireframe, type } = mesh.material
-	const obj = {
-		meshName: mesh.name,
-		meshFrom: mesh.meshFrom,
-		color: color.getStyle(),
-		opacity,
-		depthWrite,
-		wireframe,
-		visible: mesh.visible,
-		type
-	}
-	return obj
-}
 
-//材质撤回数据回填
-function meshRevoke(oldData) {
-	const { meshName, materialType } = oldData
-	if (!meshName) {
-		return this.onChangeModelMeshType({ type: materialType })
-	}
-	const mesh = this.model.getObjectByProperty('name', meshName)
-	const { color, opacity, depthWrite, wireframe, visible, type, meshFrom } = oldData
-	const { map } = mesh.material
-	if (materialType) {
-		mesh.material = new THREE[type]({
-			map,
-		})
-	} else {
-		const originalMaterial = this.originalMaterials.get(mesh.uuid);
-		mesh.material = originalMaterial
-	}
-	// 处理修改了贴图的材质
-	if (meshFrom) {
-		// 如果使用的是系统贴图
-		if (mapIdList.includes(meshFrom)) {
-			// 找到当前的系统材质
-			const mapInfo = mapImageList.find(m => m.id == meshFrom) || {}
-			// 加载系统材质贴图
-			const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
-			// 如果当前模型的材质类型被修改了，则使用用新的材质type
-			if (materialType) {
-				mesh.material = new THREE[type]({
-					map: mapTexture,
-				})
-			} else {
-				mesh.material.map = mapTexture
-			}
-		} else {
-			// 如果是当前模型材质自身贴图
-			const meshFrom = this.model.getObjectByProperty('name', meshFrom)
-			const { map } = meshFrom.material
-			// 如果当前模型的材质类型被修改了，则使用用新的材质type
-			if (materialType) {
-				mesh.material = new THREE[type]({
-					map,
-				})
-			} else {
-				mesh.material.map = map
-			}
-		}
-	}
-	// 设置材质显隐
-	mesh.material.visible = visible
-	//设置材质颜色
-	mesh.material.color.set(new THREE.Color(color))
-	//设置网格
-	mesh.material.wireframe = wireframe
-	// 设置深度写入
-	mesh.material.depthWrite = depthWrite
-	//设置透明度
-	mesh.material.transparent = true
-	mesh.material.opacity = opacity
-	
-}
+
 
 
 
@@ -374,7 +297,5 @@ export default {
 	onGetEditMeshList,
 	onChangeModelMeshType,
 	onSetGeometryMeshList,
-	getActiveMesh,
-	meshRevoke,
 	initMaterial
 }

@@ -74,7 +74,7 @@
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input @input="onChangeMeaterial('opacity')" @change="addManageRecord" v-model="config.opacity"
+          <el-slider show-input @input="onChangeMeaterial" @change="onChangeMeaterial" v-model="config.opacity"
             :min="0" :max="1" :step="0.01" />
         </div>
       </div>
@@ -185,7 +185,6 @@ watch(() => store.selectMeshUuid,
 const onChangeMeshType = (e) => {
   const activeMesh = meshTypeList.find((v) => v.type == e);
   state.modelApi.onChangeModelMeshType(activeMesh);
-  addManageRecord()
 };
 
 // 选择材质
@@ -206,14 +205,11 @@ const onChangeMaterialType = (mesh) => {
 const activeChangeColor = (color) => {
   config.color = color;
   state.modelApi.onSetModelMaterial(config);
-  addManageRecord()
 };
 
 const onChangeMeaterial = (type) => {
   state.modelApi.onSetModelMaterial(config);
-  if (type != 'opacity') {
-    addManageRecord()
-  }
+  
 };
 
 // 设置材质显隐
@@ -245,34 +241,6 @@ const onChangeSystemModelMap = (map) => {
   ElMessage.success("当前材质贴图修改成功");
 };
 
-// 添加操作记录
-const addManageRecord = async () => {
-
-  const meshInfo = store.modelApi.getActiveMesh()
-  const data = {
-    tab: 'EditMaterial',
-    materialType: activeMeshType.value,
-    ...meshInfo
-  }
-  indexedDB.putArray(data)
-}
-
-// 撤回操作
-const materialRevoke = (revoke) => {
-  // const { methodsName, recordData } = revoke
-  // isRevoke.value = true
-  // switch (methodsName) {
-  //   case 'onChangeMeshType':
-  //     activeMeshType.value = recordData
-  //     onChangeMeshType(recordData)
-  //     break;
-  //   case 'onChangeMaterialType':
-  //     onChangeMaterialType(recordData)
-  //     break;
-  //   default:
-  //     break;
-  // }
-}
 
 const getMeshConfig = () => {
   return {
@@ -282,7 +250,6 @@ const getMeshConfig = () => {
 };
 defineExpose({
   getMeshConfig,
-  materialRevoke
 });
 </script>
 <style scoped lang="scss">
