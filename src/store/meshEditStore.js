@@ -18,4 +18,18 @@ export const useMeshEditStore = defineStore('useMeshEditStore', {
 			this.selectMesh = selectMesh
 		}
 	}
-}) 
+})
+
+export const useIndexedDBStore = defineStore('useIndexedDBStore', {
+	state: () => ({
+		db: {}
+	}),
+	getters: {
+
+	},
+	actions: {
+		setDbApi(db) {
+			this.db = db
+		}
+	}
+})

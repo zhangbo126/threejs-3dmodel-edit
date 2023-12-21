@@ -12,8 +12,8 @@
 	 * @function onSetGeometryMeshList 设置几何体模型材质
 	 */
 
-import * as THREE from 'three' 
-import {  ElMessageBox } from 'element-plus';
+import * as THREE from 'three'
+import { ElMessageBox } from 'element-plus';
 import { useMeshEditStore } from '@/store/meshEditStore'
 const store = useMeshEditStore()
 
@@ -28,6 +28,8 @@ function getModelMeaterialList() {
 				const newMaterial = v.material.clone()
 				v.material = newMaterial
 				this.modelMaterialList.push(v)
+
+				this.originalMaterials.set(v.uuid, v.material);
 			}
 		}
 	})
@@ -176,7 +178,6 @@ function onChangeModelMeaterial(name) {
 	store.selectMeshAction(mesh)
 	return mesh
 }
-
 // 模型点击事件
 function onMouseClickModel(event) {
 	const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
@@ -213,6 +214,7 @@ function onGetEditMeshList() {
 	})
 	return meshList
 }
+
 // 设置材质类型
 function onChangeModelMeshType(activeMesh) {
 	this.model.traverse(v => {
@@ -256,6 +258,43 @@ function onSetGeometryMeshList(v) {
 		}
 	})
 }
+// 获取当前修改的材质信息
+function getActiveMesh() {
+	const uuid = store.selectMesh.uuid
+	const mesh = this.scene.getObjectByProperty('uuid', uuid)
+	const { color, opacity, depthWrite, wireframe, type } = mesh.material
+	const obj = {
+		meshName: mesh.name,
+		meshFrom: mesh.meshFrom,
+		color: color.getStyle(),
+		opacity,
+		depthWrite,
+		wireframe,
+		visible: mesh.visible,
+		type
+	}
+	return obj
+}
+
+import { toRaw, isRef, isReactive } from 'vue';
+
+function initMaterial() {
+	this.model.traverse(v => {
+		if (v.isMesh && v.material) {
+			// 获取原始材质类型
+			const originalMaterial = this.originalMaterials.get(v.uuid);
+			// 恢复原始材质类型
+			v.material = originalMaterial;
+		}
+	});
+
+	// 清空保存的原始材质类型映射关系
+	// this.originalMaterials.clear();
+
+}
+
+
+
 
 export default {
 	getModelMeaterialList,
@@ -269,5 +308,7 @@ export default {
 	onMouseClickModel,
 	onGetEditMeshList,
 	onChangeModelMeshType,
-	onSetGeometryMeshList
+	onSetGeometryMeshList,
+	getActiveMesh,
+	initMaterial
 }

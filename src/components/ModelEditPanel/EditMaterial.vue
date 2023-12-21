@@ -74,7 +74,8 @@
           <el-button type="primary" link>透明度 </el-button>
         </div>
         <div class="grid-silder">
-          <el-slider show-input @input="onChangeMeaterial" v-model="config.opacity" :min="0" :max="1" :step="0.01" />
+          <el-slider show-input @input="onChangeMeaterial('opacity')" @change="addManageRecord" v-model="config.opacity"
+            :min="0" :max="1" :step="0.01" />
         </div>
       </div>
     </div>
@@ -117,31 +118,25 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
+import { ref, reactive, computed, onMounted, getCurrentInstance, watch, watchEffect } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
+import { indexedDB } from '@/utils/indexedDB'
 
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
-  meaterialName: null,
+  meshName: null,
   color: "#fff",
   wireframe: false,
   depthWrite: true,
   opacity: 1,
 });
 const activeMeshType = ref(null);
-const activeMesh = reactive({
-  type: "MeshBasicMaterial",
-  describe: "标准网格材质",
-  color: true,
-  wireframe: true,
-  depthWrite: true,
-  opacity: true,
-});
+
 const activeTextureMap = ref(null);
 
 const optionDisabled = computed(() => {
@@ -167,12 +162,11 @@ onMounted(() => {
   });
 });
 
-watch(
-  () => store.selectMeshUuid,
+
+watch(() => store.selectMeshUuid,
   (val) => {
     const map = state.modelMaterialList.find((v) => v.uuid == val) || {};
     activeTextureMap.value = map.mapId;
-
     if (map.mapId) {
       const { color, wireframe, depthWrite, opacity } = map.material;
       Object.assign(config, {
@@ -185,15 +179,17 @@ watch(
   }
 );
 
+
 // 切换材质类型
 const onChangeMeshType = (e) => {
   const activeMesh = meshTypeList.find((v) => v.type == e);
   state.modelApi.onChangeModelMeshType(activeMesh);
+  addManageRecord('onChangeMeshType', e)
 };
 
 // 选择材质
 const onChangeMaterialType = ({ name, id, material, mapId }) => {
-  config.meaterialName = material.name;
+  config.meshName = name;
   const activeMesh = state.modelApi.onChangeModelMeaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
   Object.assign(config, {
@@ -202,6 +198,7 @@ const onChangeMaterialType = ({ name, id, material, mapId }) => {
     depthWrite,
     opacity,
   });
+
 };
 
 const activeChangeColor = (color) => {
@@ -209,8 +206,11 @@ const activeChangeColor = (color) => {
   state.modelApi.onSetModelMaterial(config);
 };
 
-const onChangeMeaterial = () => {
+const onChangeMeaterial = (type) => {
   state.modelApi.onSetModelMaterial(config);
+  if (type != 'opacity') {
+    addManageRecord()
+  }
 };
 
 // 设置材质显隐
@@ -241,6 +241,31 @@ const onChangeSystemModelMap = (map) => {
   });
   ElMessage.success("当前材质贴图修改成功");
 };
+
+// 添加操作记录
+const addManageRecord = async (methodsName, recordData) => {
+  const data = {
+    methodsName,
+    tab: 'EditMaterial',
+    recordData
+  }
+  indexedDB.putArray(data)
+}
+
+// 撤回操作
+const materialRevoke = (revoke) => {
+  const { methodsName, recordData: type } = revoke
+  switch (methodsName) {
+    case 'onChangeMeshType':
+      const activeMesh = meshTypeList.find((v) => v.type == type);
+      activeMeshType.value = type
+      state.modelApi.onChangeModelMeshType(activeMesh);
+      break;
+    default:
+      break;
+  }
+}
+
 const getMeshConfig = () => {
   return {
     materialType: activeMeshType.value,
@@ -249,6 +274,7 @@ const getMeshConfig = () => {
 };
 defineExpose({
   getMeshConfig,
+  materialRevoke
 });
 </script>
 <style scoped lang="scss">

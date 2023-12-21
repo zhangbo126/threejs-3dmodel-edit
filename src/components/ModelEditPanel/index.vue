@@ -1,12 +1,8 @@
 <template>
   <div class="model-panel">
     <ul class="panel-tabs">
-      <li
-        v-for="tab in panelTabs"
-        :key="tab.key"
-        :class="activeTab == tab.key ? 'active' : ''"
-        @click="activeTab = tab.key"
-      >
+      <li v-for="tab in panelTabs" :key="tab.key" :class="activeTab == tab.key ? 'active' : ''"
+        @click="activeTab = tab.key">
         <el-tooltip effect="light" :content="tab.name" placement="top">
           <div class="tab">
             <el-icon size="20px" :color="activeTab == tab.key ? '#fff' : ''">
@@ -49,7 +45,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
@@ -57,6 +53,8 @@ import EditAttribute from "./EditAttribute.vue";
 import EditLight from "./EditLight.vue";
 import EditLaterStage from "./EditLaterStage.vue";
 import EditGeometry from "./EditGeometry.vue";
+import { useMeshEditStore } from '@/store/meshEditStore'
+import { indexedDB } from '@/utils/indexedDB'
 const panelTabs = [
   {
     name: "背景",
@@ -102,6 +100,48 @@ const attribute = ref(null);
 const light = ref(null);
 const stage = ref(null);
 const geometry = ref(null)
+const store = useMeshEditStore();
+
+// 监听键盘事件 ctrl +z
+const addEventListenerKeydown = async (event) => {
+  if (event.ctrlKey && event.key === 'z') {
+    const res = await indexedDB.getArray()
+    if (Array.isArray(res)) {
+      if(res.length==1){
+        store.modelApi.initMaterial()
+      }
+      const revokeData = res[res.length - 2]
+      if(!revokeData) return false
+      switch (revokeData.tab) {
+        case 'EditMaterial':
+          // store.modelApi.materialRevoke(revokeData)
+          material.value.materialRevoke(revokeData)
+          indexedDB.removeArray(revokeData.key)
+          break;
+        case 'EditBackground':
+          break;
+        case 'EditLaterStage':
+          break;
+        case 'EditAnimation':
+          break;
+        case 'EditAttribute':
+          break;
+        default:
+          break;
+      }
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', addEventListenerKeydown);
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', addEventListenerKeydown);
+
+})
+
 // 获取所有面板配置
 const getPanelConfig = () => {
   return {
@@ -122,11 +162,14 @@ defineExpose({
   background-color: #1b1c23;
   min-width: 380px;
   height: calc(100vh - 35px);
+
   .panel-tabs {
     display: flex;
+
     .active {
       background-color: #4d57fd;
     }
+
     li {
       cursor: pointer;
       color: #888;
@@ -135,11 +178,11 @@ defineExpose({
       border-right: 1px solid #0a0a0a;
       display: flex;
       align-items: center;
+
       .tab {
         line-height: initial;
       }
     }
   }
 }
-
 </style>
