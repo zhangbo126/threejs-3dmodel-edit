@@ -102,21 +102,29 @@ const stage = ref(null);
 const geometry = ref(null)
 const store = useMeshEditStore();
 
-// 监听键盘事件 ctrl +z
+// 监听键盘事件 ctrl + z
 const addEventListenerKeydown = async (event) => {
   if (event.ctrlKey && event.key === 'z') {
     const res = await indexedDB.getArray()
     if (Array.isArray(res)) {
-      if(res.length==1){
-        store.modelApi.initMaterial()
+      // length =1 表示已经撤销到最后一条记录了
+      if (res.length == 1) {
+        return false
       }
+      const { key } = res[res.length - 1]
       const revokeData = res[res.length - 2]
-      if(!revokeData) return false
+      // 如果当前记录是最后一条历史记录则重置模型数据
+      if (res.length == 2) {
+        store.modelApi.initMaterial()
+        indexedDB.removeArray(revokeData.key)
+        return false
+      }
+      if (!revokeData) return false
       switch (revokeData.tab) {
         case 'EditMaterial':
-          // store.modelApi.materialRevoke(revokeData)
-          material.value.materialRevoke(revokeData)
-          indexedDB.removeArray(revokeData.key)
+          console.log(revokeData)
+          store.modelApi.meshRevoke(revokeData)
+          indexedDB.removeArray(key)
           break;
         case 'EditBackground':
           break;

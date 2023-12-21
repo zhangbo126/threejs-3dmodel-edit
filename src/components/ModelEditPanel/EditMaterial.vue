@@ -21,7 +21,7 @@
     <div class="options">
       <el-scrollbar max-height="200px">
         <div class="option" :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
-          @click="onChangeMaterialType(mesh)" v-for="mesh in state.modelMaterialList" :key="mesh.uuid">
+          @click.stop="onChangeMaterialType(mesh)" v-for="mesh in state.modelMaterialList" :key="mesh.uuid">
           <el-space>
             <el-icon @click="onSetMeshVisibe(mesh)" size="18" color="#409eff" v-if="mesh.visible">
               <View />
@@ -150,6 +150,7 @@ const state = reactive({
   modelTextureMap: computed(() => store.modelApi.modelTextureMap)
 });
 
+
 onMounted(() => {
   $bus.on("model-update", () => {
     // 重置动画数据
@@ -184,11 +185,12 @@ watch(() => store.selectMeshUuid,
 const onChangeMeshType = (e) => {
   const activeMesh = meshTypeList.find((v) => v.type == e);
   state.modelApi.onChangeModelMeshType(activeMesh);
-  addManageRecord('onChangeMeshType', e)
+  addManageRecord()
 };
 
 // 选择材质
-const onChangeMaterialType = ({ name, id, material, mapId }) => {
+const onChangeMaterialType = (mesh) => {
+  const { name, id, mapId } = mesh
   config.meshName = name;
   const activeMesh = state.modelApi.onChangeModelMeaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
@@ -204,6 +206,7 @@ const onChangeMaterialType = ({ name, id, material, mapId }) => {
 const activeChangeColor = (color) => {
   config.color = color;
   state.modelApi.onSetModelMaterial(config);
+  addManageRecord()
 };
 
 const onChangeMeaterial = (type) => {
@@ -243,27 +246,32 @@ const onChangeSystemModelMap = (map) => {
 };
 
 // 添加操作记录
-const addManageRecord = async (methodsName, recordData) => {
+const addManageRecord = async () => {
+
+  const meshInfo = store.modelApi.getActiveMesh()
   const data = {
-    methodsName,
     tab: 'EditMaterial',
-    recordData
+    materialType: activeMeshType.value,
+    ...meshInfo
   }
   indexedDB.putArray(data)
 }
 
 // 撤回操作
 const materialRevoke = (revoke) => {
-  const { methodsName, recordData: type } = revoke
-  switch (methodsName) {
-    case 'onChangeMeshType':
-      const activeMesh = meshTypeList.find((v) => v.type == type);
-      activeMeshType.value = type
-      state.modelApi.onChangeModelMeshType(activeMesh);
-      break;
-    default:
-      break;
-  }
+  // const { methodsName, recordData } = revoke
+  // isRevoke.value = true
+  // switch (methodsName) {
+  //   case 'onChangeMeshType':
+  //     activeMeshType.value = recordData
+  //     onChangeMeshType(recordData)
+  //     break;
+  //   case 'onChangeMaterialType':
+  //     onChangeMaterialType(recordData)
+  //     break;
+  //   default:
+  //     break;
+  // }
 }
 
 const getMeshConfig = () => {

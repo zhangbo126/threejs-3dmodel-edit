@@ -18,7 +18,7 @@ import { onlyKey } from '@/utils/utilityFunction'
 import modulesPrototype from './modelEditClass/index'
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from '@/config/constant.js'
-
+import { indexedDB } from '@/utils/indexedDB'
 
 class renderModel {
 	constructor(selector) {
@@ -297,6 +297,14 @@ class renderModel {
 				this.scene.add(this.model)
 				// 获取模型材质贴图
 				this.getModelMeaterialMaps(map)
+				// 移除上一个模型的历史操作记录
+				indexedDB.clear()
+				// 创建一条初始化操作记录
+				const record = {
+					methodsName: 'initModel',
+					tab: 'EditMaterial'
+				}
+				indexedDB.putArray(record)
 				resolve(true)
 
 			}, (xhr) => {

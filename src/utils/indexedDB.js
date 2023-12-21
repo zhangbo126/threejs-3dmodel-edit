@@ -6,7 +6,7 @@
   * @function set   修改数据库
   * @function get   获取数据库
 */
-import { isRef, isReactive } from 'vue';
+import { isRef, isReactive, toRaw } from 'vue';
 
 let indexedDb = window.indexedDB;
 let name = 'threeEdit'
@@ -35,24 +35,17 @@ function createIndexedDb() {
 
 createIndexedDb()
 
-function convertToNormalData(data) {
-	if (Array.isArray(data)) {
-		return data.map(item => convertToNormalData(item));
-	} else if (typeof data === 'object' && data !== null) {
-		const convertedData = {};
-		for (const key in data) {
-			const value = data[key];
-			if (isRef(value)) {
-				convertedData[key] = convertToNormalData(value.value);
-			} else if (isReactive(value)) {
-				convertedData[key] = convertToNormalData(value);
-			} else {
-				convertedData[key] = convertToNormalData(value);
-			}
+function convertToPlainData(reactiveData) {
+	if (Array.isArray(reactiveData)) {
+		return reactiveData.map(item => convertToPlainData(item));
+	} else if (typeof reactiveData === 'object' && reactiveData !== null) {
+		const plainData = {};
+		for (let key in reactiveData) {
+			plainData[key] = convertToPlainData(reactiveData[key]);
 		}
-		return convertedData;
+		return plainData;
 	} else {
-		return data;
+		return reactiveData;
 	}
 }
 
@@ -61,7 +54,7 @@ function putArray(data) {
 		const start = performance.now();
 		const transaction = database.transaction(['mystore'], 'readwrite');
 		const objectStore = transaction.objectStore('mystore');
-		const putData = convertToNormalData(data)
+		const putData = convertToPlainData(data)
 
 		const putRequest = objectStore.put(putData);
 		putRequest.onsuccess = () => {
@@ -99,7 +92,6 @@ function getArray() {
 	return new Promise((reslove, reject) => {
 		const transaction = database.transaction(['mystore'], 'readwrite');
 		const objectStore = transaction.objectStore('mystore');
-
 		const request = objectStore.openCursor()
 		let results = []
 		request.onsuccess = (e) => {
@@ -127,6 +119,19 @@ function removeArray(key) {
 		const request = objectStore.delete(key)
 		request.onsuccess = (e) => {
 			reslove()
+		}
+		request.onerror = (event) => {
+			reject(event)
+		}
+	})
+}
+function clear() {
+	return new Promise((reslove, reject) => {
+		const transaction = database.transaction(['mystore'], 'readwrite');
+		const objectStore = transaction.objectStore('mystore');
+		const request = objectStore.clear();
+		request.onsuccess = (e) => {
+			reslove(e.target.result)
 		}
 		request.onerror = (event) => {
 			reject(event)
@@ -164,6 +169,7 @@ export const indexedDB = {
 	putArray,
 	getArray,
 	removeArray,
+	clear,
 	get,
 	remove
 }
