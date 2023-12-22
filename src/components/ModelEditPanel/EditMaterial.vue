@@ -2,6 +2,9 @@
   <div class="edit-box">
     <div class="header">
       <span>材质类型</span>
+      <el-button type="primary" icon="Refresh" @click="onInitialize">
+        重置
+      </el-button>
     </div>
     <div class="options">
       <div class="option">
@@ -135,7 +138,7 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
-const activeMeshType = ref(null);
+const activeMeshType = ref('');
 
 const activeTextureMap = ref(null);
 
@@ -199,7 +202,6 @@ const onChangeMaterialType = (mesh) => {
     depthWrite,
     opacity,
   });
-
 };
 
 const activeChangeColor = (color) => {
@@ -209,37 +211,39 @@ const activeChangeColor = (color) => {
 
 const onChangeMeaterial = (type) => {
   state.modelApi.onSetModelMaterial(config);
-
 };
 
 // 设置材质显隐
 const onSetMeshVisibe = (mesh) => {
   mesh.visible = !mesh.visible;
 };
+
 //修改当前材质贴图
 const onChangeModelMap = (map) => {
   activeTextureMap.value = map.mapId;
   state.modelApi.onSetModelMap(map);
-  Object.assign(config, {
-    color: null,
-    wireframe: false,
-    depthWrite: true,
-    opacity: 1,
-  });
   ElMessage.success("当前材质贴图修改成功");
 };
 // 修改当前材质贴图
 const onChangeSystemModelMap = (map) => {
   activeTextureMap.value = map.id;
   state.modelApi.onSetSystemModelMap(map);
+  ElMessage.success("当前材质贴图修改成功");
+};
+
+// 重置数据
+const onInitialize = () => {
   Object.assign(config, {
-    color: null,
+    meshName: null,
+    color: "#fff",
     wireframe: false,
     depthWrite: true,
     opacity: 1,
-  });
-  ElMessage.success("当前材质贴图修改成功");
-};
+  })
+  activeMeshType.value = ''
+  activeTextureMap.value = null
+  state.modelApi.initModelMaterial()
+}
 
 
 const getMeshConfig = () => {

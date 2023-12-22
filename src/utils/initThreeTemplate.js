@@ -685,6 +685,7 @@ class renderModel {
 			planeGeometry.rotation.x = -Math.PI / 2
 			planeGeometry.position.set(0, -.5, 0)
 			planeGeometry.visible = light.planeGeometry
+			planeGeometry.material.side = THREE.DoubleSide
 			planeGeometry.geometry.verticesNeedUpdate = true
 			// 让地面接收阴影
 			planeGeometry.receiveShadow = true;

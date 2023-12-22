@@ -2,6 +2,9 @@
   <div class="edit-box">
     <div class="header">
       <span>模型灯光</span>
+      <el-button type="primary" icon="Refresh" @click="onInitialize">
+        重置
+      </el-button>
     </div>
     <el-scrollbar height="calc(100vh - 130px)">
       <!-- 光源平面 -->
@@ -384,47 +387,7 @@ const state = reactive({
 
 onMounted(() => {
   $bus.on("model-update", () => {
-    Object.assign(config, {
-      //光源平面
-      planeGeometry: false,
-      planeColor: "#000000",
-      planeWidth: 7,
-      planeHeight: 7,
-      //环境光
-      ambientLight: true,
-      ambientLightColor: "#fff",
-      ambientLightIntensity: 0.8,
-      //平行光
-      directionalLight: false,
-      directionalLightHelper: true,
-      directionalLightColor: "#fff",
-      directionalLightIntensity: 5,
-      directionalHorizontal: -1.26,
-      directionalVertical: -3.85,
-      directionalSistance: 2.98,
-      directionaShadow: true,
-      //点光源
-      pointLight: false,
-      pointLightHelper: true,
-      pointLightColor: "#1E90FF",
-      pointLightIntensity: 10,
-      pointHorizontal: -4.21,
-      pointVertical: -4.1,
-      pointSistance: 2.53,
-      //聚光灯
-      spotLight: false,
-      spotLightColor: "#00BABD",
-      spotLightIntensity: 900,
-      spotHorizontal: -3.49,
-      spotVertical: -4.37,
-      spotSistance: 4.09,
-      spotAngle: 0.5,
-      spotPenumbra: 1,
-      spotFocus: 1,
-      spotCastShadow: true,
-      spotLightHelper: true,
-      spotDistance: 20
-    });
+    initLightData()
   });
 });
 
@@ -485,6 +448,55 @@ const onChangePlaneGeometry = () => {
   state.modelApi.onSetModelPlaneGeometry(config);
 };
 
+const initLightData = () => {
+  Object.assign(config, {
+    //光源平面
+    planeGeometry: false,
+    planeColor: "#000000",
+    planeWidth: 7,
+    planeHeight: 7,
+    //环境光
+    ambientLight: true,
+    ambientLightColor: "#fff",
+    ambientLightIntensity: 0.8,
+    //平行光
+    directionalLight: false,
+    directionalLightHelper: true,
+    directionalLightColor: "#fff",
+    directionalLightIntensity: 5,
+    directionalHorizontal: -1.26,
+    directionalVertical: -3.85,
+    directionalSistance: 2.98,
+    directionaShadow: true,
+    //点光源
+    pointLight: false,
+    pointLightHelper: true,
+    pointLightColor: "#1E90FF",
+    pointLightIntensity: 10,
+    pointHorizontal: -4.21,
+    pointVertical: -4.1,
+    pointSistance: 2.53,
+    //聚光灯
+    spotLight: false,
+    spotLightColor: "#00BABD",
+    spotLightIntensity: 900,
+    spotHorizontal: -3.49,
+    spotVertical: -4.37,
+    spotSistance: 4.09,
+    spotAngle: 0.5,
+    spotPenumbra: 1,
+    spotFocus: 1,
+    spotCastShadow: true,
+    spotLightHelper: true,
+    spotDistance: 20
+  });
+}
+
+const onInitialize = () => {
+  initLightData()
+  state.modelApi.onResettingLight({ ambientLight: true })
+}
+
 defineExpose({
   config
 });
@@ -499,10 +511,6 @@ defineExpose({
   padding-left: 12px;
   width: 270px;
 }
-
-
-
-
 
 .anambient-img {
   padding: 0px 10px;
@@ -522,4 +530,5 @@ defineExpose({
     position: relative;
     cursor: pointer;
   }
-}</style>
+}
+</style>

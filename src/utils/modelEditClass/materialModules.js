@@ -10,6 +10,7 @@
 	 * @function onGetEditMeshList 获取最新材质信息列表
 	 * @function onChangeModelMeshType 切换材质类型
 	 * @function onSetGeometryMeshList 设置几何体模型材质
+	 * @function initModelMaterial 重置模型材质数据
 	 */
 
 import * as THREE from 'three'
@@ -120,7 +121,6 @@ function getModelMaps(materials, uuid) {
 	materials.forEach(texture => {
 		if (texture.map && texture.map.image) {
 			const canvas = document.createElement('canvas')
-			const { width, height } = texture.map.image
 			canvas.width = 75
 			canvas.height = 75
 			const context = canvas.getContext('2d')
@@ -252,6 +252,7 @@ function onSetGeometryMeshList(v) {
 			const materials = Array.isArray(v.material) ? v.material : [v.material]
 			// 统一将模型材质 设置为 MeshLambertMaterial 类型
 			this.modelMaterialList.push(v)
+			this.originalMaterials.set(v.uuid,v.material)
 			// 获取模型自动材质贴图
 			const { url } = this.getModelMaps(materials, uuid)
 			const mesh = {
@@ -268,7 +269,7 @@ function onSetGeometryMeshList(v) {
 }
 
 
-function initMaterial() {
+function initModelMaterial() {
 	this.model.traverse(v => {
 		if (v.isMesh && v.material) {
 			// 获取原始材质类型
@@ -282,6 +283,10 @@ function initMaterial() {
 			v.material = originalMaterial;
 		}
 	});
+	this.modelMaterialList.forEach((v)=>{
+		 v.visible =true
+	})
+	store.selectMeshAction({})
 }
 
 
@@ -300,5 +305,5 @@ export default {
 	onGetEditMeshList,
 	onChangeModelMeshType,
 	onSetGeometryMeshList,
-	initMaterial
+	initModelMaterial
 }

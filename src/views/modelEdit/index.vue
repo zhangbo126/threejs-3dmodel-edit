@@ -182,7 +182,6 @@ const addEventListenerFllscreen = (e) => {
 onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
-
   store.setModelApi(modelApi)
   $bus.on("page-loading", (value) => {
     loading.value = value;
