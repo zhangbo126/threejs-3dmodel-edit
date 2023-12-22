@@ -4,7 +4,8 @@
 	 * @function setModelMeshDecompose 模型拆分
 	 * @function setModelMeshDrag 模型材质可拖拽
 	 * @function getMeshDragPosition 获取模型材质位拖拽置
-	 * @function onSetFlowColor() 修改辉光颜色
+	 * @function onSetFlowColor 修改辉光颜色
+	 * @function initStageFlow 重置数据
 */
 
 import * as THREE from 'three'
@@ -76,6 +77,7 @@ function setModelMeshDecompose({ decompose }) {
 				const position = {
 					x, y, z: 0
 				}
+			
 				modelDecomposeMove(mesh, position)
 			}
 		}
@@ -115,10 +117,23 @@ function onSetFlowColor(color) {
 	this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
 }
 
+function initStageFlow() {
+	this.renderer.toneMappingExposure = 2
+	Object.assign(this.unrealBloomPass, {
+		threshold: 0,
+		strength: 0,
+		radius: 0,
+	})
+	this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
+	this.setModelMeshDrag({ modelDrag: false })
+	this.setModelMeshDecompose({ decompose: 0 })
+}
+
 export default {
 	onSetUnrealBloomPass,
 	setModelMeshDecompose,
 	setModelMeshDrag,
 	getMeshDragPosition,
-	onSetFlowColor
+	onSetFlowColor,
+	initStageFlow
 }

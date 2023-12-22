@@ -60,6 +60,7 @@ function onSetModelPlaneGeometry({ planeGeometry, planeColor, planeWidth, planeH
 	this.planeGeometry.visible = planeGeometry
 	this.planeGeometry.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
 	this.planeGeometry.material.color.set(planeColor)
+	this.planeGeometry.material.side = THREE.DoubleSide
 	this.planeGeometry.geometry.verticesNeedUpdate = true
 }
 // 重置场景灯光

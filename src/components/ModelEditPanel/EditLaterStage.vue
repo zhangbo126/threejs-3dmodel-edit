@@ -2,6 +2,9 @@
   <div class="edit-box">
     <div class="header">
       <span>后期处理</span>
+      <el-button type="primary" icon="Refresh" @click="onInitialize">
+        重置
+      </el-button>
     </div>
     <!-- 辉光 -->
     <div class="options">
@@ -169,6 +172,19 @@ const onChangeDrag = () => {
   store.modelApi.setModelMeshDecompose(config);
   store.modelApi.setModelMeshDrag(config);
 };
+const onInitialize = () => {
+  Object.assign(config, {
+    glow: false,
+    threshold: 0.05,
+    strength: 0.6,
+    radius: 1,
+    decompose: 0,
+    modelDrag: false,
+    toneMappingExposure: 2,
+  });
+  store.modelApi.initStageFlow()
+}
+
 const getStageConfig = () => {
   return {
     meshPositonList: store.modelApi.getMeshDragPosition(),
@@ -180,3 +196,4 @@ defineExpose({
 });
 </script>
 <style lang="scss" scoped></style>
+        

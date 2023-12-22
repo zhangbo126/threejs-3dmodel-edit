@@ -363,7 +363,7 @@ class renderModel {
 	// 创建辅助线
 	createHelper() {
 		//网格辅助线
-		this.gridHelper = new THREE.GridHelper(4, 10, 'rgb(193,193,193)', 'rgb(193,193,193)');
+		this.gridHelper = new THREE.GridHelper(6, 18, '#fff', 'rgb(193,193,193)');
 		this.gridHelper.position.set(0, -.59, -.1)
 		this.gridHelper.visible = false
 		this.scene.add(this.gridHelper)
@@ -502,7 +502,7 @@ class renderModel {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
-					this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
+					
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
@@ -711,7 +711,7 @@ class renderModel {
 			strength: 0,
 			radius: 0,
 		})
-
+		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		// 重置"辅助线/轴配置"模块数据
 		this.skeletonHelper.visible = false
 		const config = {
@@ -722,8 +722,8 @@ class renderModel {
 			positionX: 0,
 			positionY: -0.5,
 			positionZ: 0,
-			divisions: 10,
-			size: 4,
+			divisions: 18,
+			size: 6,
 			color: "rgb(193,193,193)",
 			axesHelper: false,
 			axesSize: 1.8,
