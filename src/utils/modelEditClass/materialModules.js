@@ -22,15 +22,19 @@ const store = useMeshEditStore()
 // 获取当前模型材质
 function getModelMeaterialList() {
 	this.modelMaterialList = []
+	let i = 0;
 	this.model.traverse((v) => {
 		if (v.isMesh) {
 			v.castShadow = true
 			v.frustumCulled = false
 			if (v.material) {
+				i++;
 				const newMaterial = v.material.clone()
 				v.material = newMaterial
 				this.modelMaterialList.push(v)
-				this.originalMaterials.set(v.uuid, v.material);
+				const cloneMesh = v.material.clone()
+				cloneMesh.userData.mapId = v.name + '_' + i
+				this.originalMaterials.set(v.uuid, cloneMesh);
 			}
 		}
 	})
@@ -59,19 +63,20 @@ function getModelMeaterialMaps(map) {
 	const isMap = map ? true : false
 	let i = 0;
 	this.model.traverse((v) => {
-		const { uuid } = v
+		const { name } = v
 		if (v.isMesh && v.material) {
 			i++;
 			const materials = Array.isArray(v.material) ? v.material : [v.material]
-			const { url, mapId } = this.getModelMaps(materials, uuid)
+			const { url } = this.getModelMaps(materials)
+
 			const mesh = {
 				meshName: v.name,
 				material: v.material,
 				url,
-				mapId: mapId + '_' + i
+				mapId: name + '_' + i
 			}
 			// 获取当前模型材质
-			v.mapId = mapId + '_' + i
+			v.mapId = name + '_' + i
 			this.modelTextureMap.push(mesh)
 			// 部分模型本身没有贴图需 要单独处理
 			if (isMap) {
@@ -79,12 +84,12 @@ function getModelMeaterialMaps(map) {
 				const newMaterial = v.material.clone()
 				v.material = newMaterial
 				v.material.map = mapTexture
-				v.mapId = uuid + '_' + i
+				v.mapId = name + '_' + i
 				this.modelTextureMap = [{
 					meshName: v.name,
 					material: v.material,
 					url: map,
-					mapId: uuid + '_' + i
+					mapId: name + '_' + i
 				}]
 			}
 		}
@@ -115,7 +120,7 @@ function setModelPositionSize() {
 
 }
 // 获取模型自带贴图
-function getModelMaps(materials, uuid) {
+function getModelMaps(materials) {
 	let textureMap = {}
 	materials.forEach(texture => {
 		if (texture.map && texture.map.image) {
@@ -258,7 +263,7 @@ function onSetGeometryMeshList(v) {
 	this.modelMaterialList = []
 	this.modelTextureMap = []
 	this.model.traverse((v) => {
-		const { uuid, name } = v
+		const { name } = v
 		v.castShadow = true
 		v.frustumCulled = false
 		if (v.isMesh && v.material) {
@@ -267,7 +272,7 @@ function onSetGeometryMeshList(v) {
 			this.modelMaterialList.push(v)
 			this.originalMaterials.set(v.uuid, v.material)
 			// 获取模型自动材质贴图
-			const { url } = this.getModelMaps(materials, uuid)
+			const { url } = this.getModelMaps(materials)
 			const mesh = {
 				meshName: v.name,
 				material: v.material,
@@ -287,13 +292,8 @@ function initModelMaterial() {
 		if (v.isMesh && v.material) {
 			// 获取原始材质类型
 			const originalMaterial = this.originalMaterials.get(v.uuid);
-			// 恢复原始材质类型
-			originalMaterial.wireframe = false
-			originalMaterial.visible = true
-			originalMaterial.depthWrite = true
-			originalMaterial.opacity = 1
-			originalMaterial.color = new THREE.Color(v.material.color)
-			v.material = originalMaterial;
+			v.material = originalMaterial.clone();
+			v.mapId = originalMaterial.userData.mapId
 		}
 	});
 	this.modelMaterialList.forEach((v) => {
