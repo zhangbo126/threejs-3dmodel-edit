@@ -50,8 +50,8 @@
       <div class="option space-between">
         <el-space>
           <el-button type="primary" link>材质颜色</el-button>
-          <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="onChangeMeaterial"
-            @active-change="activeChangeColor" v-model="config.color" />
+          <el-color-picker color-format="rgb" :predefine="PREDEFINE_COLORS" @change="onChangeMeaterial"
+            v-model="config.color" />
         </el-space>
         <el-space>
           <el-tooltip effect="dark" content="注意：深度写入属性不支持模型“导出” " placement="top">
@@ -127,13 +127,12 @@ import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
-import { indexedDB } from '@/utils/indexedDB'
 
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   meshName: null,
-  color: "#fff",
+  color: null,
   wireframe: false,
   depthWrite: true,
   opacity: 1,
@@ -173,8 +172,9 @@ watch(() => store.selectMeshUuid,
     activeTextureMap.value = map.mapId;
     if (map.mapId) {
       const { color, wireframe, depthWrite, opacity } = map.material;
+      const newColor = new THREE.Color(color).getStyle()
       Object.assign(config, {
-        color: new THREE.Color(color).getStyle(),
+        color: newColor,
         wireframe,
         depthWrite,
         opacity,
@@ -204,10 +204,7 @@ const onChangeMaterialType = (mesh) => {
   });
 };
 
-const activeChangeColor = (color) => {
-  config.color = color;
-  state.modelApi.onSetModelMaterial(config);
-};
+
 
 const onChangeMeaterial = (type) => {
   state.modelApi.onSetModelMaterial(config);

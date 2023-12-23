@@ -30,7 +30,6 @@ function getModelMeaterialList() {
 				const newMaterial = v.material.clone()
 				v.material = newMaterial
 				this.modelMaterialList.push(v)
-
 				this.originalMaterials.set(v.uuid, v.material);
 			}
 		}
@@ -164,13 +163,27 @@ function onSetModelMap({ material, mapId, meshName }) {
 function onSetSystemModelMap({ id, url }) {
 	const uuid = store.selectMesh.uuid
 	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	const mapTexture = new THREE.TextureLoader().load(url)
-	const newMaterial = mesh.material.clone()
-	newMaterial.map = mapTexture
-	mesh.material = newMaterial
-	mesh.mapId = id
-	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
-	mesh.meshFrom = id
+	const texture = new THREE.TextureLoader()
+	texture.load(url, (mapTexture) => {
+		mapTexture.wrapS = THREE.RepeatWrapping;
+		mapTexture.wrapT = THREE.RepeatWrapping;
+		mapTexture.repeat.set(1, 1);
+		mapTexture.center.set(0.5, 0.5);
+		mapTexture.offset.set(0, 0);
+		mapTexture.rotation = 0
+		mapTexture.magFilter = THREE.NearestFilter;
+		mapTexture.minFilter = THREE.LinearMipmapLinearFilter;
+		mapTexture.needsUpdate = true;
+		const newMaterial = mesh.material.clone()
+		newMaterial.map = mapTexture
+		newMaterial.side = THREE.FrontSide
+		mesh.material = newMaterial
+		mesh.mapId = id
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = id
+	})
+
+
 }
 // 选择材质
 function onChangeModelMeaterial(name) {
@@ -252,7 +265,7 @@ function onSetGeometryMeshList(v) {
 			const materials = Array.isArray(v.material) ? v.material : [v.material]
 			// 统一将模型材质 设置为 MeshLambertMaterial 类型
 			this.modelMaterialList.push(v)
-			this.originalMaterials.set(v.uuid,v.material)
+			this.originalMaterials.set(v.uuid, v.material)
 			// 获取模型自动材质贴图
 			const { url } = this.getModelMaps(materials, uuid)
 			const mesh = {
@@ -279,12 +292,12 @@ function initModelMaterial() {
 			originalMaterial.visible = true
 			originalMaterial.depthWrite = true
 			originalMaterial.opacity = 1
-			originalMaterial.color = new THREE.Color('#fff')
+			originalMaterial.color = new THREE.Color(v.material.color)
 			v.material = originalMaterial;
 		}
 	});
-	this.modelMaterialList.forEach((v)=>{
-		 v.visible =true
+	this.modelMaterialList.forEach((v) => {
+		v.visible = true
 	})
 	store.selectMeshAction({})
 }
