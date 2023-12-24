@@ -453,7 +453,6 @@ class renderModel {
 				v.castShadow = true
 				v.frustumCulled = false
 				if (v.material) {
-					const { name, color, map } = v.material
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					this.modelMaterialList.push(v)
@@ -464,6 +463,7 @@ class renderModel {
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					v.material.map = mapTexture
+					mapTexture.dispose()
 				}
 			}
 		})
@@ -481,13 +481,16 @@ class renderModel {
 					this.scene.background = new THREE.Color(color)
 					break;
 				case 2:
-					this.scene.background = new THREE.TextureLoader().load(image);
+					const bgTexture =  new THREE.TextureLoader().load(image);
+					this.scene.background = bgTexture
+					bgTexture.dispose()
 					break;
 				case 3:
 					const texture = new THREE.TextureLoader().load(viewImg);
 					texture.mapping = THREE.EquirectangularReflectionMapping
 					this.scene.background = texture
 					this.scene.environment = texture
+					texture.dispose()
 					break;
 				default:
 					break;
@@ -528,6 +531,7 @@ class renderModel {
 					} else {
 						mesh.material.map = mapTexture
 					}
+					mapTexture.dispose()
 				} else {
 					// 如果是当前模型材质自身贴图
 					const meshFrom = this.model.getObjectByProperty('name', v.meshFrom)
@@ -656,7 +660,9 @@ class renderModel {
 		if (light.spotLight) {
 			const spotLight = new THREE.SpotLight(light.spotLightColor, 900);
 			spotLight.visible = light.spotLight
-			spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
+			const texture = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
+			texture.dispose()
+			spotLight.map = texture
 			spotLight.decay = 2;
 			spotLight.shadow.mapSize.width = 1920;
 			spotLight.shadow.mapSize.height = 1080;

@@ -12,7 +12,9 @@ function onSetSceneColor(color) {
 }
 // 设置场景图片
 function onSetSceneImage(url) {
-	this.scene.background = new THREE.TextureLoader().load(url);
+	const texture = new THREE.TextureLoader().load(url);
+	this.scene.background = texture
+	texture.dispose()
 }
 // 设置全景图
 function onSetSceneViewImage(url) {
@@ -20,6 +22,7 @@ function onSetSceneViewImage(url) {
 	texture.mapping = THREE.EquirectangularReflectionMapping
 	this.scene.background = texture
 	this.scene.environment = texture
+	texture.dispose()
 }
 
 export default {
