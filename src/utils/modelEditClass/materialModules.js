@@ -38,6 +38,7 @@ function getModelMeaterialList() {
 			}
 		}
 	})
+	
 }
 
 // 获取当前模型材质贴图
@@ -59,7 +60,8 @@ function getModelMeaterialMaps(map) {
 		})
 		return this.modelTextureMap = null
 	}
-
+	materials.clear()
+	
 	const isMap = map ? true : false
 	let i = 0;
 	this.model.traverse((v) => {
@@ -91,6 +93,7 @@ function getModelMeaterialMaps(map) {
 					url: map,
 					mapId: name + '_' + i
 				}]
+				mapTexture.dispose()
 			}
 		}
 	})
@@ -186,8 +189,10 @@ function onSetSystemModelMap({ id, url }) {
 		mesh.mapId = id
 		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
 		mesh.meshFrom = id
+		mapTexture.dispose()
+		
 	})
-
+	
 
 }
 // 选择材质
@@ -203,7 +208,7 @@ function onMouseClickModel(event) {
 	this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 	this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
 	this.raycaster.setFromCamera(this.mouse, this.camera)
-	const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh)
+	const intersects = this.raycaster.intersectObjects(this.scene.children,true).filter(item => item.object.isMesh && item.object.material)
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object
 		this.outlinePass.selectedObjects = [intersectedObject]

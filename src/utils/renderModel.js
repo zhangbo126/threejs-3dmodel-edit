@@ -121,7 +121,8 @@ class renderModel {
 		this.modelProgressCallback = (e) => e
 		// 当前拖拽的几何模型
 		this.dragGeometryModel = {}
-
+		// 当前模型加载状态
+		this.loadingStatus = true
 
 	}
 	init() {
@@ -157,6 +158,7 @@ class renderModel {
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
+		texture.dispose()
 	}
 	// 创建相机
 	initCamera() {
@@ -185,40 +187,43 @@ class renderModel {
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		// 将不需要处理辉光的材质进行存储备份
-		this.scene.traverse((v) => {
-			if (v instanceof THREE.GridHelper) {
-				this.materials.gridHelper = v.material
-				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
-			}
-			if (v instanceof THREE.Scene) {
-				this.materials.scene = v.background
-				v.background = null
-			}
-			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
-				this.materials[v.uuid] = v.material
-				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
-			}
-		})
-		this.glowComposer.render()
-		// 在辉光渲染器执行完之后在恢复材质原效果
-		this.scene.traverse((v) => {
-			if (this.materials[v.uuid]) {
-				v.material = this.materials[v.uuid]
-				delete this.materials[v.uuid]
-			}
-			if (v instanceof THREE.GridHelper) {
-				v.material = this.materials.gridHelper
-				delete this.materials.gridHelper
-			}
-			if (v instanceof THREE.Scene) {
-				v.background = this.materials.scene
-				delete this.materials.scene
-			}
-		})
-		this.controls.update()
+		// 等模型加载和相关数据处理完成在执行
+		if (this.loadingStatus) {
+			// 将不需要处理辉光的材质进行存储备份
+			this.scene.traverse((v) => {
+				if (v instanceof THREE.GridHelper) {
+					this.materials.gridHelper = v.material
+					v.material = new THREE.MeshStandardMaterial({ color: 'black' })
+				}
+				if (v instanceof THREE.Scene) {
+					this.materials.scene = v.background
+					v.background = null
+				}
+				if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
+					this.materials[v.uuid] = v.material
+					v.material = new THREE.MeshStandardMaterial({ color: 'black' })
+				}
+			})
+			this.glowComposer.render()
+			// 在辉光渲染器执行完之后在恢复材质原效果
+			this.scene.traverse((v) => {
+				if (this.materials[v.uuid]) {
+					v.material = this.materials[v.uuid]
+					delete this.materials[v.uuid]
+				}
+				if (v instanceof THREE.GridHelper) {
+					v.material = this.materials.gridHelper
+					delete this.materials.gridHelper
+				}
+				if (v instanceof THREE.Scene) {
+					v.background = this.materials.scene
+					delete this.materials.scene
+				}
+			})
+			this.controls.update()
+			this.effectComposer.render()
+		}
 		TWEEN.update();
-		this.effectComposer.render()
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
@@ -237,6 +242,7 @@ class renderModel {
 	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
 		return new Promise((resolve, reject) => {
+			this.loadingStatus = false
 			const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
 			let loader
 			if (['glb', 'gltf'].includes(fileType)) {
@@ -296,6 +302,7 @@ class renderModel {
 				this.scene.add(this.model)
 				// 获取模型材质贴图
 				this.getModelMeaterialMaps(map)
+				this.loadingStatus = true
 				resolve(true)
 
 			}, (xhr) => {
@@ -447,6 +454,7 @@ class renderModel {
 		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
 
+
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
 		effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio))
@@ -502,7 +510,7 @@ class renderModel {
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
-					
+
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
