@@ -38,7 +38,7 @@ function getModelMeaterialList() {
 			}
 		}
 	})
-	
+
 }
 
 // 获取当前模型材质贴图
@@ -61,7 +61,7 @@ function getModelMeaterialMaps(map) {
 		return this.modelTextureMap = null
 	}
 	materials.clear()
-	
+
 	const isMap = map ? true : false
 	let i = 0;
 	this.model.traverse((v) => {
@@ -128,8 +128,8 @@ function getModelMaps(materials) {
 	materials.forEach(texture => {
 		if (texture.map && texture.map.image) {
 			const canvas = document.createElement('canvas')
-			canvas.width = 75
-			canvas.height = 75
+			canvas.width = texture.map.image.width
+			canvas.height = texture.map.image.height
 			const context = canvas.getContext('2d')
 			context.drawImage(texture.map.image, 0, 0)
 			textureMap = {
@@ -171,29 +171,23 @@ function onSetModelMap({ material, mapId, meshName }) {
 function onSetSystemModelMap({ id, url }) {
 	const uuid = store.selectMesh.uuid
 	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	const texture = new THREE.TextureLoader()
-	texture.load(url, (mapTexture) => {
-		mapTexture.wrapS = THREE.RepeatWrapping;
-		mapTexture.wrapT = THREE.RepeatWrapping;
-		mapTexture.repeat.set(1, 1);
-		mapTexture.center.set(0.5, 0.5);
-		mapTexture.offset.set(0, 0);
-		mapTexture.rotation = 0
-		mapTexture.magFilter = THREE.NearestFilter;
-		mapTexture.minFilter = THREE.LinearMipmapLinearFilter;
-		mapTexture.needsUpdate = true;
-		const newMaterial = mesh.material.clone()
-		newMaterial.map = mapTexture
-		newMaterial.side = THREE.FrontSide
-		mesh.material = newMaterial
-		mesh.mapId = id
-		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
-		mesh.meshFrom = id
-		mapTexture.dispose()
-		
-	})
-	
-
+	const texture = new THREE.TextureLoader().load(url)
+	const newMaterial = mesh.material.clone()
+	newMaterial.map = texture
+	newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
+	newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
+	newMaterial.map.repeat.set(1, 1);
+	newMaterial.map.offset.set(0, 0);
+	newMaterial.map.center.set(.5,.5);
+	newMaterial.map.rotation = 0
+	// newMaterial.map.magFilter = THREE.NearestFilter;
+	// newMaterial.map.minFilter = THREE.LinearMipmapLinearFilter;
+	// newMaterial.side = THREE.FrontSide
+	mesh.material = newMaterial
+	mesh.mapId = id
+	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+	mesh.meshFrom = id
+	texture.dispose()
 }
 // 选择材质
 function onChangeModelMeaterial(name) {
@@ -208,7 +202,7 @@ function onMouseClickModel(event) {
 	this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 	this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
 	this.raycaster.setFromCamera(this.mouse, this.camera)
-	const intersects = this.raycaster.intersectObjects(this.scene.children,true).filter(item => item.object.isMesh && item.object.material)
+	const intersects = this.raycaster.intersectObjects(this.scene.children, true).filter(item => item.object.isMesh && item.object.material)
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object
 		this.outlinePass.selectedObjects = [intersectedObject]
