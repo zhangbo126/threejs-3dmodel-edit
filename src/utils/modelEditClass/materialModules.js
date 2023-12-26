@@ -112,13 +112,13 @@ function setModelPositionSize() {
 	const scale = targetSize / (maxSize > 1 ? maxSize : .5);
 	this.model.scale.set(scale, scale, scale)
 	// 设置模型位置
-	// this.model.position.sub(center.multiplyScalar(scale))
+	this.model.position.sub(center.multiplyScalar(scale))
 	// 设置控制器最小缩放值
 	this.controls.maxDistance = size.length() * 10
 	// 设置相机位置
 	this.camera.position.set(0, 2, 6)
 	// 设置相机坐标系
-	this.camera.lookAt(center)
+	// this.camera.lookAt(center)
 	this.camera.updateProjectionMatrix();
 
 }
@@ -128,8 +128,8 @@ function getModelMaps(materials) {
 	materials.forEach(texture => {
 		if (texture.map && texture.map.image) {
 			const canvas = document.createElement('canvas')
-			canvas.width = texture.map.image.width
-			canvas.height = texture.map.image.height
+			canvas.width = 75
+			canvas.height = 75
 			const context = canvas.getContext('2d')
 			context.drawImage(texture.map.image, 0, 0)
 			textureMap = {
@@ -177,15 +177,12 @@ function onSetSystemModelMap({ id, url }) {
 	newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
 	newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
 	newMaterial.map.flipY = false
+	newMaterial.map.encoding = THREE.sRGBEncoding
+	newMaterial.map.minFilter = THREE.LinearFilter;
+	newMaterial.map.magFilter = THREE.LinearFilter;
 	// newMaterial.map.repeat.set(1, 1);
 	// newMaterial.map.offset.set(0, 0);
 	// newMaterial.map.center.set(.5,.5);
-	// newMaterial.map.rotation = Math.PI 
-	// newMaterial.map.magFilter = THREE.NearestFilter;
-	// newMaterial.map.minFilter = THREE.LinearMipmapLinearFilter;
-	// newMaterial.side = THREE.FrontSide 
-	// newMaterial.side = THREE.DoubleSide 
-
 	mesh.material = newMaterial
 	mesh.mapId = id
 	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要

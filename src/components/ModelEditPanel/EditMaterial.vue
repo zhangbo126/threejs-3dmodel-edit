@@ -271,6 +271,7 @@ defineExpose({
 
   .el-map {
     padding: 6px;
+    max-height: 70px;
   }
 
   .select {

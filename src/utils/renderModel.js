@@ -237,6 +237,8 @@ class renderModel {
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 		this.controls.enablePan = false
+		this.controls.rotateSpeed = 2
+		this.controls.panSpeed = 1
 	}
 	// 加载模型
 	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
@@ -283,16 +285,6 @@ class renderModel {
 				this.modelAnimation = result.animations || []
 				this.getModelMeaterialList()
 				this.setModelPositionSize()
-				//	设置模型大小
-				if (scale) {
-					this.model.scale.set(scale, scale, scale);
-				}
-				//设置模型位置 
-				this.model.position.set(0, -.5, 0)
-				if (position) {
-					const { x, y, z } = position
-					this.model.position.set(x, y, z)
-				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 
@@ -385,7 +377,7 @@ class renderModel {
 	createLight() {
 		// 创建环境光
 		this.ambientLight = new THREE.AmbientLight('#fff', .8)
-		this.ambientLight.visible = false
+		this.ambientLight.visible = true
 
 		this.scene.add(this.ambientLight)
 
