@@ -142,7 +142,7 @@ class renderModel {
 			// 添加物体模型 TODO：初始化时需要默认一个
 			// https://images.wanjunshijie.com/demo/threeDemo2/glb/city.glb
 			//  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
-			const load = await this.setModel({ filePath: 'threeFile/glb/glb-30.glb', fileType: 'glb', decomposeName: 'transformers_3' })
+			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
@@ -386,6 +386,7 @@ class renderModel {
 		// 创建环境光
 		this.ambientLight = new THREE.AmbientLight('#fff', .8)
 		this.ambientLight.visible = false
+
 		this.scene.add(this.ambientLight)
 
 		// 创建平行光

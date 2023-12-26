@@ -41,26 +41,26 @@ const modelList = [
 		filePath: 'threeFile/glb/glb-8.glb',
 		icon: require('@/assets/model-icon/3.png')
 	},
-	{
-		name: '变形金刚（3）',
-		key: 'transformers-3',
-		fileType: 'glb',
-		id: 9,
-		animation: false,
-		filePath: 'threeFile/glb/glb-30.glb',
-		icon: require('@/assets/model-icon/4.png'),
-		decomposeName: 'transformers_3'
-	},
 	// {
 	// 	name: '变形金刚（3）',
 	// 	key: 'transformers-3',
 	// 	fileType: 'glb',
 	// 	id: 9,
 	// 	animation: false,
-	// 	filePath: 'threeFile/glb/glb-9.glb',
+	// 	filePath: 'threeFile/glb/glb-30.glb',
 	// 	icon: require('@/assets/model-icon/4.png'),
 	// 	decomposeName: 'transformers_3'
 	// },
+	{
+		name: '变形金刚（3）',
+		key: 'transformers-3',
+		fileType: 'glb',
+		id: 9,
+		animation: false,
+		filePath: 'threeFile/glb/glb-9.glb',
+		icon: require('@/assets/model-icon/4.png'),
+		decomposeName: 'transformers_3'
+	},
 	{
 		name: '变形金刚（1）',
 		key: 'transformers-1',
