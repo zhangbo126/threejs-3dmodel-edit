@@ -176,13 +176,16 @@ function onSetSystemModelMap({ id, url }) {
 	newMaterial.map = texture
 	newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
 	newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
-	newMaterial.map.repeat.set(1, 1);
-	newMaterial.map.offset.set(0, 0);
-	newMaterial.map.center.set(.5,.5);
-	newMaterial.map.rotation = 0
+	newMaterial.map.flipY = false
+	// newMaterial.map.repeat.set(1, 1);
+	// newMaterial.map.offset.set(0, 0);
+	// newMaterial.map.center.set(.5,.5);
+	// newMaterial.map.rotation = Math.PI 
 	// newMaterial.map.magFilter = THREE.NearestFilter;
 	// newMaterial.map.minFilter = THREE.LinearMipmapLinearFilter;
-	// newMaterial.side = THREE.FrontSide
+	// newMaterial.side = THREE.FrontSide 
+	// newMaterial.side = THREE.DoubleSide 
+
 	mesh.material = newMaterial
 	mesh.mapId = id
 	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要

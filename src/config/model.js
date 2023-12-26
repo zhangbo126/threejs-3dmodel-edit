@@ -47,10 +47,20 @@ const modelList = [
 		fileType: 'glb',
 		id: 9,
 		animation: false,
-		filePath: 'threeFile/glb/glb-9.glb',
+		filePath: 'threeFile/glb/glb-30.glb',
 		icon: require('@/assets/model-icon/4.png'),
 		decomposeName: 'transformers_3'
 	},
+	// {
+	// 	name: '变形金刚（3）',
+	// 	key: 'transformers-3',
+	// 	fileType: 'glb',
+	// 	id: 9,
+	// 	animation: false,
+	// 	filePath: 'threeFile/glb/glb-9.glb',
+	// 	icon: require('@/assets/model-icon/4.png'),
+	// 	decomposeName: 'transformers_3'
+	// },
 	{
 		name: '变形金刚（1）',
 		key: 'transformers-1',
@@ -227,6 +237,7 @@ const backgrundList = [
 		id: 18,
 		url: require('@/assets/image/model-bg-18.jpg')
 	},
+
 ]
 
 let viewImageList = []
@@ -295,6 +306,10 @@ const mapImageList = [
 	{
 		id: 87,
 		url: require(`@/assets/maps/19.jpg`)
+	},
+	{
+		id: 222,
+		url: require(`@/assets/maps/20.jpg`)
 	},
 	...viewImageList
 ]

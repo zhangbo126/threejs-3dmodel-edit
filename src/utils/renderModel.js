@@ -123,7 +123,6 @@ class renderModel {
 		this.dragGeometryModel = {}
 		// 当前模型加载状态
 		this.loadingStatus = true
-
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -143,7 +142,7 @@ class renderModel {
 			// 添加物体模型 TODO：初始化时需要默认一个
 			// https://images.wanjunshijie.com/demo/threeDemo2/glb/city.glb
 			//  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
-			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
+			const load = await this.setModel({ filePath: 'threeFile/glb/glb-30.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
@@ -154,7 +153,7 @@ class renderModel {
 	// 创建场景
 	initScene() {
 		this.scene = new THREE.Scene()
-		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
+		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-6.png'))
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
@@ -188,7 +187,7 @@ class renderModel {
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		// 等模型加载和相关数据处理完成在执行
-		if (this.loadingStatus) {
+		if (this.loadingStatus || this.controls.enabled) {
 			// 将不需要处理辉光的材质进行存储备份
 			this.scene.traverse((v) => {
 				if (v instanceof THREE.GridHelper) {
@@ -386,6 +385,7 @@ class renderModel {
 	createLight() {
 		// 创建环境光
 		this.ambientLight = new THREE.AmbientLight('#fff', .8)
+		this.ambientLight.visible = false
 		this.scene.add(this.ambientLight)
 
 		// 创建平行光

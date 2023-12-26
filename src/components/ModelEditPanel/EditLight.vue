@@ -324,7 +324,7 @@ const config = reactive({
   planeWidth: 7,
   planeHeight: 7,
   //环境光
-  ambientLight: true,
+  ambientLight: false,
   ambientLightColor: "#fff",
   ambientLightIntensity: 0.8,
   //平行光
@@ -456,7 +456,7 @@ const initLightData = () => {
     planeWidth: 7,
     planeHeight: 7,
     //环境光
-    ambientLight: true,
+    ambientLight: false,
     ambientLightColor: "#fff",
     ambientLightIntensity: 0.8,
     //平行光
@@ -494,7 +494,7 @@ const initLightData = () => {
 
 const onInitialize = () => {
   initLightData()
-  state.modelApi.onResettingLight({ ambientLight: true })
+  state.modelApi.onResettingLight({ ambientLight: false })
 }
 
 defineExpose({

@@ -77,7 +77,7 @@ function setModelMeshDecompose({ decompose }) {
 				const position = {
 					x, y, z: 0
 				}
-			
+
 				modelDecomposeMove(mesh, position)
 			}
 		}
