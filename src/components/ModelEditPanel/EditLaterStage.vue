@@ -88,7 +88,7 @@
           <span> 模型分解 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="20" />
+          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
         </div>
       </div>
       <div class="option" :class="moveDisable">
@@ -169,11 +169,12 @@ const onChangeDecompose = () => {
 };
 const onChangeDrag = () => {
   config.decompose = 0;
-  store.modelApi.setModelMeshDecompose(config);
+  // store.modelApi.setModelMeshDecompose(config);
   store.modelApi.setModelMeshDrag(config);
 };
 const onInitialize = () => {
   Object.assign(config, {
+    color:'',
     glow: false,
     threshold: 0.05,
     strength: 0.6,

@@ -129,7 +129,7 @@ class renderModel {
 	}
 	// 创建渲染器
 	initRender() {
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }) //设置抗锯齿
+		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }) //设置抗锯齿
 		//设置屏幕像素比
 		this.renderer.setPixelRatio(window.devicePixelRatio)
 		//渲染的尺寸大小
@@ -138,21 +138,18 @@ class renderModel {
 		//色调映射
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
 		this.renderer.autoClear = true
-		// this.renderer.outputColorSpace = THREE.sRGBEncoding
+		this.renderer.outputColorSpace = THREE.SRGBColorSpace
 		//曝光
-		this.renderer.toneMappingExposure = 3
+		this.renderer.toneMappingExposure = 2
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-		const meshTxt = document.createElement('div')
-		meshTxt.id = 'mesh-txt'
-		this.container.appendChild(meshTxt)
 		this.container.appendChild(this.renderer.domElement)
 	}
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
-		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 1000)
-		this.camera.near = 0.1
+		this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 2000)
+		// this.camera.near = 0.1
 		const { camera } = this.config
 		if (!camera) return false
 		const { x, y, z } = camera
@@ -168,9 +165,9 @@ class renderModel {
 		this.onWindowResizesListener = this.onWindowResize.bind(this)
 		window.addEventListener("resize", this.onWindowResizesListener)
 
-		// 鼠标移动
-		this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
-		this.container.addEventListener('mousemove', this.onMouseMoveListener)
+		// // 鼠标移动
+		// this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
+		// this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
@@ -190,7 +187,9 @@ class renderModel {
 			}
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
+				this.materials.environment = v.environment
 				v.background = null
+				v.environment = null
 			}
 			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
 				this.materials[v.uuid] = v.material
@@ -210,7 +209,9 @@ class renderModel {
 			}
 			if (v instanceof THREE.Scene) {
 				v.background = this.materials.scene
+				v.environment = this.materials.environment
 				delete this.materials.scene
+				delete this.materials.environment
 			}
 		})
 		this.effectComposer.render()
@@ -300,19 +301,8 @@ class renderModel {
 				this.getModelMeaterialList(map)
 				this.modelAnimation = result.animations || []
 				this.setModelPositionSize()
-				//	设置模型大小
-				if (scale) {
-					this.model.scale.set(scale, scale, scale);
-				}
-				//设置模型位置 
-				this.model.position.set(0, -.5, 0)
-				if (position) {
-					const { x, y, z } = position
-					this.model.position.set(x, y, z)
-				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
-
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
 				resolve(true)
@@ -434,19 +424,18 @@ class renderModel {
 		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
 		this.model.scale.set(scale, scale, scale)
 		// 设置模型位置
-		// this.model.position.sub(center.multiplyScalar(scale))
+		this.model.position.sub(center.multiplyScalar(scale))
 		// 设置控制器最小缩放值
 		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
 		// this.camera.position.set(0, 2, 6)
 		// 设置相机坐标系
-		this.camera.lookAt(center)
+		// this.camera.lookAt(center)
 		this.camera.updateProjectionMatrix();
 
 	}
 	// 获取当前模型材质
-	getModelMeaterialList(map) {
-		const isMap = map ? true : false
+	getModelMeaterialList() {
 		this.modelMaterialList = []
 		this.model.traverse((v) => {
 			if (v.isMesh) {
@@ -456,14 +445,6 @@ class renderModel {
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					this.modelMaterialList.push(v)
-				}
-				// 部分模型本身没有贴图需 要单独处理
-				if (v.material && isMap) {
-					const mapTexture = new THREE.TextureLoader().load(map)
-					const newMaterial = v.material.clone()
-					v.material = newMaterial
-					v.material.map = mapTexture
-					mapTexture.dispose()
 				}
 			}
 		})
@@ -481,7 +462,7 @@ class renderModel {
 					this.scene.background = new THREE.Color(color)
 					break;
 				case 2:
-					const bgTexture =  new THREE.TextureLoader().load(image);
+					const bgTexture = new THREE.TextureLoader().load(image);
 					this.scene.background = bgTexture
 					bgTexture.dispose()
 					break;
@@ -523,11 +504,18 @@ class renderModel {
 					const mapInfo = mapImageList.find(m => m.id == v.meshFrom) || {}
 					// 加载系统材质贴图
 					const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
+					mapTexture.wrapS = THREE.MirroredRepeatWrapping;
+					mapTexture.wrapT = THREE.MirroredRepeatWrapping;
+					mapTexture.flipY = false
+					mapTexture.colorSpace = THREE.SRGBColorSpace
+					mapTexture.minFilter = THREE.LinearFilter;
+					mapTexture.magFilter = THREE.LinearFilter;
 					// 如果当前模型的材质类型被修改了，则使用用新的材质type
 					if (material.materialType) {
 						mesh.material = new THREE[type]({
 							map: mapTexture,
 						})
+
 					} else {
 						mesh.material.map = mapTexture
 					}
@@ -689,7 +677,7 @@ class renderModel {
 			const planeGeometry = new THREE.Mesh(geometry, groundMaterial);
 			planeGeometry.name = 'planeGeometry'
 			planeGeometry.rotation.x = -Math.PI / 2
-			planeGeometry.position.set(0, -.5, 0)
+			planeGeometry.position.set(0, -1.2, 0)
 			planeGeometry.visible = light.planeGeometry
 			planeGeometry.material.side = THREE.DoubleSide
 			planeGeometry.geometry.verticesNeedUpdate = true
