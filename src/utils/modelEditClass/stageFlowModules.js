@@ -30,6 +30,7 @@ function onSetUnrealBloomPass(config) {
 		this.unrealBloomPass.radius = 0
 		this.renderer.toneMappingExposure = toneMappingExposure
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
+
 	}
 }
 // 模型拆分
@@ -77,7 +78,7 @@ function setModelMeshDecompose({ decompose }) {
 				const position = {
 					x, y, z: 0
 				}
-			
+
 				modelDecomposeMove(mesh, position)
 			}
 		}
@@ -127,6 +128,7 @@ function initStageFlow() {
 	this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 	this.setModelMeshDrag({ modelDrag: false })
 	this.setModelMeshDecompose({ decompose: 0 })
+    this.glowUnrealBloomPass=false
 }
 
 export default {

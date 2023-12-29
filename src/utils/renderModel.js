@@ -13,6 +13,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { ElMessage } from 'element-plus';
 import { onlyKey } from '@/utils/utilityFunction'
 import modulesPrototype from './modelEditClass/index'
@@ -98,8 +99,6 @@ class renderModel {
 		this.raycaster = new THREE.Raycaster()
 		// 鼠标位置
 		this.mouse = new THREE.Vector2()
-		// 模型自带贴图
-		this.modelTextureMap
 		// 辉光效果合成器
 		this.glowComposer
 		// 辉光渲染器
@@ -123,7 +122,6 @@ class renderModel {
 		this.dragGeometryModel = {}
 		// 当前模型加载状态
 		this.loadingStatus = true
-
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -152,9 +150,9 @@ class renderModel {
 		})
 	}
 	// 创建场景
-	initScene() {
+	async initScene() {
 		this.scene = new THREE.Scene()
-		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
+		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-6.png'))
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
@@ -188,40 +186,49 @@ class renderModel {
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		// 等模型加载和相关数据处理完成在执行
-		if (this.loadingStatus) {
+		if (this.loadingStatus || this.controls.enabled) {
 			// 将不需要处理辉光的材质进行存储备份
-			this.scene.traverse((v) => {
-				if (v instanceof THREE.GridHelper) {
-					this.materials.gridHelper = v.material
-					v.material = new THREE.MeshStandardMaterial({ color: 'black' })
-				}
-				if (v instanceof THREE.Scene) {
-					this.materials.scene = v.background
-					v.background = null
-				}
-				if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
-					this.materials[v.uuid] = v.material
-					v.material = new THREE.MeshStandardMaterial({ color: 'black' })
-				}
-			})
-			this.glowComposer.render()
-			// 在辉光渲染器执行完之后在恢复材质原效果
-			this.scene.traverse((v) => {
-				if (this.materials[v.uuid]) {
-					v.material = this.materials[v.uuid]
-					delete this.materials[v.uuid]
-				}
-				if (v instanceof THREE.GridHelper) {
-					v.material = this.materials.gridHelper
-					delete this.materials.gridHelper
-				}
-				if (v instanceof THREE.Scene) {
-					v.background = this.materials.scene
-					delete this.materials.scene
-				}
-			})
-			this.controls.update()
+			// if (this.glowUnrealBloomPass) {
+				this.scene.traverse((v) => {
+					if (v instanceof THREE.GridHelper) {
+						this.materials.gridHelper = v.material
+						v.material = new THREE.MeshStandardMaterial({ color: '#000' })
+					}
+					if (v instanceof THREE.Scene) {
+						this.materials.scene = v.background
+						this.materials.environment = v.environment
+						v.background = null
+						v.environment = null
+					}
+					if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
+						this.materials[v.uuid] = v.material
+						v.material = new THREE.MeshStandardMaterial({ color: '#000' })
+					}
+				})
+				this.glowComposer.render()
+				// 辉光渲染器执行完之后在恢复材质原效果
+				this.scene.traverse((v) => {
+					if (this.materials[v.uuid]) {
+						v.material = this.materials[v.uuid]
+						delete this.materials[v.uuid]
+					}
+					if (v instanceof THREE.GridHelper) {
+						v.material = this.materials.gridHelper
+						delete this.materials.gridHelper
+					}
+					if (v instanceof THREE.Scene) {
+						v.background = this.materials.scene
+						v.environment = this.materials.environment
+						delete this.materials.scene
+						delete this.materials.environment
+					}
+				})
+			// } else {
+			// 	this.glowComposer.render()
+			// }
+
 			this.effectComposer.render()
+			this.controls.update()
 		}
 		TWEEN.update();
 	}
@@ -238,9 +245,12 @@ class renderModel {
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 		this.controls.enablePan = false
+		this.controls.enableDamping = true;
+		this.controls.target.set(0, 0, 0);
+		this.controls.update()
 	}
 	// 加载模型
-	setModel({ filePath, fileType, scale, map, position, decomposeName }) {
+	setModel({ filePath, fileType, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			this.loadingStatus = false
 			const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
@@ -284,24 +294,11 @@ class renderModel {
 				this.modelAnimation = result.animations || []
 				this.getModelMeaterialList()
 				this.setModelPositionSize()
-				//	设置模型大小
-				if (scale) {
-					this.model.scale.set(scale, scale, scale);
-				}
-				//设置模型位置 
-				this.model.position.set(0, -.5, 0)
-				if (position) {
-					const { x, y, z } = position
-					this.model.position.set(x, y, z)
-				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
-
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
-				// 获取模型材质贴图
-				this.getModelMeaterialMaps(map)
 				this.loadingStatus = true
 				resolve(true)
 
@@ -353,6 +350,7 @@ class renderModel {
 				const box = new THREE.Box3().setFromObject(this.model);
 				const size = box.getSize(new THREE.Vector3());
 				this.controls.maxDistance = size.length() * 10
+				this.loadingStatus = true
 				reslove(true)
 			} else {
 				ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
@@ -386,6 +384,8 @@ class renderModel {
 	createLight() {
 		// 创建环境光
 		this.ambientLight = new THREE.AmbientLight('#fff', .8)
+		this.ambientLight.visible = true
+
 		this.scene.add(this.ambientLight)
 
 		// 创建平行光
@@ -438,6 +438,7 @@ class renderModel {
 	}
 	// 创建效果合成器
 	createEffectComposer() {
+		if (!this.container) return false
 		const { clientHeight, clientWidth } = this.container
 		this.effectComposer = new EffectComposer(this.renderer)
 		const renderPass = new RenderPass(this.scene, this.camera)
@@ -667,8 +668,6 @@ class renderModel {
 		this.raycaster == null
 		// 鼠标位置
 		this.mouse = null
-		// 模型自带贴图
-		this.modelTextureMap = null
 		// 辉光效果合成器
 		this.glowComposer = null
 		// 辉光渲染器
@@ -681,6 +680,7 @@ class renderModel {
 		// 拖拽对象控制器
 		this.dragControls = null
 		this.dragGeometryModel = null
+		this.glowUnrealBloomPass = false
 	}
 
 
@@ -705,7 +705,7 @@ class renderModel {
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		this.scene.remove(this.model)
 		this.model = null
-		this.modelTextureMap = []
+		this.glowUnrealBloomPass = false
 		this.glowMaterialList = []
 		this.modelMaterialList = []
 		this.originalMaterials.clear()
@@ -728,7 +728,7 @@ class renderModel {
 			y: -0.59,
 			z: -0.1,
 			positionX: 0,
-			positionY: -0.5,
+			positionY: -1,
 			positionZ: 0,
 			divisions: 18,
 			size: 6,

@@ -30,6 +30,7 @@ function getModelMeaterialList() {
 			if (v.material) {
 				i++;
 				const newMaterial = v.material.clone()
+				v.mapId = v.name + '_' + i
 				v.material = newMaterial
 				this.modelMaterialList.push(v)
 				const cloneMesh = v.material.clone()
@@ -38,67 +39,10 @@ function getModelMeaterialList() {
 			}
 		}
 	})
-	
-}
-
-// 获取当前模型材质贴图
-function getModelMeaterialMaps(map) {
-	this.modelTextureMap = []
-	// TODO 获取当前模型材质数量如果超过100个 则不加载模型自带贴图
-	const materials = new Set();
-	this.model.traverse((node) => {
-		if (node.isMesh) {
-			const meshMaterials = Array.isArray(node.material) ? node.material : [node.material];
-			meshMaterials.forEach((material) => materials.add(material));
-		}
-	});
-
-	const numMaterials = materials.size;
-	if (numMaterials > 100) {
-		ElMessageBox.alert(`当前模型材质数量过大“${numMaterials}个”，编辑器页面可能有卡顿`, '提示', {
-			confirmButtonText: '确认',
-		})
-		return this.modelTextureMap = null
-	}
-	materials.clear()
-	
-	const isMap = map ? true : false
-	let i = 0;
-	this.model.traverse((v) => {
-		const { name } = v
-		if (v.isMesh && v.material) {
-			i++;
-			const materials = Array.isArray(v.material) ? v.material : [v.material]
-			const { url } = this.getModelMaps(materials)
-
-			const mesh = {
-				meshName: v.name,
-				material: v.material,
-				url,
-				mapId: name + '_' + i
-			}
-			// 获取当前模型材质
-			v.mapId = name + '_' + i
-			this.modelTextureMap.push(mesh)
-			// 部分模型本身没有贴图需 要单独处理
-			if (isMap) {
-				const mapTexture = new THREE.TextureLoader().load(map)
-				const newMaterial = v.material.clone()
-				v.material = newMaterial
-				v.material.map = mapTexture
-				v.mapId = name + '_' + i
-				this.modelTextureMap = [{
-					meshName: v.name,
-					material: v.material,
-					url: map,
-					mapId: name + '_' + i
-				}]
-				mapTexture.dispose()
-			}
-		}
-	})
 
 }
+
+
 // 设置模型定位缩放大小
 function setModelPositionSize() {
 	//设置模型位置
@@ -112,13 +56,13 @@ function setModelPositionSize() {
 	const scale = targetSize / (maxSize > 1 ? maxSize : .5);
 	this.model.scale.set(scale, scale, scale)
 	// 设置模型位置
-	// this.model.position.sub(center.multiplyScalar(scale))
+	this.model.position.sub(center.multiplyScalar(scale))
 	// 设置控制器最小缩放值
 	this.controls.maxDistance = size.length() * 10
 	// 设置相机位置
 	this.camera.position.set(0, 2, 6)
 	// 设置相机坐标系
-	this.camera.lookAt(center)
+	// this.camera.lookAt(center)
 	this.camera.updateProjectionMatrix();
 
 }
@@ -159,41 +103,37 @@ function onSetModelMaterial(config) {
 	}
 }
 // 设置模型贴图（模型自带）
-function onSetModelMap({ material, mapId, meshName }) {
+function onSetModelMap({ mapId, meshName }) {
 	const uuid = store.selectMesh.uuid
 	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	mesh.material = material.clone()
+	const originMaterial = this.originalMaterials.get(uuid)
+	mesh.material = originMaterial.clone()
 	mesh.mapId = mapId
 	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
 	mesh.meshFrom = meshName
 }
+
 // 设置模型贴图（系统贴图）
 function onSetSystemModelMap({ id, url }) {
 	const uuid = store.selectMesh.uuid
 	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	const texture = new THREE.TextureLoader()
-	texture.load(url, (mapTexture) => {
-		mapTexture.wrapS = THREE.RepeatWrapping;
-		mapTexture.wrapT = THREE.RepeatWrapping;
-		mapTexture.repeat.set(1, 1);
-		mapTexture.center.set(0.5, 0.5);
-		mapTexture.offset.set(0, 0);
-		mapTexture.rotation = 0
-		mapTexture.magFilter = THREE.NearestFilter;
-		mapTexture.minFilter = THREE.LinearMipmapLinearFilter;
-		mapTexture.needsUpdate = true;
-		const newMaterial = mesh.material.clone()
-		newMaterial.map = mapTexture
-		newMaterial.side = THREE.FrontSide
-		mesh.material = newMaterial
-		mesh.mapId = id
-		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
-		mesh.meshFrom = id
-		mapTexture.dispose()
-		
-	})
-	
-
+	const texture = new THREE.TextureLoader().load(url)
+	const newMaterial = mesh.material.clone()
+	newMaterial.map = texture
+	newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
+	newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
+	newMaterial.map.flipY = false
+	newMaterial.map.colorSpace = THREE.SRGBColorSpace
+	newMaterial.map.minFilter = THREE.LinearFilter;
+	newMaterial.map.magFilter = THREE.LinearFilter;
+	// newMaterial.map.repeat.set(1, 1);
+	// newMaterial.map.offset.set(0, 0);
+	// newMaterial.map.center.set(.5,.5);
+	mesh.material = newMaterial
+	mesh.mapId = id
+	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+	mesh.meshFrom = id
+	texture.dispose()
 }
 // 选择材质
 function onChangeModelMeaterial(name) {
@@ -208,7 +148,7 @@ function onMouseClickModel(event) {
 	this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 	this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
 	this.raycaster.setFromCamera(this.mouse, this.camera)
-	const intersects = this.raycaster.intersectObjects(this.scene.children,true).filter(item => item.object.isMesh && item.object.material)
+	const intersects = this.raycaster.intersectObjects(this.scene.children, true).filter(item => item.object.isMesh && item.object.material)
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object
 		this.outlinePass.selectedObjects = [intersectedObject]
@@ -260,6 +200,7 @@ function onChangeModelMeshType(activeMesh) {
 			depthWrite ? v.material.depthWrite = depthWrite : ''
 			opacity ? v.material.opacity = opacity : ''
 			wireframe ? v.material.wireframe = wireframe : ''
+			v.material.side  =THREE.DoubleSide
 		}
 	})
 }
@@ -312,7 +253,6 @@ function initModelMaterial() {
 
 export default {
 	getModelMeaterialList,
-	getModelMeaterialMaps,
 	setModelPositionSize,
 	getModelMaps,
 	onSetModelMaterial,

@@ -177,7 +177,7 @@ const config = reactive({
   y: -0.59,
   z: -0.1,
   positionX: 0,
-  positionY: -0.5,
+  positionY: -1,
   positionZ: 0,
   divisions: 18,
   size: 6,
@@ -210,7 +210,7 @@ onMounted(() => {
       y: -0.59,
       z: -0.1,
       positionX: 0,
-      positionY: -0.5,
+      positionY: -1,
       positionZ: 0,
       divisions: 18,
       size: 6,
@@ -238,7 +238,7 @@ const onSetPosition = () => {
 // 重置模型位置
 const onResultPosition = () => {
   config.positionX = 0;
-  config.positionY = -0.5;
+  config.positionY = -1;
   config.positionZ = 0;
   store.modelApi.onResultModelPosition(config);
 };

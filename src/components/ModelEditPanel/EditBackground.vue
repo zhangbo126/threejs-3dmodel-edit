@@ -122,11 +122,11 @@ const config = reactive({
   visible: true,
   type: 3, //1 颜色 2 图片  3全景图
   image: require("@/assets/image/model-bg-3.jpg"),
-  viewImg: require("@/assets/image/view-4.png"),
+  viewImg: require("@/assets/image/view-6.png"),
   color: "#000",
 });
 const activeBackgroundId = ref(3);
-const activeViewImageId = ref(3);
+const activeViewImageId = ref(5);
 
 const optionsDisable = computed(() => {
   const { visible } = config;

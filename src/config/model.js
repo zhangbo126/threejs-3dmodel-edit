@@ -227,6 +227,7 @@ const backgrundList = [
 		id: 18,
 		url: require('@/assets/image/model-bg-18.jpg')
 	},
+
 ]
 
 let viewImageList = []
@@ -295,6 +296,10 @@ const mapImageList = [
 	{
 		id: 87,
 		url: require(`@/assets/maps/19.jpg`)
+	},
+	{
+		id: 222,
+		url: require(`@/assets/maps/20.jpg`)
 	},
 	...viewImageList
 ]
