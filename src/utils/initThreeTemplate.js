@@ -178,12 +178,22 @@ class renderModel {
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		this.controls.update()
-		// 将不需要处理辉光的材质进行存储备份
+		const { stage } = this.config
+		//辉光效果开关开启时执行
+		if (stage && stage.glow) {
+			// 将不需要处理辉光的材质进行存储备份
+			this.setMeshFlow()
+		} else {
+			this.effectComposer.render()
+			this.controls.update()
+		}
+	}
+	// 设置材质辉光
+	setMeshFlow() {
 		this.scene.traverse((v) => {
 			if (v instanceof THREE.GridHelper) {
 				this.materials.gridHelper = v.material
-				v.material = new THREE.MeshStandardMaterial({ color: 'black' })
+				v.material = new THREE.MeshStandardMaterial({ color: '#000' })
 			}
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
@@ -193,11 +203,11 @@ class renderModel {
 			}
 			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
 				this.materials[v.uuid] = v.material
-				v.material = new THREE.MeshBasicMaterial({ color: 'black' })
+				v.material = new THREE.MeshStandardMaterial({ color: '#000' })
 			}
 		})
 		this.glowComposer.render()
-		// 在辉光渲染器执行完之后在恢复材质原效果
+		// 辉光渲染器执行完之后在恢复材质原效果
 		this.scene.traverse((v) => {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
@@ -215,6 +225,8 @@ class renderModel {
 			}
 		})
 		this.effectComposer.render()
+		this.controls.update()
+
 	}
 	// 创建效果合成器
 	createEffectComposer() {

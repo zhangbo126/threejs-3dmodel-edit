@@ -87,7 +87,7 @@ class renderModel {
 		//模型平面
 		this.planeGeometry
 		//模型材质列表
-		this.modelMaterialList
+		this.modelMaterialList = []
 		// 模型材质原始数据缓存
 		this.originalMaterials = new Map()
 		// 效果合成器
@@ -101,6 +101,7 @@ class renderModel {
 		this.mouse = new THREE.Vector2()
 		// 辉光效果合成器
 		this.glowComposer
+		this.glowRenderPass
 		// 辉光渲染器
 		this.unrealBloomPass
 		// 辉光着色器
@@ -152,7 +153,7 @@ class renderModel {
 	// 创建场景
 	async initScene() {
 		this.scene = new THREE.Scene()
-		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-6.png'))
+		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
@@ -186,51 +187,17 @@ class renderModel {
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
 		// 等模型加载和相关数据处理完成在执行
-		if (this.loadingStatus || this.controls.enabled) {
-			// 将不需要处理辉光的材质进行存储备份
-			// if (this.glowUnrealBloomPass) {
-				this.scene.traverse((v) => {
-					if (v instanceof THREE.GridHelper) {
-						this.materials.gridHelper = v.material
-						v.material = new THREE.MeshStandardMaterial({ color: '#000' })
-					}
-					if (v instanceof THREE.Scene) {
-						this.materials.scene = v.background
-						this.materials.environment = v.environment
-						v.background = null
-						v.environment = null
-					}
-					if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
-						this.materials[v.uuid] = v.material
-						v.material = new THREE.MeshStandardMaterial({ color: '#000' })
-					}
-				})
-				this.glowComposer.render()
-				// 辉光渲染器执行完之后在恢复材质原效果
-				this.scene.traverse((v) => {
-					if (this.materials[v.uuid]) {
-						v.material = this.materials[v.uuid]
-						delete this.materials[v.uuid]
-					}
-					if (v instanceof THREE.GridHelper) {
-						v.material = this.materials.gridHelper
-						delete this.materials.gridHelper
-					}
-					if (v instanceof THREE.Scene) {
-						v.background = this.materials.scene
-						v.environment = this.materials.environment
-						delete this.materials.scene
-						delete this.materials.environment
-					}
-				})
-			// } else {
-			// 	this.glowComposer.render()
-			// }
-
-			this.effectComposer.render()
-			this.controls.update()
+		if (this.loadingStatus) {
+			//辉光效果开关开启时执行
+			if (this.glowUnrealBloomPass) {
+				// 将不需要处理辉光的材质进行存储备份
+				this.setMeshFlow()
+			} else {
+				this.effectComposer.render()
+				this.controls.update()
+			}
+			TWEEN.update();
 		}
-		TWEEN.update();
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
@@ -311,6 +278,46 @@ class renderModel {
 			})
 
 		})
+	}
+	// 设置材质辉光
+	setMeshFlow() {
+		this.scene.traverse((v) => {
+			if (v instanceof THREE.GridHelper) {
+				this.materials.gridHelper = v.material
+				v.material = new THREE.MeshStandardMaterial({ color: '#000' })
+			}
+			if (v instanceof THREE.Scene) {
+				this.materials.scene = v.background
+				this.materials.environment = v.environment
+				v.background = null
+				v.environment = null
+			}
+			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
+				this.materials[v.uuid] = v.material
+				v.material = new THREE.MeshStandardMaterial({ color: '#000' })
+			}
+		})
+		this.glowComposer.render()
+		// 辉光渲染器执行完之后在恢复材质原效果
+		this.scene.traverse((v) => {
+			if (this.materials[v.uuid]) {
+				v.material = this.materials[v.uuid]
+				delete this.materials[v.uuid]
+			}
+			if (v instanceof THREE.GridHelper) {
+				v.material = this.materials.gridHelper
+				delete this.materials.gridHelper
+			}
+			if (v instanceof THREE.Scene) {
+				v.background = this.materials.scene
+				v.environment = this.materials.environment
+				delete this.materials.scene
+				delete this.materials.environment
+			}
+		})
+		this.effectComposer.render()
+		this.controls.update()
+
 	}
 	// 加载几何体模型
 	setGeometryModel(model) {
@@ -455,6 +462,10 @@ class renderModel {
 		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
 
+		// const bloomPass = new BloomPass(1, 300, 4, 19202);
+		// this.effectComposer.addPass(bloomPass)
+
+
 
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
@@ -474,7 +485,8 @@ class renderModel {
 		const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters)
 		this.glowComposer = new EffectComposer(this.renderer, glowRender)
 		this.glowComposer.renderToScreen = false
-		this.glowComposer.addPass(new RenderPass(this.scene, this.camera))
+		this.glowRenderPass = new RenderPass(this.scene, this.camera)
+		this.glowComposer.addPass(this.glowRenderPass)
 		this.glowComposer.addPass(this.unrealBloomPass)
 		// 着色器
 		this.shaderPass = new ShaderPass(new THREE.ShaderMaterial({
@@ -657,7 +669,7 @@ class renderModel {
 		//模型平面
 		this.planeGeometry = null
 		//模型材质列表
-		this.modelMaterialList = null
+		this.modelMaterialList = []
 		this.originalMaterials.clear()
 		// 效果合成器
 		this.effectComposer = null
@@ -669,6 +681,8 @@ class renderModel {
 		// 鼠标位置
 		this.mouse = null
 		// 辉光效果合成器
+		this.glowComposer.renderer.clear()
+		this.glowComposer.renderer.dispose()
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
@@ -681,6 +695,7 @@ class renderModel {
 		this.dragControls = null
 		this.dragGeometryModel = null
 		this.glowUnrealBloomPass = false
+
 	}
 
 

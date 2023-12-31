@@ -15,7 +15,14 @@
           </el-icon>
           <span> 辉光 </span>
         </el-space>
-        <el-switch v-model="config.glow" @change="onChangeFlow" />
+        <el-tooltip effect="dark" content="注意：辉光效果十分耗费性能，大模型文件开启会有卡顿，请谨慎使用 " placement="top">
+          <el-space>
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+            <el-switch v-model="config.glow" @change="onChangeFlow" />
+          </el-space>
+        </el-tooltip>
       </div>
     </div>
     <div class="options" :class="optionsDisable">
