@@ -11,10 +11,10 @@
 	 * @function onChangeModelMeshType 切换材质类型
 	 * @function onSetGeometryMeshList 设置几何体模型材质
 	 * @function initModelMaterial 重置模型材质数据
+	 * @function onSetMeshVisibe 设置材质显隐
 	 */
 
 import * as THREE from 'three'
-import { ElMessageBox } from 'element-plus';
 import { useMeshEditStore } from '@/store/meshEditStore'
 
 const store = useMeshEditStore()
@@ -32,7 +32,15 @@ function getModelMeaterialList() {
 				const newMaterial = v.material.clone()
 				v.mapId = v.name + '_' + i
 				v.material = newMaterial
-				this.modelMaterialList.push(v)
+				const { mapId, uuid, userData, type, name, isMesh, visible } = v
+				const { color, wireframe, depthWrite, opacity } = v.material
+
+				const meshMaterial = { color, wireframe, depthWrite, opacity }
+				const mesh = {
+					mapId, uuid, userData, type, name, isMesh, visible, material: meshMaterial
+				}
+				this.modelMaterialList.push(mesh)
+
 				const cloneMesh = v.material.clone()
 				cloneMesh.userData.mapId = v.name + '_' + i
 				this.originalMaterials.set(v.uuid, cloneMesh);
@@ -102,6 +110,14 @@ function onSetModelMaterial(config) {
 		})
 	}
 }
+
+// 修改材质显隐
+function onSetMeshVisibe(config) {
+	const mesh = this.scene.getObjectByProperty('uuid', config.uuid)
+	mesh.visible = config.visible
+}
+
+
 // 设置模型贴图（模型自带）
 function onSetModelMap({ mapId, meshName }) {
 	const uuid = store.selectMesh.uuid
@@ -126,9 +142,6 @@ function onSetSystemModelMap({ id, url }) {
 	newMaterial.map.colorSpace = THREE.SRGBColorSpace
 	newMaterial.map.minFilter = THREE.LinearFilter;
 	newMaterial.map.magFilter = THREE.LinearFilter;
-	// newMaterial.map.repeat.set(1, 1);
-	// newMaterial.map.offset.set(0, 0);
-	// newMaterial.map.center.set(.5,.5);
 	mesh.material = newMaterial
 	mesh.mapId = id
 	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
@@ -157,6 +170,7 @@ function onMouseClickModel(event) {
 	} else {
 		this.outlinePass.selectedObjects = []
 		store.selectMeshAction({})
+
 	}
 }
 // 获取最新材质信息列表
@@ -200,34 +214,21 @@ function onChangeModelMeshType(activeMesh) {
 			depthWrite ? v.material.depthWrite = depthWrite : ''
 			opacity ? v.material.opacity = opacity : ''
 			wireframe ? v.material.wireframe = wireframe : ''
-			v.material.side  =THREE.DoubleSide
+			v.material.side = THREE.DoubleSide
 		}
 	})
 }
 // 设置几何体材质
 function onSetGeometryMeshList(v) {
 	this.modelMaterialList = []
-	this.modelTextureMap = []
 	this.model.traverse((v) => {
 		const { name } = v
 		v.castShadow = true
 		v.frustumCulled = false
 		if (v.isMesh && v.material) {
-			const materials = Array.isArray(v.material) ? v.material : [v.material]
-			// 统一将模型材质 设置为 MeshLambertMaterial 类型
 			this.modelMaterialList.push(v)
 			this.originalMaterials.set(v.uuid, v.material)
-			// 获取模型自动材质贴图
-			const { url } = this.getModelMaps(materials)
-			const mesh = {
-				meshName: v.name,
-				material: v.material,
-				url,
-				mapId: name
-			}
-			// 获取当前模型材质
 			v.mapId = name
-			this.modelTextureMap.push(mesh)
 		}
 	})
 }
@@ -240,6 +241,7 @@ function initModelMaterial() {
 			const originalMaterial = this.originalMaterials.get(v.uuid);
 			v.material = originalMaterial.clone();
 			v.mapId = originalMaterial.userData.mapId
+			v.visible = true
 		}
 	});
 	this.modelMaterialList.forEach((v) => {
@@ -263,5 +265,6 @@ export default {
 	onGetEditMeshList,
 	onChangeModelMeshType,
 	onSetGeometryMeshList,
+	onSetMeshVisibe,
 	initModelMaterial
 }

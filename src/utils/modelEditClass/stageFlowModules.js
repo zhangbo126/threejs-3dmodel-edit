@@ -11,6 +11,7 @@
 import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
 import { DragControls } from 'three/examples/jsm/controls/DragControls';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { MODEL_DECOMPOSE } from '@/config/constant.js'
 
 // 设置辉光效果
@@ -30,7 +31,8 @@ function onSetUnrealBloomPass(config) {
 		this.unrealBloomPass.radius = 0
 		this.renderer.toneMappingExposure = toneMappingExposure
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
-
+		this.glowComposer.renderer.clear()
+		this.glowComposer.renderer.dispose()
 	}
 }
 // 模型拆分
@@ -89,15 +91,21 @@ function setModelMeshDrag({ modelDrag }) {
 	// 先把之前的拖拽信息给清除掉
 	if (this.dragControls) this.dragControls.dispose()
 	if (modelDrag) {
-		this.dragControls = new DragControls(this.modelMaterialList, this.camera, this.renderer.domElement);
+		this.dragControls = new TransformControls(this.camera, this.renderer.domElement);
+		this.dragControls.addEventListener('dragging-changed', (event)=>{
+			 console.log(event)
+			this.controls.enabled = !event.value;
+			// console.log(event)
+		})
+	   this.scene.add(this.dragControls)
 		// 拖拽事件监听
-		this.dragControls.addEventListener('dragstart', () => {
-			this.controls.enabled = false
-		})
+		// this.dragControls.addEventListener('dragstart', () => {
+		// 	// this.controls.enabled = false
+		// })
 
-		this.dragControls.addEventListener('dragend', () => {
-			this.controls.enabled = true
-		})
+		// this.dragControls.addEventListener('dragend', () => {
+		// 	this.controls.enabled = true
+		// })
 	}
 }
 // 获取模型材质位拖拽置
@@ -128,7 +136,9 @@ function initStageFlow() {
 	this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 	this.setModelMeshDrag({ modelDrag: false })
 	this.setModelMeshDecompose({ decompose: 0 })
-    this.glowUnrealBloomPass=false
+	this.glowUnrealBloomPass = false
+	this.glowComposer.renderer.clear()
+	this.glowComposer.renderer.dispose()
 }
 
 export default {

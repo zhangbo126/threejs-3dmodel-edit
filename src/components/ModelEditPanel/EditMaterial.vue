@@ -85,8 +85,8 @@
     <div class="header">当前材质自带贴图</div>
     <div class="options">
       <el-scrollbar max-height="140px">
-        <el-row justify="center" :style="{ minHeight: '120px'}">
-          <el-col :span="10" :style="{ textAlign: 'center'}" v-if="activeMeshMap">
+        <el-row justify="center" :style="{ minHeight: '120px' }">
+          <el-col :span="10" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
             <div @click="onChangeModelMap(activeMeshMap)" :class="activeMapId == activeMeshMap.mapId ? 'active' : ''"
               class="mesh-image">
               <el-image :src="activeMeshMap.url" class="mesh-map" fit="cover"> </el-image>
@@ -145,7 +145,6 @@ const state = reactive({
   originalMaterials: computed(() => store.modelApi.originalMaterials),
   modelApi: computed(() => store.modelApi),
   selectMeshUuid: computed(() => store.selectMeshUuid),
-  modelTextureMap: computed(() => store.modelApi.modelTextureMap)
 });
 
 
@@ -245,6 +244,8 @@ const onChangeMeaterial = () => {
 // 设置材质显隐
 const onSetMeshVisibe = (mesh) => {
   mesh.visible = !mesh.visible;
+  state.modelApi.onSetMeshVisibe(mesh);
+
 };
 
 //修改当前材质贴图
