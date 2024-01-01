@@ -29,6 +29,12 @@ function getModelMeaterialList() {
 			v.frustumCulled = false
 			if (v.material) {
 				i++;
+				const newMesh = v.clone()
+				Object.assign(v.userData, {
+					rotation: newMesh.rotation,
+					scale: newMesh.scale,
+					position: newMesh.position,
+				})
 				const newMaterial = v.material.clone()
 				v.mapId = v.name + '_' + i
 				v.material = newMaterial
@@ -161,15 +167,23 @@ function onMouseClickModel(event) {
 	this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
 	this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
 	this.raycaster.setFromCamera(this.mouse, this.camera)
-	const intersectsChildren = this.raycaster.intersectObjects(this.model.children, true)
+	let model
+	if (this.model) model = this.model
+	if (this.geometryGroup.children.length) model = this.geometryGroup
+	if (!model) return false
+
+
+	const intersectsChildren = this.raycaster.intersectObjects(model.children, true)
 	const intersects = intersectsChildren.filter(item => item.object.isMesh && item.object.material)
+
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object
 		this.outlinePass.selectedObjects = [intersectedObject]
 		store.selectMeshAction(intersectedObject)
-		if (this.transformControls && intersectedObject.visible) {
+		if (this.transformControls) {
 			const boundingBox = new THREE.Box3().setFromObject(intersectedObject);
 			const { dragPosition } = intersectedObject.userData
+
 			//检测当前模型位置是否有初始值
 			if (dragPosition) {
 				this.transformControls.position.copy(dragPosition);

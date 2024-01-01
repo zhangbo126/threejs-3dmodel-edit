@@ -87,14 +87,15 @@ function setModelMeshDecompose({ decompose }) {
 	})
 }
 // 模型材质可拖拽
-function setModelMeshDrag({ flag }) {
-	if (flag) {
+function setModelMeshDrag({ manageFlage }) {
+	if (manageFlage) {
 		if (!this.transformControls) {
 			this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
 			this.transformControls.setMode('translate')
 			this.transformControls.addEventListener('dragging-changed', (event) => {
 				this.controls.enabled = !event.value;
 			})
+			this.transformControls.size = 1
 			this.scene.add(this.transformControls)
 		}
 		this.transformControls.attach()
@@ -154,11 +155,23 @@ function initStageFlow() {
 		radius: 0,
 	})
 	this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
-	this.setModelMeshDecompose({ decompose: 0 })
 	this.glowUnrealBloomPass = false
 	this.glowComposer.renderer.clear()
 	this.glowComposer.renderer.dispose()
-	this.transformControls.detach()
+	if (this.transformControls) {
+		this.transformControls.detach()
+		this.transformControls.dispose()
+		this.scene.remove(this.transformControls)
+		this.transformControls = null
+	}
+	this.model.traverse((v) => {
+		if (v.isMesh && v.material) {
+			const { rotation, scale, position } = v.userData
+			v.rotation.set(rotation.x, rotation.y, rotation.z)
+			v.scale.set(scale.x, scale.y, scale.z)
+			v.position.set(position.x, position.y, position.z)
+		}
+	})
 }
 
 export default {

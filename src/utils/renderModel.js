@@ -345,6 +345,14 @@ class renderModel {
 				const mesh = new THREE.Mesh(geometry, material)
 				const { x, y, z } = intersects[0].point
 				mesh.position.set(x, y, z)
+
+				const newMesh = mesh.clone()
+				Object.assign(mesh.userData, {
+					rotation: newMesh.rotation,
+					scale: newMesh.scale,
+					position: newMesh.position,
+				})
+
 				mesh.name = type + '_' + onlyKey(4, 5)
 				mesh.userData.geometry = true
 				this.geometryGroup.add(mesh)
@@ -457,12 +465,12 @@ class renderModel {
 		this.outlinePass.usePatternTexture = false // 是否使用纹理图案
 		this.outlinePass.edgeThickness = 1 // 边缘浓度
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
-		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
+		this.outlinePass.pulsePeriod = 200 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
 		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
 
-		
+
 
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
@@ -514,6 +522,7 @@ class renderModel {
 					this.camera.fov = 80
 					this.camera.updateProjectionMatrix()
 					const load = await this.setGeometryModel(model)
+					this.outlinePass.renderScene = this.geometryGroup
 					reslove()
 				} else {
 					this.clearSceneModel()
@@ -541,8 +550,8 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-		this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
-		this.glowComposer.setSize(clientWidth, clientHeight)
+		if (this.effectComposer) this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
+		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	// 下载场景封面
 	onDownloadScenCover() {
@@ -678,8 +687,10 @@ class renderModel {
 		// 鼠标位置
 		this.mouse = null
 		// 辉光效果合成器
-		this.glowComposer.renderer.clear()
-		this.glowComposer.renderer.dispose()
+		if (this.glowComposer) {
+			this.glowComposer.renderer.clear()
+			this.glowComposer.renderer.dispose()
+		}
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
@@ -726,9 +737,10 @@ class renderModel {
 			this.transformControls.detach()
 			this.transformControls.dispose()
 			this.scene.remove(this.transformControls)
-			this.transformControls=null
+			this.transformControls = null
 		}
 		this.renderer.toneMappingExposure = 2
+		this.outlinePass.selectedObjects = []
 		Object.assign(this.unrealBloomPass, {
 			threshold: 0,
 			strength: 0,
