@@ -4,8 +4,9 @@
 * @function onSetSceneColor 设置场景颜色
 * @function onSetSceneImage 设置场景图片
 * @function onSetSceneViewImage 设置全景图
+* @function onSetSceneViewConfig 设置全景图参数
 */
-import * as THREE from 'three' 
+import * as THREE from 'three'
 
 function onSetSceneColor(color) {
 	this.scene.background = new THREE.Color(color)
@@ -14,19 +15,31 @@ function onSetSceneColor(color) {
 function onSetSceneImage(url) {
 	const texture = new THREE.TextureLoader().load(url);
 	this.scene.background = texture
+	this.scene.backgroundIntensity = 1
 	texture.dispose()
 }
 // 设置全景图
-function onSetSceneViewImage(url) {
-	const texture = new THREE.TextureLoader().load(url);
+function onSetSceneViewImage(config) {
+	const { blurriness, intensity, viewImg } = config
+	const texture = new THREE.TextureLoader().load(viewImg);
 	texture.mapping = THREE.EquirectangularReflectionMapping
 	this.scene.background = texture
 	this.scene.environment = texture
+	this.scene.backgroundIntensity = intensity
+	this.scene.backgroundBlurriness = blurriness
 	texture.dispose()
+}
+
+// 设置全景图
+function onSetSceneViewConfig(config) {
+	const { blurriness, intensity } = config
+	this.scene.backgroundIntensity = intensity
+	this.scene.backgroundBlurriness = blurriness
 }
 
 export default {
 	onSetSceneColor,
 	onSetSceneImage,
-	onSetSceneViewImage
+	onSetSceneViewImage,
+	onSetSceneViewConfig
 }

@@ -29,13 +29,8 @@
       <el-scrollbar max-height="250px" v-show="config.type == 2">
         <el-row>
           <el-col :style="{ textAlign: 'center' }" :span="6" v-for="background in backgrundList" :key="background.id">
-            <el-image
-              @click="onChangeImage(background)"
-              class="el-img"
-              :class="activeBackgroundId == background.id ? 'active' : ''"
-              :src="background.url"
-              fit="cover"
-            />
+            <el-image @click="onChangeImage(background)" class="el-img"
+              :class="activeBackgroundId == background.id ? 'active' : ''" :src="background.url" fit="cover" />
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -53,12 +48,8 @@
             </el-space>
           </div>
           <div class="action">
-            <el-color-picker
-              :predefine="predefineColors"
-              @change="onChangeColor"
-              @active-change="activeChangeColor"
-              v-model="config.color"
-            />
+            <el-color-picker :predefine="predefineColors" @change="onChangeColor" @active-change="activeChangeColor"
+              v-model="config.color" />
           </div>
           <div class="check" v-show="config.type == 1">
             <el-icon size="20px" color="#2a3ff6">
@@ -90,21 +81,39 @@
           </div>
         </el-space>
       </div>
-      <el-scrollbar max-height="350px" v-show="config.type == 3">
+      <el-scrollbar max-height="600px" v-show="config.type == 3">
         <el-row>
-          <el-col
-            :span="6"
-            :style="{ textAlign: 'center' }"
-            v-for="view in viewImageList"
-            :key="view.id"
-          >
-            <el-image
-              @click="onChangeViewImage(view)"
-              class="el-view"
-              :class="activeViewImageId == view.id ? 'active' : ''"
-              :src="view.url"
-              fit="cover"
-            />
+          <el-col :span="6" :style="{ textAlign: 'center' }" v-for="view in viewImageList" :key="view.id">
+            <el-image @click="onChangeViewImage(view)" class="el-view"
+              :class="activeViewImageId == view.id ? 'active' : ''" :src="view.url" fit="cover" />
+          </el-col>
+        </el-row>
+        <el-row v-show="config.type == 3">
+          <el-col>
+            <div class="options">
+              <div class="option">
+                <el-space>
+                  <div class="grid-txt">
+                    <el-button type="primary" link>强度</el-button>
+                  </div>
+                </el-space>
+                <div class="grid-silder">
+                  <el-slider show-input @input="onChangeViewConfig" v-model="config.intensity" :min="0" :max="1"
+                    :step="0.01" />
+                </div>
+              </div>
+              <div class="option">
+                <el-space>
+                  <div class="grid-txt">
+                    <el-button type="primary" link> 模糊</el-button>
+                  </div>
+                </el-space>
+                <div class="grid-silder">
+                  <el-slider show-input @input="onChangeViewConfig" v-model="config.blurriness" :min="0" :max="1"
+                    :step="0.01" />
+                </div>
+              </div>
+            </div>
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -124,6 +133,9 @@ const config = reactive({
   image: require("@/assets/image/model-bg-3.jpg"),
   viewImg: require("@/assets/image/view-4.png"),
   color: "#000",
+  blurriness: 1,
+  intensity: 1,
+
 });
 const activeBackgroundId = ref(3);
 const activeViewImageId = ref(3);
@@ -135,7 +147,11 @@ const optionsDisable = computed(() => {
 const predefineColors = PREDEFINE_COLORS;
 //切换类型
 const onChangeType = (type) => {
-  config.type = type;
+  Object.assign(config, {
+    type,
+    intensity: 1,
+    blurriness: 1,
+  })
   switch (type) {
     case 1:
       store.modelApi.onSetSceneColor(config.color);
@@ -144,7 +160,7 @@ const onChangeType = (type) => {
       store.modelApi.onSetSceneImage(config.image);
       break;
     case 3:
-      store.modelApi.onSetSceneViewImage(config.viewImg);
+      store.modelApi.onSetSceneViewImage(config);
       break;
     default:
       break;
@@ -160,7 +176,7 @@ const onChangeImage = ({ id, url }) => {
 const onChangeViewImage = ({ id, url }) => {
   config.viewImg = url;
   activeViewImageId.value = id;
-  store.modelApi.onSetSceneViewImage(url);
+  store.modelApi.onSetSceneViewImage(config);
 };
 // 颜色面板值发生变化
 const activeChangeColor = (color) => {
@@ -171,6 +187,11 @@ const activeChangeColor = (color) => {
 const onChangeColor = () => {
   store.modelApi.onSetSceneColor(config.color);
 };
+
+// 修改全景图配置
+const onChangeViewConfig = () => {
+  store.modelApi.onSetSceneViewConfig(config);
+}
 
 const onChangeBgSwitch = () => {
   const { type, visible, image, viewImg } = config;
@@ -183,7 +204,7 @@ const onChangeBgSwitch = () => {
       store.modelApi.onSetSceneImage(image);
       break;
     case 3:
-      store.modelApi.onSetSceneViewImage(viewImg);
+      store.modelApi.onSetSceneViewImage(config);
       break;
     default:
       break;
@@ -216,12 +237,14 @@ defineExpose({
   cursor: pointer;
   margin-bottom: 4px;
 }
+
 .el-view {
   width: 60px;
   height: 60px;
   cursor: pointer;
   margin-bottom: 8px;
 }
+
 .active {
   border: 2px solid #18c174;
 }

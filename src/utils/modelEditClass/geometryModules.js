@@ -15,12 +15,12 @@ function onDeleteGeometryMesh(uuid) {
 	this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 	mesh.clear()
 	this.geometryGroup.remove(mesh)
-	this.dragControls.dispose()
+	this.transformControls.dispose()
 	// 更新拖拽函数的材质对象
 	if (this.modelMaterialList.length == 0) {
-		this.setModelMeshDrag({ modelDrag: false })
+		this.setModelMeshDrag({ transformType: false })
 	} else {
-		this.setModelMeshDrag({ modelDrag: true })
+		this.setModelMeshDrag({ transformType: true })
 	}
 }
 function onSetGeometryMesh(activeGeometry, type) {

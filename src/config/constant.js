@@ -190,8 +190,8 @@ export const MODEL_DEFAULT_CONFIG = {
 		"strength": 0.6,
 		"radius": 1,
 		"decompose": 0,
-		"modelDrag": false,
-		"toneMappingExposure": 3,
+		"transformType": 'translate',
+		"toneMappingExposure": 2,
 		"hoverMeshTag": false
 	},
 	"camera": {

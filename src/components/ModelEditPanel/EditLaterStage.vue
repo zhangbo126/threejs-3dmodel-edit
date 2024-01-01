@@ -103,10 +103,19 @@
           <el-icon>
             <Rank :size="20" />
           </el-icon>
-          <span> 模型材质拖拽 </span>
+          <span> 模型材质操作 </span>
         </el-space>
         <div class="grid-silder">
-          <el-switch v-model="config.modelDrag" @change="onChangeDrag" />
+          <el-switch v-model="config.manageFlage" @change="onChangeStage" />
+        </div>
+      </div>
+      <div class="option" :class="manageDisable">
+        <div class="grid-silder">
+          <el-radio-group v-model="config.transformType" @change="onChangeTransform">
+            <el-radio-button label="translate">拖拽</el-radio-button>
+            <el-radio-button label="rotate">旋转</el-radio-button>
+            <el-radio-button label="scale">缩放</el-radio-button>
+          </el-radio-group>
         </div>
       </div>
     </div>
@@ -128,12 +137,15 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return (decomposeMesh.length <= 1) || decomposeMesh.length != modelMaterialList.length || config.modelDrag ? "disabled" : "";
+  return (decomposeMesh.length <= 1) || decomposeMesh.length != modelMaterialList.length || config.manageFlage ? "disabled" : "";
 });
 const moveDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
   return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length ? "disabled" : "";
+});
+const manageDisable = computed(() => {
+  return config.manageFlage ? "" : "disabled";
 });
 
 
@@ -143,7 +155,9 @@ const config = reactive({
   strength: 0.6,
   radius: 1,
   decompose: 0,
-  modelDrag: false,
+  transformType: 'translate',
+  manageFlage: false,
+  manageFlage: false,
   toneMappingExposure: 2,
   color: ''
 });
@@ -155,7 +169,8 @@ onMounted(() => {
       strength: 0.6,
       radius: 1,
       decompose: 0,
-      modelDrag: false,
+      transformType: 'translate',
+      manageFlage: false,
       toneMappingExposure: 2,
     });
   });
@@ -174,20 +189,24 @@ const onChangeFlow = () => {
 const onChangeDecompose = () => {
   store.modelApi.setModelMeshDecompose(config);
 };
-const onChangeDrag = () => {
+const onChangeStage = () => {
   config.decompose = 0;
-  // store.modelApi.setModelMeshDecompose(config);
   store.modelApi.setModelMeshDrag(config);
 };
+const onChangeTransform = (type) => {
+  store.modelApi.setTransformControlsType(type);
+};
+
+
 const onInitialize = () => {
   Object.assign(config, {
-    color:'',
     glow: false,
     threshold: 0.05,
     strength: 0.6,
     radius: 1,
     decompose: 0,
-    modelDrag: false,
+    transformType: 'translate',
+    manageFlage: false,
     toneMappingExposure: 2,
   });
   store.modelApi.initStageFlow()
