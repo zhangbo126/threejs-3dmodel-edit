@@ -10,10 +10,10 @@
 
 import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
-import { DragControls } from 'three/examples/jsm/controls/DragControls';
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { MODEL_DECOMPOSE } from '@/config/constant.js'
-
+import { useMeshEditStore } from '@/store/meshEditStore'
+const store = useMeshEditStore()
 // 设置辉光效果
 function onSetUnrealBloomPass(config) {
 	const { glow, threshold, strength, radius, toneMappingExposure, color } = config
@@ -87,35 +87,56 @@ function setModelMeshDecompose({ decompose }) {
 	})
 }
 // 模型材质可拖拽
-function setModelMeshDrag({ modelDrag }) {
-	// 先把之前的拖拽信息给清除掉
-	if (this.dragControls) this.dragControls.dispose()
-	if (modelDrag) {
-		this.dragControls = new TransformControls(this.camera, this.renderer.domElement);
-		this.dragControls.addEventListener('dragging-changed', (event)=>{
-			 console.log(event)
-			this.controls.enabled = !event.value;
-			// console.log(event)
-		})
-	   this.scene.add(this.dragControls)
-		// 拖拽事件监听
-		// this.dragControls.addEventListener('dragstart', () => {
-		// 	// this.controls.enabled = false
-		// })
-
-		// this.dragControls.addEventListener('dragend', () => {
-		// 	this.controls.enabled = true
-		// })
+function setModelMeshDrag({ manageFlage }) {
+	if (manageFlage) {
+		if (!this.transformControls) {
+			this.transformControls = new TransformControls(this.camera, this.renderer.domElement);
+			this.transformControls.setMode('translate')
+			this.transformControls.addEventListener('dragging-changed', (event) => {
+				this.controls.enabled = !event.value;
+			})
+			this.transformControls.size = 1
+			this.scene.add(this.transformControls)
+		}
+		this.transformControls.attach()
+	} else {
+		if (this.transformControls) {
+			this.transformControls.detach()
+			this.transformControls.dispose()
+			this.scene.remove(this.transformControls)
+			this.transformControls = null
+		}
 	}
 }
+// 设置控制器类型
+function setTransformControlsType(type) {
+	this.transformControls.setMode(type)
+}
+
+
 // 获取模型材质位拖拽置
 function getMeshDragPosition() {
 	const positonList = []
 	this.modelMaterialList.forEach(v => {
 		const mesh = this.model.getObjectByProperty('name', v.name)
+		const { rotation, scale, position } = mesh
 		const obj = {
 			name: v.name,
-			...mesh.position
+			rotation: {
+				x: rotation.x,
+				y: rotation.y,
+				z: rotation.z,
+			},
+			scale: {
+				x: scale.x,
+				y: scale.y,
+				z: scale.z,
+			},
+			position: {
+				x: position.x,
+				y: position.y,
+				z: position.z,
+			},
 		}
 		positonList.push(obj)
 	})
@@ -134,11 +155,23 @@ function initStageFlow() {
 		radius: 0,
 	})
 	this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
-	this.setModelMeshDrag({ modelDrag: false })
-	this.setModelMeshDecompose({ decompose: 0 })
 	this.glowUnrealBloomPass = false
 	this.glowComposer.renderer.clear()
 	this.glowComposer.renderer.dispose()
+	if (this.transformControls) {
+		this.transformControls.detach()
+		this.transformControls.dispose()
+		this.scene.remove(this.transformControls)
+		this.transformControls = null
+	}
+	this.model.traverse((v) => {
+		if (v.isMesh && v.material) {
+			const { rotation, scale, position } = v.userData
+			v.rotation.set(rotation.x, rotation.y, rotation.z)
+			v.scale.set(scale.x, scale.y, scale.z)
+			v.position.set(position.x, position.y, position.z)
+		}
+	})
 }
 
 export default {
@@ -147,5 +180,6 @@ export default {
 	setModelMeshDrag,
 	getMeshDragPosition,
 	onSetFlowColor,
-	initStageFlow
+	initStageFlow,
+	setTransformControlsType
 }

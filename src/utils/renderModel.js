@@ -110,7 +110,7 @@ class renderModel {
 		this.glowMaterialList
 		this.materials = {}
 		// 拖拽对象控制器
-		this.dragControls
+		this.transformControls
 		// 是否开启辉光
 		this.glowUnrealBloomPass = false
 		// 窗口变化监听事件
@@ -157,6 +157,8 @@ class renderModel {
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
+		this.scene.backgroundIntensity = 1
+		this.scene.backgroundBlurriness = 1
 		texture.dispose()
 	}
 	// 创建相机
@@ -343,6 +345,14 @@ class renderModel {
 				const mesh = new THREE.Mesh(geometry, material)
 				const { x, y, z } = intersects[0].point
 				mesh.position.set(x, y, z)
+
+				const newMesh = mesh.clone()
+				Object.assign(mesh.userData, {
+					rotation: newMesh.rotation,
+					scale: newMesh.scale,
+					position: newMesh.position,
+				})
+
 				mesh.name = type + '_' + onlyKey(4, 5)
 				mesh.userData.geometry = true
 				this.geometryGroup.add(mesh)
@@ -351,7 +361,7 @@ class renderModel {
 				this.skeletonHelper.visible = false
 				this.skeletonHelper.dispose()
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
-				this.setModelMeshDrag({ modelDrag: true })
+				this.setModelMeshDrag({ transformType: true })
 				this.scene.add(this.model)
 				//计算控制器缩放大小
 				const box = new THREE.Box3().setFromObject(this.model);
@@ -392,9 +402,7 @@ class renderModel {
 		// 创建环境光
 		this.ambientLight = new THREE.AmbientLight('#fff', .8)
 		this.ambientLight.visible = true
-
 		this.scene.add(this.ambientLight)
-
 		// 创建平行光
 		this.directionalLight = new THREE.DirectionalLight('#fff', 5)
 		this.directionalLight.position.set(-1.44, 2.2, 1)
@@ -450,20 +458,17 @@ class renderModel {
 		this.effectComposer = new EffectComposer(this.renderer)
 		const renderPass = new RenderPass(this.scene, this.camera)
 		this.effectComposer.addPass(renderPass)
-		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera)
+		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.model, this.camera)
 		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
 		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
-		this.outlinePass.edgeGlow = 2.0 // 发光强度
+		this.outlinePass.edgeGlow = 2 // 发光强度
 		this.outlinePass.usePatternTexture = false // 是否使用纹理图案
 		this.outlinePass.edgeThickness = 1 // 边缘浓度
 		this.outlinePass.edgeStrength = 4 // 边缘的强度，值越高边框范围越大
-		this.outlinePass.pulsePeriod = 100 // 闪烁频率，值越大频率越低
+		this.outlinePass.pulsePeriod = 200 // 闪烁频率，值越大频率越低
 		this.effectComposer.addPass(this.outlinePass)
 		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
-
-		// const bloomPass = new BloomPass(1, 300, 4, 19202);
-		// this.effectComposer.addPass(bloomPass)
 
 
 
@@ -517,16 +522,17 @@ class renderModel {
 					this.camera.fov = 80
 					this.camera.updateProjectionMatrix()
 					const load = await this.setGeometryModel(model)
+					this.outlinePass.renderScene = this.geometryGroup
 					reslove()
 				} else {
 					this.clearSceneModel()
 					// 重置"灯光"模块数据
 					this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
-
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
+					this.outlinePass.renderScene = this.model
 					// 模型加载成功返回 true
 					reslove({ load, filePath: model.filePath })
 				}
@@ -544,8 +550,8 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-		this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
-		this.glowComposer.setSize(clientWidth, clientHeight)
+		if (this.effectComposer) this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
+		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	// 下载场景封面
 	onDownloadScenCover() {
@@ -677,12 +683,14 @@ class renderModel {
 		// 动画渲染器
 		this.renderAnimation = null
 		// 碰撞检测
-		this.raycaster == null
+		this.raycaster = null
 		// 鼠标位置
 		this.mouse = null
 		// 辉光效果合成器
-		this.glowComposer.renderer.clear()
-		this.glowComposer.renderer.dispose()
+		if (this.glowComposer) {
+			this.glowComposer.renderer.clear()
+			this.glowComposer.renderer.dispose()
+		}
 		this.glowComposer = null
 		// 辉光渲染器
 		this.unrealBloomPass = null
@@ -692,7 +700,7 @@ class renderModel {
 		this.glowMaterialList = null
 		this.materials = null
 		// 拖拽对象控制器
-		this.dragControls = null
+		this.transformControls = null
 		this.dragGeometryModel = null
 		this.glowUnrealBloomPass = false
 
@@ -725,10 +733,14 @@ class renderModel {
 		this.modelMaterialList = []
 		this.originalMaterials.clear()
 		this.materials = {}
-		if (this.dragControls) {
-			this.dragControls.dispose()
+		if (this.transformControls) {
+			this.transformControls.detach()
+			this.transformControls.dispose()
+			this.scene.remove(this.transformControls)
+			this.transformControls = null
 		}
 		this.renderer.toneMappingExposure = 2
+		this.outlinePass.selectedObjects = []
 		Object.assign(this.unrealBloomPass, {
 			threshold: 0,
 			strength: 0,

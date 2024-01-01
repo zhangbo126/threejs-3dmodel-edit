@@ -468,7 +468,7 @@ class renderModel {
 		if (!background) return false
 		// 设置背景
 		if (background.visible) {
-			const { color, image, viewImg } = background
+			const { color, image, viewImg, intensity, blurriness } = background
 			switch (background.type) {
 				case 1:
 					this.scene.background = new THREE.Color(color)
@@ -483,6 +483,8 @@ class renderModel {
 					texture.mapping = THREE.EquirectangularReflectionMapping
 					this.scene.background = texture
 					this.scene.environment = texture
+					this.scene.backgroundIntensity = intensity
+					this.scene.backgroundBlurriness = blurriness
 					texture.dispose()
 					break;
 				default:
@@ -583,8 +585,10 @@ class renderModel {
 		// 模型材质位置
 		meshPositonList.forEach(v => {
 			const mesh = this.model.getObjectByProperty('name', v.name)
-			const { x, y, z } = v
-			mesh.position.set(x, y, z)
+			const { rotation, scale, position } = v
+			mesh.rotation.set(rotation.x, rotation.y, rotation.z)
+			mesh.scale.set(scale.x, scale.y, scale.z)
+			mesh.position.set(position.x, position.y, position.z)
 		})
 	}
 	// 鼠标移入模型材质
