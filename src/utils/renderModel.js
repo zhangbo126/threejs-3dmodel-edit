@@ -260,7 +260,6 @@ class renderModel {
 						break;
 				}
 				this.model.decomposeName = decomposeName
-				this.modelAnimation = result.animations || []
 				this.getModelMeaterialList()
 				this.setModelPositionSize()
 				this.skeletonHelper.visible = false
@@ -270,6 +269,7 @@ class renderModel {
 				this.scene.add(this.model)
 				this.loadingStatus = true
 				resolve(true)
+				this.getModelAnimaionList(result)
 
 			}, (xhr) => {
 				this.modelProgressCallback(xhr.loaded)
@@ -455,7 +455,7 @@ class renderModel {
 	createEffectComposer() {
 		if (!this.container) return false
 		const { clientHeight, clientWidth } = this.container
-		this.effectComposer = new EffectComposer(this.renderer)
+		this.effectComposer = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(clientWidth, clientHeight))
 		const renderPass = new RenderPass(this.scene, this.camera)
 		this.effectComposer.addPass(renderPass)
 		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.model, this.camera)
@@ -469,7 +469,6 @@ class renderModel {
 		this.effectComposer.addPass(this.outlinePass)
 		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
-
 
 
 		let effectFXAA = new ShaderPass(FXAAShader)
@@ -509,7 +508,7 @@ class renderModel {
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
 		this.shaderPass.renderToScreen = true
 		this.shaderPass.needsSwap = true
-		this.effectComposer.addPass(this.shaderPass)
+		this.shaderPass.name = 'ShaderColor'
 	}
 	// 切换模型
 	onSwitchModel(model) {
@@ -738,6 +737,13 @@ class renderModel {
 			this.transformControls.dispose()
 			this.scene.remove(this.transformControls)
 			this.transformControls = null
+		}
+		if (this.glowComposer) {
+			this.glowComposer.renderer.clear()
+			this.glowComposer.renderer.dispose()
+		}
+		if (this.effectComposer) {
+			this.effectComposer.removePass(this.shaderPass)
 		}
 		this.renderer.toneMappingExposure = 2
 		this.outlinePass.selectedObjects = []

@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-box">
+  <div class="edit-box" v-zLoading="loading">
     <div class="header">
       <span>背景</span>
       <el-switch v-model="config.visible" @change="onChangeBgSwitch" />
@@ -90,6 +90,32 @@
         </el-row>
         <el-row v-show="config.type == 3">
           <el-col>
+            <div class="option">
+              <div class="icon-name">
+                <el-space>
+                  <span>外部资源</span>
+                </el-space>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-upload action="" accept=".jpg,.png,.hdr" :show-file-list="false" :auto-upload="false"
+              :on-change="onUploadTexture">
+              <div class="texture-add">
+                <div class="icon">
+                  <el-tooltip effect="dark" content="该功能仅作预览，数据无法保存" placement="top">
+                    <el-icon size="60">
+                      <UploadFilled />
+                    </el-icon>
+                  </el-tooltip>
+                  <span>加载外部全景图</span>
+                </div>
+              </div>
+            </el-upload>
+          </el-col>
+        </el-row>
+        <el-row v-show="config.type == 3">
+          <el-col>
             <div class="options">
               <div class="option">
                 <el-space>
@@ -118,7 +144,6 @@
         </el-row>
       </el-scrollbar>
     </div>
-
   </div>
 </template>
 <script setup>
@@ -126,6 +151,8 @@ import { ref, reactive, computed } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
 import { backgrundList, viewImageList } from "@/config/model.js";
+import { getFileType } from '@/utils/utilityFunction'
+import { ElMessage } from 'element-plus'
 const store = useMeshEditStore();
 const config = reactive({
   visible: true,
@@ -135,8 +162,9 @@ const config = reactive({
   color: "#000",
   blurriness: 1,
   intensity: 1,
-
 });
+
+const loading = ref(false)
 const activeBackgroundId = ref(3);
 const activeViewImageId = ref(3);
 
@@ -173,11 +201,26 @@ const onChangeImage = ({ id, url }) => {
   store.modelApi.onSetSceneImage(url);
 };
 //选择全景图
-const onChangeViewImage = ({ id, url }) => {
-  config.viewImg = url;
-  activeViewImageId.value = id;
-  store.modelApi.onSetSceneViewImage(config);
+const onChangeViewImage = async ({ id, url }) => {
+  try {
+    loading.value = true
+    config.viewImg = url;
+    activeViewImageId.value = id;
+    await store.modelApi.onSetSceneViewImage(config);
+  } finally {
+    loading.value = false
+    ElMessage.success("操作成功");
+  }
 };
+
+// 上传外部图片
+const onUploadTexture = async (file) => {
+  const filePath = URL.createObjectURL(file.raw);
+  await store.modelApi.onSetStorageViewImage(filePath, getFileType(file.name));
+  URL.revokeObjectURL(filePath)
+  ElMessage.success("操作成功");
+}
+
 // 颜色面板值发生变化
 const activeChangeColor = (color) => {
   config.color = color;
@@ -247,5 +290,36 @@ defineExpose({
 
 .active {
   border: 2px solid #18c174;
+}
+
+.texture-add {
+  width: 228px;
+  height: 108px;
+  border: 1px dashed #dcdfe6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+
+  .icon {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    span {
+      font-size: 14px;
+    }
+  }
+
+  &:hover {
+    border-color: #409eff;
+
+    .icon {
+      color: #409eff;
+
+    }
+  }
 }
 </style>

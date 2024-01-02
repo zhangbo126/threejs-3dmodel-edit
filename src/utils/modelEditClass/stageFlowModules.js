@@ -12,8 +12,6 @@ import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { MODEL_DECOMPOSE } from '@/config/constant.js'
-import { useMeshEditStore } from '@/store/meshEditStore'
-const store = useMeshEditStore()
 // 设置辉光效果
 function onSetUnrealBloomPass(config) {
 	const { glow, threshold, strength, radius, toneMappingExposure, color } = config
@@ -24,7 +22,13 @@ function onSetUnrealBloomPass(config) {
 		this.unrealBloomPass.radius = radius
 		this.renderer.toneMappingExposure = toneMappingExposure
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
-
+		// TODO：如果辉光开启在动态添加着色器（性能优化）
+		const passesArray = this.effectComposer.passes || []
+		const shaderColor = passesArray.find(v=>v.name=='ShaderColor') || {}
+		if(!shaderColor.name){
+	    	this.effectComposer.addPass(this.shaderPass)  
+		}
+		
 	} else {
 		this.unrealBloomPass.threshold = 0
 		this.unrealBloomPass.strength = 0
@@ -33,6 +37,8 @@ function onSetUnrealBloomPass(config) {
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		this.glowComposer.renderer.clear()
 		this.glowComposer.renderer.dispose()
+		this.effectComposer.removePass(this.shaderPass)
+
 	}
 }
 // 模型拆分
@@ -164,6 +170,7 @@ function initStageFlow() {
 		this.scene.remove(this.transformControls)
 		this.transformControls = null
 	}
+	this.effectComposer.removePass(this.shaderPass)
 	this.model.traverse((v) => {
 		if (v.isMesh && v.material) {
 			const { rotation, scale, position } = v.userData

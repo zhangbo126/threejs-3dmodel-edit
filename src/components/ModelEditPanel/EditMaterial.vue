@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-box">
+  <div class="edit-box" v-zLoading="loading">
     <div class="header">
       <span>材质类型</span>
       <el-button type="primary" icon="Refresh" @click="onInitialize">
@@ -85,8 +85,8 @@
     <div class="header">当前材质自带贴图</div>
     <div class="options">
       <el-scrollbar max-height="140px">
-        <el-row justify="center" :style="{ minHeight: '120px' }">
-          <el-col :span="10" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
+        <el-row justify="center" align="middle" :style="{ minHeight: '120px' }">
+          <el-col :span="10" :offse="4" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
             <div @click="onChangeModelMap(activeMeshMap)" :class="activeMapId == activeMeshMap.mapId ? 'active' : ''"
               class="mesh-image">
               <el-image :src="activeMeshMap.url" class="mesh-map" fit="cover"> </el-image>
@@ -94,6 +94,14 @@
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
               </div>
             </div>
+          </el-col>
+          <el-col :span="8" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
+            <el-upload action="" accept=".jpg,.png,.hdr" :show-file-list="false" :auto-upload="false"
+              :on-change="onUploadTexture">
+              <el-tooltip effect="dark" content="该功能仅仅作预览，数据无法保存 " placement="top">
+                <el-button type="primary" icon="UploadFilled">加载外部贴图</el-button>
+              </el-tooltip>
+            </el-upload>
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -116,9 +124,10 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, onMounted, getCurrentInstance, watch, watchEffect } from "vue";
+import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
+import { getFileType } from '@/utils/utilityFunction'
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
@@ -132,6 +141,7 @@ const config = reactive({
   depthWrite: true,
   opacity: 1,
 });
+const loading = ref(false)
 const activeMeshType = ref('');
 const activeMeshMap = ref(null)
 const activeMapId = ref(null);
@@ -164,7 +174,7 @@ onMounted(() => {
 watch(() => store.selectMeshUuid,
   (val) => {
     const mesh = state.modelMaterialList.find((v) => v.uuid == val) || {};
-    activeMapId.value = mesh.mapId;
+    activeMapId.value = mesh.mapId
     if (mesh.mapId) {
       const { color, wireframe, depthWrite, opacity } = mesh.material;
       const newColor = new THREE.Color(color).getStyle()
@@ -255,11 +265,29 @@ const onChangeModelMap = (map) => {
   ElMessage.success("当前材质贴图修改成功");
 };
 // 修改当前材质贴图
-const onChangeSystemModelMap = (map) => {
-  activeMapId.value = map.id;
-  state.modelApi.onSetSystemModelMap(map);
-  ElMessage.success("当前材质贴图修改成功");
+const onChangeSystemModelMap = async (map) => {
+  try {
+    loading.value = true
+    activeMapId.value = map.id;
+    // 修改当前材质列表的贴图ID
+    const mesh = state.modelMaterialList.find((v) => v.uuid == store.selectMeshUuid) || {};
+    mesh.mapId = map.id
+    state.modelApi.onSetSystemModelMap(map);
+    ElMessage.success("当前材质贴图修改成功");
+  } finally {
+    loading.value = false
+
+  }
 };
+
+// 上传外部贴图
+const onUploadTexture = async (file) => {
+  const filePath = URL.createObjectURL(file.raw);
+  await state.modelApi.onSetStorageModelMap(filePath, getFileType(file.name));
+  URL.revokeObjectURL(filePath)
+  ElMessage.success("当前材质贴图修改成功");
+
+}
 
 // 重置数据
 const onInitialize = () => {
@@ -273,6 +301,7 @@ const onInitialize = () => {
   activeMeshType.value = ''
   activeMapId.value = null
   state.modelApi.initModelMaterial()
+
 }
 
 
@@ -333,7 +362,7 @@ defineExpose({
 }
 
 .mesh-image {
-  max-width: 220px;
+  max-width: 140px;
   box-sizing: border-box;
   position: relative;
   font-size: 0;

@@ -15,8 +15,8 @@
 	 */
 
 import * as THREE from 'three'
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { useMeshEditStore } from '@/store/meshEditStore'
-
 const store = useMeshEditStore()
 
 // 获取当前模型材质
@@ -35,6 +35,7 @@ function getModelMeaterialList() {
 					scale: newMesh.scale,
 					position: newMesh.position,
 				})
+
 				const newMaterial = v.material.clone()
 				v.mapId = v.name + '_' + i
 				v.material = newMaterial
@@ -50,9 +51,11 @@ function getModelMeaterialList() {
 				const cloneMesh = v.material.clone()
 				cloneMesh.userData.mapId = v.name + '_' + i
 				this.originalMaterials.set(v.uuid, cloneMesh);
+
 			}
 		}
 	})
+
 
 }
 
@@ -115,6 +118,14 @@ function onSetModelMaterial(config) {
 			opacity
 		})
 	}
+	// 修改当前材质列表的参数
+	const listMesh = this.modelMaterialList.find((v) => v.uuid == uuid) || {};
+	Object.assign(listMesh.material, {
+		color: new THREE.Color(color),
+		wireframe,
+		depthWrite,
+		opacity
+	})
 }
 
 // 修改材质显隐
@@ -135,24 +146,57 @@ function onSetModelMap({ mapId, meshName }) {
 	mesh.meshFrom = meshName
 }
 
-// 设置模型贴图（系统贴图）
+// 设置模型贴图（系统贴图） 
 function onSetSystemModelMap({ id, url }) {
-	const uuid = store.selectMesh.uuid
-	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	const texture = new THREE.TextureLoader().load(url)
-	const newMaterial = mesh.material.clone()
-	newMaterial.map = texture
-	newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
-	newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
-	newMaterial.map.flipY = false
-	newMaterial.map.colorSpace = THREE.SRGBColorSpace
-	newMaterial.map.minFilter = THREE.LinearFilter;
-	newMaterial.map.magFilter = THREE.LinearFilter;
-	mesh.material = newMaterial
-	mesh.mapId = id
-	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
-	mesh.meshFrom = id
-	texture.dispose()
+	return new Promise((reslove) => {
+		const uuid = store.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		const texture = new THREE.TextureLoader().load(url)
+		const newMaterial = mesh.material.clone()
+		newMaterial.map = texture
+		newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
+		newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
+		newMaterial.map.flipY = false
+		newMaterial.map.colorSpace = THREE.SRGBColorSpace
+		newMaterial.map.minFilter = THREE.LinearFilter;
+		newMaterial.map.magFilter = THREE.LinearFilter;
+		mesh.material = newMaterial
+		mesh.mapId = id
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = id
+		texture.dispose()
+		reslove()
+	})
+}
+
+// 设置模型贴图 (外部) 
+function onSetStorageModelMap(url, type) {
+	return new Promise(async (reslove) => {
+		const uuid = store.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		// 根据 图片类型选择不同的加载器
+		let loader
+		let texture
+		if (type == 'hdr') {
+			loader = new RGBELoader()
+		} else {
+			loader = new THREE.TextureLoader()
+		}
+
+		texture = await loader.loadAsync(url)
+		const newMaterial = mesh.material.clone()
+		newMaterial.map = texture
+		newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
+		newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
+		newMaterial.map.flipY = false
+		newMaterial.map.colorSpace = THREE.SRGBColorSpace
+		newMaterial.map.minFilter = THREE.LinearFilter;
+		newMaterial.map.magFilter = THREE.LinearFilter;
+		mesh.material = newMaterial
+		texture.dispose()
+		reslove()
+	})
+
 }
 // 选择材质
 function onChangeModelMeaterial(name) {
@@ -171,7 +215,6 @@ function onMouseClickModel(event) {
 	if (this.model) model = this.model
 	if (this.geometryGroup.children.length) model = this.geometryGroup
 	if (!model) return false
-
 
 	const intersectsChildren = this.raycaster.intersectObjects(model.children, true)
 	const intersects = intersectsChildren.filter(item => item.object.isMesh && item.object.material)
@@ -263,7 +306,7 @@ function onSetGeometryMeshList(v) {
 	})
 }
 
-
+// 重置模型材质数据
 function initModelMaterial() {
 	this.model.traverse(v => {
 		if (v.isMesh && v.material) {
@@ -276,9 +319,17 @@ function initModelMaterial() {
 	});
 	this.modelMaterialList.forEach((v) => {
 		v.visible = true
+		const originalMaterial = this.originalMaterials.get(v.uuid);
+		v.mapId = originalMaterial.userData.mapId
+		const { color, wireframe, depthWrite, opacity } = originalMaterial
+		Object.assign(v.material, {
+			color, wireframe, depthWrite, opacity
+		})
 	})
 	store.selectMeshAction({})
 }
+
+
 
 
 
@@ -290,6 +341,7 @@ export default {
 	onSetModelMaterial,
 	onSetModelMap,
 	onSetSystemModelMap,
+	onSetStorageModelMap,
 	onChangeModelMeaterial,
 	onMouseClickModel,
 	onGetEditMeshList,
