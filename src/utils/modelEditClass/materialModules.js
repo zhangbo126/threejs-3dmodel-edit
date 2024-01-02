@@ -15,8 +15,8 @@
 	 */
 
 import * as THREE from 'three'
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { useMeshEditStore } from '@/store/meshEditStore'
-
 const store = useMeshEditStore()
 
 // 获取当前模型材质
@@ -47,7 +47,7 @@ function getModelMeaterialList() {
 					mapId, uuid, userData, type, name, isMesh, visible, material: meshMaterial
 				}
 				this.modelMaterialList.push(mesh)
-				
+
 				const cloneMesh = v.material.clone()
 				cloneMesh.userData.mapId = v.name + '_' + i
 				this.originalMaterials.set(v.uuid, cloneMesh);
@@ -146,7 +146,7 @@ function onSetModelMap({ mapId, meshName }) {
 	mesh.meshFrom = meshName
 }
 
-// 设置模型贴图（系统贴图）
+// 设置模型贴图（系统贴图） 
 function onSetSystemModelMap({ id, url }) {
 	const uuid = store.selectMesh.uuid
 	const mesh = this.scene.getObjectByProperty('uuid', uuid)
@@ -164,6 +164,36 @@ function onSetSystemModelMap({ id, url }) {
 	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
 	mesh.meshFrom = id
 	texture.dispose()
+}
+
+// 设置模型贴图 (外部) getFileType
+function onSetStorageModelMap(url, type) {
+	return new Promise(async (reslove) => {
+		const uuid = store.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		// 根据 图片类型选择不同的加载器
+		let loader
+		let texture
+		if (type == 'hdr') {
+			loader = new RGBELoader()
+		} else {
+			loader = new THREE.TextureLoader()
+		}
+
+		texture = await loader.loadAsync(url)
+		const newMaterial = mesh.material.clone()
+		newMaterial.map = texture
+		newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
+		newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
+		newMaterial.map.flipY = false
+		newMaterial.map.colorSpace = THREE.SRGBColorSpace
+		newMaterial.map.minFilter = THREE.LinearFilter;
+		newMaterial.map.magFilter = THREE.LinearFilter;
+		mesh.material = newMaterial
+		texture.dispose()
+		reslove()
+	})
+
 }
 // 选择材质
 function onChangeModelMeaterial(name) {
@@ -299,6 +329,8 @@ function initModelMaterial() {
 
 
 
+
+
 export default {
 	getModelMeaterialList,
 	setModelPositionSize,
@@ -306,6 +338,7 @@ export default {
 	onSetModelMaterial,
 	onSetModelMap,
 	onSetSystemModelMap,
+	onSetStorageModelMap,
 	onChangeModelMeaterial,
 	onMouseClickModel,
 	onGetEditMeshList,

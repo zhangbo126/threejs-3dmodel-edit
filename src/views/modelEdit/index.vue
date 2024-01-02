@@ -249,6 +249,9 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="scss">
+.edit-box{
+   height: calc(100vh - 79px);
+}
 .edit-box,
 .model-choose {
   .header {

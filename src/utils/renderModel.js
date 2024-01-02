@@ -260,7 +260,6 @@ class renderModel {
 						break;
 				}
 				this.model.decomposeName = decomposeName
-
 				this.getModelMeaterialList()
 				this.setModelPositionSize()
 				this.skeletonHelper.visible = false
