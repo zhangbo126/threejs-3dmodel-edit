@@ -22,14 +22,17 @@ function onSetSceneImage(url) {
 }
 // 设置全景图
 function onSetSceneViewImage(config) {
-	const { blurriness, intensity, viewImg } = config
-	const texture = new THREE.TextureLoader().load(viewImg);
-	texture.mapping = THREE.EquirectangularReflectionMapping
-	this.scene.background = texture
-	this.scene.environment = texture
-	this.scene.backgroundIntensity = intensity
-	this.scene.backgroundBlurriness = blurriness
-	texture.dispose()
+	return new Promise((reslove) => {
+		const { blurriness, intensity, viewImg } = config
+		const texture = new THREE.TextureLoader().load(viewImg);
+		texture.mapping = THREE.EquirectangularReflectionMapping
+		this.scene.background = texture
+		this.scene.environment = texture
+		this.scene.backgroundIntensity = intensity
+		this.scene.backgroundBlurriness = blurriness
+		texture.dispose()
+		reslove()
+	})
 }
 
 // 设置全景图

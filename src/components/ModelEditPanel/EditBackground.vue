@@ -201,23 +201,24 @@ const onChangeImage = ({ id, url }) => {
   store.modelApi.onSetSceneImage(url);
 };
 //选择全景图
-const onChangeViewImage = ({ id, url }) => {
-  config.viewImg = url;
-  activeViewImageId.value = id;
-  store.modelApi.onSetSceneViewImage(config);
+const onChangeViewImage = async ({ id, url }) => {
+  try {
+    loading.value = true
+    config.viewImg = url;
+    activeViewImageId.value = id;
+    await store.modelApi.onSetSceneViewImage(config);
+  } finally {
+    loading.value = false
+    ElMessage.success("操作成功");
+  }
 };
 
 // 上传外部图片
 const onUploadTexture = async (file) => {
-  loading.value = true
-  try {
-    const filePath = URL.createObjectURL(file.raw);
-    await store.modelApi.onSetStorageViewImage(filePath, getFileType(file.name));
-    URL.revokeObjectURL(filePath)
-    ElMessage.success("操作成功");
-  } finally {
-    loading.value = false
-  }
+  const filePath = URL.createObjectURL(file.raw);
+  await store.modelApi.onSetStorageViewImage(filePath, getFileType(file.name));
+  URL.revokeObjectURL(filePath)
+  ElMessage.success("操作成功");
 }
 
 // 颜色面板值发生变化

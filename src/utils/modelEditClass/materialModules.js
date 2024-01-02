@@ -148,25 +148,28 @@ function onSetModelMap({ mapId, meshName }) {
 
 // 设置模型贴图（系统贴图） 
 function onSetSystemModelMap({ id, url }) {
-	const uuid = store.selectMesh.uuid
-	const mesh = this.scene.getObjectByProperty('uuid', uuid)
-	const texture = new THREE.TextureLoader().load(url)
-	const newMaterial = mesh.material.clone()
-	newMaterial.map = texture
-	newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
-	newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
-	newMaterial.map.flipY = false
-	newMaterial.map.colorSpace = THREE.SRGBColorSpace
-	newMaterial.map.minFilter = THREE.LinearFilter;
-	newMaterial.map.magFilter = THREE.LinearFilter;
-	mesh.material = newMaterial
-	mesh.mapId = id
-	// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
-	mesh.meshFrom = id
-	texture.dispose()
+	return new Promise((reslove) => {
+		const uuid = store.selectMesh.uuid
+		const mesh = this.scene.getObjectByProperty('uuid', uuid)
+		const texture = new THREE.TextureLoader().load(url)
+		const newMaterial = mesh.material.clone()
+		newMaterial.map = texture
+		newMaterial.map.wrapS = THREE.MirroredRepeatWrapping;
+		newMaterial.map.wrapT = THREE.MirroredRepeatWrapping;
+		newMaterial.map.flipY = false
+		newMaterial.map.colorSpace = THREE.SRGBColorSpace
+		newMaterial.map.minFilter = THREE.LinearFilter;
+		newMaterial.map.magFilter = THREE.LinearFilter;
+		mesh.material = newMaterial
+		mesh.mapId = id
+		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
+		mesh.meshFrom = id
+		texture.dispose()
+		reslove()
+	})
 }
 
-// 设置模型贴图 (外部) getFileType
+// 设置模型贴图 (外部) 
 function onSetStorageModelMap(url, type) {
 	return new Promise(async (reslove) => {
 		const uuid = store.selectMesh.uuid

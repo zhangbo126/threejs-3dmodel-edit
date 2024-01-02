@@ -265,28 +265,28 @@ const onChangeModelMap = (map) => {
   ElMessage.success("当前材质贴图修改成功");
 };
 // 修改当前材质贴图
-const onChangeSystemModelMap = (map) => {
-  activeMapId.value = map.id;
-  // 修改当前材质列表的贴图ID
-  const mesh = state.modelMaterialList.find((v) => v.uuid == store.selectMeshUuid) || {};
-  mesh.mapId = map.id
-  state.modelApi.onSetSystemModelMap(map);
-  ElMessage.success("当前材质贴图修改成功");
+const onChangeSystemModelMap = async (map) => {
+  try {
+    loading.value = true
+    activeMapId.value = map.id;
+    // 修改当前材质列表的贴图ID
+    const mesh = state.modelMaterialList.find((v) => v.uuid == store.selectMeshUuid) || {};
+    mesh.mapId = map.id
+    state.modelApi.onSetSystemModelMap(map);
+    ElMessage.success("当前材质贴图修改成功");
+  } finally {
+    loading.value = false
+
+  }
 };
 
 // 上传外部贴图
 const onUploadTexture = async (file) => {
-  loading.value = true
+  const filePath = URL.createObjectURL(file.raw);
+  await state.modelApi.onSetStorageModelMap(filePath, getFileType(file.name));
+  URL.revokeObjectURL(filePath)
+  ElMessage.success("当前材质贴图修改成功");
 
-  try {
-    const filePath = URL.createObjectURL(file.raw);
-    await state.modelApi.onSetStorageModelMap(filePath, getFileType(file.name));
-    URL.revokeObjectURL(filePath)
-    ElMessage.success("当前材质贴图修改成功");
-  } catch {
-    loading.value = false
-
-  }
 }
 
 // 重置数据
