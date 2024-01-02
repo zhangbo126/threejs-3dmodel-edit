@@ -6,6 +6,7 @@
 	 * @function onClearAnimation 清除动画
 	 * @function onSetRotation 设置模型轴动画
 	 * @function onSetRotationType 设置模型轴动画类型
+	 * @function getModelAnimaionList 获取当前模型动画列表
  */
 
 import * as THREE from 'three'
@@ -67,6 +68,11 @@ function rotationAnimationFun(rotationType, rotationSpeed) {
 	this.model.rotation[rotationType] += rotationSpeed / 50
 }
 
+//获取当前模型动画
+function getModelAnimaionList(result) {
+    this.modelAnimation =result.animations || []
+}
+
 export default {
 	onStartModelAnimaion,
 	onSetModelAnimaion,
@@ -74,5 +80,6 @@ export default {
 	onClearAnimation,
 	onSetRotation,
 	onSetRotationType,
-	rotationAnimationFun
+	rotationAnimationFun,
+	getModelAnimaionList
 }

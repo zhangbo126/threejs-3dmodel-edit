@@ -164,7 +164,7 @@ onMounted(() => {
 watch(() => store.selectMeshUuid,
   (val) => {
     const mesh = state.modelMaterialList.find((v) => v.uuid == val) || {};
-    activeMapId.value = mesh.mapId;
+    activeMapId.value = mesh.mapId
     if (mesh.mapId) {
       const { color, wireframe, depthWrite, opacity } = mesh.material;
       const newColor = new THREE.Color(color).getStyle()
@@ -176,6 +176,8 @@ watch(() => store.selectMeshUuid,
       });
 
       const originMaterial = state.originalMaterials.get(mesh.uuid)
+
+
       activeMeshMap.value = {
         url: getModelMaps(mesh),
         name: mesh.name,
@@ -257,6 +259,9 @@ const onChangeModelMap = (map) => {
 // 修改当前材质贴图
 const onChangeSystemModelMap = (map) => {
   activeMapId.value = map.id;
+  // 修改当前材质列表的贴图ID
+  const mesh = state.modelMaterialList.find((v) => v.uuid == store.selectMeshUuid) || {};
+  mesh.mapId = map.id
   state.modelApi.onSetSystemModelMap(map);
   ElMessage.success("当前材质贴图修改成功");
 };
@@ -273,6 +278,7 @@ const onInitialize = () => {
   activeMeshType.value = ''
   activeMapId.value = null
   state.modelApi.initModelMaterial()
+
 }
 
 

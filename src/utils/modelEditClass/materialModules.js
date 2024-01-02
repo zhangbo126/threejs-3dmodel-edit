@@ -35,6 +35,7 @@ function getModelMeaterialList() {
 					scale: newMesh.scale,
 					position: newMesh.position,
 				})
+
 				const newMaterial = v.material.clone()
 				v.mapId = v.name + '_' + i
 				v.material = newMaterial
@@ -46,13 +47,15 @@ function getModelMeaterialList() {
 					mapId, uuid, userData, type, name, isMesh, visible, material: meshMaterial
 				}
 				this.modelMaterialList.push(mesh)
-
+				
 				const cloneMesh = v.material.clone()
 				cloneMesh.userData.mapId = v.name + '_' + i
 				this.originalMaterials.set(v.uuid, cloneMesh);
+
 			}
 		}
 	})
+
 
 }
 
@@ -115,6 +118,14 @@ function onSetModelMaterial(config) {
 			opacity
 		})
 	}
+	// 修改当前材质列表的参数
+	const listMesh = this.modelMaterialList.find((v) => v.uuid == uuid) || {};
+	Object.assign(listMesh.material, {
+		color: new THREE.Color(color),
+		wireframe,
+		depthWrite,
+		opacity
+	})
 }
 
 // 修改材质显隐
@@ -171,7 +182,6 @@ function onMouseClickModel(event) {
 	if (this.model) model = this.model
 	if (this.geometryGroup.children.length) model = this.geometryGroup
 	if (!model) return false
-
 
 	const intersectsChildren = this.raycaster.intersectObjects(model.children, true)
 	const intersects = intersectsChildren.filter(item => item.object.isMesh && item.object.material)
@@ -263,7 +273,7 @@ function onSetGeometryMeshList(v) {
 	})
 }
 
-
+// 重置模型材质数据
 function initModelMaterial() {
 	this.model.traverse(v => {
 		if (v.isMesh && v.material) {
@@ -276,6 +286,12 @@ function initModelMaterial() {
 	});
 	this.modelMaterialList.forEach((v) => {
 		v.visible = true
+		const originalMaterial = this.originalMaterials.get(v.uuid);
+		v.mapId = originalMaterial.userData.mapId
+		const { color, wireframe, depthWrite, opacity } = originalMaterial
+		Object.assign(v.material, {
+			color, wireframe, depthWrite, opacity
+		})
 	})
 	store.selectMeshAction({})
 }
