@@ -6,9 +6,6 @@
 export type SetModelType = {
 	filePath: string;
 	fileType: string;
-	scale: number | null | undefined;
-	map: any;
-	position: any;
 	decomposeName: string;
 }
 

@@ -117,7 +117,6 @@ defineExpose({
 .model-panel {
   background-color: #1b1c23;
   min-width: 380px;
-  height: calc(100vh - 35px);
 
   .panel-tabs {
     display: flex;

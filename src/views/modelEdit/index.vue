@@ -60,7 +60,7 @@ import { onMounted, ref, Ref, getCurrentInstance, onBeforeUnmount, } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
-import renderModel from "./renderModel";
+import renderModel from "@/utils/renderModel";
 import { modelList } from "@/config/model";
 import { pageEnums } from '@/enums/pageEnums'
 import PageLoading from "@/components/Loading/PageLoading.vue";
@@ -136,7 +136,7 @@ const onFullScreen = () => {
       element.requestFullscreen();
       // 适用于旧版WebKit浏览器
     } else if (element.webkitRequestFullscreen) {
-      element.webkitRequestFullscreen();
+      element?.webkitRequestFullscreen();
     }
   } else {
     if (document.exitFullscreen) {
@@ -197,7 +197,7 @@ onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi)
-
+  console.log(modelApi)
   $bus.on("page-loading", (value: any) => {
     loading.value = value;
   });
@@ -261,11 +261,14 @@ onBeforeUnmount(() => {
 }
 </style>
 <style lang="scss">
+.edit-box{
+  height: calc(100vh - 79px);
+}
 .edit-box,
 .model-choose {
   .header {
     width: 100%;
-    height: 40px;
+    height: 35px;
     display: flex;
     justify-content: space-between;
     align-items: center;

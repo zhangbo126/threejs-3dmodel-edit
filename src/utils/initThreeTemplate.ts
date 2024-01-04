@@ -215,26 +215,37 @@ class renderModel {
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		this.controls.update()
-		// 将不需要处理辉光的材质进行存储备份
+		const { stage } = this.config
+		//辉光效果开关开启时执行
+		if (stage && stage.glow) {
+			// 将不需要处理辉光的材质进行存储备份
+			this.setMeshFlow()
+		} else {
+			this.effectComposer.render()
+			this.controls.update()
+		}
+	}
+	// 设置材质辉光
+	setMeshFlow() {
 		this.scene.traverse((v: any) => {
 			if (v instanceof THREE.GridHelper) {
 				this.materials.gridHelper = v.material
-				v.material = new THREE.LineBasicMaterial({ color: 'black' })
+				v.material = new THREE.LineBasicMaterial({ color: '#000' })
 			}
-
 			if (v instanceof THREE.Scene) {
 				this.materials.scene = v.background
+				this.materials.environment = v.environment
 				v.background = null
+				v.environment = null
 			}
 			if (!this.glowMaterialList.includes(v.name) && v.isMesh) {
 				this.materials[v.uuid] = v.material
-				v.material = new THREE.MeshBasicMaterial({ color: 'black' })
+				v.material = new THREE.MeshStandardMaterial({ color: '#000' })
 			}
 		})
 		this.glowComposer.render()
-		// 在辉光渲染器执行完之后在恢复材质原效果
-		this.scene.traverse((v: { uuid: string | number; material: any; background: any }) => {
+		// 辉光渲染器执行完之后在恢复材质原效果
+		this.scene.traverse((v: { uuid: string | number; material: any; background: any; environment: any }) => {
 			if (this.materials[v.uuid]) {
 				v.material = this.materials[v.uuid]
 				delete this.materials[v.uuid]
@@ -245,10 +256,14 @@ class renderModel {
 			}
 			if (v instanceof THREE.Scene) {
 				v.background = this.materials.scene
+				v.environment = this.materials.environment
 				delete this.materials.scene
+				delete this.materials.environment
 			}
 		})
+		this.controls.update()
 		this.effectComposer.render()
+
 	}
 	// 创建效果合成器
 	createEffectComposer() {
@@ -308,7 +323,7 @@ class renderModel {
 	}
 	// 加载模型
 	loadModel(modelFile: SetModelType) {
-		const { filePath, fileType, scale, map, position } = modelFile
+		const { filePath, fileType } = modelFile
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
 			loader.load(filePath, (result: any) => {
@@ -332,19 +347,9 @@ class renderModel {
 					default:
 						break;
 				}
-				this.getModelMeaterialList(map)
+				this.getModelMeaterialList()
 				this.modelAnimation = result.animations || []
 				this.setModelPositionSize()
-				//	设置模型大小
-				if (scale) {
-					this.model.scale.set(scale, scale, scale);
-				}
-				//设置模型位置 
-				this.model.position.set(0, -.5, 0)
-				if (position) {
-					const { x, y, z } = position
-					this.model.position.set(x, y, z)
-				}
 				this.skeletonHelper.visible = false
 				this.scene.add(this.skeletonHelper)
 
@@ -480,25 +485,16 @@ class renderModel {
 
 	}
 	// 获取当前模型材质
-	getModelMeaterialList(map: string) {
-		const isMap = map ? true : false
+	getModelMeaterialList() {
 		this.modelMaterialList = []
-		this.model.traverse((v: { isMesh: any; castShadow: boolean; frustumCulled: boolean; material: { clone?: any; map: any; name?: any; color?: any } }) => {
+		this.model.traverse((v: { isMesh: any; castShadow: boolean; frustumCulled: boolean; material: { clone: () => any } }) => {
 			if (v.isMesh) {
 				v.castShadow = true
 				v.frustumCulled = false
 				if (v.material) {
-					const { name, color, map } = v.material
 					const newMaterial = v.material.clone()
 					v.material = newMaterial
 					this.modelMaterialList.push(v)
-				}
-				// 部分模型本身没有贴图需 要单独处理
-				if (v.material && isMap) {
-					const mapTexture = new THREE.TextureLoader().load(map)
-					const newMaterial = v.material.clone()
-					v.material = newMaterial
-					v.material.map = mapTexture
 				}
 			}
 		})
@@ -507,24 +503,27 @@ class renderModel {
 	// 处理背景数据回填
 	setSceneBackground() {
 		const { background } = this.config
-
 		if (!background) return false
-		const { color, image, viewImg } = background
-
 		// 设置背景
 		if (background.visible) {
+			const { color, image, viewImg, intensity, blurriness } = background
 			switch (background.type) {
 				case 1:
 					this.scene.background = new THREE.Color(color)
 					break;
 				case 2:
-					this.scene.background = new THREE.TextureLoader().load(image);
+					const bgTexture = new THREE.TextureLoader().load(image);
+					this.scene.background = bgTexture
+					bgTexture.dispose()
 					break;
 				case 3:
 					const texture = new THREE.TextureLoader().load(viewImg);
 					texture.mapping = THREE.EquirectangularReflectionMapping
 					this.scene.background = texture
 					this.scene.environment = texture
+					this.scene.backgroundIntensity = intensity
+					this.scene.backgroundBlurriness = blurriness
+					texture.dispose()
 					break;
 				default:
 					break;
@@ -538,7 +537,7 @@ class renderModel {
 		const { material } = this.config
 		if (!material || !material.meshList) return false
 		const mapIdList = mapImageList.map(v => v.id)
-		material.meshList.forEach((v: { meshName?: any; meshFrom?: any; color?: any; opacity?: any; depthWrite?: any; wireframe?: any; visible?: any; type?: any }) => {
+		material.meshList.forEach((v: any) => {
 			const mesh = this.model.getObjectByProperty('name', v.meshName)
 			const { color, opacity, depthWrite, wireframe, visible, type } = v
 			const { map } = mesh.material
@@ -557,14 +556,22 @@ class renderModel {
 					const mapInfo = mapImageList.find(m => m.id == v.meshFrom) || {}
 					// 加载系统材质贴图
 					const mapTexture = new THREE.TextureLoader().load(mapInfo.url)
+					mapTexture.wrapS = THREE.MirroredRepeatWrapping;
+					mapTexture.wrapT = THREE.MirroredRepeatWrapping;
+					mapTexture.flipY = false
+					mapTexture.colorSpace = THREE.SRGBColorSpace
+					mapTexture.minFilter = THREE.LinearFilter;
+					mapTexture.magFilter = THREE.LinearFilter;
 					// 如果当前模型的材质类型被修改了，则使用用新的材质type
 					if (material.materialType) {
 						mesh.material = new (THREE as any)[type]({
 							map: mapTexture,
 						})
+
 					} else {
 						mesh.material.map = mapTexture
 					}
+					mapTexture.dispose()
 				} else {
 					// 如果是当前模型材质自身贴图
 					const meshFrom = this.model.getObjectByProperty('name', v.meshFrom)
@@ -591,11 +598,10 @@ class renderModel {
 			mesh.material.transparent = true
 			mesh.material.opacity = opacity
 		})
-
 	}
 	// 设置辉光和模型操作数据回填
 	setModelLaterStage() {
-		const { stage } = this.config as any
+		const { stage } = this.config
 		if (!stage) return false
 		const { threshold, strength, radius, toneMappingExposure, meshPositonList, color } = stage
 		// 设置辉光效果
@@ -614,10 +620,12 @@ class renderModel {
 			this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
 		}
 		// 模型材质位置
-		meshPositonList.forEach((v: { name?: any; x?: any; y?: any; z?: any }) => {
+		meshPositonList.forEach((v: { name?: any; rotation?: any; scale?: any; position?: any }) => {
 			const mesh = this.model.getObjectByProperty('name', v.name)
-			const { x, y, z } = v
-			mesh.position.set(x, y, z)
+			const { rotation, scale, position } = v
+			mesh.rotation.set(rotation.x, rotation.y, rotation.z)
+			mesh.scale.set(scale.x, scale.y, scale.z)
+			mesh.position.set(position.x, position.y, position.z)
 		})
 	}
 	// 鼠标移入模型材质
@@ -721,7 +729,7 @@ class renderModel {
 			const planeGeometry: any = new THREE.Mesh(geometry, groundMaterial);
 			planeGeometry.name = 'planeGeometry'
 			planeGeometry.rotation.x = -Math.PI / 2
-			planeGeometry.position.set(0, -.5, 0)
+			planeGeometry.position.set(0, -1.2, 0)
 			planeGeometry.visible = light.planeGeometry
 			planeGeometry.geometry.verticesNeedUpdate = true
 			// 让地面接收阴影
@@ -783,7 +791,6 @@ class renderModel {
 		this.axesHelper.visible = axesHelper
 		this.axesHelper.position.set(0, -.50, 0)
 		this.scene.add(this.axesHelper);
-
 		// 骨骼辅助线
 		this.skeletonHelper.visible = skeletonHelper
 

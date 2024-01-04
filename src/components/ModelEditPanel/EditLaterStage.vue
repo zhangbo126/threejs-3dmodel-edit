@@ -2,6 +2,9 @@
   <div class="edit-box">
     <div class="header">
       <span>后期处理</span>
+      <el-button type="primary" icon="Refresh" @click="onInitialize">
+        重置
+      </el-button>
     </div>
     <!-- 辉光 -->
     <div class="options">
@@ -12,7 +15,14 @@
           </el-icon>
           <span> 辉光 </span>
         </el-space>
-        <el-switch v-model="config.glow" @change="onChangeFlow" />
+        <el-tooltip effect="dark" content="注意：辉光效果十分耗费性能，大模型文件开启会有卡顿，请谨慎使用 " placement="top">
+          <el-space>
+            <el-icon>
+              <WarnTriangleFilled :size="20" color="#ffb940" />
+            </el-icon>
+            <el-switch v-model="config.glow" @change="onChangeFlow" />
+          </el-space>
+        </el-tooltip>
       </div>
     </div>
     <div class="options" :class="optionsDisable">
@@ -85,7 +95,7 @@
           <span> 模型分解 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="20" />
+          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
         </div>
       </div>
       <div class="option" :class="moveDisable">
@@ -93,10 +103,19 @@
           <el-icon>
             <Rank :size="20" />
           </el-icon>
-          <span> 模型材质拖拽 </span>
+          <span> 模型材质操作 </span>
         </el-space>
         <div class="grid-silder">
-          <el-switch v-model="config.modelDrag" @change="onChangeDrag" />
+          <el-switch v-model="config.manageFlage" @change="onChangeStage" />
+        </div>
+      </div>
+      <div class="option" :class="manageDisable">
+        <div class="grid-silder">
+          <el-radio-group v-model="config.transformType" @change="onChangeTransform">
+            <el-radio-button label="translate">拖拽</el-radio-button>
+            <el-radio-button label="rotate">旋转</el-radio-button>
+            <el-radio-button label="scale">缩放</el-radio-button>
+          </el-radio-group>
         </div>
       </div>
     </div>
@@ -118,7 +137,7 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter((v: any) => v.type == "Mesh");
-  return (decomposeMesh.length <= 1) || decomposeMesh.length != modelMaterialList.length || config.modelDrag ? "disabled" : "";
+  return (decomposeMesh.length <= 1) || decomposeMesh.length != modelMaterialList.length || config.manageFlage ? "disabled" : "";
 });
 const moveDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
@@ -126,6 +145,9 @@ const moveDisable = computed(() => {
   return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length ? "disabled" : "";
 });
 
+const manageDisable = computed(() => {
+  return config.manageFlage ? "" : "disabled";
+});
 
 const config = reactive({
   glow: false,
@@ -133,7 +155,8 @@ const config = reactive({
   strength: 0.6,
   radius: 1,
   decompose: 0,
-  modelDrag: false,
+  transformType: 'translate',
+  manageFlage: false,
   toneMappingExposure: 2,
   color: ''
 });
@@ -146,8 +169,11 @@ onMounted(() => {
       strength: 0.6,
       radius: 1,
       decompose: 0,
-      modelDrag: false,
+      transformType: 'translate',
+      manageFlage: false,
       toneMappingExposure: 2,
+      color: ''
+
     });
   });
 });
@@ -168,11 +194,30 @@ const onChangeDecompose = () => {
   store.modelApi.setModelMeshDecompose(config);
 };
 
-const onChangeDrag = () => {
+
+const onChangeStage = () => {
   config.decompose = 0;
-  store.modelApi.setModelMeshDecompose(config);
   store.modelApi.setModelMeshDrag(config);
 };
+const onChangeTransform = (type: any) => {
+  store.modelApi.setTransformControlsType(type);
+};
+
+const onInitialize = () => {
+  Object.assign(config, {
+    glow: false,
+    threshold: 0.05,
+    strength: 0.6,
+    radius: 1,
+    decompose: 0,
+    transformType: 'translate',
+    manageFlage: false,
+    toneMappingExposure: 2,
+    color: ''
+
+  });
+  store.modelApi.initStageFlow()
+}
 
 const getStageConfig = () => {
   return {

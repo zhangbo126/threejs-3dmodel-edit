@@ -81,11 +81,65 @@
           </div>
         </el-space>
       </div>
-      <el-scrollbar max-height="350px" v-show="config.type == 3">
+      <el-scrollbar max-height="600px" v-show="config.type == 3">
         <el-row>
           <el-col :span="6" :style="{ textAlign: 'center' }" v-for="view in viewImageList" :key="view.id">
             <el-image @click="onChangeViewImage(view)" class="el-view"
               :class="activeViewImageId == view.id ? 'active' : ''" :src="view.url" fit="cover" />
+          </el-col>
+        </el-row>
+        <el-row v-show="config.type == 3">
+          <el-col>
+            <div class="option">
+              <div class="icon-name">
+                <el-space>
+                  <span>外部资源</span>
+                </el-space>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-upload action="" accept=".jpg,.png,.hdr" :show-file-list="false" :auto-upload="false"
+              :on-change="onUploadTexture">
+              <div class="texture-add">
+                <div class="icon">
+                  <el-tooltip effect="dark" content="该功能仅作预览，数据无法保存" placement="top">
+                    <el-icon size="60">
+                      <UploadFilled />
+                    </el-icon>
+                  </el-tooltip>
+                  <span>加载外部全景图</span>
+                </div>
+              </div>
+            </el-upload>
+          </el-col>
+        </el-row>
+        <el-row v-show="config.type == 3">
+          <el-col>
+            <div class="options">
+              <div class="option">
+                <el-space>
+                  <div class="grid-txt">
+                    <el-button type="primary" link>强度</el-button>
+                  </div>
+                </el-space>
+                <div class="grid-silder">
+                  <el-slider show-input @input="onChangeViewConfig" v-model="config.intensity" :min="0" :max="1"
+                    :step="0.01" />
+                </div>
+              </div>
+              <div class="option">
+                <el-space>
+                  <div class="grid-txt">
+                    <el-button type="primary" link> 模糊</el-button>
+                  </div>
+                </el-space>
+                <div class="grid-silder">
+                  <el-slider show-input @input="onChangeViewConfig" v-model="config.blurriness" :min="0" :max="1"
+                    :step="0.01" />
+                </div>
+              </div>
+            </div>
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -96,7 +150,9 @@
 import { ref, reactive, computed } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
-import { backgrundList, viewImageList } from "@/config/model";
+import { backgrundList, viewImageList } from "@/config/model.ts";
+import { getFileType } from '@/utils/utilityFunction'
+import { ElMessage } from 'element-plus'
 const store = useMeshEditStore();
 const config = reactive({
   visible: true,
@@ -104,7 +160,11 @@ const config = reactive({
   image: require("@/assets/image/model-bg-3.jpg"),
   viewImg: require("@/assets/image/view-4.png"),
   color: "#000",
+  blurriness: 1,
+  intensity: 1,
 });
+
+
 
 const activeBackgroundId = ref(3);
 const activeViewImageId = ref(3);
@@ -126,7 +186,7 @@ const onChangeType = (type: number) => {
       store.modelApi.onSetSceneImage(config.image);
       break;
     case 3:
-      store.modelApi.onSetSceneViewImage(config.viewImg);
+      store.modelApi.onSetSceneViewImage(config);
       break;
     default:
       break;
@@ -139,13 +199,23 @@ const onChangeImage = (image: { id: number, url: string }) => {
   activeBackgroundId.value = id;
   store.modelApi.onSetSceneImage(url);
 };
+
 //选择全景图
-const onChangeViewImage = (image: { id: number, url: string }) => {
+const onChangeViewImage = async (image: { id: number, url: string }) => {
   const { id, url } = image
   config.viewImg = url;
   activeViewImageId.value = id;
-  store.modelApi.onSetSceneViewImage(url);
+  await store.modelApi.onSetSceneViewImage(config);
 };
+
+// 上传外部图片
+const onUploadTexture = async (file: { raw: Blob | MediaSource; name: string; }) => {
+  const filePath = URL.createObjectURL(file.raw);
+  await store.modelApi.onSetStorageViewImage(filePath, getFileType(file.name));
+  URL.revokeObjectURL(filePath)
+  ElMessage.success("操作成功");
+}
+
 // 颜色面板值发生变化
 const activeChangeColor = (color: string) => {
   config.color = color;
@@ -155,6 +225,11 @@ const activeChangeColor = (color: string) => {
 const onChangeColor = () => {
   store.modelApi.onSetSceneColor(config.color);
 };
+
+// 修改全景图配置
+const onChangeViewConfig = () => {
+  store.modelApi.onSetSceneViewConfig(config);
+}
 
 const onChangeBgSwitch = () => {
   const { type, visible, image, viewImg } = config;
@@ -210,5 +285,35 @@ defineExpose({
 
 .active {
   border: 2px solid #18c174;
+}
+
+.texture-add {
+  width: 228px;
+  height: 108px;
+  border: 1px dashed #dcdfe6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+
+  .icon {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    span {
+      font-size: 14px;
+    }
+  }
+
+  &:hover {
+    border-color: #409eff;
+
+    .icon {
+      color: #409eff;
+    }
+  }
 }
 </style>

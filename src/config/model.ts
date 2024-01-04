@@ -145,25 +145,8 @@ const modelList: Array<any> = [
 		id: 26,
 		animation: true,
 		filePath: 'threeFile/glb/glb-26.glb',
-		scale: .02,
 		icon: require('@/assets/model-icon/16.png')
-	},
-	{
-		name: '龙',
-		key: 'dragon',
-		fileType: 'glb',
-		map: require('@/assets/maps/4.png'),
-		id: 29,
-		animation: true,
-		scale: 1,
-		position: {
-			x: 0,
-			y: -1,
-			z: 0
-		},
-		filePath: 'threeFile/glb/glb-29.glb',
-		icon: require('@/assets/model-icon/21.png')
-	},
+	}
 ]
 
 const backgrundList: Array<any> = [

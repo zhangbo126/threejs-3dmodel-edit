@@ -2,6 +2,9 @@
   <div class="edit-box">
     <div class="header">
       <span>材质类型</span>
+      <el-button type="primary" icon="Refresh" @click="onInitialize">
+        重置
+      </el-button>
     </div>
     <div class="options">
       <div class="option">
@@ -48,7 +51,7 @@
         <el-space>
           <el-button type="primary" link>材质颜色</el-button>
           <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="onChangeMeaterial"
-            @active-change="activeChangeColor" v-model="config.color" />
+            v-model="config.color" />
         </el-space>
         <el-space>
           <el-tooltip effect="dark" content="注意：深度写入属性不支持模型“导出” " placement="top">
@@ -78,22 +81,26 @@
         </div>
       </div>
     </div>
-    <div class="header">模型自带贴图</div>
-    <div class="options" :class="optionDisabled">
-      <el-scrollbar max-height="100px">
-        <el-row v-if="state.modelTextureMap">
-          <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in state.modelTextureMap" :key="map.mapId">
-            <div @click="onChangeModelMap(map)" class="image-box" :class="activeTextureMap == map.mapId ? 'active' : ''">
-              <el-image :src="map.url" class="el-map" fit="cover" />
-              <div class="select" v-if="activeTextureMap == map.mapId">
+    <div class="header">当前材质自带贴图</div>
+    <div class="options">
+      <el-scrollbar max-height="140px">
+        <el-row justify="center" align="middle" :style="{ minHeight: '120px' }">
+          <el-col :span="10" :offse="4" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
+            <div @click="onChangeModelMap(activeMeshMap)" :class="activeMapId == activeMeshMap.mapId ? 'active' : ''"
+              class="mesh-image">
+              <el-image :src="activeMeshMap.url" class="mesh-map" fit="cover"> </el-image>
+              <div class="select" v-if="activeMapId == activeMeshMap.mapId">
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
               </div>
             </div>
           </el-col>
-        </el-row>
-        <el-row justify="center" v-else>
-          <el-col>
-            <div class="not-load">当前模型材质数量过大,暂不支持贴图加载</div>
+          <el-col :span="8" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
+            <el-upload action="" accept=".jpg,.png,.hdr" :show-file-list="false" :auto-upload="false"
+              :on-change="onUploadTexture">
+              <el-tooltip effect="dark" content="该功能仅仅作预览，数据无法保存 " placement="top">
+                <el-button type="primary" icon="UploadFilled">加载外部贴图</el-button>
+              </el-tooltip>
+            </el-upload>
           </el-col>
         </el-row>
       </el-scrollbar>
@@ -103,10 +110,9 @@
       <el-scrollbar max-height="230px">
         <el-row>
           <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in mapImageList" :key="map.id">
-            <div @click="onChangeSystemModelMap(map)" class="image-box"
-              :class="activeTextureMap == map.id ? 'active' : ''">
+            <div @click="onChangeSystemModelMap(map)" class="image-box" :class="activeMapId == map.id ? 'active' : ''">
               <el-image :src="map.url" class="el-map" fit="cover" />
-              <div class="select" v-if="activeTextureMap == map.id">
+              <div class="select" v-if="activeMapId == map.id">
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
               </div>
             </div>
@@ -117,9 +123,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
+import { ref, reactive, computed, onMounted, getCurrentInstance, watch, Ref } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
+import { getFileType } from '@/utils/utilityFunction'
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
 import { ElMessage } from "element-plus";
@@ -127,22 +134,17 @@ import { ElMessage } from "element-plus";
 const store = useMeshEditStore();
 const { $bus } = (getCurrentInstance() as any).proxy;
 const config = reactive({
-  meaterialName: null,
+  meshName: null,
   color: "#fff",
   wireframe: false,
   depthWrite: true,
   opacity: 1,
 });
-const activeMeshType = ref(null);
-const activeMesh = reactive({
-  type: "MeshBasicMaterial",
-  describe: "标准网格材质",
-  color: true,
-  wireframe: true,
-  depthWrite: true,
-  opacity: true,
-});
-const activeTextureMap = ref(null);
+
+const activeMeshType = ref('');
+const activeMeshMap: Ref<any> = ref(null)
+const activeMapId = ref(null);
+
 
 const optionDisabled = computed(() => {
   const activeMesh = state.modelMaterialList.find((v: any) => v.uuid == state.selectMeshUuid) || {};
@@ -153,7 +155,7 @@ const state = reactive({
   modelMaterialList: computed(() => store.modelApi.modelMaterialList),
   modelApi: computed(() => store.modelApi),
   selectMeshUuid: computed(() => store.selectMeshUuid),
-  modelTextureMap: computed(() => store.modelApi.modelTextureMap)
+  originalMaterials: computed(() => store.modelApi.originalMaterials)
 });
 
 
@@ -171,31 +173,41 @@ onMounted(() => {
 
 watch(() => store.selectMeshUuid,
   (val) => {
-    const map = state.modelMaterialList.find((v: any) => v.uuid == val) || {};
-    activeTextureMap.value = map.mapId;
-
-    if (map.mapId) {
-      const { color, wireframe, depthWrite, opacity } = map.material;
+    const mesh: any = state.modelMaterialList.find((v: { uuid: any; }) => v.uuid == val) || {};
+    activeMapId.value = mesh.mapId
+    if (mesh.mapId) {
+      const { color, wireframe, depthWrite, opacity } = mesh.material;
+      const newColor = new THREE.Color(color).getStyle()
       Object.assign(config, {
-        color: new THREE.Color(color).getStyle(),
+        color: newColor,
         wireframe,
         depthWrite,
         opacity,
       });
+
+      const originMaterial = state.originalMaterials.get(mesh.uuid)
+      activeMeshMap.value = {
+        url: getModelMaps(mesh),
+        name: mesh.name,
+        mapId: originMaterial.userData.mapId,
+        material: mesh.material
+      }
+    } else {
+      activeMeshMap.value = null
     }
   }
 );
 
 // 切换材质类型
 const onChangeMeshType = (e: string) => {
-  const activeMesh = meshTypeList.find((v: string) => v.type == e);
+  const activeMesh = meshTypeList.find((v: any) => v.type == e);
   state.modelApi.onChangeModelMeshType(activeMesh);
 };
 
 // 选择材质
-const onChangeMaterialType = (mesh: { name: string; material: any; }) => {
-  const { name, material } = mesh
-  config.meaterialName = material.name;
+const onChangeMaterialType = (mesh: any) => {
+  const { name } = mesh
+  config.meshName = name;
   const activeMesh = state.modelApi.onChangeModelMeaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
   Object.assign(config, {
@@ -204,12 +216,35 @@ const onChangeMaterialType = (mesh: { name: string; material: any; }) => {
     depthWrite,
     opacity,
   });
+
+  const originMaterial = state.originalMaterials.get(mesh.uuid)
+  activeMeshMap.value = {
+    url: getModelMaps(mesh),
+    name: mesh.name,
+    mapId: mesh.mapId,
+    material: originMaterial
+  }
 };
 
-const activeChangeColor = (color: string) => {
-  config.color = color;
-  state.modelApi.onSetModelMaterial(config);
-};
+// 获取模型自带贴图
+const getModelMaps = (mesh: any) => {
+  const originMaterial = state.originalMaterials.get(mesh.uuid)
+  const materials = Array.isArray(originMaterial) ? originMaterial : [originMaterial]
+  let textureMapUrl
+  materials.forEach((texture: any) => {
+    if (texture?.map && texture.map.image) {
+      const canvas = document.createElement('canvas')
+      const { width, height } = texture.map.image
+      canvas.width = width
+      canvas.height = height
+      const context: CanvasRenderingContext2D | null = canvas.getContext('2d')
+      context?.drawImage(texture.map.image, 0, 0)
+      textureMapUrl = canvas.toDataURL('image/png', .5)
+      canvas.remove()
+    }
+  })
+  return textureMapUrl
+}
 
 const onChangeMeaterial = () => {
   state.modelApi.onSetModelMaterial(config);
@@ -218,31 +253,49 @@ const onChangeMeaterial = () => {
 // 设置材质显隐
 const onSetMeshVisibe = (mesh: any) => {
   mesh.visible = !mesh.visible;
+  state.modelApi.onSetMeshVisibe(mesh);
 };
 //修改当前材质贴图
 const onChangeModelMap = (map: { mapId: null; }) => {
-  activeTextureMap.value = map.mapId;
+  activeMapId.value = map.mapId;
   state.modelApi.onSetModelMap(map);
-  Object.assign(config, {
-    color: null,
-    wireframe: false,
-    depthWrite: true,
-    opacity: 1,
-  });
   ElMessage.success("当前材质贴图修改成功");
 };
+
 // 修改当前材质贴图
 const onChangeSystemModelMap = (map: { id: null; }) => {
-  activeTextureMap.value = map.id;
+  activeMapId.value = map.id;
+  // 修改当前材质列表的贴图ID
+  const mesh = state.modelMaterialList.find((v: { uuid: any; }) => v.uuid == store.selectMeshUuid) || {};
+  mesh.mapId = map.id
   state.modelApi.onSetSystemModelMap(map);
+  ElMessage.success("当前材质贴图修改成功");
+};
+
+// 上传外部贴图
+const onUploadTexture = async (file: any) => {
+  const filePath = URL.createObjectURL(file.raw);
+  await state.modelApi.onSetStorageModelMap(filePath, getFileType(file.name));
+  URL.revokeObjectURL(filePath)
+  ElMessage.success("当前材质贴图修改成功");
+
+}
+
+// 重置数据
+const onInitialize = () => {
   Object.assign(config, {
-    color: null,
+    meshName: null,
+    color: "#fff",
     wireframe: false,
     depthWrite: true,
     opacity: 1,
-  });
-  ElMessage.success("当前材质贴图修改成功");
-};
+  })
+  activeMeshType.value = ''
+  activeMapId.value = null
+  state.modelApi.initModelMaterial()
+
+}
+
 const getMeshConfig = () => {
   return {
     materialType: activeMeshType.value,
@@ -273,9 +326,21 @@ defineExpose({
     padding: 6px;
   }
 
-  .select {
-    position: absolute;
-  }
+
+}
+
+.select {
+  position: absolute;
+  right: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  margin: auto;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .not-load {
@@ -283,6 +348,22 @@ defineExpose({
   font-size: 16px;
   color: #fff;
   text-align: center;
+}
+
+.mesh-image {
+  max-width: 140px;
+  box-sizing: border-box;
+  position: relative;
+  font-size: 0;
+  cursor: pointer;
+  opacity: 0.6;
+
+  .mesh-map {
+    position: relative;
+    max-height: 100px;
+    height: 100px;
+    margin: 8px 9px;
+  }
 }
 
 .active {
