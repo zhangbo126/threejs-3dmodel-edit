@@ -135,15 +135,11 @@ const onFullScreen = () => {
     if (element.requestFullscreen) {
       element.requestFullscreen();
       // 适用于旧版WebKit浏览器
-    } else if (element.webkitRequestFullscreen) {
-      element?.webkitRequestFullscreen();
-    }
+    } 
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
+    } 
   }
 }
 
@@ -188,8 +184,8 @@ const onExportModleFile = (type: string) => {
 };
 
 // 全屏监听事件
-const addEventListenerFllscreen = (e) => {
-  const status = document.fullscreenElement || document.webkitFullscreenElement;
+const addEventListenerFllscreen = () => {
+  const status = document.fullscreenElement 
   fullscreenStatus.value = !!status
 }
 
@@ -197,7 +193,6 @@ onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi)
-  console.log(modelApi)
   $bus.on("page-loading", (value: any) => {
     loading.value = value;
   });

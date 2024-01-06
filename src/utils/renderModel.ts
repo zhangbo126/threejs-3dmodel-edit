@@ -20,7 +20,7 @@ import { lightPosition, onlyKey } from '@/utils/utilityFunction'
 import TWEEN from "@tweenjs/tween.js";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { vertexShader, fragmentShader, MODEL_DECOMPOSE } from '@/config/constant'
-import { SetModelType, OnSwitchModelType, OnSetModelMapType, OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/types/renderOptions'
+import { SetModelType, OnSwitchModelType,  OnSetSystemModelMapType, OnGetEditMeshListType, OnSetModelAmbientLightType, OnSetModelDirectionalLightType } from '@/types/renderOptions'
 const store = useMeshEditStore();
 
 class renderModel {
