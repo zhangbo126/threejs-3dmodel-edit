@@ -30,8 +30,8 @@ const treeComponent = createThreeDComponent(config.value);
 </script>
 <style lang="scss" scoped>
 .iframe-box {
-	width:100%;
-	height:100%;
+	width: 100%;
+	height: 100vh;
 }
 </style>
   

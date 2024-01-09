@@ -13,8 +13,6 @@ import { ElMessageBox } from 'element-plus'
 const router = useRouter();
 const config = ref(null)
 
-
-
 if (local.get(MODEL_PRIVEW_CONFIG)) {
   config.value = local.get(MODEL_PRIVEW_CONFIG)
 } else {
