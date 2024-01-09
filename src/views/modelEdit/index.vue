@@ -137,7 +137,7 @@ const onImportantCode = () => {
   const modelConfig = editPanel.value.getPanelConfig();
   modelConfig.camera = store.modelApi.onGetModelCamera();
   modelConfig.fileInfo = choosePanel.value.activeModel;
-  implatDialog.value.showDialog(JSON.stringify(modelConfig))
+  implatDialog.value.showDialog(modelConfig)
 }
 
 // 全屏

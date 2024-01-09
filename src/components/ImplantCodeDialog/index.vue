@@ -23,15 +23,18 @@ const codeString = ref(null)
 
 const showDialog = (code) => {
 	visible.value = true
-	const src = `${IFRAME_PREVIEW}?` + 'modelConfig=' + code
+	const  codeStr = JSON.stringify(code)  
+	const codeConfig =codeStr.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, "'$1'");
+	const src = `${IFRAME_PREVIEW}?` + 'modelConfig=' +codeConfig
 	const iframe = `<iframe  src="${src}" allowfullscreen></iframe>`;
 	codeString.value = iframe
 }
 
 const onCopyCode = () => {
 	const clipboard = new Clipboard('.copy-button', { text: () => codeString.value });
-	clipboard.on('success', () => {
+	clipboard.on('success', (val) => {
 		ElMessage.success('复制成功')
+		console.log(val)
 		clipboard.destroy();
 	});
 	clipboard.on('error', () => {
@@ -39,6 +42,7 @@ const onCopyCode = () => {
 		clipboard.destroy();
 	});
 }
+
 
 defineExpose({ showDialog })
 </script>
