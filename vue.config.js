@@ -17,6 +17,11 @@ module.exports = defineConfig({
       template: 'public/preview.html',
       filename: 'preview.html',
     },
+    modelIframe: {
+      entry: 'src/main.js',
+      template: 'public/modelIframe.html',
+      filename: 'modelIframe.html',
+    },
     modelBase: {
       entry: 'src/main.js',
       template: 'public/modelBase.html',

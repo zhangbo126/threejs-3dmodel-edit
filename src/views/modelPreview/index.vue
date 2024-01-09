@@ -13,14 +13,10 @@ import { ElMessageBox } from 'element-plus'
 const router = useRouter();
 const config = ref(null)
 
-//获取URL参数
-const modelConfig = window.location.href.split('?modelConfig=')[1]
+
 
 if (local.get(MODEL_PRIVEW_CONFIG)) {
   config.value = local.get(MODEL_PRIVEW_CONFIG)
-} else if (modelConfig) {
-  const configStr = decodeURIComponent(modelConfig).replace(/'/g, '"')
-  config.value = JSON.parse(configStr)
 } else {
   ElMessageBox.alert(`当前页面出错,返回首页`, '提示', {
     confirmButtonText: '确认',

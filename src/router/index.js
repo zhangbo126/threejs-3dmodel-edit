@@ -18,6 +18,12 @@ const routes = [
         component: () => import('@/views/modelPreview/index.vue')
       },
       {
+        path: '/modelIframe',
+        name: 'modelIframe',
+        meta: { keepAlive: false },
+        component: () => import('@/views/modelIframe/index.vue')
+      },
+      {
         path: '/modelBase',
         name: 'modelBase',
         meta: { keepAlive: false },
