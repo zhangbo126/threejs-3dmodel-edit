@@ -1,7 +1,6 @@
 <template>
   <div id="preview">
     <tree-component />
-
   </div>
 </template>
 <script setup lang="jsx" name="modelBase">
@@ -21,9 +20,9 @@ if (local.get(MODEL_PRIVEW_CONFIG)) {
   config.value = local.get(MODEL_PRIVEW_CONFIG)
 } else if (modelConfig) {
   const convertedStr = modelConfig.replace(/'/g, '"');
-  console.log('线上代码=====', convertedStr, JSON.parse(convertedStr))
+  console.log('线上代码=====', convertedStr)
+  console.log('线上代码=====', JSON.parse(convertedStr))
   config.value = JSON.parse(convertedStr)
-
 
 } else {
   ElMessageBox.alert(`当前页面出错,返回首页`, '提示', {
