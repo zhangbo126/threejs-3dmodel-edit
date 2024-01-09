@@ -28,7 +28,6 @@ const showDialog = (code) => {
 	const src = `${IFRAME_PREVIEW}?` + 'modelConfig=' +codeConfig
 	const iframe = `<iframe  width="100%" height="100%" src="${src}" allowfullscreen></iframe>`;
 	codeString.value = iframe
-	console.log(codeConfig)
 }
 
 const onCopyCode = () => {
