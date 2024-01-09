@@ -26,8 +26,9 @@ const showDialog = (code) => {
 	const  codeStr = JSON.stringify(code)  
 	const codeConfig =codeStr.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, "'$1'");
 	const src = `${IFRAME_PREVIEW}?` + 'modelConfig=' +codeConfig
-	const iframe = `<iframe  src="${src}" allowfullscreen></iframe>`;
+	const iframe = `<iframe  width="100%" height="100%" src="${src}" allowfullscreen></iframe>`;
 	codeString.value = iframe
+	console.log(codeConfig)
 }
 
 const onCopyCode = () => {
