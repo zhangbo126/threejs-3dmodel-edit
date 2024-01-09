@@ -202,6 +202,9 @@ export const MODEL_DEFAULT_CONFIG = {
 
 }
 
+//  嵌入网站 iframe 网页地址
+export const IFRAME_PREVIEW = 'https://zhang_6666.gitee.io/three.js3d/preview'
+
 
 // 材质类型列表
 export const meshTypeList = [
