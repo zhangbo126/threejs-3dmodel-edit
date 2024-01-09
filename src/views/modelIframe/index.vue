@@ -1,5 +1,7 @@
 <template>
-	<tree-component />
+	<div class="iframe-box">
+		<tree-component />
+	</div>
 </template>
 <script setup lang="jsx" name="modelBase">
 import { useRouter } from "vue-router";
@@ -26,5 +28,10 @@ if (modelConfig) {
 
 const treeComponent = createThreeDComponent(config.value);
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.iframe-box {
+	width:100%;
+	height:100%;
+}
+</style>
   

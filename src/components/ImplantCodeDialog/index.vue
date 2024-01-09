@@ -1,8 +1,19 @@
 <template>
 	<el-dialog v-model="visible" title="嵌入网站" width="600px" :close-on-click-modal="false">
-		<el-scrollbar max-height="510px">
-			<code class="code">{{ codeString }}</code>
+		<el-scrollbar max-height="400px">
+			<code class="code">{{ codeIframe }}</code>
 		</el-scrollbar>
+		<el-row :style="{ marginTop: '10px' }">
+			<el-col :span="12">
+				<el-text type="primary">容器宽度</el-text>
+				<el-input-number class="number-style" :precision="0" v-model="iframeConfig.width" />
+			</el-col>
+			<el-col :span="12">
+				<el-text type="primary">容器高度</el-text>
+				<el-input-number class="number-style" :precision="0" v-model="iframeConfig.height" />
+			</el-col>
+
+		</el-row>
 		<template #footer>
 			<span class="dialog-footer">
 				<el-button type="primary" class="copy-button" @click="onCopyCode">
@@ -15,26 +26,32 @@
 <script setup>
 
 import { ElMessage } from "element-plus";
-import { defineExpose, ref } from 'vue'
+import { defineExpose, ref, reactive, computed } from 'vue'
 import Clipboard from 'clipboard';
 import { IFRAME_PREVIEW } from '@/config/constant'
 const visible = ref(false)
 const codeString = ref(null)
+const iframeConfig = reactive({
+	width: 400,
+	height: 300,
+})
+
+const codeIframe = computed(() => {
+	const codeConfig = codeString.value.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, "'$1'");
+	const src = `${IFRAME_PREVIEW}?` + 'modelConfig=' + codeConfig
+	const iframe = `<iframe  width="${iframeConfig.width}" height="${iframeConfig.height}" src="${src}" allowfullscreen></iframe>`;
+	return iframe
+})
 
 const showDialog = (code) => {
 	visible.value = true
-	const  codeStr = JSON.stringify(code)  
-	const codeConfig =codeStr.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, "'$1'");
-	const src = `${IFRAME_PREVIEW}?` + 'modelConfig=' +codeConfig
-	const iframe = `<iframe  width="100%" height="100%" src="${src}" allowfullscreen></iframe>`;
-	codeString.value = iframe
+	codeString.value = JSON.stringify(code)
 }
 
 const onCopyCode = () => {
-	const clipboard = new Clipboard('.copy-button', { text: () => codeString.value });
+	const clipboard = new Clipboard('.copy-button', { text: () => codeIframe.value });
 	clipboard.on('success', (val) => {
 		ElMessage.success('复制成功')
-		console.log(val)
 		clipboard.destroy();
 	});
 	clipboard.on('error', () => {
@@ -42,6 +59,7 @@ const onCopyCode = () => {
 		clipboard.destroy();
 	});
 }
+
 
 
 defineExpose({ showDialog })
@@ -56,6 +74,9 @@ defineExpose({ showDialog })
 	font-family: Consolas, monospace;
 	color: #333;
 	word-wrap: break-word;
+}
 
+.number-style {
+	width: 150px !important;
 }
 </style>
