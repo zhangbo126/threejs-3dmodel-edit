@@ -126,7 +126,7 @@ const onPrivew = () => {
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
     $local.set(MODEL_PRIVEW_CONFIG, modelConfig);
-    const { href } = router.resolve({ path: "/preview" ,query:{modelConfig:JSON.stringify(modelConfig)}});
+    const { href } = router.resolve({ path: "/preview" });
     window.open(href, "_blank");
   } else {
     ElMessage.warning("当前模型暂不支持“效果预览”");
