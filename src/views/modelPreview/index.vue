@@ -13,16 +13,17 @@ import { ElMessageBox } from 'element-plus'
 const router = useRouter();
 const route = useRoute();
 const config = ref(null)
-const { modelConfig } = route.query
 
-console.log('线上代码=====', modelConfig)
+const urlParams = new URLSearchParams(url.split('?')[1]);
+const modelConfigParam = urlParams.get('modelConfig');
+console.log('modelConfigParam', modelConfigParam)
+
 if (local.get(MODEL_PRIVEW_CONFIG)) {
   config.value = local.get(MODEL_PRIVEW_CONFIG)
-} else if (modelConfig) {
-  const convertedStr = modelConfig.replace(/'/g, '"');
-  console.log('线上代码=====', convertedStr)
-  console.log('线上代码=====', JSON.parse(convertedStr))
-  config.value = JSON.parse(convertedStr)
+} else if (modelConfigParam) {
+  console.log(decodeURIComponent(modelConfigParam.replace(/'/g, '"')))
+  const modelConfig = JSON.parse(decodeURIComponent(modelConfigParam.replace(/'/g, '"')));
+  config.value = modelConfig
 
 } else {
   ElMessageBox.alert(`当前页面出错,返回首页`, '提示', {
