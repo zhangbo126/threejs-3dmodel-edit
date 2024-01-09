@@ -9,10 +9,14 @@ import { local } from "@/utils/storage";
 import { MODEL_PRIVEW_CONFIG } from "@/config/constant.ts";
 import createThreeDComponent from "@/utils/initThreeTemplate.ts";
 import { pageEnums } from '@/enums/pageEnums'
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { onMounted } from 'vue'
 const router = useRouter();
-const config = local.get(MODEL_PRIVEW_CONFIG);
+const route = useRoute();
+const { modelConfig } = route.query
+
+const config = local.get(MODEL_PRIVEW_CONFIG) || JSON.parse(modelConfig);
+
 if (!config) {
   ElMessageBox.alert(`当前页面出错,返回首页`, '提示', {
     confirmButtonText: '确认',

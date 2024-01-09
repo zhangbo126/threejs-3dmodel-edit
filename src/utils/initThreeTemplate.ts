@@ -463,7 +463,6 @@ class renderModel {
 
 	// 设置模型定位缩放大小
 	setModelPositionSize() {
-		//设置模型位置
 		this.model.updateMatrixWorld()
 		const box = new THREE.Box3().setFromObject(this.model);
 		const size = box.getSize(new THREE.Vector3());
@@ -474,13 +473,10 @@ class renderModel {
 		const scale = targetSize / (maxSize > 1 ? maxSize : .5);
 		this.model.scale.set(scale, scale, scale)
 		// 设置模型位置
-		// this.model.position.sub(center.multiplyScalar(scale))
+		this.model.position.sub(center.multiplyScalar(scale))
 		// 设置控制器最小缩放值
 		this.controls.maxDistance = size.length() * 10
 		// 设置相机位置
-		// this.camera.position.set(0, 2, 6)
-		// 设置相机坐标系
-		this.camera.lookAt(center)
 		this.camera.updateProjectionMatrix();
 
 	}

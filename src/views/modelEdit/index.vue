@@ -11,9 +11,8 @@
           <el-button type="primary" icon="Film" @click="$router.push({ path: pageEnums.MODEL_BASE })">
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
-          <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
-
+          <el-button type="primary" icon="Document" v-if="handleConfigBtn" @click="onSaveConfig">保存数据</el-button>
+          <el-button type="primary" icon="View" v-if="handleConfigBtn" @click="onPrivew">预览</el-button>
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
               下载/导出<el-icon class="el-icon--right"><arrow-down /></el-icon>
@@ -26,6 +25,9 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+          <el-button type="primary" icon="HelpFilled" v-if="handleConfigBtn"  @click="onImportantCode">
+            嵌入代码
+          </el-button>
           <el-button type="primary" icon="FullScreen" @click="onFullScreen">
             {{ fullscreenStatus ? '取消全屏' : '全屏' }}
           </el-button>
@@ -52,11 +54,13 @@
       </div>
     </div>
     <page-loading :loading="loading" :percentage="progress"></page-loading>
+    <!-- 嵌入代码弹框 -->
+    <implant-code-dialog ref="implatDialog"></implant-code-dialog>
   </div>
 </template>
 <script setup lang="ts" name="modelEdit">
-import { ModelChoose, ModelEditPanel } from "@/components/index";
-import { onMounted, ref, Ref, getCurrentInstance, onBeforeUnmount, } from "vue";
+import { ModelChoose, ModelEditPanel, ImplantCodeDialog } from "@/components/index";
+import { onMounted, ref, Ref, getCurrentInstance, onBeforeUnmount, computed } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -76,11 +80,19 @@ const store = useMeshEditStore();
 const router = useRouter();
 const { $bus, $local } = (getCurrentInstance()!.proxy as unknown) as getCurrentInstanceOptions;
 
+const handleConfigBtn = computed(() => {
+  if (editPanel.value) {
+    const fileInfo = choosePanel.value.activeModel
+    return fileInfo?.filePath ? true : false
+  }
+  return false
+})
 
 const loading = ref(false);
 const progress = ref(0);
 const editPanel: Ref<any> = ref(null);
 const choosePanel: Ref<any> = ref(null);
+const implatDialog: Ref<any> = ref(null);
 const fullscreenStatus = ref(false)
 
 // 重置相机位置
@@ -115,7 +127,6 @@ const onGeometryDrop = (e: any) => {
 // 预览
 const onPrivew = () => {
   const modelConfig = editPanel.value.getPanelConfig();
-
   modelConfig.camera = store.modelApi.onGetModelCamera();
   modelConfig.fileInfo = choosePanel.value.activeModel;
   //判断是否是外部模型
@@ -126,7 +137,17 @@ const onPrivew = () => {
   } else {
     ElMessage.warning("当前模型暂不支持“效果预览”");
   }
+
 };
+
+
+// 嵌入代码
+const onImportantCode = () => {
+  const modelConfig = editPanel.value.getPanelConfig();
+  modelConfig.camera = store.modelApi.onGetModelCamera();
+  modelConfig.fileInfo = choosePanel.value.activeModel;
+  implatDialog.value.showDialog(JSON.stringify(modelConfig))
+}
 
 // 全屏
 const onFullScreen = () => {
@@ -135,11 +156,11 @@ const onFullScreen = () => {
     if (element.requestFullscreen) {
       element.requestFullscreen();
       // 适用于旧版WebKit浏览器
-    } 
+    }
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
-    } 
+    }
   }
 }
 
@@ -153,7 +174,6 @@ const onSaveConfig = () => {
   })
     .then(() => {
       const modelConfig = editPanel.value.getPanelConfig();
-
       modelConfig.camera = store.modelApi.onGetModelCamera();
       modelConfig.fileInfo = choosePanel.value.activeModel;
       // 判断是否是外部模型
@@ -185,7 +205,7 @@ const onExportModleFile = (type: string) => {
 
 // 全屏监听事件
 const addEventListenerFllscreen = () => {
-  const status = document.fullscreenElement 
+  const status = document.fullscreenElement
   fullscreenStatus.value = !!status
 }
 
@@ -256,9 +276,10 @@ onBeforeUnmount(() => {
 }
 </style>
 <style lang="scss">
-.edit-box{
+.edit-box {
   height: calc(100vh - 79px);
 }
+
 .edit-box,
 .model-choose {
   .header {

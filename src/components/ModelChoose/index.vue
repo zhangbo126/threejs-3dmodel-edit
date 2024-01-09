@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, getCurrentInstance, reactive, Ref } from "vue";
+import { ref, computed, getCurrentInstance, Ref } from "vue";
 import { modelList, geometryModelList } from "@/config/model";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { getFileType } from "@/utils/utilityFunction";
