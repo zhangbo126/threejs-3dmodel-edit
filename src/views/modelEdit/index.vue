@@ -11,8 +11,8 @@
           <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" @click="onSaveConfig">保存数据</el-button>
-          <el-button type="primary" icon="View" @click="onPrivew">效果预览</el-button>
+          <el-button type="primary" icon="Document" v-if="handleConfigBtn"  @click="onSaveConfig">保存数据</el-button>
+          <el-button type="primary" icon="View" v-if="handleConfigBtn"  @click="onPrivew">效果预览</el-button>
 
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
@@ -26,6 +26,9 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+          <el-button type="primary" icon="HelpFilled" v-if="handleConfigBtn"  @click="onImportantCode">
+            嵌入代码
+          </el-button>
           <el-button type="primary" icon="FullScreen" @click="onFullScreen">
             {{ fullscreenStatus ? '取消全屏' : '全屏' }}
           </el-button>
@@ -52,11 +55,13 @@
       </div>
     </div>
     <page-loading :loading="loading" :percentage="progress"></page-loading>
+     <!-- 嵌入代码弹框 -->
+     <implant-code-dialog ref="implatDialog"></implant-code-dialog>
   </div>
 </template>
 
 <script setup name="modelEdit">
-import { ModelEditPanel, ModelChoose } from "@/components/index";
+import { ModelEditPanel, ModelChoose ,ImplantCodeDialog } from "@/components/index";
 import { onMounted, ref, getCurrentInstance, onBeforeUnmount, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -74,8 +79,16 @@ const loading = ref(false);
 const progress = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
+const implatDialog = ref(null);
 const fullscreenStatus = ref(false)
 
+const handleConfigBtn = computed(() => {
+  if (editPanel.value) {
+    const fileInfo = choosePanel.value.activeModel
+    return fileInfo?.filePath ? true : false
+  }
+  return false
+})
 // 重置相机位置
 const onResetCamera = () => {
   store.modelApi.onResetModelCamera();
@@ -119,6 +132,14 @@ const onPrivew = () => {
     ElMessage.warning("当前模型暂不支持“效果预览”");
   }
 };
+
+const onImportantCode = () => {
+  const modelConfig = editPanel.value.getPanelConfig();
+  modelConfig.camera = store.modelApi.onGetModelCamera();
+  modelConfig.fileInfo = choosePanel.value.activeModel;
+  implatDialog.value.showDialog(modelConfig)
+}
+
 // 全屏
 const onFullScreen = () => {
   const element = document.documentElement;
