@@ -1,5 +1,5 @@
 <template>
-	<el-dialog v-model="visible" title="嵌入网站" width="600px" :close-on-click-modal="false">
+	<el-dialog v-model="visible" title="将当前编辑效果嵌入你的项目" width="600px" :close-on-click-modal="false">
 		<el-scrollbar max-height="400px">
 			<code class="code">{{ codeIframe }}</code>
 		</el-scrollbar>
@@ -51,8 +51,9 @@ const showDialog = (code) => {
 const onCopyCode = () => {
 	const clipboard = new Clipboard('.copy-button', { text: () => codeIframe.value });
 	clipboard.on('success', (val) => {
-		ElMessage.success('复制成功')
+		ElMessage.success('复制成功,将代码粘贴至你的项目中即可')
 		clipboard.destroy();
+		visible.value=false
 	});
 	clipboard.on('error', () => {
 		console.log('复制失败');
