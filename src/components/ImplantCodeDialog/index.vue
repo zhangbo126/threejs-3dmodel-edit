@@ -12,7 +12,6 @@
 				<el-text type="primary">容器高度</el-text>
 				<el-input-number class="number-style" :precision="0" v-model="iframeConfig.height" />
 			</el-col>
-
 		</el-row>
 		<template #footer>
 			<span class="dialog-footer">
