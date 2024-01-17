@@ -24,39 +24,43 @@ function getModelMeaterialList() {
 	this.modelMaterialList = []
 	let i = 0;
 	this.model.traverse((v) => {
-		if (v.isMesh) {
+		if (v.isMesh && v.material) {
 			v.castShadow = true
 			v.frustumCulled = false
-			if (v.material) {
-				i++;
-				const newMesh = v.clone()
-				Object.assign(v.userData, {
-					rotation: newMesh.rotation,
-					scale: newMesh.scale,
-					position: newMesh.position,
-				})
+			if (Array.isArray(v.material)) {
+				v.material = v.material[0]
+				this.setMaterialMeshParams(v, i)
 
-				const newMaterial = v.material.clone()
-				v.mapId = v.name + '_' + i
-				v.material = newMaterial
-				const { mapId, uuid, userData, type, name, isMesh, visible } = v
-				const { color, wireframe, depthWrite, opacity } = v.material
-
-				const meshMaterial = { color, wireframe, depthWrite, opacity }
-				const mesh = {
-					mapId, uuid, userData, type, name, isMesh, visible, material: meshMaterial
-				}
-				this.modelMaterialList.push(mesh)
-
-				const cloneMesh = v.material.clone()
-				cloneMesh.userData.mapId = v.name + '_' + i
-				this.originalMaterials.set(v.uuid, cloneMesh);
-
+			} else {
+				this.setMaterialMeshParams(v, i)
 			}
 		}
 	})
+}
 
 
+// 材质参数二次处理
+function setMaterialMeshParams(v, i) {
+	const newMesh = v.clone()
+	Object.assign(v.userData, {
+		rotation: newMesh.rotation,
+		scale: newMesh.scale,
+		position: newMesh.position,
+	})
+
+	const newMaterial = v.material.clone()
+	v.mapId = v.name + '_' + i
+	v.material = newMaterial
+	const { mapId, uuid, userData, type, name, isMesh, visible } = v
+	const { color, wireframe, depthWrite, opacity } = v.material
+	const meshMaterial = { color, wireframe, depthWrite, opacity }
+	const mesh = {
+		mapId, uuid, userData, type, name, isMesh, visible, material: meshMaterial
+	}
+	this.modelMaterialList.push(mesh)
+	const cloneMesh = v.material.clone()
+	cloneMesh.userData.mapId = v.name + '_' + i
+	this.originalMaterials.set(v.uuid, cloneMesh);
 }
 
 
@@ -348,5 +352,6 @@ export default {
 	onChangeModelMeshType,
 	onSetGeometryMeshList,
 	onSetMeshVisibe,
-	initModelMaterial
+	initModelMaterial,
+	setMaterialMeshParams
 }
