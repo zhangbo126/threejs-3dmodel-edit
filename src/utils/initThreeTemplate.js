@@ -286,7 +286,7 @@ class renderModel {
 
 	}
 	// 加载模型
-	loadModel({ filePath, fileType, scale, map, position }) {
+	loadModel({ filePath, fileType, map }) {
 		return new Promise((resolve, reject) => {
 			const loader = this.fileLoaderMap[fileType]
 			loader.load(filePath, (result) => {
@@ -770,55 +770,54 @@ class renderModel {
 }
 
 
-/**
- * @describe 动态创建3d模型组件的方法
- * @param config 组件参数配置信息
-*/
+	/**
+	 * @describe 动态创建3d模型组件的方法
+	 * @param config 组件参数配置信息
+	*/
 
-function createThreeDComponent(config) {
+	function createThreeDComponent(config) {
+		// 创建一个元素ID 
+		const elementId = 'answer' + onlyKey(5, 10)
+		let modelApi = null
+		return defineComponent({
+			data() {
+				return {
+					loading: false,
+				}
+			},
+			props: ['width', 'height'],
+			watch: {
+				$props: {
+					handler(val) {
+						if (modelApi) {
+							debounce(modelApi.onWindowResize(), 200)
+						}
+					},
+					immediate: false,
+					deep: true
+				}
+			},
+			render() {
+				if (this.width && this.height) {
+					return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px', pointerEvents: 'none', }} id={elementId} ></div>)
 
-	// 创建一个元素ID 
-	const elementId = 'answer' + onlyKey(5, 10)
-	let modelApi = null
-	return defineComponent({
-		data() {
-			return {
-				loading: false,
+				} else {
+					return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100%' }} id={elementId} ></div>)
+				}
+			},
+			async mounted() {
+				this.loading = true
+				modelApi = new renderModel(config, elementId);
+				const load = await modelApi.init()
+				if (load) {
+					this.loading = false
+				}
+			},
+			beforeUnmount() {
+				modelApi.onClearModelData()
 			}
-		},
-		props: ['width', 'height'],
-		watch: {
-			$props: {
-				handler(val) {
-					if (modelApi) {
-						debounce(modelApi.onWindowResize(), 200)
-					}
-				},
-				immediate: false,
-				deep: true
-			}
-		},
-		render() {
-			if (this.width && this.height) {
-				return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px', pointerEvents: 'none', }} id={elementId} ></div>)
-
-			} else {
-				return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100%' }} id={elementId} ></div>)
-			}
-		},
-		async mounted() {
-			this.loading = true
-			modelApi = new renderModel(config, elementId);
-			const load = await modelApi.init()
-			if (load) {
-				this.loading = false
-			}
-		},
-		beforeUnmount() {
-			modelApi.onClearModelData()
-		}
-	})
-}
+		})
+	}
 
 
 export default createThreeDComponent
