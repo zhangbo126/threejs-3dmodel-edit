@@ -442,7 +442,6 @@ class renderModel {
 		// 设置相机位置
 		// this.camera.position.set(0, 2, 6)
 		// 设置相机坐标系
-		// this.camera.lookAt(center)
 		this.camera.updateProjectionMatrix();
 
 	}
@@ -691,7 +690,6 @@ class renderModel {
 			const geometry = new THREE.PlaneGeometry(light.planeWidth, light.planeHeight);
 			var groundMaterial = new THREE.MeshStandardMaterial({ color: light.planeColor });
 			const planeGeometry = new THREE.Mesh(geometry, groundMaterial);
-			planeGeometry.name = 'planeGeometry'
 			planeGeometry.rotation.x = -Math.PI / 2
 			planeGeometry.position.set(0, -1.2, 0)
 			planeGeometry.visible = light.planeGeometry

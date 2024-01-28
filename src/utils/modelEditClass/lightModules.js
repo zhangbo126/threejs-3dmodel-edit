@@ -59,7 +59,6 @@ function onSetModelSpotLight(config) {
 function onSetModelPlaneGeometry({ planeGeometry, planeColor, planeWidth, planeHeight }) {
 	this.planeGeometry.visible = planeGeometry
 	this.planeGeometry.geometry = new THREE.PlaneGeometry(planeWidth, planeHeight)
-	this.planeGeometry.position.set(0,-1.2,0)
 	this.planeGeometry.material.color.set(planeColor)
 	this.planeGeometry.material.side = THREE.DoubleSide
 	this.planeGeometry.geometry.verticesNeedUpdate = true
