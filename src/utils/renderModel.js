@@ -442,9 +442,8 @@ class renderModel {
 		const geometry = new THREE.PlaneGeometry(4, 4);
 		var groundMaterial = new THREE.MeshStandardMaterial({ color: '#000000' });
 		this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
-		this.planeGeometry.name = 'planeGeometry'
 		this.planeGeometry.rotation.x = -Math.PI / 2
-		this.planeGeometry.position.set(0, -.5, 0)
+		this.planeGeometry.position.set(0, -1.2, 0)
 
 		// 让地面接收阴影
 		this.planeGeometry.receiveShadow = true;

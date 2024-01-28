@@ -83,7 +83,6 @@ function setModelPositionSize() {
 	// 设置相机位置
 	this.camera.position.set(0, 2, 6)
 	// 设置相机坐标系
-	// this.camera.lookAt(center)
 	this.camera.updateProjectionMatrix();
 
 }
@@ -319,6 +318,7 @@ function initModelMaterial() {
 			v.material = originalMaterial.clone();
 			v.mapId = originalMaterial.userData.mapId
 			v.visible = true
+			v.meshFrom =null
 		}
 	});
 	this.modelMaterialList.forEach((v) => {
