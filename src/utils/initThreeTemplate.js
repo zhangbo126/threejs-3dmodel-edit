@@ -333,7 +333,15 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-		if (this.effectComposer) this.effectComposer.setSize(clientWidth, clientHeight)
+		if (this.effectComposer) {
+			// 假设抗锯齿效果是EffectComposer中的第一个pass
+			var pass = this.effectComposer.passes[3]
+			const pixelRatio = this.renderer.getPixelRatio()
+			pass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
+			this.effectComposer.setSize(clientWidth, clientHeight)
+
+		}
+
 		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	// 清除模型数据
@@ -768,54 +776,54 @@ class renderModel {
 }
 
 
-	/**
-	 * @describe 动态创建3d模型组件的方法
-	 * @param config 组件参数配置信息
-	*/
+/**
+ * @describe 动态创建3d模型组件的方法
+ * @param config 组件参数配置信息
+*/
 
-	function createThreeDComponent(config) {
-		// 创建一个元素ID 
-		const elementId = 'answer' + onlyKey(5, 10)
-		let modelApi = null
-		return defineComponent({
-			data() {
-				return {
-					loading: false,
-				}
-			},
-			props: ['width', 'height'],
-			watch: {
-				$props: {
-					handler(val) {
-						if (modelApi) {
-							debounce(modelApi.onWindowResize(), 200)
-						}
-					},
-					immediate: false,
-					deep: true
-				}
-			},
-			render() {
-				if (this.width && this.height) {
-					return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px', pointerEvents: 'none', }} id={elementId} ></div>)
-
-				} else {
-					return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100%' }} id={elementId} ></div>)
-				}
-			},
-			async mounted() {
-				this.loading = true
-				modelApi = new renderModel(config, elementId);
-				const load = await modelApi.init()
-				if (load) {
-					this.loading = false
-				}
-			},
-			beforeUnmount() {
-				modelApi.onClearModelData()
+function createThreeDComponent(config) {
+	// 创建一个元素ID 
+	const elementId = 'answer' + onlyKey(5, 10)
+	let modelApi = null
+	return defineComponent({
+		data() {
+			return {
+				loading: false,
 			}
-		})
-	}
+		},
+		props: ['width', 'height'],
+		watch: {
+			$props: {
+				handler(val) {
+					if (modelApi) {
+						debounce(modelApi.onWindowResize(), 200)
+					}
+				},
+				immediate: false,
+				deep: true
+			}
+		},
+		render() {
+			if (this.width && this.height) {
+				return h(<div v-zLoading={this.loading} style={{ width: this.width - 10 + 'px', height: this.height - 10 + 'px', pointerEvents: 'none', }} id={elementId} ></div>)
+
+			} else {
+				return h(<div v-zLoading={this.loading} style={{ width: '100%', height: '100%' }} id={elementId} ></div>)
+			}
+		},
+		async mounted() {
+			this.loading = true
+			modelApi = new renderModel(config, elementId);
+			const load = await modelApi.init()
+			if (load) {
+				this.loading = false
+			}
+		},
+		beforeUnmount() {
+			modelApi.onClearModelData()
+		}
+	})
+}
 
 
 export default createThreeDComponent

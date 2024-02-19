@@ -175,7 +175,6 @@ class renderModel {
 		const { clientHeight, clientWidth } = this.container
 		this.renderer.setSize(clientWidth, clientHeight)
 		//色调映射
-		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
 		this.renderer.toneMapping = THREE.ReinhardToneMapping
 		this.renderer.autoClear = true
 		this.renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -199,7 +198,10 @@ class renderModel {
 				this.controls.update()
 			}
 			TWEEN.update();
+		   
 		}
+
+
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
@@ -455,7 +457,9 @@ class renderModel {
 		if (!this.container) return false
 		const { clientHeight, clientWidth } = this.container
 		this.effectComposer = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(clientWidth, clientHeight))
+		// this.effectComposer = new EffectComposer(this.renderer)
 		const renderPass = new RenderPass(this.scene, this.camera)
+        
 		this.effectComposer.addPass(renderPass)
 		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.model, this.camera)
 		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
@@ -468,7 +472,6 @@ class renderModel {
 		this.effectComposer.addPass(this.outlinePass)
 		let outputPass = new OutputPass()
 		this.effectComposer.addPass(outputPass)
-
 
 		let effectFXAA = new ShaderPass(FXAAShader)
 		const pixelRatio = this.renderer.getPixelRatio()
@@ -548,8 +551,19 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-		if (this.effectComposer) this.effectComposer.setSize(clientWidth * 2, clientHeight * 2)
+	
+		if (this.effectComposer) {
+			// 假设抗锯齿效果是EffectComposer中的第一个pass
+			var pass = this.effectComposer.passes[3] 
+			const pixelRatio = this.renderer.getPixelRatio()
+			pass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
+			this.effectComposer.setSize(clientWidth, clientHeight)
+
+		}
+
 		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
+		
+
 	}
 	// 下载场景封面
 	onDownloadScenCover() {
