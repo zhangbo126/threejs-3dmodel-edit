@@ -41,10 +41,14 @@
         <div v-show="activeTab == 'EditGeometry'">
           <edit-geometry ref="geometry"></edit-geometry>
         </div>
-        <!-- 多模型添加 -->
-        <div v-show="activeTab == 'EditMoreModel'">
-          <edit-more-model ref="more"></edit-more-model>
+        <!-- 标签配置 -->
+        <div v-show="activeTab == 'EditTags'">
+          <edit-tags ref="tags"></edit-tags>
         </div>
+        <!-- 多模型添加 -->
+        <!-- <div v-show="activeTab == 'EditMoreModel'">
+          <edit-more-model ref="more"></edit-more-model>
+        </div> -->
       </div>
     </div>
   </template>
@@ -58,6 +62,7 @@
   import EditLaterStage from "./EditLaterStage.vue";
   import EditGeometry from "./EditGeometry.vue";
   import EditMoreModel from "./EditMoreModel.vue";
+  import EditTags from "./EditTags.vue";
   import { useMeshEditStore } from '@/store/meshEditStore'
 
   const panelTabs = [
@@ -97,12 +102,12 @@
       icon: "Cellphone",
     },
     {
-      name: "多模型配置",
-      key: "EditMoreModel",
-      icon: "DocumentCopy",
+      name: "标签配置",
+      key: "EditTags",
+      icon: "CollectionTag",
     },
   ];
-  const activeTab = ref("EditMaterial");
+  const activeTab = ref("CollectionTag");
   const background = ref(null);
   const material = ref(null);
   const animation = ref(null);
@@ -110,6 +115,7 @@
   const light = ref(null);
   const stage = ref(null);
   const geometry = ref(null)
+  const tags = ref(null)
   const more = ref(null)
   const store = useMeshEditStore();
 

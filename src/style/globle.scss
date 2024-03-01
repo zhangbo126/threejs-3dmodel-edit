@@ -11,4 +11,29 @@
 
 .grid-style {
 	min-width: 110px;
-  }
+}
+
+
+.element-tag {
+	box-shadow: 0px 0px 4px rgba(0, 255, 255, 0.5);
+	border: 1px solid rgba(127, 255, 255, 0.25);
+	font-family: Helvetica, sans-serif;
+	text-align: center;
+	line-height: normal;
+	cursor: pointer;
+	font-size: 6px;
+	overflow: hidden;
+	
+}
+
+.tag-icon {
+	text-align: center;
+	color: #ffffff;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+
+
+
+

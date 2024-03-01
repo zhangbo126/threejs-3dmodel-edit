@@ -13,7 +13,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
+import { CSS3DRenderer } from 'three/addons/renderers/CSS3DRenderer.js';
 import { ElMessage } from 'element-plus';
 import { onlyKey } from '@/utils/utilityFunction'
 import modulesPrototype from './modelEditClass/index'
@@ -123,6 +123,14 @@ class renderModel {
 		this.dragGeometryModel = {}
 		// 当前模型加载状态
 		this.loadingStatus = true
+		// 3d文字渲染器
+		this.css3DRenderer = null
+		// 3d文字控制器
+		this.css3dControls = null
+		// 当前拖拽标签信息
+		this.dragTag = {}
+		//当前标签列表
+		this.dragTagList=[]
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -160,11 +168,12 @@ class renderModel {
 		this.scene.backgroundIntensity = 1
 		this.scene.backgroundBlurriness = 1
 		texture.dispose()
+
 	}
 	// 创建相机
 	initCamera() {
 		const { clientHeight, clientWidth } = this.container
-		this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 0.25, 2000)
+		this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 1, 2000)
 	}
 	// 创建渲染器
 	initRender() {
@@ -183,6 +192,15 @@ class renderModel {
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
+
+
+		// 创建一个CSS3DRenderer
+		this.css3DRenderer = new CSS3DRenderer();
+		this.css3DRenderer.setSize(clientWidth, clientHeight);
+		this.css3DRenderer.domElement.style.position = 'absolute';
+		this.css3DRenderer.domElement.style.pointerEvents = 'none';
+		this.css3DRenderer.domElement.style.top = 0;
+		
 	}
 	// 更新场景
 	sceneAnimation() {
@@ -198,10 +216,12 @@ class renderModel {
 				this.controls.update()
 			}
 			TWEEN.update();
-		   
+             // 3d标签渲染器
+			if (this.dragTagList.length) {
+				this.css3DRenderer.render(this.scene, this.camera)
+				this.css3dControls.update()
+			}
 		}
-
-
 	}
 	// 监听事件
 	addEvenListMouseLisatener() {
@@ -219,6 +239,15 @@ class renderModel {
 		this.controls.enableDamping = true;
 		this.controls.target.set(0, 0, 0);
 		this.controls.update()
+
+		//标签控制器
+		this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement)
+		this.css3dControls.enablePan = false
+		this.css3dControls.enableDamping = true;
+		this.css3dControls.target.set(0, 0, 0);
+		this.css3dControls.update()
+
+
 	}
 	// 加载模型
 	setModel({ filePath, fileType, decomposeName }) {
@@ -321,7 +350,6 @@ class renderModel {
 		})
 		this.effectComposer.render()
 		this.controls.update()
-
 	}
 	// 加载几何体模型
 	setGeometryModel(model) {
@@ -459,7 +487,7 @@ class renderModel {
 		this.effectComposer = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(clientWidth, clientHeight))
 		// this.effectComposer = new EffectComposer(this.renderer)
 		const renderPass = new RenderPass(this.scene, this.camera)
-        
+
 		this.effectComposer.addPass(renderPass)
 		this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.model, this.camera)
 		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
@@ -551,10 +579,10 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-	
+
 		if (this.effectComposer) {
 			// 假设抗锯齿效果是EffectComposer中的第一个pass
-			var pass = this.effectComposer.passes[3] 
+			var pass = this.effectComposer.passes[3]
 			const pixelRatio = this.renderer.getPixelRatio()
 			pass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
 			this.effectComposer.setSize(clientWidth, clientHeight)
@@ -562,7 +590,7 @@ class renderModel {
 		}
 
 		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
-		
+
 
 	}
 	// 下载场景封面
@@ -715,6 +743,7 @@ class renderModel {
 		this.transformControls = null
 		this.dragGeometryModel = null
 		this.glowUnrealBloomPass = false
+		
 
 	}
 
@@ -758,6 +787,9 @@ class renderModel {
 		if (this.effectComposer) {
 			this.effectComposer.removePass(this.shaderPass)
 		}
+
+	
+
 		this.renderer.toneMappingExposure = 2
 		this.outlinePass.selectedObjects = []
 		Object.assign(this.unrealBloomPass, {
@@ -786,6 +818,8 @@ class renderModel {
 		this.onSetModelGridHelper(config)
 		this.onSetModelGridHelperSize(config)
 		this.onSetModelAxesHelper(config)
+		this.clearSceneTags()
+	
 	}
 	// 设置当前被拖拽的几何模型
 	setDragGeometryModel(model) {
