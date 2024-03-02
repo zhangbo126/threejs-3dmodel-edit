@@ -11,8 +11,8 @@
           <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })">
             模型库
           </el-button>
-          <el-button type="primary" icon="Document" v-if="handleConfigBtn"  @click="onSaveConfig">保存数据</el-button>
-          <el-button type="primary" icon="View" v-if="handleConfigBtn"  @click="onPrivew">效果预览</el-button>
+          <el-button type="primary" icon="Document" v-if="handleConfigBtn" @click="onSaveConfig">保存数据</el-button>
+          <el-button type="primary" icon="View" v-if="handleConfigBtn" @click="onPrivew">效果预览</el-button>
 
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download">
@@ -26,7 +26,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-button type="primary" icon="HelpFilled" v-if="handleConfigBtn"  @click="onImportantCode">
+          <el-button type="primary" icon="HelpFilled" v-if="handleConfigBtn" @click="onImportantCode">
             嵌入代码
           </el-button>
           <el-button type="primary" icon="FullScreen" @click="onFullScreen">
@@ -55,13 +55,13 @@
       </div>
     </div>
     <page-loading :loading="loading" :percentage="progress"></page-loading>
-     <!-- 嵌入代码弹框 -->
-     <implant-code-dialog ref="implatDialog"></implant-code-dialog>
+    <!-- 嵌入代码弹框 -->
+    <implant-code-dialog ref="implatDialog"></implant-code-dialog>
   </div>
 </template>
 
 <script setup name="modelEdit">
-import { ModelEditPanel, ModelChoose ,ImplantCodeDialog } from "@/components/index";
+import { ModelEditPanel, ModelChoose, ImplantCodeDialog } from "@/components/index";
 import { onMounted, ref, getCurrentInstance, onBeforeUnmount, computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -111,12 +111,23 @@ const initModelBaseData = () => {
 
 // 几何体模型拖拽结束
 const onGeometryDrop = (e) => {
-  const dragGeometryModel = store.modelApi.dragGeometryModel;
-  if (dragGeometryModel.id) {
-    dragGeometryModel.clientX = e.clientX;
-    dragGeometryModel.clientY = e.clientY;
+  const { dragGeometryModel, dragTag } = store.modelApi
+  const { clientX, clientY } = e
+  // console.log(dragType)
+  // 如果是几何体模型拖拽
+  if (dragGeometryModel.id && store.dragType == 'geometry') {
+    dragGeometryModel.clientX = clientX;
+    dragGeometryModel.clientY = clientY;
     store.modelApi.onSwitchModel(dragGeometryModel);
   }
+
+  if (dragTag.id && store.dragType == 'tags') {
+    dragTag.clientX = clientX;
+    dragTag.clientY = clientY;
+    store.modelApi.create3dTags(dragTag);
+  }
+
+
 };
 // 预览
 const onPrivew = () => {
@@ -270,9 +281,10 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="scss">
-.edit-box{
-   height: calc(100vh - 79px);
+.edit-box {
+  height: calc(100vh - 79px);
 }
+
 .edit-box,
 .model-choose {
   .header {

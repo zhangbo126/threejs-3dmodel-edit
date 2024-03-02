@@ -16,6 +16,8 @@
 
 import * as THREE from 'three'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
+
+
 import { useMeshEditStore } from '@/store/meshEditStore'
 const store = useMeshEditStore()
 
@@ -218,7 +220,7 @@ function onMouseClickModel(event) {
 	if (this.model) model = this.model
 	if (this.geometryGroup.children.length) model = this.geometryGroup
 	if (!model) return false
-
+  
 	const intersectsChildren = this.raycaster.intersectObjects(model.children, true)
 	const intersects = intersectsChildren.filter(item => item.object.isMesh && item.object.material)
 

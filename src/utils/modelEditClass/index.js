@@ -5,6 +5,7 @@ import lightModules from './lightModules' // 灯光模块
 import animaionModules from './animaionModules' // 动画模块
 import helperModules from './helperModules' // 辅助线模块
 import geometryModules from './geometryModules' // 几何体模块
+import tagsModules from './tagsModules' // 标签模块
 export default {
 	...backgroundModules,
 	...materialModules,
@@ -12,6 +13,7 @@ export default {
 	...lightModules,
 	...animaionModules,
 	...helperModules,
-	...geometryModules
+	...geometryModules,
+	...tagsModules,
 }
 

@@ -441,4 +441,26 @@ const geometryModelList = [
 	},
 ]
 
-export { modelList, backgrundList, viewImageList, mapImageList, geometryModelList }
+
+const tagList =[
+	 {
+		name:'Star',
+	 },
+	 {
+		name:'Promotion',
+	 },
+	 {
+		name:'CirclePlusFilled',
+	 },
+	 {
+		name:'VideoCamera',
+	 },
+	 {
+		name:'Location',
+	 },
+	 {
+		name:'ElemeFilled',
+	 },
+]
+
+export { modelList, backgrundList, viewImageList, mapImageList, geometryModelList,tagList }

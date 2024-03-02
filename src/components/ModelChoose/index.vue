@@ -177,6 +177,7 @@ const onAddGeometry = async () => {
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
   store.modelApi.setDragGeometryModel(model);
+  store.changeDragType('geometry')
 };
 // 拖拽中
 const onDrag = (event) => {
