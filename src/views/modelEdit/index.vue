@@ -113,14 +113,15 @@ const initModelBaseData = () => {
 const onGeometryDrop = (e) => {
   const { dragGeometryModel, dragTag } = store.modelApi
   const { clientX, clientY } = e
+  // console.log(dragType)
   // 如果是几何体模型拖拽
-  if (dragGeometryModel.id) {
+  if (dragGeometryModel.id && store.dragType == 'geometry') {
     dragGeometryModel.clientX = clientX;
     dragGeometryModel.clientY = clientY;
     store.modelApi.onSwitchModel(dragGeometryModel);
   }
 
-  if (dragTag.id) {
+  if (dragTag.id && store.dragType == 'tags') {
     dragTag.clientX = clientX;
     dragTag.clientY = clientY;
     store.modelApi.create3dTags(dragTag);

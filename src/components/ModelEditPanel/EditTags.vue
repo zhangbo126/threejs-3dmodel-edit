@@ -4,7 +4,9 @@
 			<span>
 				标签配置
 			</span>
-			<el-switch v-model="config.visible" @change="onChangeTagSwitch" />
+			<el-button type="primary" icon="Refresh" @click="onInitialize">
+				重置
+			</el-button>
 		</div>
 		<!-- 标签类型列表 -->
 		<div class="options" :class="tagDisable">
@@ -200,15 +202,17 @@ const tagDisable = computed(() => {
 // 拖拽标签开始
 const onDragstart = (e, tag) => {
 	store.modelApi.setDragTag(tag);
+	store.changeDragType('tags')
 };
 // 拖拽中
 const onDrag = (event) => {
 	event.preventDefault();
 };
 
-// 标签开关
-const onChangeTagSwitch = () => {
-
+// 重置数据
+const onInitialize = () => {
+	activeTag.uuid = null
+	store.modelApi.clearSceneTags()
 }
 
 

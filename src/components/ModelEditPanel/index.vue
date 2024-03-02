@@ -107,7 +107,7 @@
       icon: "CollectionTag",
     },
   ];
-  const activeTab = ref("CollectionTag");
+  const activeTab = ref("EditMaterial");
   const background = ref(null);
   const material = ref(null);
   const animation = ref(null);

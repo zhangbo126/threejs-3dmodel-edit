@@ -579,7 +579,7 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-
+        this.css3DRenderer.setSize(clientWidth, clientHeight)
 		if (this.effectComposer) {
 			// 假设抗锯齿效果是EffectComposer中的第一个pass
 			var pass = this.effectComposer.passes[3]

@@ -12,7 +12,7 @@ import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import { onlyKey } from '@/utils/utilityFunction'
-import { ElIcon, ElMessage } from 'element-plus';
+import { ElIcon, ElMessage, ElPopover, ElButton } from 'element-plus';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { h, createApp } from "vue";
 
@@ -49,14 +49,14 @@ function create3dTags() {
 								{`标签-${len}`}
 							</span>
 						</div>
-						<div className='tag-icon'><ElIcon>{h(ElementPlusIconsVue[name])}</ElIcon></div>
+						<div className='tag-icon' ><ElIcon >{h(ElementPlusIconsVue[name])}</ElIcon></div>
 					</div>
 				)
 			}
 		});
+
 		const vNode = tagvMode.mount(document.createElement('div'))
 		element.appendChild(vNode.$el)
-
 
 		var cssObject = new CSS3DObject(element);
 		const { x, y, z } = intersects[0].point
@@ -76,7 +76,8 @@ function create3dTags() {
 			backgroundColor,
 			color: '#ffffffbf',
 			iconColor: '#fff',
-			iconSize: 12
+			iconSize: 12,
+			hover: false
 		}
 
 		if (this.dragTagList.length == 0) {
@@ -130,14 +131,12 @@ function updateTagElement(tag) {
 		const element = object.element.querySelector('.element-tag')
 		const iconElement = object.element.querySelector('.tag-icon')
 		const txtElement = object.element.querySelector('.tag-txt')
-
 		const { height, backgroundColor, width,
 			fontSize, color, innerText, iconColor,
 			iconSize, positionY, positionX, positionZ } = tag
 
 		element.style.height = height + 'px'
 		element.style.backgroundColor = backgroundColor
-		element.style.borderColor = backgroundColor
 		element.style.boxShadow = `0px 0px 4px ${backgroundColor}`
 		element.style.width = width + 'px'
 		element.style.fontSize = fontSize + 'px'
@@ -167,6 +166,8 @@ function updateTagElement(tag) {
 	}
 
 }
+
+
 
 export default {
 	create3dTags,
