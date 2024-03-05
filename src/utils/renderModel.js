@@ -130,8 +130,10 @@ class renderModel {
 		// 当前拖拽标签信息
 		this.dragTag = {}
 		//当前标签列表
-		this.dragTagList=[]
+		this.dragTagList = []
 	}
+
+
 	init() {
 		return new Promise(async (reslove, reject) => {
 			//初始化渲染器
@@ -200,7 +202,7 @@ class renderModel {
 		this.css3DRenderer.domElement.style.position = 'absolute';
 		this.css3DRenderer.domElement.style.pointerEvents = 'none';
 		this.css3DRenderer.domElement.style.top = 0;
-		
+
 	}
 	// 更新场景
 	sceneAnimation() {
@@ -216,7 +218,7 @@ class renderModel {
 				this.controls.update()
 			}
 			TWEEN.update();
-             // 3d标签渲染器
+			// 3d标签渲染器
 			if (this.dragTagList.length) {
 				this.css3DRenderer.render(this.scene, this.camera)
 				this.css3dControls.update()
@@ -579,7 +581,7 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight // 摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
-        this.css3DRenderer.setSize(clientWidth, clientHeight)
+		this.css3DRenderer.setSize(clientWidth, clientHeight)
 		if (this.effectComposer) {
 			// 假设抗锯齿效果是EffectComposer中的第一个pass
 			var pass = this.effectComposer.passes[3]
@@ -743,7 +745,7 @@ class renderModel {
 		this.transformControls = null
 		this.dragGeometryModel = null
 		this.glowUnrealBloomPass = false
-		
+
 
 	}
 
@@ -788,7 +790,7 @@ class renderModel {
 			this.effectComposer.removePass(this.shaderPass)
 		}
 
-	
+
 
 		this.renderer.toneMappingExposure = 2
 		this.outlinePass.selectedObjects = []
@@ -819,7 +821,7 @@ class renderModel {
 		this.onSetModelGridHelperSize(config)
 		this.onSetModelAxesHelper(config)
 		this.clearSceneTags()
-	
+
 	}
 	// 设置当前被拖拽的几何模型
 	setDragGeometryModel(model) {

@@ -12,7 +12,7 @@ import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import { onlyKey } from '@/utils/utilityFunction'
-import { ElIcon, ElMessage, ElPopover, ElButton } from 'element-plus';
+import { ElIcon, ElMessage } from 'element-plus';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { h, createApp } from "vue";
 
@@ -26,7 +26,6 @@ function create3dTags() {
 
 	const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 	const { clientX, clientY, name } = this.dragTag
-
 	// 计算鼠标在屏幕上的坐标
 	this.mouse.x = ((clientX - offsetLeft) / clientWidth) * 2 - 1
 	this.mouse.y = -((clientY - offsetTop) / clientHeight) * 2 + 1

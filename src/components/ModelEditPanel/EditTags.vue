@@ -16,6 +16,7 @@
 						<PriceTag />
 					</el-icon>
 					<span>标签类型</span>
+					<span :style="{ color: '#18c174 ' }">(可拖拽添加多个)</span>
 				</el-space>
 			</div>
 			<el-scrollbar max-height="150px">
