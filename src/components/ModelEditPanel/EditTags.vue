@@ -9,7 +9,7 @@
 			</el-button>
 		</div>
 		<!-- 标签类型列表 -->
-		<div class="options" :class="tagDisable">
+		<div class="options">
 			<div class="option">
 				<el-space>
 					<el-icon>
@@ -34,7 +34,7 @@
 			</el-scrollbar>
 		</div>
 		<!-- 标签列表 -->
-		<div class="options" :class="tagDisable">
+		<div class="options">
 			<div class="header">
 				标签列表
 			</div>
@@ -164,22 +164,21 @@
 						v-model.trim="activeTag.innerText"></el-input>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </template>
 <script setup>
 
-import { reactive, computed } from "vue";
+import { reactive, computed, defineExpose } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 const store = useMeshEditStore();
 
+
 const predefineColors = PREDEFINE_COLORS;
 const config = reactive({
-	visible: true,
 	dragTagList: computed(() => store.modelApi.dragTagList)
 });
 
@@ -193,10 +192,6 @@ const tagList = computed(() => {
 
 const activeTag = reactive({})
 
-const tagDisable = computed(() => {
-	const { visible } = config;
-	return visible ? "" : "disabled";
-})
 
 
 // 拖拽标签开始
@@ -232,7 +227,7 @@ const onChangeTagValue = () => {
 	store.modelApi.updateTagElement(activeTag)
 }
 
-
+defineExpose({ config })
 
 </script>
 <style scoped lang="scss">

@@ -25,7 +25,7 @@ function setDragTag(tag) {
 function create3dTags() {
 
 	const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-	const { clientX, clientY, name } = this.dragTag
+	const { clientX, clientY, name: iconName } = this.dragTag
 
 	// 计算鼠标在屏幕上的坐标
 	this.mouse.x = ((clientX - offsetLeft) / clientWidth) * 2 - 1
@@ -34,7 +34,7 @@ function create3dTags() {
 	const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
 	if (intersects.length > 0) {
-		var element = document.createElement('div');
+		let element = document.createElement('div');
 		// 创建容器标签
 		const backgroundColor = 'rgba(0,127,127,' + (Math.random() * 0.5 + 0.25) + ')'
 		const len = this.dragTagList.length + 1
@@ -49,7 +49,7 @@ function create3dTags() {
 								{`标签-${len}`}
 							</span>
 						</div>
-						<div className='tag-icon' ><ElIcon >{h(ElementPlusIconsVue[name])}</ElIcon></div>
+						<div className='tag-icon' ><ElIcon >{h(ElementPlusIconsVue[iconName])}</ElIcon></div>
 					</div>
 				)
 			}
@@ -57,8 +57,8 @@ function create3dTags() {
 
 		const vNode = tagvMode.mount(document.createElement('div'))
 		element.appendChild(vNode.$el)
-
-		var cssObject = new CSS3DObject(element);
+        
+		let cssObject = new CSS3DObject(element);
 		const { x, y, z } = intersects[0].point
 		cssObject.position.set(x, y, z);
 		cssObject.scale.set(.01, .01, .01)
@@ -77,6 +77,7 @@ function create3dTags() {
 			color: '#ffffffbf',
 			iconColor: '#fff',
 			iconSize: 12,
+			iconName,
 			hover: false
 		}
 
@@ -85,6 +86,7 @@ function create3dTags() {
 		}
 		this.dragTagList.push(tag)
 		this.scene.add(cssObject)
+
 
 	} else {
 		ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
