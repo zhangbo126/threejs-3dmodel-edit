@@ -12,7 +12,7 @@ import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import { onlyKey } from '@/utils/utilityFunction'
-import { ElIcon, ElMessage, ElPopover, ElButton } from 'element-plus';
+import { ElIcon, ElMessage } from 'element-plus';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { h, createApp } from "vue";
 
