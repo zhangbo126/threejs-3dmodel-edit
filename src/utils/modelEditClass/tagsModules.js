@@ -87,7 +87,6 @@ function create3dTags() {
 		this.dragTagList.push(tag)
 		this.scene.add(cssObject)
 
-
 	} else {
 		ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
 	}

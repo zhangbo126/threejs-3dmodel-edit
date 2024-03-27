@@ -4,7 +4,8 @@
     <header class="model-header">
       <div class="header-lf">
         <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
-        <span>作者:answer</span>
+        <span>作者:answer </span>
+        <span>当前Three.js版本:{{THREE.REVISION}}</span>
       </div>
       <div class="header-lr">
         <el-space>
@@ -70,6 +71,7 @@ import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading";
 import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
 import { useMeshEditStore } from '@/store/meshEditStore'
+import * as THREE from 'three'
 
 const store = useMeshEditStore();
 const router = useRouter();
