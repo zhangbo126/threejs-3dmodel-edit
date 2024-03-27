@@ -188,12 +188,14 @@ class renderModel {
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 		this.controls.enablePan = true
-		this.controls.enabled = true
+		this.controls.enabled = false
+		this.controls.target.set(0, 0, 0);
 
 		//标签控制器
 		this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement)
 		this.css3dControls.enablePan = false
-		this.css3dControls.enableDamping = true;
+		this.css3dControls.enabled = false
+		this.css3dControls.enableDamping = false;
 		this.css3dControls.target.set(0, 0, 0);
 		this.css3dControls.update()
 	}
@@ -406,8 +408,8 @@ class renderModel {
 			this.axesHelper.dispose()
 		}
 
-		this.effectComposer.dispose()
-		this.glowComposer.dispose()
+		if (this.effectComposer) this.effectComposer.dispose()
+		if (this.glowComposer) this.glowComposer.dispose()
 		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
 		window.removeEventListener("resize", this.onWindowResizesListener)
 
