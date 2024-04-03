@@ -14,6 +14,8 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
 import { CSS3DRenderer } from 'three/addons/renderers/CSS3DRenderer.js';
 import { vertexShader, fragmentShader } from '@/config/constant.js'
@@ -43,9 +45,10 @@ class renderModel {
 		//文件加载器类型
 		this.fileLoaderMap = {
 			'glb': new GLTFLoader(),
-			'fbx': new FBXLoader(),
+			'fbx': new FBXLoader(this.loadingManager),
 			'gltf': new GLTFLoader(),
-			'obj': new OBJLoader(),
+			'obj': new OBJLoader(this.loadingManager),
+			'stl': new STLLoader(),
 		}
 		//模型动画列表
 		this.modelAnimation
@@ -318,7 +321,16 @@ class renderModel {
 	// 加载模型
 	loadModel({ filePath, fileType, map }) {
 		return new Promise((resolve, reject) => {
-			const loader = this.fileLoaderMap[fileType]
+			let loader
+			if (['glb', 'gltf'].includes(fileType)) {
+				const dracoLoader = new DRACOLoader()
+				dracoLoader.setDecoderPath(`draco/gltf/`)
+				dracoLoader.setDecoderConfig({ type: 'js' })
+				dracoLoader.preload()
+				loader = new GLTFLoader().setDRACOLoader(dracoLoader)
+			} else {
+				loader = this.fileLoaderMap[fileType]
+			}
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
@@ -336,6 +348,11 @@ class renderModel {
 					case 'obj':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						break;
+					case 'stl':
+						const material = new THREE.MeshStandardMaterial();
+						const mesh = new THREE.Mesh(result, material);
+						this.model = mesh
 						break;
 					default:
 						break;
