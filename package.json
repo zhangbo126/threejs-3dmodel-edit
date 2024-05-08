@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve:test": "vue-cli-service serve --mode test",
+    "serve:product": "vue-cli-service serve --mode product",
     "build": "vue-cli-service build",
+    "build:test:": "vue-cli-service --mode test build",
+    "build:product": "vue-cli-service --mode product build",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint"
   },
@@ -24,6 +28,8 @@
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vue3-draggable-resizable": "^1.6.5",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
