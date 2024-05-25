@@ -10,7 +10,7 @@
       <div class="option">
         <el-space>
           <span>当前材质类型：</span>
-          <el-select v-model="activeMeshType" @change="onChangeMeshType" placeholder="请选择" size="small">
+          <el-select v-model="activeMeshType" @change="onChangeMeshType" placeholder="请选择" size="small" :style="{width:'200px'}"> 
             <el-option v-for="item in meshTypeList" :key="item.type"
               :label="`${item.type ? item.type : ''}(${item.describe})`" :value="item.type" />
           </el-select>

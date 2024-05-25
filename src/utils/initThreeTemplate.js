@@ -1,6 +1,8 @@
 
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, createApp } from 'vue'
 import * as THREE from 'three' //导入整个 three.js核心库
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { ElIcon, ElMessage } from 'element-plus';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls' //导入控制器模块，轨道控制器
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader' //导入GLTF模块，模型解析器,根据文件格式来定
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
@@ -12,6 +14,10 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
+import { CSS3DRenderer } from 'three/addons/renderers/CSS3DRenderer.js';
 import { vertexShader, fragmentShader } from '@/config/constant.js'
 import { mapImageList } from "@/config/model";
 import { lightPosition, onlyKey, debounce } from '@/utils/utilityFunction'
@@ -39,9 +45,10 @@ class renderModel {
 		//文件加载器类型
 		this.fileLoaderMap = {
 			'glb': new GLTFLoader(),
-			'fbx': new FBXLoader(),
+			'fbx': new FBXLoader(this.loadingManager),
 			'gltf': new GLTFLoader(),
-			'obj': new OBJLoader(),
+			'obj': new OBJLoader(this.loadingManager),
+			'stl': new STLLoader(),
 		}
 		//模型动画列表
 		this.modelAnimation
@@ -94,6 +101,11 @@ class renderModel {
 		this.onWindowResizesListener
 		// 鼠标移动
 		this.onMouseMoveListener
+		// 3d文字控制器
+		this.css3dControls = null
+		// 3d文字渲染器
+		this.css3DRenderer = null
+
 	}
 	init() {
 		return new Promise(async (reslove, reject) => {
@@ -121,6 +133,8 @@ class renderModel {
 			this.setModelAnimation()
 			// 设置模型轴/辅助线信息
 			this.setModelAxleLine()
+			// 设置场景标签信息
+			this.setSceneTagsRender()
 			//场景渲染
 			this.sceneAnimation()
 			this.addEvenListMouseLisatener()
@@ -144,6 +158,13 @@ class renderModel {
 		this.renderer.shadowMap.enabled = true
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 		this.container.appendChild(this.renderer.domElement)
+
+		// 创建一个CSS3DRenderer
+		this.css3DRenderer = new CSS3DRenderer();
+		this.css3DRenderer.setSize(clientWidth, clientHeight);
+		this.css3DRenderer.domElement.style.position = 'absolute';
+		this.css3DRenderer.domElement.style.pointerEvents = 'none';
+		this.css3DRenderer.domElement.style.top = 0;
 	}
 	// 创建相机
 	initCamera() {
@@ -165,20 +186,26 @@ class renderModel {
 		this.onWindowResizesListener = this.onWindowResize.bind(this)
 		window.addEventListener("resize", this.onWindowResizesListener)
 
-		// // 鼠标移动
-		// this.onMouseMoveListener = this.onMouseMoveModel.bind(this)
-		// this.container.addEventListener('mousemove', this.onMouseMoveListener)
 	}
 	// 创建控制器
 	initControls() {
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement)
 		this.controls.enablePan = true
-		this.controls.enabled = true
+		this.controls.enabled = false
+		this.controls.target.set(0, 0, 0);
+
+		//标签控制器
+		this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement)
+		this.css3dControls.enablePan = false
+		this.css3dControls.enabled = false
+		this.css3dControls.enableDamping = false;
+		this.css3dControls.target.set(0, 0, 0);
+		this.css3dControls.update()
 	}
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())
-		const { stage } = this.config
+		const { stage, tags } = this.config
 		//辉光效果开关开启时执行
 		if (stage && stage.glow) {
 			// 将不需要处理辉光的材质进行存储备份
@@ -186,6 +213,12 @@ class renderModel {
 		} else {
 			this.effectComposer.render()
 			this.controls.update()
+		}
+
+		// 3d标签渲染器
+		if (tags && tags.dragTagList.length) {
+			this.css3DRenderer.render(this.scene, this.camera)
+			this.css3dControls.update()
 		}
 	}
 	// 设置材质辉光
@@ -288,7 +321,16 @@ class renderModel {
 	// 加载模型
 	loadModel({ filePath, fileType, map }) {
 		return new Promise((resolve, reject) => {
-			const loader = this.fileLoaderMap[fileType]
+			let loader
+			if (['glb', 'gltf'].includes(fileType)) {
+				const dracoLoader = new DRACOLoader()
+				dracoLoader.setDecoderPath(`draco/gltf/`)
+				dracoLoader.setDecoderConfig({ type: 'js' })
+				dracoLoader.preload()
+				loader = new GLTFLoader().setDRACOLoader(dracoLoader)
+			} else {
+				loader = this.fileLoaderMap[fileType]
+			}
 			loader.load(filePath, (result) => {
 				switch (fileType) {
 					case 'glb':
@@ -306,6 +348,11 @@ class renderModel {
 					case 'obj':
 						this.model = result
 						this.skeletonHelper = new THREE.SkeletonHelper(result)
+						break;
+					case 'stl':
+						const material = new THREE.MeshStandardMaterial();
+						const mesh = new THREE.Mesh(result, material);
+						this.model = mesh
 						break;
 					default:
 						break;
@@ -333,6 +380,7 @@ class renderModel {
 		this.camera.aspect = clientWidth / clientHeight //摄像机宽高比例
 		this.camera.updateProjectionMatrix() //相机更新矩阵，将3d内容投射到2d面上转换
 		this.renderer.setSize(clientWidth, clientHeight)
+		this.css3DRenderer.setSize(clientWidth, clientHeight)
 		if (this.effectComposer) {
 			// 假设抗锯齿效果是EffectComposer中的第一个pass
 			var pass = this.effectComposer.passes[3]
@@ -349,11 +397,20 @@ class renderModel {
 		cancelAnimationFrame(this.rotationAnimationFrame)
 		cancelAnimationFrame(this.renderAnimation)
 		cancelAnimationFrame(this.animationFrame)
+		const { tags } = this.config
 		this.scene.traverse((v) => {
 			if (v.type === 'Mesh') {
 				v.geometry.dispose();
 				v.material.dispose();
 			}
+			// 清除场景标签
+			// if (v instanceof CSS3DObject && tags.dragTagList.length) {
+			// 	this.scene.remove(v)
+			// 	// var element = v.element;
+			// 	// if (element && element.parentNode) {
+			// 	// 	element.parentNode.removeChild(element);
+			// 	// }
+			// }
 		})
 		this.scene.clear()
 		this.renderer.clear()
@@ -367,10 +424,13 @@ class renderModel {
 			this.axesHelper.clear()
 			this.axesHelper.dispose()
 		}
-		this.effectComposer.dispose()
-		this.glowComposer.dispose()
+
+		if (this.effectComposer) this.effectComposer.dispose()
+		if (this.glowComposer) this.glowComposer.dispose()
 		this.container.removeEventListener('mousemove', this.onMouseMoveListener)
 		window.removeEventListener("resize", this.onWindowResizesListener)
+
+
 		this.config = null
 		this.container = null
 		// 相机
@@ -428,6 +488,10 @@ class renderModel {
 		// 需要辉光的材质
 		this.glowMaterialList = null
 		this.materials = null
+		// 3d文字控制器
+		this.css3dControls = null
+		// 3d文字渲染器
+		this.css3DRenderer = null
 
 	}
 
@@ -598,40 +662,6 @@ class renderModel {
 			mesh.position.set(position.x, position.y, position.z)
 		})
 	}
-	// 鼠标移入模型材质
-	onMouseMoveModel(event) {
-		if (this.modelAnimation.length) return false
-		const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
-		this.mouse.x = ((event.clientX - offsetLeft) / clientWidth) * 2 - 1
-		this.mouse.y = -((event.clientY - offsetTop) / clientHeight) * 2 + 1
-		this.raycaster.setFromCamera(this.mouse, this.camera)
-		const intersects = this.raycaster.intersectObjects(this.scene.children).filter(item => item.object.isMesh && this.glowMaterialList.includes(item.object.name))
-		if (intersects.length > 0) {
-			const meshTxt = document.getElementById("mesh-txt");
-			// TODO:动画模型不显示材质标签
-			if (this.modelAnimation.length) {
-				document.body.style.cursor = 'pointer';
-				return false
-			}
-			// 判断是否开启显示材质标签
-			const { hoverMeshTag } = this.config.stage
-			if (hoverMeshTag) {
-				// 设置材质标签位置
-				const intersectedObject = intersects[0].object
-				meshTxt.innerHTML = intersectedObject.name
-				meshTxt.style.display = "block";
-				meshTxt.style.top = event.clientY - offsetTop + 'px';
-				meshTxt.style.left = event.clientX - offsetLeft + 20 + 'px';
-			}
-			document.body.style.cursor = 'pointer'
-
-		} else {
-			const meshTxt = document.getElementById("mesh-txt");
-			document.body.style.cursor = '';
-			meshTxt.style.display = "none";
-
-		}
-	}
 	// 处理灯光数据回填
 	setSceneLight() {
 		const { light } = this.config
@@ -772,7 +802,50 @@ class renderModel {
 		// 骨骼辅助线
 		this.skeletonHelper.visible = skeletonHelper
 	}
+	// 处理标签渲染
+	setSceneTagsRender() {
+		const { tags } = this.config
+		if (tags && tags.dragTagList.length) {
+			this.container.appendChild(this.css3DRenderer.domElement);
+			tags.dragTagList.forEach(v => {
+				let element = document.createElement('div');
+				const { backgroundColor, color, fontSize, height, iconColor, iconName, iconSize, innerText, positionX, positionY, positionZ, width } = v
+				// 创建3d标签
+				const tagvMode = createApp({
+					render() {
+						return (
+							<div>
+								<div className="element-tag"
+									style={{
+										width: width + 'px',
+										height: height + 'px',
+										fontSize: fontSize + 'px',
+										color: color,
+										backgroundColor,
+										boxShadow: `0px 0px 4px ${backgroundColor}`
+									}}>
+									<span className='tag-txt'>
+										{innerText}
+									</span>
+								</div>
+								<div className='tag-icon' ><ElIcon >{h(ElementPlusIconsVue[iconName])}</ElIcon></div>
+							</div>
+						)
+					}
+				});
 
+				const vNode = tagvMode.mount(document.createElement('div'))
+				element.appendChild(vNode.$el)
+				let cssObject = new CSS3DObject(element);
+				cssObject.position.set(positionX, positionY, positionZ);
+				cssObject.scale.set(.01, .01, .01)
+				const iconElement = element.querySelector('.tag-icon')
+				iconElement.style.fontSize = iconSize + 'px'
+				iconElement.style.color = iconColor
+				this.scene.add(cssObject)
+			})
+		}
+	}
 }
 
 

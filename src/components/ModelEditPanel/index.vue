@@ -130,6 +130,7 @@
       attribute: attribute.value.getAttrbuteConfig(),
       light: light.value.config,
       stage: stage.value.getStageConfig(),
+      tags:tags.value.config
     };
   };
   defineExpose({
