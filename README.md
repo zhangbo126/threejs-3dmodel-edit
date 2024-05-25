@@ -71,7 +71,6 @@
 ![输入图片说明](public/image/2.png)
 ![输入图片说明](public/image/3.png)
 ![输入图片说明](public/image/4.png)
-![输入图片说明](public/image/5.png)
 ![输入图片说明](public/image/6.png)
 ![输入图片说明](public/image/7.png)
 ![输入图片说明](public/image/8.png)
