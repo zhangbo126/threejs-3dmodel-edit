@@ -12,7 +12,7 @@
 
 ### 🌐 安装/启动/打包
 ```
- yarn  / yarn serve  / yarn build
+ yarn  / yarn serve  / yarn build(yarn build:pro)
 
 ```
 ### 🎨 预览
