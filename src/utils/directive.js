@@ -1,5 +1,5 @@
 import { createApp } from "vue"
-import Loading from '@/components/Loading'
+import Loading from '@/components/Loading/index.vue'
 /**
   * @description loading 加载状态  
  * @params {Vue}   vue实列操作对象

@@ -56,8 +56,8 @@
 </template>
 <script setup name="modelBase">
 import { DraggableContainer } from "vue3-draggable-resizable";
-import DraggableResizableItem from "@/components/DraggableResizableItem/index";
-import RightContextMenu from "@/components/RightContextMenu";
+import DraggableResizableItem from "@/components/DraggableResizableItem/index.vue";
+import RightContextMenu from "@/components/RightContextMenu/index.vue";
 import { MODEL_BASE_DATA, MODEL_BASE_DRAGE_DATA, } from "@/config/constant";
 import { deepCopy, onlyKey } from "@/utils/utilityFunction";
 import { ref, getCurrentInstance, onMounted, nextTick } from "vue";

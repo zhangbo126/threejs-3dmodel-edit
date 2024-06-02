@@ -95,7 +95,8 @@
           <span> 模型分解 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
+          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0"
+            :max="800" />
         </div>
       </div>
       <div class="option" :class="moveDisable">
@@ -112,9 +113,9 @@
       <div class="option" :class="manageDisable">
         <div class="grid-silder">
           <el-radio-group v-model="config.transformType" @change="onChangeTransform">
-            <el-radio-button label="translate">拖拽</el-radio-button>
-            <el-radio-button label="rotate">旋转</el-radio-button>
-            <el-radio-button label="scale">缩放</el-radio-button>
+            <el-radio-button value="translate">拖拽</el-radio-button>
+            <el-radio-button value="rotate">旋转</el-radio-button>
+            <el-radio-button value="scale">缩放</el-radio-button>
           </el-radio-group>
         </div>
       </div>
@@ -223,4 +224,3 @@ defineExpose({
 });
 </script>
 <style lang="scss" scoped></style>
-        

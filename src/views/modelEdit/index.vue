@@ -5,7 +5,7 @@
       <div class="header-lf">
         <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
         <span>作者:answer </span>
-        <span>当前Three.js版本:{{THREE.REVISION}}</span>
+        <span>当前Three.js版本:{{ THREE.REVISION }}</span>
       </div>
       <div class="header-lr">
         <el-space>
@@ -68,7 +68,7 @@ import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "@/utils/renderModel";
 import { modelList } from "@/config/model";
-import PageLoading from "@/components/Loading/PageLoading";
+import PageLoading from "@/components/Loading/PageLoading.vue";
 import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import * as THREE from 'three'
@@ -107,6 +107,8 @@ const initModelBaseData = () => {
         fileInfo: { ...v },
       });
     });
+
+
     $local.set(MODEL_BASE_DATA, modelBaseData);
   }
 };

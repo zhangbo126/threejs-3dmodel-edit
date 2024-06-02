@@ -38,9 +38,9 @@
       </div>
       <div class="option">
         <el-radio-group v-model="config.loop" @change="onUplateAnimation">
-          <el-radio-button label="LoopOnce">只执行一次</el-radio-button>
-          <el-radio-button label="LoopRepeat">无限循环</el-radio-button>
-          <el-radio-button label="LoopPingPong">来回循环</el-radio-button>
+          <el-radio-button value="LoopOnce">只执行一次</el-radio-button>
+          <el-radio-button value="LoopRepeat">无限循环</el-radio-button>
+          <el-radio-button value="LoopPingPong">来回循环</el-radio-button>
         </el-radio-group>
       </div>
       <div class="option">
@@ -76,9 +76,9 @@
         <el-space>
           <span> 轴方向 </span>
           <el-radio-group v-model="config.rotationType" @change="onRotationType">
-            <el-radio-button label="x">X轴</el-radio-button>
-            <el-radio-button label="y">Y轴</el-radio-button>
-            <el-radio-button label="z">Z轴</el-radio-button>
+            <el-radio-button value="x">X轴</el-radio-button>
+            <el-radio-button value="y">Y轴</el-radio-button>
+            <el-radio-button value="z">Z轴</el-radio-button>
           </el-radio-group>
         </el-space>
       </div>
