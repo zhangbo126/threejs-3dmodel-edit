@@ -18,6 +18,7 @@
 ### 🎨 预览
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
 - 2.线上访问:[https://zhang_6666.gitee.io/three.js3d](https://zhang_6666.gitee.io/three.js3d)
+- 3.关于打包部署服务端:在vite.config.js 里修改 base 路径来适配当前的域名路径
 
 ### 🎵 主要技术栈
 | 名称                | 版本  | 名称        | 版本   |
