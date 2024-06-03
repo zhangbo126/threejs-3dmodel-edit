@@ -1,5 +1,5 @@
 
-
+import { getAssetsFile } from "@/utils/utilityFunction"
 const modelList = [
 	{
 		name: '人物(女)',
@@ -8,7 +8,7 @@ const modelList = [
 		id: 3,
 		animation: true,
 		filePath: 'threeFile/glb/glb-3.glb',
-		icon: require('@/assets/model-icon/12.png')
+		icon: getAssetsFile('model-icon/12.png')
 	},
 
 	{
@@ -19,7 +19,7 @@ const modelList = [
 		animation: true,
 		filePath: 'threeFile/glb/glb-6.glb',
 		scale: 1.3,
-		icon: require('@/assets/model-icon/13.png')
+		icon: getAssetsFile('model-icon/13.png')
 	},
 
 	{
@@ -29,7 +29,7 @@ const modelList = [
 		id: 7,
 		animation: false,
 		filePath: 'threeFile/glb/glb-7.glb',
-		icon: require('@/assets/model-icon/2.png')
+		icon: getAssetsFile('model-icon/2.png')
 	},
 
 	{
@@ -39,7 +39,7 @@ const modelList = [
 		id: 8,
 		animation: false,
 		filePath: 'threeFile/glb/glb-8.glb',
-		icon: require('@/assets/model-icon/3.png')
+		icon: getAssetsFile('model-icon/3.png')
 	},
 	{
 		name: '变形金刚（3）',
@@ -48,7 +48,7 @@ const modelList = [
 		id: 9,
 		animation: false,
 		filePath: 'threeFile/glb/glb-9.glb',
-		icon: require('@/assets/model-icon/4.png'),
+		icon: getAssetsFile('model-icon/4.png'),
 		decomposeName: 'transformers_3'
 	},
 	{
@@ -58,7 +58,7 @@ const modelList = [
 		id: 10,
 		animation: false,
 		filePath: 'threeFile/glb/glb-10.glb',
-		icon: require('@/assets/model-icon/1.png'),
+		icon: getAssetsFile('model-icon/1.png'),
 		decomposeName: 'transformers_1'
 	},
 	{
@@ -68,7 +68,7 @@ const modelList = [
 		id: 11,
 		animation: false,
 		filePath: 'threeFile/glb/glb-11.glb',
-		icon: require('@/assets/model-icon/5.png')
+		icon: getAssetsFile('model-icon/5.png')
 	},
 	{
 		name: '变形金刚(4)',
@@ -77,7 +77,7 @@ const modelList = [
 		id: 12,
 		animation: false,
 		filePath: 'threeFile/glb/glb-12.glb',
-		icon: require('@/assets/model-icon/6.png')
+		icon: getAssetsFile('model-icon/6.png')
 	},
 
 	{
@@ -87,7 +87,7 @@ const modelList = [
 		id: 16,
 		animation: true,
 		filePath: 'threeFile/glb/glb-16.glb',
-		icon: require('@/assets/model-icon/14.png')
+		icon: getAssetsFile('model-icon/14.png')
 	},
 
 	{
@@ -98,7 +98,7 @@ const modelList = [
 		animation: true,
 		scale: .2,
 		filePath: 'threeFile/glb/glb-17.glb',
-		icon: require('@/assets/model-icon/15.png')
+		icon: getAssetsFile('model-icon/15.png')
 	},
 	{
 		name: '鹿',
@@ -107,7 +107,7 @@ const modelList = [
 		id: 18,
 		animation: true,
 		filePath: 'threeFile/glb/glb-18.glb',
-		icon: require('@/assets/model-icon/17.png')
+		icon: getAssetsFile('model-icon/17.png')
 	},
 
 	{
@@ -117,7 +117,7 @@ const modelList = [
 		id: 22,
 		animation: false,
 		filePath: 'threeFile/glb/glb-22.glb',
-		icon: require('@/assets/model-icon/9.png'),
+		icon: getAssetsFile('model-icon/9.png'),
 		decomposeName: 'transformers_2'
 	},
 	{
@@ -127,7 +127,7 @@ const modelList = [
 		id: 24,
 		animation: false,
 		filePath: 'threeFile/glb/glb-24.glb',
-		icon: require('@/assets/model-icon/11.png')
+		icon: getAssetsFile('model-icon/11.png')
 	},
 	{
 		name: '牛头酋长',
@@ -136,7 +136,7 @@ const modelList = [
 		id: 25,
 		animation: true,
 		filePath: 'threeFile/glb/glb-25.glb',
-		icon: require('@/assets/model-icon/18.png')
+		icon: getAssetsFile('model-icon/18.png')
 	},
 	{
 		name: '火男',
@@ -146,70 +146,83 @@ const modelList = [
 		animation: true,
 		filePath: 'threeFile/glb/glb-26.glb',
 		scale: .02,
-		icon: require('@/assets/model-icon/16.png')
+		icon: getAssetsFile('model-icon/16.png')
 	}
 ]
 
 const backgrundList = [
 	{
 		id: 1,
-		url: require('@/assets/image/model-bg-1.jpg')
+		url: getAssetsFile('image/model-bg-1.jpg')
 	},
 	{
 		id: 2,
-		url: require('@/assets/image/model-bg-2.jpeg')
+		url: getAssetsFile('image/model-bg-2.jpeg')
 	},
 	{
 		id: 3,
-		url: require('@/assets/image/model-bg-3.jpg')
+		url: getAssetsFile('image/model-bg-3.jpg')
+
 	},
 	{
 		id: 4,
-		url: require('@/assets/image/model-bg-4.jpg')
+		url: getAssetsFile('image/model-bg-4.jpg')
+
 	},
 	{
 		id: 5,
-		url: require('@/assets/image/model-bg-5.png')
+		url: getAssetsFile('image/model-bg-5.jpg')
+
 	},
 	{
 		id: 6,
-		url: require('@/assets/image/model-bg-6.jpg')
+		url: getAssetsFile('image/model-bg-6.jpg')
+
 	},
 	{
 		id: 7,
-		url: require('@/assets/image/model-bg-7.jpg')
+		url: getAssetsFile('image/model-bg-7.jpg')
+
 	},
 	{
 		id: 8,
-		url: require('@/assets/image/model-bg-8.jpg')
+		url: getAssetsFile('image/model-bg-8.jpg')
+
 	},
 	{
 		id: 9,
-		url: require('@/assets/image/model-bg-9.jpg')
+		url: getAssetsFile('image/model-bg-9.jpg')
+
 	},
 	{
 		id: 10,
-		url: require('@/assets/image/model-bg-10.jpg')
+		url: getAssetsFile('image/model-bg-10.jpg')
+
 	},
 	{
 		id: 11,
-		url: require('@/assets/image/model-bg-11.jpg')
+		url: getAssetsFile('image/model-bg-11.jpg')
+
 	},
 	{
 		id: 15,
-		url: require('@/assets/image/model-bg-15.jpg')
+		url: getAssetsFile('image/model-bg-15.jpg')
+
 	},
 	{
 		id: 16,
-		url: require('@/assets/image/model-bg-16.jpg')
+		url: getAssetsFile('image/model-bg-16.jpg')
+
 	},
 	{
 		id: 17,
-		url: require('@/assets/image/model-bg-17.jpg')
+		url: getAssetsFile('image/model-bg-17.jpg')
+
 	},
 	{
 		id: 18,
-		url: require('@/assets/image/model-bg-18.jpg')
+		url: getAssetsFile('image/model-bg-18.jpg')
+
 	},
 
 ]
@@ -218,7 +231,7 @@ let viewImageList = []
 for (let i = 0; i <= 15; i++) {
 	const image = {
 		id: i,
-		url: require(`@/assets/image/view-${i + 1}.png`),
+		url: getAssetsFile(`image/view-${i + 1}.png`),
 		file: `threeFile/hdr/${i + 1}.hdr`
 	}
 	viewImageList.push(image)
@@ -227,63 +240,77 @@ for (let i = 0; i <= 15; i++) {
 const mapImageList = [
 	{
 		id: 100,
-		url: require(`@/assets/maps/5.jpg`)
+		url: getAssetsFile('maps/5.jpg')
 	},
 	{
 		id: 99,
-		url: require(`@/assets/maps/6.jpg`)
+		url: getAssetsFile('maps/6.jpg')
+
 	},
 	{
 		id: 98,
-		url: require(`@/assets/maps/7.jpg`)
+		url: getAssetsFile('maps/7.jpg')
+
 	},
 	{
 		id: 97,
-		url: require(`@/assets/maps/8.jpg`)
+		url: getAssetsFile('maps/8.jpg')
+
 	},
 	{
 		id: 96,
-		url: require(`@/assets/maps/9.jpg`)
+		url: getAssetsFile('maps/9.jpg')
+
 	},
 	{
 		id: 95,
-		url: require(`@/assets/maps/10.jpg`)
+		url: getAssetsFile('maps/10.jpg')
+
 	},
 	{
 		id: 94,
-		url: require(`@/assets/maps/11.png`)
+		url: getAssetsFile('maps/11.jpg')
+
 	},
 	{
 		id: 93,
-		url: require(`@/assets/maps/12.jpg`)
+		url: getAssetsFile('maps/12.jpg')
+
 	},
 	{
 		id: 92,
-		url: require(`@/assets/maps/13.jpg`)
+		url: getAssetsFile('maps/13.jpg')
+
 	},
 	{
 		id: 91,
-		url: require(`@/assets/maps/14.png`)
+		url: getAssetsFile('maps/14.jpg')
+
 	},
 	{
 		id: 90,
-		url: require(`@/assets/maps/16.jpg`)
+		url: getAssetsFile('maps/16.jpg')
+
 	},
 	{
 		id: 89,
-		url: require(`@/assets/maps/17.jpg`)
+		url: getAssetsFile('maps/17.jpg')
+
 	},
 	{
 		id: 88,
-		url: require(`@/assets/maps/18.jpg`)
+		url: getAssetsFile('maps/18.jpg')
+
 	},
 	{
 		id: 87,
-		url: require(`@/assets/maps/19.jpg`)
+		url: getAssetsFile('maps/19.jpg')
+
 	},
 	{
 		id: 222,
-		url: require(`@/assets/maps/20.jpg`)
+		url: getAssetsFile('maps/20.jpg')
+
 	},
 	...viewImageList
 ]
@@ -442,25 +469,25 @@ const geometryModelList = [
 ]
 
 
-const tagList =[
-	 {
-		name:'Star',
-	 },
-	 {
-		name:'Promotion',
-	 },
-	 {
-		name:'CirclePlusFilled',
-	 },
-	 {
-		name:'VideoCamera',
-	 },
-	 {
-		name:'Location',
-	 },
-	 {
-		name:'ElemeFilled',
-	 },
+const tagList = [
+	{
+		name: 'Star',
+	},
+	{
+		name: 'Promotion',
+	},
+	{
+		name: 'CirclePlusFilled',
+	},
+	{
+		name: 'VideoCamera',
+	},
+	{
+		name: 'Location',
+	},
+	{
+		name: 'ElemeFilled',
+	},
 ]
 
-export { modelList, backgrundList, viewImageList, mapImageList, geometryModelList,tagList }
+export { modelList, backgrundList, viewImageList, mapImageList, geometryModelList, tagList }

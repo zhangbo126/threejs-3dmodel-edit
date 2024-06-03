@@ -116,7 +116,7 @@
 import { ref, computed, getCurrentInstance } from "vue";
 import { modelList, geometryModelList } from "@/config/model.js";
 import { useMeshEditStore } from '@/store/meshEditStore'
-import { getFileType } from "@/utils/utilityFunction.js";
+import { getFileType, getAssetsFile } from "@/utils/utilityFunction.js";
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 
@@ -139,7 +139,7 @@ const activeModel = ref({
   id: 9,
   animation: false,
   filePath: "threeFile/glb/glb-9.glb",
-  icon: require("@/assets/model-icon/4.png"),
+  icon: getAssetsFile('model-icon/4.png'),
   decomposeName: "transformers_3",
   key: "transformers-3",
 });

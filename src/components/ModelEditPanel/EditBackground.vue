@@ -151,14 +151,14 @@ import { ref, reactive, computed } from "vue";
 import { useMeshEditStore } from '@/store/meshEditStore'
 import { PREDEFINE_COLORS } from "@/config/constant";
 import { backgrundList, viewImageList } from "@/config/model.js";
-import { getFileType } from '@/utils/utilityFunction'
+import { getFileType, getAssetsFile } from '@/utils/utilityFunction'
 import { ElMessage } from 'element-plus'
 const store = useMeshEditStore();
 const config = reactive({
   visible: true,
   type: 3, //1 颜色 2 图片  3全景图
-  image: require("@/assets/image/model-bg-3.jpg"),
-  viewImg: require("@/assets/image/view-4.png"),
+  image: getAssetsFile('image/model-bg-3.jpg'),
+  viewImg: getAssetsFile('image/view-4.png'),
   color: "#000",
   blurriness: 1,
   intensity: 1,

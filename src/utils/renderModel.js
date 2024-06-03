@@ -15,7 +15,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 import { CSS3DRenderer } from 'three/addons/renderers/CSS3DRenderer.js';
 import { ElMessage } from 'element-plus';
-import { onlyKey } from '@/utils/utilityFunction'
+import { onlyKey, getAssetsFile } from '@/utils/utilityFunction'
 import modulesPrototype from './modelEditClass/index'
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from '@/config/constant.js'
@@ -163,7 +163,7 @@ class renderModel {
 	// 创建场景
 	async initScene() {
 		this.scene = new THREE.Scene()
-		const texture = new THREE.TextureLoader().load(require('@/assets/image/view-4.png'))
+		const texture = new THREE.TextureLoader().load(getAssetsFile('image/view-4.png'))
 		texture.mapping = THREE.EquirectangularReflectionMapping
 		this.scene.background = texture
 		this.scene.environment = texture
@@ -458,7 +458,8 @@ class renderModel {
 		//  创建聚光灯
 		this.spotLight = new THREE.SpotLight('#00BABD', 900);
 		this.spotLight.visible = false
-		this.spotLight.map = new THREE.TextureLoader().load(require('@/assets/image/model-bg-1.jpg'));
+		this.spotLight.map = new THREE.TextureLoader().load(getAssetsFile('image/model-bg-1.jpg'));
+		this.spotLight.map = new THREE.TextureLoader().load(getAssetsFile('image/model-bg-1.jpg'));
 		this.spotLight.decay = 2;
 		this.spotLight.shadow.mapSize.width = 1920;
 		this.spotLight.shadow.mapSize.height = 1080;
