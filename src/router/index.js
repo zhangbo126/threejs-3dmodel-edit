@@ -3,7 +3,7 @@ const routes = [
   {
     name: 'layout',
     path: '/',
-    component: () => import('@/views/layouts/index'),
+    component: () => import('@/views/layouts/index.vue'),
     children: [
       {
         path: '/',
@@ -32,10 +32,10 @@ const routes = [
     ]
   }
 ]
-
+const base = import.meta.env.MODE == 'production' ? '/three.js3d/' : '/'
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  base: process.env.BASE_URL,
+  history: createWebHistory(base),
+  base,
   model: 'hash',
   routes
 })

@@ -116,7 +116,7 @@
 import { ref, computed, getCurrentInstance } from "vue";
 import { modelList, geometryModelList } from "@/config/model.js";
 import { useMeshEditStore } from '@/store/meshEditStore'
-import { getFileType } from "@/utils/utilityFunction.js";
+import { getFileType, getAssetsFile } from "@/utils/utilityFunction.js";
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 
@@ -139,7 +139,7 @@ const activeModel = ref({
   id: 9,
   animation: false,
   filePath: "threeFile/glb/glb-9.glb",
-  icon: require("@/assets/model-icon/4.png"),
+  icon: getAssetsFile('model-icon/4.png'),
   decomposeName: "transformers_3",
   key: "transformers-3",
 });
@@ -222,108 +222,96 @@ defineExpose({
   min-width: 305px;
   height: calc(100vh - 35px) !important;
   background-color: #1b1c23;
-
   .el-img {
+    box-sizing: border-box;
     width: 145px;
     height: 88px;
-    cursor: pointer;
     margin-bottom: 4px;
-    box-sizing: border-box;
+    cursor: pointer;
     opacity: 0.5;
   }
-
   .active-model {
     border: 3px solid #18c174 !important;
     opacity: 1;
   }
-
   .geometry {
-    color: #fff;
-    cursor: all-scroll;
-    font-size: 12px;
-    text-align: center;
-    height: 70px;
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    border: 1px solid #dcdfe6;
+    align-items: center;
+    justify-content: center;
+    height: 70px;
     margin: 4px 2px;
-  }
-
-  .geometry-box {
-    padding: 0px 20px;
-    color: #8c939d;
-    box-sizing: border-box;
+    font-size: 12px;
+    color: #ffffff;
     text-align: center;
+    cursor: all-scroll;
+    border: 1px solid #dcdfe6;
+  }
+  .geometry-box {
     position: relative;
-    overflow: hidden;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
-
+    padding: 0 20px;
+    overflow: hidden;
+    color: #8c939d;
+    text-align: center;
     .geometry-add {
-      width: 228px;
-      height: 108px;
-      border: 1px dashed #dcdfe6;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px;
+      width: 228px;
+      height: 108px;
       cursor: pointer;
-
+      border: 1px dashed #dcdfe6;
+      border-radius: 6px;
       .icon {
         span {
           font-size: 14px;
         }
       }
-
       &:hover {
-        border-color: #409eff;
         color: #409eff;
+        border-color: #409eff;
       }
     }
   }
-
   .file-box {
-    padding: 10px 20px;
-    color: #8c939d;
-    box-sizing: border-box;
-    text-align: center;
-    cursor: pointer;
     position: relative;
-    overflow: hidden;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
-
+    padding: 10px 20px;
+    overflow: hidden;
+    color: #8c939d;
+    text-align: center;
+    cursor: pointer;
     .upload {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 228px;
       height: 128px;
       border: 1px dashed #dcdfe6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border-radius: 6px;
-
       .icon {
         span {
           font-size: 14px;
         }
       }
-
       &:hover {
-        border-color: #409eff;
         color: #409eff;
+        border-color: #409eff;
       }
     }
   }
-
   .file-name {
-    color: #fff;
-    text-align: center;
+    overflow: hidden;
     font-size: 14px;
+    color: #ffffff;
+    text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
   }
 }
 </style>

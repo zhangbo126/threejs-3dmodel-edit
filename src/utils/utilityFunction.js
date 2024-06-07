@@ -73,7 +73,7 @@ export function lightPosition(horizontal, vertical, distance) {
 	const x = distance * Math.sin(horizontal) * Math.cos(vertical);
 	const y = distance * Math.sin(vertical);
 	const z = distance * Math.cos(horizontal) * Math.cos(vertical);
-	return {x,y,z}
+	return { x, y, z }
 }
 
 
@@ -140,3 +140,16 @@ export function getFileType(fileName) {
 	const fileExtension = fileName.split('.').pop().toLowerCase();
 	return fileExtension
 }
+
+
+
+/** 
+   @description 获取assets下资源文件
+  * @param {String}  filePath 文件的相对路径 
+  * @return {String} 文件的实际路径
+*/
+
+export function getAssetsFile(filePath) {
+	return new URL(`../assets/${filePath}`, import.meta.url).href
+}
+

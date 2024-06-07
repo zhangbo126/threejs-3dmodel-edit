@@ -70,7 +70,7 @@ function rotationAnimationFun(rotationType, rotationSpeed) {
 
 //获取当前模型动画
 function getModelAnimaionList(result) {
-    this.modelAnimation =result.animations || []
+	this.modelAnimation = result.animations || []
 }
 
 export default {

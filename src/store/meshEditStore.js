@@ -7,7 +7,7 @@ export const useMeshEditStore = defineStore('useMeshEditStore', {
 		//当前材质
 		selectMesh: {},
 		// 当前drag拖拽类型
-		dragType:''
+		dragType: ''
 	}),
 	getters: {
 		selectMeshUuid: (state) => state.selectMesh.uuid

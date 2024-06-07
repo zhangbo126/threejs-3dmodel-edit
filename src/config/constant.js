@@ -55,7 +55,7 @@ export const fragmentShader = `
 // 	'\n' +
 // 	'\t\t\t}'
 
-
+import { getAssetsFile } from '@/utils/utilityFunction'
 
 // 模型拆解材质的位移参数
 export const MODEL_DECOMPOSE = {
@@ -114,8 +114,8 @@ export const MODEL_DEFAULT_CONFIG = {
 	"background": {
 		"visible": true,
 		"type": 3,
-		"image": require("@/assets/image/model-bg-3.jpg"),
-		"viewImg": require("@/assets/image/view-4.png"),
+		"image": getAssetsFile('image/model-bg-3.jpg'),
+		"viewImg": getAssetsFile('image/view-4.png'),
 		"color": "#000"
 	},
 	"material": {

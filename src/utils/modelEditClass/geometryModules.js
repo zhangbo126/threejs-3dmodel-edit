@@ -28,5 +28,4 @@ function onSetGeometryMesh(activeGeometry, type) {
 export default {
 	onDeleteGeometryMesh,
 	onSetGeometryMesh
-
 }

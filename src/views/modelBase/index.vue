@@ -23,8 +23,14 @@
     <div class="base-container">
       <el-scrollbar :max-height="'calc(100vh - 45px)'" class="base-menu">
         <ul class="menu-list">
-          <li v-for="model in modelBaseList" :key="model.fileInfo.id" draggable="true"
-            @dragstart="(e) => onDragStart(e, model)" @drag="(e) => onDrag(e)" @dragend="onDragEnd">
+          <li
+            v-for="model in modelBaseList"
+            :key="model.fileInfo.id"
+            draggable="true"
+            @dragstart="e => onDragStart(e, model)"
+            @drag="e => onDrag(e)"
+            @dragend="onDragEnd"
+          >
             <div class="model-image">
               <el-image draggable="false" fit="scale-down" :src="model.fileInfo.icon"></el-image>
             </div>
@@ -41,11 +47,16 @@
       <div id="drag-content">
         <div class="content" @drop="onDrop" @dragover.prevent>
           <draggable-container :adsorbParent="true" :disabled="true" v-if="dragModelList.length">
-            <draggable-resizable-item @onDragActived="onDragActived" @onDragDeactivated="onDragDeactivated"
-              @contextmenu.prevent="onContextmenu" v-for="drag in dragModelList" :key="drag.modelKey"
-              :config="drag"></draggable-resizable-item>
+            <draggable-resizable-item
+              @onDragActived="onDragActived"
+              @onDragDeactivated="onDragDeactivated"
+              @contextmenu.prevent="onContextmenu"
+              v-for="drag in dragModelList"
+              :key="drag.modelKey"
+              :config="drag"
+            ></draggable-resizable-item>
           </draggable-container>
-          <div class="empty-tip" v-else> 请拖拽添加多个!!!</div>
+          <div class="empty-tip" v-else>请拖拽添加多个!!!</div>
           <!-- 右键菜单 -->
           <right-context-menu :rightMenuPositon="rightMenuPositon" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
@@ -56,9 +67,9 @@
 </template>
 <script setup name="modelBase">
 import { DraggableContainer } from "vue3-draggable-resizable";
-import DraggableResizableItem from "@/components/DraggableResizableItem/index";
-import RightContextMenu from "@/components/RightContextMenu";
-import { MODEL_BASE_DATA, MODEL_BASE_DRAGE_DATA, } from "@/config/constant";
+import DraggableResizableItem from "@/components/DraggableResizableItem/index.vue";
+import RightContextMenu from "@/components/RightContextMenu/index.vue";
+import { MODEL_BASE_DATA, MODEL_BASE_DRAGE_DATA } from "@/config/constant";
 import { deepCopy, onlyKey } from "@/utils/utilityFunction";
 import { ref, getCurrentInstance, onMounted, nextTick } from "vue";
 import { ElMessage } from "element-plus";
@@ -75,11 +86,11 @@ const onDragStart = (event, model) => {
   dragActive.value = deepCopy(model);
 };
 // 拖拽中
-const onDrag = (event) => {
+const onDrag = event => {
   event.preventDefault();
 };
 // 拖拽结束
-const onDragEnd = (event) => {
+const onDragEnd = event => {
   event.preventDefault();
   const { x, y } = dragActive.value;
   if (!x || !y) {
@@ -93,11 +104,11 @@ const onDragEnd = (event) => {
   dragModelList.value.push(dragActive.value);
   dragActive.value = null;
   if (dragModelList.value.length >= 4) {
-    ElMessage.warning('请注意:模型组件加载过多会导致浏览器崩溃！！！')
+    ElMessage.warning("请注意:模型组件加载过多会导致浏览器崩溃！！！");
   }
 };
 // 拖拽完成
-const onDrop = (event) => {
+const onDrop = event => {
   event.preventDefault();
   // 设置模型拖放位置
   const container = document.querySelector("#drag-content").getBoundingClientRect();
@@ -108,17 +119,17 @@ const onDrop = (event) => {
 };
 
 // 选中拖拽元素
-const onDragActived = (drag) => {
+const onDragActived = drag => {
   dragActive.value = drag;
 };
 // 取消选中拖拽元素
-const onDragDeactivated = (modelKey) => {
+const onDragDeactivated = modelKey => {
   if (modelKey == dragActive.value.modelKey) {
     dragActive.value = null;
   }
 };
 // 鼠标右键事件
-const onContextmenu = (e) => {
+const onContextmenu = e => {
   rightMenuPositon.value = {
     x: e.clientX,
     y: e.clientY,
@@ -128,11 +139,9 @@ const onContextmenu = (e) => {
 };
 
 // 删除
-const onDeleteDrag = (modelKey) => {
-  dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
-}
-
-
+const onDeleteDrag = modelKey => {
+  dragModelList.value = dragModelList.value.filter(v => v.modelKey != modelKey);
+};
 
 // 获取拖拽数据列表
 const getDragDataList = () => {
@@ -142,7 +151,7 @@ const getDragDataList = () => {
 // 保存拖拽数据
 const onSavaDragdata = () => {
   $local.set(MODEL_BASE_DRAGE_DATA, dragModelList.value);
-  ElMessage.success('更新成功')
+  ElMessage.success("更新成功");
 };
 
 // 监听缓存数据变化
@@ -151,10 +160,10 @@ onMounted(async () => {
     getDragDataList();
   });
   // 监听键盘按下 delete 键
-  window.addEventListener("keydown", (event) => {
+  window.addEventListener("keydown", event => {
     if (event.keyCode === 46 && event.key == "Delete" && dragActive.value) {
       const { modelKey } = dragActive.value;
-      dragModelList.value = dragModelList.value.filter((v) => v.modelKey != modelKey);
+      dragModelList.value = dragModelList.value.filter(v => v.modelKey != modelKey);
       dragActive.value = null;
     }
   });
@@ -163,103 +172,92 @@ onMounted(async () => {
 <style scoped lang="scss">
 .model-base {
   .base-header {
-    height: 45px;
-    width: 100%;
-    background-color: #010c1d;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-    text-align: center;
-    font-weight: 500;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0px 20px;
     box-sizing: border-box;
-
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 45px;
+    padding: 0 20px;
+    font-weight: 500;
+    color: #ffffff;
+    text-align: center;
+    background-color: #010c1d;
+    box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
     .center-box {
       display: flex;
       align-items: center;
       font-size: 22px;
     }
   }
-
   .base-container {
     display: flex;
-
     .base-menu {
-      height: calc(100vh - 45px);
-      width: 230px;
-      padding: 10px 10px;
       box-sizing: border-box;
+      width: 230px;
+      height: calc(100vh - 45px);
+      padding: 10px;
       background-color: #18181c;
-
       .menu-list {
         li {
-          border-radius: 3px;
-          font-size: 14px;
-          margin-bottom: 10px;
-          color: #fff;
           box-sizing: border-box;
+          margin-bottom: 10px;
+          font-size: 14px;
+          color: #ffffff;
           cursor: all-scroll;
           border: 1px solid #323332;
-
+          border-radius: 3px;
           &:hover {
             border: 2px solid #18c174;
           }
-
           .model-image {
-            font-size: 0;
             padding: 10px 18px;
+            font-size: 0;
           }
-
           .model-info {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 30px;
-            padding: 0px 8px;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 30px;
+            padding: 0 8px;
             background-color: #232324;
-
             .model-name {
-              text-overflow: ellipsis;
-              white-space: nowrap;
               overflow: hidden;
               text-align: center;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
         }
       }
     }
-
     #drag-content {
-      height: calc(100vh - 45px);
       box-sizing: border-box;
       display: flex;
       flex-flow: row;
       width: 100%;
+      height: calc(100vh - 45px);
       border: 5px solid #000000;
-
       .content {
         position: relative;
-        overflow: hidden;
         width: 100%;
+        overflow: hidden;
         background-color: #18181c;
-        background-size: 15px 15px, 15px 15px;
-        background-image: linear-gradient(#18181c 14px, transparent 0),
-          linear-gradient(90deg, transparent 14px, #86909c 0);
-
+        background-image: linear-gradient(#18181c 14px, transparent 0), linear-gradient(90deg, transparent 14px, #86909c 0);
+        background-size:
+          15px 15px,
+          15px 15px;
         .empty-tip {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           width: 100%;
           height: 100%;
           font-size: 20px;
           color: #18c174;
-          display: flex;
-          justify-content: center;
-          align-items: center;
           letter-spacing: 10px;
         }
-
         .drag-box {
           .drag-image {
             font-size: 0;
