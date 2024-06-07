@@ -139,26 +139,22 @@
   </script>
   <style lang="scss" scoped>
   .model-panel {
-    background-color: #1b1c23;
     min-width: 380px;
     height: calc(100vh - 35px);
-
+    background-color: #1b1c23;
     .panel-tabs {
       display: flex;
-
       .active {
         background-color: #4d57fd;
       }
-
       li {
-        cursor: pointer;
-        color: #888;
-        background: #272830;
-        padding: 10px;
-        border-right: 1px solid #0a0a0a;
         display: flex;
         align-items: center;
-
+        padding: 10px;
+        color: #888888;
+        cursor: pointer;
+        background: #272830;
+        border-right: 1px solid #0a0a0a;
         .tab {
           line-height: initial;
         }

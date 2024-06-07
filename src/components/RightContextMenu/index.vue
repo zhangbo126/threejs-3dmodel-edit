@@ -68,32 +68,32 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .right-menu {
-  background-color: #fff;
-  border-radius: 4px;
-  list-style-type: none;
-  box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
+  position: fixed;
+  z-index: 1000;
+  box-sizing: border-box;
+  display: none;
+  padding: 4px 0;
   font-size: 12px;
   font-weight: 500;
-  box-sizing: border-box;
-  padding: 4px 0;
-  position: fixed;
-  display: none;
-  z-index: 1000;
+  list-style-type: none;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 2px 2px 3px 0 rgb(0 0 0 / 30%);
   .right-menu-item {
     box-sizing: border-box;
-    border-radius: 4px;
-    transition: all 0.36s;
-    cursor: pointer;
-    width: 100px;
-    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100px;
+    height: 20px;
     padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.36s;
   }
   .right-menu-item:hover {
-    background-color: #ebf5ff;
     color: #6bacf2;
+    background-color: #ebf5ff;
   }
 }
 </style>

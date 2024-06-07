@@ -506,28 +506,23 @@ defineExpose({
 .edit-box {
   height: auto;
 }
-
 .silder {
-  padding-left: 12px;
   width: 270px;
+  padding-left: 12px;
 }
-
 .anambient-img {
-  padding: 0px 10px;
-
+  padding: 0 10px;
   ul {
     display: flex;
     flex-wrap: wrap;
   }
-
   .anambient-active {
-    border: 2px solid #4d57fd;
     box-sizing: border-box;
+    border: 2px solid #4d57fd;
   }
-
   li {
-    margin: 0px 4px;
     position: relative;
+    margin: 0 4px;
     cursor: pointer;
   }
 }

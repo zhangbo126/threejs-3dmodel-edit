@@ -155,15 +155,13 @@ const inputRange = (key) => {
 .icon-name {
   width: 240px;
   max-width: 240px;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
 }
-
 .option {
   justify-content: space-between;
 }
-
 .grid-txt {
   display: flex;
   flex-wrap: wrap;

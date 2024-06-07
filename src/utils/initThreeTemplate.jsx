@@ -47,7 +47,7 @@ class renderModel {
       fbx: new FBXLoader(this.loadingManager),
       gltf: new GLTFLoader(),
       obj: new OBJLoader(this.loadingManager),
-      stl: new STLLoader(),
+      stl: new STLLoader()
     };
     //模型动画列表
     this.modelAnimation;
@@ -64,7 +64,7 @@ class renderModel {
     this.loopMap = {
       LoopOnce: THREE.LoopOnce,
       LoopRepeat: THREE.LoopRepeat,
-      LoopPingPong: THREE.LoopPingPong,
+      LoopPingPong: THREE.LoopPingPong
     };
     // 模型骨架
     this.skeletonHelper;
@@ -144,7 +144,7 @@ class renderModel {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: true
     }); //设置抗锯齿
     //设置屏幕像素比
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -171,12 +171,7 @@ class renderModel {
   // 创建相机
   initCamera() {
     const { clientHeight, clientWidth } = this.container;
-    this.camera = new THREE.PerspectiveCamera(
-      45,
-      clientWidth / clientHeight,
-      0.25,
-      2000
-    );
+    this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 2000);
     // this.camera.near = 0.1
     const { camera } = this.config;
     if (!camera) return false;
@@ -201,10 +196,7 @@ class renderModel {
     this.controls.target.set(0, 0, 0);
 
     //标签控制器
-    this.css3dControls = new OrbitControls(
-      this.camera,
-      this.css3DRenderer.domElement
-    );
+    this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement);
     this.css3dControls.enablePan = false;
     this.css3dControls.enabled = false;
     this.css3dControls.enableDamping = false;
@@ -232,7 +224,7 @@ class renderModel {
   }
   // 设置材质辉光
   setMeshFlow() {
-    this.scene.traverse((v) => {
+    this.scene.traverse(v => {
       if (v instanceof THREE.GridHelper) {
         this.materials.gridHelper = v.material;
         v.material = new THREE.MeshStandardMaterial({ color: "#000" });
@@ -250,7 +242,7 @@ class renderModel {
     });
     this.glowComposer.render();
     // 辉光渲染器执行完之后在恢复材质原效果
-    this.scene.traverse((v) => {
+    this.scene.traverse(v => {
       if (this.materials[v.uuid]) {
         v.material = this.materials[v.uuid];
         delete this.materials[v.uuid];
@@ -275,11 +267,7 @@ class renderModel {
     this.effectComposer = new EffectComposer(this.renderer);
     const renderPass = new RenderPass(this.scene, this.camera);
     this.effectComposer.addPass(renderPass);
-    this.outlinePass = new OutlinePass(
-      new THREE.Vector2(clientWidth, clientHeight),
-      this.scene,
-      this.camera
-    );
+    this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera);
     this.outlinePass.visibleEdgeColor = new THREE.Color("#FF8C00"); // 可见边缘的颜色
     this.outlinePass.hiddenEdgeColor = new THREE.Color("#8a90f3"); // 不可见边缘的颜色
     this.outlinePass.edgeGlow = 2.0; // 发光强度
@@ -292,33 +280,21 @@ class renderModel {
 
     let effectFXAA = new ShaderPass(FXAAShader);
     const pixelRatio = this.renderer.getPixelRatio();
-    effectFXAA.uniforms.resolution.value.set(
-      1 / (clientWidth * pixelRatio),
-      1 / (clientHeight * pixelRatio)
-    );
+    effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
     effectFXAA.renderToScreen = true;
     effectFXAA.needsSwap = true;
     this.effectComposer.addPass(effectFXAA);
 
     //创建辉光效果
-    this.unrealBloomPass = new UnrealBloomPass(
-      new THREE.Vector2(clientWidth, clientHeight),
-      0,
-      0,
-      0
-    );
+    this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0);
     // 辉光合成器
     const renderTargetParameters = {
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
       format: THREE.RGBAFormat,
-      stencilBuffer: false,
+      stencilBuffer: false
     };
-    const glowRender = new THREE.WebGLRenderTarget(
-      clientWidth * 2,
-      clientHeight * 2,
-      renderTargetParameters
-    );
+    const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters);
     this.glowComposer = new EffectComposer(this.renderer, glowRender);
     this.glowComposer.renderToScreen = false;
     this.glowComposer.addPass(new RenderPass(this.scene, this.camera));
@@ -330,11 +306,11 @@ class renderModel {
           baseTexture: { value: null },
           bloomTexture: { value: this.glowComposer.renderTarget2.texture },
           tDiffuse: { value: null },
-          glowColor: { value: null },
+          glowColor: { value: null }
         },
         vertexShader,
         fragmentShader,
-        defines: {},
+        defines: {}
       }),
       "baseTexture"
     );
@@ -359,7 +335,7 @@ class renderModel {
       }
       loader.load(
         filePath,
-        (result) => {
+        result => {
           switch (fileType) {
             case "glb":
               this.model = result.scene;
@@ -390,12 +366,12 @@ class renderModel {
           this.setModelPositionSize();
           this.skeletonHelper.visible = false;
           this.scene.add(this.skeletonHelper);
-          this.glowMaterialList = this.modelMaterialList.map((v) => v.name);
+          this.glowMaterialList = this.modelMaterialList.map(v => v.name);
           this.scene.add(this.model);
           resolve(true);
         },
         () => {},
-        (err) => {
+        err => {
           ElMessage.error("文件错误");
           console.log(err);
           reject();
@@ -414,10 +390,7 @@ class renderModel {
       // 假设抗锯齿效果是EffectComposer中的第一个pass
       var pass = this.effectComposer.passes[3];
       const pixelRatio = this.renderer.getPixelRatio();
-      pass.uniforms.resolution.value.set(
-        1 / (clientWidth * pixelRatio),
-        1 / (clientHeight * pixelRatio)
-      );
+      pass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
       this.effectComposer.setSize(clientWidth, clientHeight);
     }
 
@@ -429,7 +402,7 @@ class renderModel {
     cancelAnimationFrame(this.renderAnimation);
     cancelAnimationFrame(this.animationFrame);
     const { tags } = this.config;
-    this.scene.traverse((v) => {
+    this.scene.traverse(v => {
       if (v.type === "Mesh") {
         v.geometry.dispose();
         v.material.dispose();
@@ -548,7 +521,7 @@ class renderModel {
   // 获取当前模型材质
   getModelMeaterialList() {
     this.modelMaterialList = [];
-    this.model.traverse((v) => {
+    this.model.traverse(v => {
       if (v.isMesh) {
         v.castShadow = true;
         v.frustumCulled = false;
@@ -597,14 +570,14 @@ class renderModel {
   setModelMeaterial() {
     const { material } = this.config;
     if (!material || !material.meshList) return false;
-    const mapIdList = mapImageList.map((v) => v.id);
-    material.meshList.forEach((v) => {
+    const mapIdList = mapImageList.map(v => v.id);
+    material.meshList.forEach(v => {
       const mesh = this.model.getObjectByProperty("name", v.meshName);
       const { color, opacity, depthWrite, wireframe, visible, type } = v;
       const { map } = mesh.material;
       if (material.materialType) {
         mesh.material = new THREE[type]({
-          map,
+          map
         });
       } else {
         mesh.material.map = map;
@@ -614,7 +587,7 @@ class renderModel {
         // 如果使用的是系统贴图
         if (mapIdList.includes(v.meshFrom)) {
           // 找到当前的系统材质
-          const mapInfo = mapImageList.find((m) => m.id == v.meshFrom) || {};
+          const mapInfo = mapImageList.find(m => m.id == v.meshFrom) || {};
           // 加载系统材质贴图
           const mapTexture = new THREE.TextureLoader().load(mapInfo.url);
           mapTexture.wrapS = THREE.MirroredRepeatWrapping;
@@ -626,7 +599,7 @@ class renderModel {
           // 如果当前模型的材质类型被修改了，则使用用新的材质type
           if (material.materialType) {
             mesh.material = new THREE[type]({
-              map: mapTexture,
+              map: mapTexture
             });
           } else {
             mesh.material.map = mapTexture;
@@ -639,7 +612,7 @@ class renderModel {
           // 如果当前模型的材质类型被修改了，则使用用新的材质type
           if (material.materialType) {
             mesh.material = new THREE[type]({
-              map,
+              map
             });
           } else {
             mesh.material.map = map;
@@ -663,23 +636,14 @@ class renderModel {
   setModelLaterStage() {
     const { stage } = this.config;
     if (!stage) return false;
-    const {
-      threshold,
-      strength,
-      radius,
-      toneMappingExposure,
-      meshPositonList,
-      color,
-    } = stage;
+    const { threshold, strength, radius, toneMappingExposure, meshPositonList, color } = stage;
     // 设置辉光效果
     if (stage.glow) {
       this.unrealBloomPass.threshold = threshold;
       this.unrealBloomPass.strength = strength;
       this.unrealBloomPass.radius = radius;
       this.renderer.toneMappingExposure = toneMappingExposure;
-      this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(
-        color
-      );
+      this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color);
     } else {
       this.unrealBloomPass.threshold = 0;
       this.unrealBloomPass.strength = 0;
@@ -688,7 +652,7 @@ class renderModel {
       this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
     }
     // 模型材质位置
-    meshPositonList.forEach((v) => {
+    meshPositonList.forEach(v => {
       const mesh = this.model.getObjectByProperty("name", v.name);
       const { rotation, scale, position } = v;
       mesh.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -703,48 +667,27 @@ class renderModel {
     // 环境光
     if (light.ambientLight) {
       // 创建环境光
-      const ambientLight = new THREE.AmbientLight(
-        light.ambientLightColor,
-        light.ambientLightIntensity
-      );
+      const ambientLight = new THREE.AmbientLight(light.ambientLightColor, light.ambientLightIntensity);
       ambientLight.visible = light.ambientLight;
       this.scene.add(ambientLight);
     }
     // 平行光
     if (light.directionalLight) {
-      const directionalLight = new THREE.DirectionalLight(
-        light.directionalLightColor,
-        light.directionalLightIntensity
-      );
-      const { x, y, z } = lightPosition(
-        light.directionalHorizontal,
-        light.directionalVertical,
-        light.directionalSistance
-      );
+      const directionalLight = new THREE.DirectionalLight(light.directionalLightColor, light.directionalLightIntensity);
+      const { x, y, z } = lightPosition(light.directionalHorizontal, light.directionalVertical, light.directionalSistance);
       directionalLight.position.set(x, y, z);
       directionalLight.castShadow = light.directionaShadow;
       directionalLight.visible = light.directionalLight;
       this.scene.add(directionalLight);
-      const directionalLightHelper = new THREE.DirectionalLightHelper(
-        directionalLight,
-        0.5
-      );
+      const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
       directionalLightHelper.visible = light.directionalLightHelper;
       this.scene.add(directionalLightHelper);
     }
     // 点光源
     if (light.pointLight) {
-      const pointLight = new THREE.PointLight(
-        light.pointLightColor,
-        light.pointLightIntensity,
-        100
-      );
+      const pointLight = new THREE.PointLight(light.pointLightColor, light.pointLightIntensity, 100);
       pointLight.visible = light.pointLight;
-      const { x, y, z } = lightPosition(
-        light.pointHorizontal,
-        light.pointVertical,
-        light.pointSistance
-      );
+      const { x, y, z } = lightPosition(light.pointHorizontal, light.pointVertical, light.pointSistance);
       pointLight.position.set(x, y, z);
       this.scene.add(pointLight);
       // 创建点光源辅助线
@@ -756,9 +699,7 @@ class renderModel {
     if (light.spotLight) {
       const spotLight = new THREE.SpotLight(light.spotLightColor, 900);
       spotLight.visible = light.spotLight;
-      const texture = new THREE.TextureLoader().load(
-        getAssetsFile("image/model-bg-1.jpg")
-      );
+      const texture = new THREE.TextureLoader().load(getAssetsFile("image/model-bg-1.jpg"));
       texture.dispose();
       spotLight.map = texture;
       spotLight.decay = 2;
@@ -772,11 +713,7 @@ class renderModel {
       spotLight.shadow.focus = light.spotFocus;
       spotLight.castShadow = light.spotCastShadow;
       spotLight.distance = light.spotDistance;
-      const { x, y, z } = lightPosition(
-        light.spotHorizontal,
-        light.spotVertical,
-        light.spotSistance
-      );
+      const { x, y, z } = lightPosition(light.spotHorizontal, light.spotVertical, light.spotSistance);
       spotLight.position.set(x, y, z);
       this.scene.add(spotLight);
       //创建聚光灯辅助线
@@ -786,12 +723,9 @@ class renderModel {
     }
     // 模型平面
     if (light.planeGeometry) {
-      const geometry = new THREE.PlaneGeometry(
-        light.planeWidth,
-        light.planeHeight
-      );
+      const geometry = new THREE.PlaneGeometry(light.planeWidth, light.planeHeight);
       var groundMaterial = new THREE.MeshStandardMaterial({
-        color: light.planeColor,
+        color: light.planeColor
       });
       const planeGeometry = new THREE.Mesh(geometry, groundMaterial);
       planeGeometry.rotation.x = -Math.PI / 2;
@@ -812,10 +746,7 @@ class renderModel {
       this.animationMixer = new THREE.AnimationMixer(this.model);
       const { animationName, timeScale, weight, loop } = animation;
       // 模型动画
-      const clip = THREE.AnimationClip.findByName(
-        this.modelAnimation,
-        animationName
-      );
+      const clip = THREE.AnimationClip.findByName(this.modelAnimation, animationName);
       if (clip) {
         this.animateClipAction = this.animationMixer.clipAction(clip);
         this.animateClipAction.setEffectiveTimeScale(timeScale);
@@ -840,9 +771,7 @@ class renderModel {
   }
   // 轴动画帧
   rotationAnimationFun(rotationType, rotationSpeed) {
-    this.rotationAnimationFrame = requestAnimationFrame(() =>
-      this.rotationAnimationFun(rotationType, rotationSpeed)
-    );
+    this.rotationAnimationFrame = requestAnimationFrame(() => this.rotationAnimationFun(rotationType, rotationSpeed));
     this.model.rotation[rotationType] += rotationSpeed / 50;
   }
   // 模型轴辅助线配置
@@ -867,7 +796,7 @@ class renderModel {
       z,
       rotationX,
       rotationY,
-      rotationZ,
+      rotationZ
     } = attribute;
     if (!visible) return false;
     //网格辅助线
@@ -896,7 +825,7 @@ class renderModel {
     const { tags } = this.config;
     if (tags && tags.dragTagList.length) {
       this.container.appendChild(this.css3DRenderer.domElement);
-      tags.dragTagList.forEach((v) => {
+      tags.dragTagList.forEach(v => {
         let element = document.createElement("div");
         const {
           backgroundColor,
@@ -910,7 +839,7 @@ class renderModel {
           positionX,
           positionY,
           positionZ,
-          width,
+          width
         } = v;
         // 创建3d标签
         const tagvMode = createApp({
@@ -925,7 +854,7 @@ class renderModel {
                     fontSize: fontSize + "px",
                     color: color,
                     backgroundColor,
-                    boxShadow: `0px 0px 4px ${backgroundColor}`,
+                    boxShadow: `0px 0px 4px ${backgroundColor}`
                   }}
                 >
                   <span className="tag-txt">{innerText}</span>
@@ -935,7 +864,7 @@ class renderModel {
                 </div>
               </div>
             );
-          },
+          }
         });
 
         const vNode = tagvMode.mount(document.createElement("div"));
@@ -964,7 +893,7 @@ function createThreeDComponent(config) {
   return defineComponent({
     data() {
       return {
-        loading: false,
+        loading: false
       };
     },
     props: ["width", "height"],
@@ -976,8 +905,8 @@ function createThreeDComponent(config) {
           }
         },
         immediate: false,
-        deep: true,
-      },
+        deep: true
+      }
     },
     render() {
       if (this.width && this.height) {
@@ -987,19 +916,13 @@ function createThreeDComponent(config) {
             style={{
               width: this.width - 10 + "px",
               height: this.height - 10 + "px",
-              pointerEvents: "none",
+              pointerEvents: "none"
             }}
             id={elementId}
           ></div>
         );
       } else {
-        return h(
-          <div
-            v-zLoading={this.loading}
-            style={{ width: "100%", height: "100%" }}
-            id={elementId}
-          ></div>
-        );
+        return h(<div v-zLoading={this.loading} style={{ width: "100%", height: "100%" }} id={elementId}></div>);
       }
     },
     async mounted() {
@@ -1012,7 +935,7 @@ function createThreeDComponent(config) {
     },
     beforeUnmount() {
       modelApi.onClearModelData();
-    },
+    }
   });
 }
 

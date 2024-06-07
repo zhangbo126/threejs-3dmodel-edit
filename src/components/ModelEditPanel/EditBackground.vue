@@ -260,62 +260,53 @@ defineExpose({
 </script>
 <style lang="scss" scoped>
 .add-img {
-  border: 1px dashed #414141;
-  width: 180px;
-  height: 78px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 180px;
+  height: 78px;
   cursor: pointer;
+  border: 1px dashed #414141;
 }
-
 .img-privew {
+  padding: 0 26px;
   cursor: pointer;
-  padding: 0px 26px;
 }
-
 .el-img {
   width: 78px;
   height: 40px;
-  cursor: pointer;
   margin-bottom: 4px;
+  cursor: pointer;
 }
-
 .el-view {
   width: 60px;
   height: 60px;
-  cursor: pointer;
   margin-bottom: 8px;
+  cursor: pointer;
 }
-
 .active {
   border: 2px solid #18c174;
 }
-
 .texture-add {
-  width: 228px;
-  height: 108px;
-  border: 1px dashed #dcdfe6;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  width: 228px;
+  height: 108px;
   cursor: pointer;
-
+  border: 1px dashed #dcdfe6;
+  border-radius: 6px;
   .icon {
-    color: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    color: #ffffff;
     span {
       font-size: 14px;
     }
   }
-
   &:hover {
     border-color: #409eff;
-
     .icon {
       color: #409eff;
 
