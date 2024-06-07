@@ -24,11 +24,11 @@ function onSetUnrealBloomPass(config) {
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color(color)
 		// TODO：如果辉光开启在动态添加着色器（性能优化）
 		const passesArray = this.effectComposer.passes || []
-		const shaderColor = passesArray.find(v=>v.name=='ShaderColor') || {}
-		if(!shaderColor.name){
-	    	this.effectComposer.addPass(this.shaderPass)  
+		const shaderColor = passesArray.find(v => v.name == 'ShaderColor') || {}
+		if (!shaderColor.name) {
+			this.effectComposer.addPass(this.shaderPass)
 		}
-		
+
 	} else {
 		this.unrealBloomPass.threshold = 0
 		this.unrealBloomPass.strength = 0

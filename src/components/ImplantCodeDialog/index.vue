@@ -68,13 +68,12 @@ defineExpose({ showDialog })
 <style lang="scss" scoped>
 .code {
 	display: block;
-	background-color: #f9f9f9;
 	padding: 10px;
 	font-family: Consolas, monospace;
-	color: #333;
+	color: #333333;
 	word-wrap: break-word;
+	background-color: #f9f9f9;
 }
-
 .number-style {
 	width: 150px !important;
 }

@@ -319,65 +319,53 @@ defineExpose({
 .options {
   max-width: 380px;
 }
-
-
 .image-box {
-  width: 90px;
-  height: 90px;
+  position: relative;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
+  width: 90px;
+  height: 90px;
   cursor: pointer;
   opacity: 0.6;
-  position: relative;
-
   .el-map {
-    padding: 6px;
     max-height: 70px;
+    padding: 6px;
   }
 
 
 }
-
 .select {
   position: absolute;
-  right: 0;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  margin: auto;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin: auto;
 }
-
 .not-load {
-  padding: 20px 0px;
+  padding: 20px 0;
   font-size: 16px;
-  color: #fff;
+  color: #ffffff;
   text-align: center;
 }
-
 .mesh-image {
-  max-width: 140px;
-  box-sizing: border-box;
   position: relative;
+  box-sizing: border-box;
+  max-width: 140px;
   font-size: 0;
   cursor: pointer;
   opacity: 0.6;
-
-
   .mesh-map {
     position: relative;
-    max-height: 100px;
     height: 100px;
+    max-height: 100px;
     margin: 8px 9px;
   }
 }
-
 .active {
   border: 2px solid #18c174;
   opacity: 1;
