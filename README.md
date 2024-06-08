@@ -19,8 +19,13 @@
 ### 🎨 预览
 
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
-- 2.线上访问:[https://zhang_6666.gitee.io/three.js3d](https://zhang_6666.gitee.io/three.js3d)
+- 2.线上访问:[https://zhangbo126.github.io/threejs-3dmodel-edit/](https://zhangbo126.github.io/threejs-3dmodel-edit/)
 - 3.关于打包部署服务端:在 vite.config.js 里修改 base 路径来适配当前的域名路径
+
+### 项目地址
+
+- 1. github:[https://github.com/zhangbo126/threejs-3dmodel-edit](https://github.com/zhangbo126/threejs-3dmodel-edit)
+- 2. gitee:[https://gitee.com/ZHANG_6666/Three.js3D](https://gitee.com/ZHANG_6666/Three.js3D)
 
 ### 🎵 主要技术栈
 
