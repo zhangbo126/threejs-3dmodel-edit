@@ -2,8 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import piniaStore from './store/pinia'
-// indexedDB方法
-import '@/utils/indexedDB'
+
 import ElementPlus from 'element-plus'
 // 自定义封装全局方法
 import GlobalProperties from "@/utils/globalProperties.js";
