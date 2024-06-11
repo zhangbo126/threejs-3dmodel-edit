@@ -203,7 +203,7 @@ export const MODEL_DEFAULT_CONFIG = {
 }
 
 //  嵌入网站 iframe 网页地址
-export const IFRAME_PREVIEW = 'https://zhangbo126.github.io/threejs-3dmodel-edit/modelIframe'
+export const IFRAME_PREVIEW = 'https://zhangbo126.github.io/threejs-3dmodel-edit/modelIframe?modelIframe'
 
 
 // 材质类型列表

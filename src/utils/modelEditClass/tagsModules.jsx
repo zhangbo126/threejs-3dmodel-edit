@@ -63,14 +63,13 @@ function create3dTags() {
     const {
       uuid,
       position,
-      element: { innerHTML, innerText }
+      element: { innerText }
     } = cssObject;
     const tag = {
       uuid,
       positionX: position.x,
       positionY: position.y,
       positionZ: position.z,
-      innerHTML,
       innerText,
       width: 60,
       height: 40,
