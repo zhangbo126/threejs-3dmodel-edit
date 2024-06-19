@@ -19,7 +19,7 @@ import { CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
 import { CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
 import { vertexShader, fragmentShader } from "@/config/constant.js";
 import { mapImageList } from "@/config/model";
-import { lightPosition, onlyKey, debounce } from "@/utils/utilityFunction";
+import { lightPosition, onlyKey, debounce, getAssetsFile } from "@/utils/utilityFunction";
 
 /**
  * @describe three.js 组件数据初始化方法
