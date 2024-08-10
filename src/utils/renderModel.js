@@ -204,6 +204,26 @@ class renderModel {
 		this.css3DRenderer.domElement.style.top = 0;
 
 	}
+	// 开启vr
+	async openCameraAR() {
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+			let video = document.getElementById('video')
+			const constraints = { video: { width: 1280, height: 720, facingMode: 'user' } };
+			navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+				// apply the stream to the video element used in the texture
+				video.srcObject = stream;
+				video.play();
+
+			}).catch(function (error) {
+				console.error('Unable to access the camera/webcam.', error);
+			});
+
+		} else {
+			alert('MediaDevices interface not available')
+			console.error('MediaDevices interface not available.');
+
+		}
+	}
 	// 更新场景
 	sceneAnimation() {
 		this.renderAnimation = requestAnimationFrame(() => this.sceneAnimation())

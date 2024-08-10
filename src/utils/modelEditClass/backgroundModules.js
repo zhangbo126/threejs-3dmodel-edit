@@ -11,9 +11,13 @@ import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 
 function onSetSceneColor(color) {
 	this.scene.background = new THREE.Color(color);
+	const video = document.getElementById('video')
+	video.pause()
 }
 // 设置场景图片
 function onSetSceneImage(url) {
+	const video = document.getElementById('video')
+	video.pause()
 	const texture = new THREE.TextureLoader().load(url);
 	this.scene.background = texture;
 	this.scene.backgroundIntensity = 1;
@@ -21,7 +25,9 @@ function onSetSceneImage(url) {
 }
 // 设置全景图
 function onSetSceneViewImage(config) {
-	return new Promise(reslove => {
+	return new Promise(resolve => {
+		const video = document.getElementById('video')
+		video.pause()
 		const { blurriness, intensity, viewImg } = config;
 		const texture = new THREE.TextureLoader().load(viewImg);
 		texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -30,7 +36,7 @@ function onSetSceneViewImage(config) {
 		this.scene.backgroundIntensity = intensity;
 		this.scene.backgroundBlurriness = blurriness;
 		texture.dispose();
-		reslove();
+		resolve();
 	});
 }
 
@@ -39,11 +45,14 @@ function onSetSceneViewConfig(config) {
 	const { blurriness, intensity } = config;
 	this.scene.backgroundIntensity = intensity;
 	this.scene.backgroundBlurriness = blurriness;
+
 }
 
 // 设置模型贴图 (外部)
 function onSetStorageViewImage(url, type) {
-	return new Promise(async reslove => {
+	return new Promise(async resolve => {
+		const video = document.getElementById('video')
+		video.pause()
 		// 根据 图片类型选择不同的加载器
 		let loader;
 		let texture;
@@ -55,9 +64,34 @@ function onSetStorageViewImage(url, type) {
 		texture = await loader.loadAsync(url);
 		texture.mapping = THREE.EquirectangularReflectionMapping;
 		this.scene.background = texture;
-		this.scene.environment = texture;
-		texture.dispose();
-		reslove();
+		texture.dispose()
+		resolve();
+	});
+}
+
+// 选择视频(外部)
+function onSetStorageViewVideo(file) {
+	return new Promise(async resolve => {
+		const render = new FileReader()
+		const video = document.getElementById('video')
+		const { clientHeight, clientWidth } = this.container
+		render.onload = (e) => {
+			video.src = e.target.result;
+			video.width = clientWidth
+			video.height = clientHeight
+			video.play();
+
+		}
+		render.readAsDataURL(file.raw);
+		// 创建视频纹理
+		const videoTexture = new THREE.VideoTexture(video);
+		this.scene.background = videoTexture
+		this.scene.minFilter = THREE.LinearFilter
+		this.scene.magFilter = THREE.LinearFilter
+		this.scene.format = THREE.RGBFormat;
+		videoTexture.dispose()
+
+		resolve()
 	});
 }
 
@@ -66,5 +100,6 @@ export default {
 	onSetSceneImage,
 	onSetSceneViewImage,
 	onSetSceneViewConfig,
-	onSetStorageViewImage
+	onSetStorageViewImage,
+	onSetStorageViewVideo
 };

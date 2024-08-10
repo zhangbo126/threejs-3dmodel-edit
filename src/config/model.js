@@ -150,7 +150,7 @@ const modelList = [
 	}
 ]
 
-const backgrundList = [
+const backgroundList = [
 	{
 		id: 1,
 		url: getAssetsFile('image/model-bg-1.jpg')
@@ -490,4 +490,4 @@ const tagList = [
 	},
 ]
 
-export { modelList, backgrundList, viewImageList, mapImageList, geometryModelList, tagList }
+export { modelList, backgroundList, viewImageList, mapImageList, geometryModelList, tagList }

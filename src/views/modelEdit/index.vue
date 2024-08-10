@@ -48,9 +48,11 @@
         <model-edit-panel ref="editPanel" v-if="store.modelApi.model"></model-edit-panel>
       </div>
     </div>
+    <!-- 视频背景video -->
+    <video id="video" loop="loop" playsinline autoplay style="display: none"></video>
     <page-loading :loading="loading" :percentage="progress"></page-loading>
     <!-- 嵌入代码弹框 -->
-    <implant-code-dialog ref="implatDialog"></implant-code-dialog>
+    <implant-code-dialog ref="implantDialog"></implant-code-dialog>
   </div>
 </template>
 
@@ -74,7 +76,7 @@ const loading = ref(false);
 const progress = ref(0);
 const editPanel = ref(null);
 const choosePanel = ref(null);
-const implatDialog = ref(null);
+const implantDialog = ref(null);
 const fullscreenStatus = ref(false);
 
 const handleConfigBtn = computed(() => {
@@ -142,7 +144,7 @@ const onImportantCode = () => {
   const modelConfig = editPanel.value.getPanelConfig();
   modelConfig.camera = store.modelApi.onGetModelCamera();
   modelConfig.fileInfo = choosePanel.value.activeModel;
-  implatDialog.value.showDialog(modelConfig);
+  implantDialog.value.showDialog(modelConfig);
 };
 
 // 全屏
