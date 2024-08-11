@@ -4,8 +4,7 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import { resolve } from "path";
 
 export default defineConfig((mode) => {
-    const { VITE_USER_NODE_ENV } = loadEnv(mode.mode, process.cwd());
-    const base = VITE_USER_NODE_ENV == 'production' ? '/three.js3d/' : '/'
+    const { VITE_APP_BASE_URL } = loadEnv(mode.mode, process.cwd());
     return {
         plugins: [vue(), vueJsx()],
         resolve: {
@@ -16,7 +15,7 @@ export default defineConfig((mode) => {
         },
         assetsInclude: ['**/*.hdr', '**/*.glb'],
         esbuild: { loader: { '.js': '.jsx' } },
-        base,
+        base: VITE_APP_BASE_URL,
         server: {
             host: '0.0.0.0',
             open: true,

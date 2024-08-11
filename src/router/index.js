@@ -32,9 +32,9 @@ const routes = [
     ]
   }
 ]
-const base = import.meta.env.MODE == 'production' ? '/three.js3d/' : '/'
+
 const router = createRouter({
-  history: createWebHistory(base),
+  history: createWebHistory(import.meta.env.VITE_APP_BASE_URL),
   base,
   model: 'hash',
   routes
