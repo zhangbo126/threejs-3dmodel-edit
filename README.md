@@ -33,7 +33,7 @@
 | ------------------------ | ------- | ------------ | ----- |
 | Vue                      | 3.2.x   | Axios        | 1.5.0 |
 | Vite                     | 4.3.x   | Element-plus | 2.4.x |
-| Three                    | 0.160.x | Pinia        | 2.1.x |
+| Three                    | 0.167.x | Pinia        | 2.1.x |
 | Vue3-Draggable-Resizable | 1.6.x   | Mitt         | 3.0.x |
 | 详见 `package.json`      | 😁      | 🥰           | 🤗    |
 
