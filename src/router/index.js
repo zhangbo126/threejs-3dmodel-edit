@@ -32,9 +32,9 @@ const routes = [
     ]
   }
 ]
-
+const base = import.meta.env.VITE_APP_BASE_URL
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_APP_BASE_URL),
+  history: createWebHistory(base),
   base,
   model: 'hash',
   routes
