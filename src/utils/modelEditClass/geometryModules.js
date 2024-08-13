@@ -25,6 +25,8 @@ function onSetGeometryMesh(activeGeometry, type) {
 	mesh.geometry = newGeometry
 }
 
+
+
 export default {
 	onDeleteGeometryMesh,
 	onSetGeometryMesh

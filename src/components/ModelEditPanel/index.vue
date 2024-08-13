@@ -1,18 +1,24 @@
-  <template>
-    <div class="model-panel">
-      <ul class="panel-tabs">
-        <li v-for="tab in panelTabs" :key="tab.key" :class="activeTab == tab.key ? 'active' : ''"
-          @click="activeTab = tab.key">
-          <el-tooltip effect="light" :content="tab.name" placement="top">
-            <div class="tab">
-              <el-icon size="20px" :color="activeTab == tab.key ? '#fff' : ''">
-                <component :is="tab.icon"></component>
-              </el-icon>
-            </div>
-          </el-tooltip>
-        </li>
-      </ul>
-      <div class="panel-edit">
+<template>
+  <div class="model-panel">
+    <ul class="panel-tabs">
+      <li v-for="tab in panelTabs" :key="tab.key" :class="activeTab == tab.key ? 'active' : ''" @click="activeTab = tab.key">
+        <el-tooltip effect="light" :content="tab.name" placement="top">
+          <div class="tab">
+            <el-icon size="20px" :color="activeTab == tab.key ? '#fff' : ''">
+              <component :is="tab.icon"></component>
+            </el-icon>
+          </div>
+        </el-tooltip>
+      </li>
+    </ul>
+    <!-- 多模型编辑下选择模型 -->
+    <div class="many-model" v-if="state.dragType == 'manyModel'">
+      <el-select :style="{ width: '120px' }" placeholder="请选择模型" size="small">
+        <el-option v-for="item in manyModelList" :key="item.uuid" :label="item.name" :value="item.uuid"></el-option>
+      </el-select>
+    </div>
+    <div class="panel-edit">
+      <el-scrollbar :max-height="maxHeightPanel">
         <!-- 背景 -->
         <div v-show="activeTab == 'EditBackground'">
           <edit-background ref="background"></edit-background>
@@ -45,120 +51,136 @@
         <div v-show="activeTab == 'EditTags'">
           <edit-tags ref="tags"></edit-tags>
         </div>
-        <!-- 多模型添加 -->
-        <!-- <div v-show="activeTab == 'EditMoreModel'">
+      </el-scrollbar>
+      <!-- 多模型添加 -->
+      <!-- <div v-show="activeTab == 'EditMoreModel'">
           <edit-more-model ref="more"></edit-more-model>
         </div> -->
-      </div>
     </div>
-  </template>
-  <script setup>
-  import { ref } from "vue";
-  import EditBackground from "./EditBackground.vue";
-  import EditMaterial from "./EditMaterial.vue";
-  import EditAnimation from "./EditAnimation.vue";
-  import EditAttribute from "./EditAttribute.vue";
-  import EditLight from "./EditLight.vue";
-  import EditLaterStage from "./EditLaterStage.vue";
-  import EditGeometry from "./EditGeometry.vue";
-  import EditMoreModel from "./EditMoreModel.vue";
-  import EditTags from "./EditTags.vue";
-  import { useMeshEditStore } from '@/store/meshEditStore'
+  </div>
+</template>
+<script setup>
+import { ref, computed, reactive } from "vue";
+import EditBackground from "./EditBackground.vue";
+import EditMaterial from "./EditMaterial.vue";
+import EditAnimation from "./EditAnimation.vue";
+import EditAttribute from "./EditAttribute.vue";
+import EditLight from "./EditLight.vue";
+import EditLaterStage from "./EditLaterStage.vue";
+import EditGeometry from "./EditGeometry.vue";
+import EditMoreModel from "./EditMoreModel.vue";
+import EditTags from "./EditTags.vue";
+import { useMeshEditStore } from "@/store/meshEditStore";
 
-  const panelTabs = [
-    {
-      name: "背景",
-      key: "EditBackground",
-      icon: "Picture",
-    },
-    {
-      name: "材质",
-      key: "EditMaterial",
-      icon: "DataAnalysis",
-    },
-    {
-      name: "后期/操作",
-      key: "EditLaterStage",
-      icon: "MagicStick",
-    },
-    {
-      name: "灯光",
-      key: "EditLight",
-      icon: "Sunrise",
-    },
-    {
-      name: "模型动画",
-      key: "EditAnimation",
-      icon: "VideoCameraFilled",
-    },
-    {
-      name: "辅助线/轴配置",
-      key: "EditAttribute",
-      icon: "Box",
-    },
-    {
-      name: "几何体模型配置",
-      key: "EditGeometry",
-      icon: "Cellphone",
-    },
-    {
-      name: "标签配置",
-      key: "EditTags",
-      icon: "CollectionTag",
-    },
-  ];
-  const activeTab = ref("EditMaterial");
-  const background = ref(null);
-  const material = ref(null);
-  const animation = ref(null);
-  const attribute = ref(null);
-  const light = ref(null);
-  const stage = ref(null);
-  const geometry = ref(null)
-  const tags = ref(null)
-  const more = ref(null)
-  const store = useMeshEditStore();
+const panelTabs = [
+  {
+    name: "背景",
+    key: "EditBackground",
+    icon: "Picture"
+  },
+  {
+    name: "材质",
+    key: "EditMaterial",
+    icon: "DataAnalysis"
+  },
+  {
+    name: "后期/操作",
+    key: "EditLaterStage",
+    icon: "MagicStick"
+  },
+  {
+    name: "灯光",
+    key: "EditLight",
+    icon: "Sunrise"
+  },
+  {
+    name: "模型动画",
+    key: "EditAnimation",
+    icon: "VideoCameraFilled"
+  },
+  {
+    name: "辅助线/轴配置",
+    key: "EditAttribute",
+    icon: "Box"
+  },
+  {
+    name: "几何体模型配置",
+    key: "EditGeometry",
+    icon: "Cellphone"
+  },
+  {
+    name: "标签配置",
+    key: "EditTags",
+    icon: "CollectionTag"
+  }
+];
+const activeTab = ref("EditMaterial");
+const background = ref(null);
+const material = ref(null);
+const animation = ref(null);
+const attribute = ref(null);
+const light = ref(null);
+const stage = ref(null);
+const geometry = ref(null);
+const tags = ref(null);
+const store = useMeshEditStore();
 
+const state = reactive({
+  dragType: computed(() => store.dragType)
+});
 
+const maxHeightPanel = computed(() => {
+  if (state.dragType == "manyModel") {
+    return `799px`;
+  }
+  return `832px`;
+});
+// 多模型模型列表
+const manyModelList = computed(() => {
+  const modelGroup = store.modelApi?.scene?.children || [];
+  return modelGroup.filter(v => v.userData.type == "manyModel").map(v => ({ name: v.name, uuid: v.uuid }));
+});
 
-  // 获取所有面板配置
-  const getPanelConfig = () => {
-    return {
-      background: background.value.config,
-      material: material.value.getMeshConfig(),
-      animation: animation.value.config,
-      attribute: attribute.value.getAttrbuteConfig(),
-      light: light.value.config,
-      stage: stage.value.getStageConfig(),
-      tags:tags.value.config
-    };
+// 获取所有面板配置
+const getPanelConfig = () => {
+  return {
+    background: background.value.config,
+    material: material.value.getMeshConfig(),
+    animation: animation.value.config,
+    attribute: attribute.value.getAttrbuteConfig(),
+    light: light.value.config,
+    stage: stage.value.getStageConfig(),
+    tags: tags.value.config
   };
-  defineExpose({
-    getPanelConfig,
-  });
-  </script>
-  <style lang="scss" scoped>
-  .model-panel {
-    min-width: 380px;
-    height: calc(100vh - 35px);
-    background-color: #1b1c23;
-    .panel-tabs {
+};
+defineExpose({
+  getPanelConfig
+});
+</script>
+<style lang="scss" scoped>
+.model-panel {
+  min-width: 380px;
+  height: calc(100vh - 35px);
+  background-color: #1b1c23;
+  .panel-tabs {
+    display: flex;
+    .active {
+      background-color: #4d57fd;
+    }
+    li {
       display: flex;
-      .active {
-        background-color: #4d57fd;
-      }
-      li {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        color: #888888;
-        cursor: pointer;
-        background: #272830;
-        border-right: 1px solid #0a0a0a;
-        .tab {
-          line-height: initial;
-        }
+      align-items: center;
+      padding: 10px;
+      color: #888888;
+      cursor: pointer;
+      background: #272830;
+      border-right: 1px solid #0a0a0a;
+      .tab {
+        line-height: initial;
       }
     }
   }
-  </style>
+  .many-model {
+  }
+}
+</style>

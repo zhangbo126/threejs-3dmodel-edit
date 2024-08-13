@@ -62,6 +62,7 @@ function onSetModelPlaneGeometry({ planeGeometry, planeColor, planeWidth, planeH
 	this.planeGeometry.material.color.set(planeColor)
 	this.planeGeometry.material.side = THREE.DoubleSide
 	this.planeGeometry.geometry.verticesNeedUpdate = true
+	console.log(this.scene)
 }
 // 重置场景灯光
 function onResettingLight({ ambientLight }) {

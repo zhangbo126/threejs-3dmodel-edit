@@ -122,7 +122,7 @@ function setTransformControlsType(type) {
 
 // 获取模型材质位拖拽置
 function getMeshDragPosition() {
-	const positonList = []
+	const positionList = []
 	this.modelMaterialList.forEach(v => {
 		const mesh = this.model.getObjectByProperty('name', v.name)
 		const { rotation, scale, position } = mesh
@@ -144,9 +144,9 @@ function getMeshDragPosition() {
 				z: position.z,
 			},
 		}
-		positonList.push(obj)
+		positionList.push(obj)
 	})
-	return positonList
+	return positionList
 }
 // 修改辉光颜色
 function onSetFlowColor(color) {

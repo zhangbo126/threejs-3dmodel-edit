@@ -11,14 +11,14 @@
         <el-space>
           <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })"> 模型库 </el-button>
           <el-button type="primary" icon="Document" v-if="handleConfigBtn" @click="onSaveConfig">保存数据</el-button>
-          <el-button type="primary" icon="View" v-if="handleConfigBtn" @click="onPrivew">效果预览</el-button>
+          <el-button type="primary" icon="View" v-if="handleConfigBtn" @click="onPreview">效果预览</el-button>
           <el-dropdown trigger="click">
             <el-button type="primary" icon="Download"> 下载/导出<el-icon class="el-icon--right"></el-icon> </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
-                <el-dropdown-item @click="onExportModleFile('glb')">导出模型(.glb)格式</el-dropdown-item>
-                <el-dropdown-item @click="onExportModleFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModelFile('glb')">导出模型(.glb)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModelFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -33,7 +33,7 @@
       <!-- 模型列表 -->
       <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
-      <div id="model" @drop="onGeometryDrop" ref="model" @dragover.prevent>
+      <div id="model" @drop="onDragDrop" ref="model" @dragover.prevent>
         <div class="camera-icon">
           <el-tooltip effect="dark" content="居中" placement="top">
             <el-icon :size="18" color="#fff" @click="onResetCamera">
@@ -81,7 +81,7 @@ const fullscreenStatus = ref(false);
 
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
-    const fileInfo = choosePanel.value.activeModel;
+    const fileInfo = choosePanel.value?.activeModel;
     return fileInfo?.filePath ? true : false;
   }
   return false;
@@ -107,29 +107,43 @@ const initModelBaseData = () => {
   }
 };
 
-// 几何体模型拖拽结束
-const onGeometryDrop = e => {
-  const { dragGeometryModel, dragTag } = store.modelApi;
+// 当前拖拽结束TODO：geometry（几何体模型） tags(3d标签) manyModel(多模型)
+const onDragDrop = async e => {
+  const { dragGeometryModel, dragTag, activeDragManyModel } = store.modelApi;
   const { clientX, clientY } = e;
-  // console.log(dragType)
-  // 如果是几何体模型拖拽
+  // 几何体
   if (dragGeometryModel.id && store.dragType == "geometry") {
     dragGeometryModel.clientX = clientX;
     dragGeometryModel.clientY = clientY;
     store.modelApi.onSwitchModel(dragGeometryModel);
   }
-
+  // 3d标签
   if (dragTag.id && store.dragType == "tags") {
     dragTag.clientX = clientX;
     dragTag.clientY = clientY;
     store.modelApi.create3dTags(dragTag);
   }
+  // 多模型
+  if (store.dragType == "manyModel") {
+    activeDragManyModel.clientX = clientX;
+    activeDragManyModel.clientY = clientY;
+    $bus.emit("page-loading", true);
+    try {
+      const load = await store.modelApi.onLoadManyModel(activeDragManyModel);
+      if (load) {
+        $bus.emit("model-update");
+        $bus.emit("page-loading", false);
+      }
+    } catch {
+      $bus.emit("page-loading", false);
+    }
+  }
 };
 // 预览
-const onPrivew = () => {
+const onPreview = () => {
   const modelConfig = editPanel.value.getPanelConfig();
   modelConfig.camera = store.modelApi.onGetModelCamera();
-  modelConfig.fileInfo = choosePanel.value.activeModel;
+  modelConfig.fileInfo = choosePanel.value?.activeModel;
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
     $local.set(MODEL_PRIVEW_CONFIG, modelConfig);
@@ -143,7 +157,7 @@ const onPrivew = () => {
 const onImportantCode = () => {
   const modelConfig = editPanel.value.getPanelConfig();
   modelConfig.camera = store.modelApi.onGetModelCamera();
-  modelConfig.fileInfo = choosePanel.value.activeModel;
+  modelConfig.fileInfo = choosePanel.value?.activeModel;
   implantDialog.value.showDialog(modelConfig);
 };
 
@@ -176,7 +190,7 @@ const onSaveConfig = () => {
     .then(() => {
       const modelConfig = editPanel.value.getPanelConfig();
       modelConfig.camera = store.modelApi.onGetModelCamera();
-      modelConfig.fileInfo = choosePanel.value.activeModel;
+      modelConfig.fileInfo = choosePanel.value?.activeModel;
       // 判断是否是外部模型
       if (modelConfig.fileInfo.filePath) {
         const modelBaseData = $local.get(MODEL_BASE_DATA) || [];
@@ -197,12 +211,12 @@ const onDownloadCover = () => {
   store.modelApi.onDownloadScenCover();
 };
 // 导出模型
-const onExportModleFile = type => {
+const onExportModelFile = type => {
   store.modelApi.onExporterModel(type);
 };
 
 // 全屏监听事件
-const addEventListenerFllscreen = e => {
+const addEventListenerFullscreen = e => {
   const status = document.fullscreenElement || document.webkitFullscreenElement;
   fullscreenStatus.value = !!status;
 };
@@ -227,11 +241,11 @@ onMounted(async () => {
   // 初始化模型库数据
   initModelBaseData();
   // 全屏监听事件
-  document.addEventListener("fullscreenchange", addEventListenerFllscreen);
+  document.addEventListener("fullscreenchange", addEventListenerFullscreen);
 });
 onBeforeUnmount(() => {
   store.modelApi.onClearModelData();
-  document.removeEventListener("fullscreenchange", addEventListenerFllscreen);
+  document.removeEventListener("fullscreenchange", addEventListenerFullscreen);
 });
 </script>
 

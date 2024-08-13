@@ -135,7 +135,7 @@ class renderModel {
       this.setSceneTagsRender();
       //场景渲染
       this.sceneAnimation();
-      this.addEvenListMouseLisatener();
+      this.addEvenListMouseListener();
       reslove(load);
     });
   }
@@ -183,7 +183,7 @@ class renderModel {
   initScene() {
     this.scene = new THREE.Scene();
   }
-  addEvenListMouseLisatener() {
+  addEvenListMouseListener() {
     // 监听场景大小改变，跳转渲染尺寸
     this.onWindowResizesListener = this.onWindowResize.bind(this);
     window.addEventListener("resize", this.onWindowResizesListener);
@@ -361,7 +361,7 @@ class renderModel {
             default:
               break;
           }
-          this.getModelMeaterialList(map);
+          this.getModelMaterialList(map);
           this.modelAnimation = result.animations || [];
           this.setModelPositionSize();
           this.skeletonHelper.visible = false;
@@ -519,7 +519,7 @@ class renderModel {
     this.camera.updateProjectionMatrix();
   }
   // 获取当前模型材质
-  getModelMeaterialList() {
+  getModelMaterialList() {
     this.modelMaterialList = [];
     this.model.traverse(v => {
       if (v.isMesh) {
