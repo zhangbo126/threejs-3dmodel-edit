@@ -64,8 +64,7 @@ class renderModel {
 			LoopRepeat: THREE.LoopRepeat,
 			LoopPingPong: THREE.LoopPingPong
 		}
-		// 模型骨架
-		this.skeletonHelper
+
 		// 网格辅助线
 		this.gridHelper
 		// 坐标轴辅助线
@@ -289,19 +288,16 @@ class renderModel {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+
 						break;
 					case 'fbx':
 						this.model = result
-						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'gltf':
 						this.model = result.scene
-						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						break;
 					case 'obj':
 						this.model = result
-						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'stl':
 						const material = new THREE.MeshStandardMaterial();
@@ -314,8 +310,7 @@ class renderModel {
 				this.model.decomposeName = decomposeName
 				this.getModelMaterialList()
 				this.setModelPositionSize()
-				this.skeletonHelper.visible = false
-				this.scene.add(this.skeletonHelper)
+
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
@@ -409,8 +404,7 @@ class renderModel {
 				this.geometryGroup.add(mesh)
 				this.model = this.geometryGroup
 				this.onSetGeometryMeshList(mesh)
-				this.skeletonHelper.visible = false
-				this.skeletonHelper.dispose()
+
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.setModelMeshDrag({ transformType: true })
 				this.scene.add(this.model)
@@ -710,8 +704,7 @@ class renderModel {
 		this.animateClipAction = null
 		// 动画循环方式枚举
 		this.loopMap = null
-		// 模型骨架
-		this.skeletonHelper = null
+
 		// 网格辅助线
 		this.gridHelper = null
 		// 坐标轴辅助线
@@ -777,19 +770,29 @@ class renderModel {
 	clearSceneModel() {
 		//先移除模型 材质释放内存
 		this.scene.traverse((v) => {
-			if (v.type === 'Mesh') {
+			if (['Mesh'].includes(v.type)) {
 				v.geometry.dispose();
 				v.material.dispose();
 			}
 		})
 		this.dragGeometryModel = {}
 		this.activeDragManyModel = {}
+		this.geometryGroup.clear()
+		this.scene.remove(this.geometryGroup)
+		this.manyModelGroup.clear()
+		this.scene.remove(this.manyModelGroup)
 
+		// 移除添加的多模型
+		const removeModelList = this.scene.children.filter(v => v.userData.type == 'manyModel')
+		removeModelList.forEach(v => {
+			this.scene.remove(v)
+		})
+		this.scene.remove(this.model)
+		this.model = null
 		//取消动画帧
 		cancelAnimationFrame(this.animationFrame)
 		cancelAnimationFrame(this.rotationAnimationFrame)
-		this.scene.remove(this.model)
-		this.model = null
+
 		this.glowUnrealBloomPass = false
 		this.glowMaterialList = []
 		this.modelMaterialList = []
@@ -817,9 +820,7 @@ class renderModel {
 			radius: 0,
 		})
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
-		// 重置"辅助线/轴配置"模块数据
-		this.skeletonHelper.visible = false
-		this.skeletonHelper.dispose()
+
 		const config = {
 			gridHelper: false,
 			x: 0,
@@ -851,7 +852,7 @@ class renderModel {
 	}
 	// 加载多模型
 	onLoadManyModel(model) {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 			const { filePath, fileType, name } = model
 			// 计算鼠标在屏幕上的坐标
@@ -871,71 +872,74 @@ class renderModel {
 				} else {
 					loader = this.fileLoaderMap[fileType]
 				}
+				let manyModel
 				loader.load(filePath, (result) => {
 					switch (fileType) {
 						case 'glb':
-							this.model = result.scene
-							// this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+							manyModel = result.scene
 							break;
 						case 'fbx':
-							this.model = result
-							// this.skeletonHelper = new THREE.SkeletonHelper(result)
+							manyModel = result
 							break;
 						case 'gltf':
-							this.model = result.scene
-							// this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+							manyModel = result.scene
 							break;
 						case 'obj':
-							this.model = result
-							// this.skeletonHelper = new THREE.SkeletonHelper(result)
+							manyModel = result
 							break;
 						case 'stl':
 							const material = new THREE.MeshStandardMaterial();
 							const mesh = new THREE.Mesh(result, material);
-							this.model = mesh
+							manyModel = mesh
 							break;
 						default:
 							break;
 					}
 					// 设置模型位置
 					const { x, y, z } = intersects[0].point
-					this.model.position.set(x, y, z)
-					const box = new THREE.Box3().setFromObject(this.model);
+					manyModel.position.set(x, y, z)
+					const box = new THREE.Box3().setFromObject(manyModel);
 					const size = box.getSize(new THREE.Vector3());
 					const maxSize = Math.max(size.x, size.y, size.z);
 					const targetSize = 1.2;
 					const scale = targetSize / (maxSize > 1 ? maxSize : .5);
-					this.model.scale.set(scale, scale, scale)
-					this.model.name = name
-					this.model.userData = {
-						type: 'manyModel'
+					manyModel.scale.set(scale, scale, scale)
+					manyModel.name = name
+					manyModel.userData = {
+						type: 'manyModel',
+						...manyModel.userData
 					}
-
+					this.manyModelGroup.add(manyModel)
+					this.model = this.manyModelGroup
 					this.outlinePass.renderScene = this.model
 					this.getModelMaterialList()
 					// 需要辉光的材质
 					this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 					this.scene.add(this.model)
-
 					this.loadingStatus = true
-					resolve(true)
+					resolve({ load: true })
 
 				}, (xhr) => {
 					this.modelProgressCallback(xhr.loaded)
 				}, (err) => {
-					ElMessage.error('文件错误')
-					// console.log(err)
-					resolve(true)
+					ElMessage.error(err)
+					reject()
 				})
 			}
 			else {
-				resolve(true)
+				reject()
 				ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
 			}
 		})
 	}
 	// 选择多模型切换
-	chooseManyModel() {
+	chooseManyModel(uuid) {
+		const chooseModel = this.scene.children.find(v => v.uuid == uuid)
+		// 设置当前编辑模型
+		this.model = chooseModel
+		this.outlinePass.renderScene = this.model
+		// 更新当前编辑的模型材质列表
+		this.getModelMaterialList()
 
 	}
 }

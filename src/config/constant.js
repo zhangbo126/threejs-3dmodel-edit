@@ -130,7 +130,6 @@ export const MODEL_DEFAULT_CONFIG = {
 	},
 	"attribute": {
 		"visible": true,
-		"skeletonHelper": false,
 		"gridHelper": false,
 		"x": 0,
 		"y": -0.59,

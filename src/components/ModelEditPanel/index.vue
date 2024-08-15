@@ -11,14 +11,9 @@
         </el-tooltip>
       </li>
     </ul>
-    <!-- 多模型编辑下选择模型 -->
-    <div class="many-model" v-if="state.dragType == 'manyModel'">
-      <el-select :style="{ width: '120px' }" placeholder="请选择模型" size="small">
-        <el-option v-for="item in manyModelList" :key="item.uuid" :label="item.name" :value="item.uuid"></el-option>
-      </el-select>
-    </div>
+
     <div class="panel-edit">
-      <el-scrollbar :max-height="maxHeightPanel">
+      <el-scrollbar max-height="832px">
         <!-- 背景 -->
         <div v-show="activeTab == 'EditBackground'">
           <edit-background ref="background"></edit-background>
@@ -51,16 +46,16 @@
         <div v-show="activeTab == 'EditTags'">
           <edit-tags ref="tags"></edit-tags>
         </div>
-      </el-scrollbar>
-      <!-- 多模型添加 -->
-      <!-- <div v-show="activeTab == 'EditMoreModel'">
+        <!-- 多模型添加 -->
+        <div v-show="activeTab == 'EditMoreModel'">
           <edit-more-model ref="more"></edit-more-model>
-        </div> -->
+        </div>
+      </el-scrollbar>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, computed, reactive } from "vue";
+import { ref } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
@@ -112,8 +107,14 @@ const panelTabs = [
     name: "标签配置",
     key: "EditTags",
     icon: "CollectionTag"
+  },
+  {
+    name: "多模型配置",
+    key: "EditMoreModel",
+    icon: "Money"
   }
 ];
+
 const activeTab = ref("EditMaterial");
 const background = ref(null);
 const material = ref(null);
@@ -123,23 +124,8 @@ const light = ref(null);
 const stage = ref(null);
 const geometry = ref(null);
 const tags = ref(null);
+const more = ref(null);
 const store = useMeshEditStore();
-
-const state = reactive({
-  dragType: computed(() => store.dragType)
-});
-
-const maxHeightPanel = computed(() => {
-  if (state.dragType == "manyModel") {
-    return `799px`;
-  }
-  return `832px`;
-});
-// 多模型模型列表
-const manyModelList = computed(() => {
-  const modelGroup = store.modelApi?.scene?.children || [];
-  return modelGroup.filter(v => v.userData.type == "manyModel").map(v => ({ name: v.name, uuid: v.uuid }));
-});
 
 // 获取所有面板配置
 const getPanelConfig = () => {
@@ -181,6 +167,14 @@ defineExpose({
     }
   }
   .many-model {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    margin: 5px;
+    .model-label {
+      font-size: 14px;
+      color: #ffffff;
+    }
   }
 }
 </style>

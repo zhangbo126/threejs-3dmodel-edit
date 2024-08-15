@@ -1,7 +1,6 @@
 
 /**
  * @describe 辅助线/轴配置模块方法
- * @function onSetModelHelper 设置模型骨架
  * @function onSetModelRotateOnAxis 设置模型轴旋转
  * @function onResultModelRotateOnAxis 重置模型轴位置
  * @function onSetModelPosition 设置模型位置
@@ -15,10 +14,7 @@
 import * as THREE from 'three'
 import TWEEN from "@tweenjs/tween.js";
 
-// 设置模型骨架
-function onSetModelHelper(visible) {
-	this.skeletonHelper.visible = visible
-}
+
 // 设置模型轴旋转
 function onSetModelRotateOnAxis(type, flag) {
 	const maxAxis = Math.PI / 2
@@ -110,7 +106,6 @@ function onSetModelAxesHelper({ axesHelper, axesSize }) {
 }
 
 export default {
-	onSetModelHelper,
 	onSetModelRotateOnAxis,
 	onResultModelRotateOnAxis,
 	onSetModelPosition,

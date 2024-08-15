@@ -112,26 +112,28 @@ const onDragDrop = async e => {
   const { dragGeometryModel, dragTag, activeDragManyModel } = store.modelApi;
   const { clientX, clientY } = e;
   // 几何体
-  if (dragGeometryModel.id && store.dragType == "geometry") {
+  if (dragGeometryModel.id && store.modelType == "geometry") {
     dragGeometryModel.clientX = clientX;
     dragGeometryModel.clientY = clientY;
     store.modelApi.onSwitchModel(dragGeometryModel);
   }
   // 3d标签
-  if (dragTag.id && store.dragType == "tags") {
+  if (dragTag.id && store.modelType == "tags") {
     dragTag.clientX = clientX;
     dragTag.clientY = clientY;
     store.modelApi.create3dTags(dragTag);
   }
   // 多模型
-  if (store.dragType == "manyModel") {
+  if (store.modelType == "manyModel") {
     activeDragManyModel.clientX = clientX;
     activeDragManyModel.clientY = clientY;
     $bus.emit("page-loading", true);
     try {
-      const load = await store.modelApi.onLoadManyModel(activeDragManyModel);
+      const { load } = await store.modelApi.onLoadManyModel(activeDragManyModel);
       if (load) {
         $bus.emit("model-update");
+        // 更新当前编辑的模型
+        // $bus.emit("manyModel-update", uuid);
         $bus.emit("page-loading", false);
       }
     } catch {
@@ -267,6 +269,9 @@ onBeforeUnmount(() => {
     text-shadow: 5px 3px 5px #c11212;
     background-color: #010c1d;
     box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
+    .header-lf {
+      font-size: 14px;
+    }
   }
   .model-container {
     display: flex;

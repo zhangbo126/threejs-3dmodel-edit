@@ -1,9 +1,13 @@
 <template>
   <div class="model-choose">
     <div class="header">
-      <span>当前场景编辑模式:{{ modelEditMap[modeEditType].text }}</span>
-      <el-tooltip effect="dark" :content="modelEditMap[modeEditType].tooltip" placement="top">
-        <el-button type="primary" icon="Refresh" @click="switchActiveModelEdit(modelEditMap[modeEditType].switchType)">
+      <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType]?.text }}</span>
+      <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType]?.tooltip" placement="top">
+        <el-button
+          type="primary"
+          icon="Refresh"
+          @click="switchActiveModelEdit(modelEditMap[reactiveData.modeEditType]?.switchType)"
+        >
           切换场景
         </el-button>
       </el-tooltip>
@@ -22,7 +26,7 @@
       <el-scrollbar max-height="210px">
         <el-row>
           <el-col
-            :draggable="modelEditMap[modeEditType].draggable"
+            :draggable="modelEditMap[reactiveData.modeEditType]?.draggable"
             :style="modelTypeStyle"
             :span="12"
             v-for="model in ordinaryModelList"
@@ -34,7 +38,7 @@
               draggable="false"
               @click.prevent="onChangeModel(model)"
               class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''"
+              :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
               :src="model.icon"
               fit="cover"
             />
@@ -56,7 +60,7 @@
       <el-scrollbar max-height="210px">
         <el-row>
           <el-col
-            :draggable="modelEditMap[modeEditType].draggable"
+            :draggable="modelEditMap[reactiveData.modeEditType]?.draggable"
             :style="modelTypeStyle"
             :span="12"
             v-for="model in animationModelList"
@@ -68,7 +72,7 @@
               draggable="false"
               @click="onChangeModel(model)"
               class="el-img"
-              :class="activeModelId == model.id ? 'active-model' : ''"
+              :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
               :src="model.icon"
               fit="cover"
             />
@@ -84,16 +88,16 @@
             <SwitchFilled />
           </el-icon>
           <span>几何体模型</span>
-          <span :style="{ color: '#18c174 ' }" v-if="geometryVisible">(可拖拽添加多个)</span>
+          <span :style="{ color: '#18c174 ' }" v-if="reactiveData.geometryVisible">(可拖拽添加多个)</span>
         </el-space>
       </div>
       <!-- 模型列表 -->
       <el-scrollbar max-height="120px">
-        <el-row v-if="geometryVisible">
+        <el-row v-if="reactiveData.geometryVisible">
           <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
             <div
               class="geometry"
-              :class="activeModelId == model.id ? 'active-model' : ''"
+              :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
               draggable="true"
               @dragstart="e => onDragstart(e, model)"
               @drag="e => onDrag(e)"
@@ -131,8 +135,8 @@
       <!-- 模型内容 -->
       <div class="file-name">
         <span>当前模型:</span>
-        <el-tooltip effect="dark" :content="localModelName" placement="top">
-          <b>{{ localModelName }}</b>
+        <el-tooltip effect="dark" :content="reactiveData.localModelName" placement="top">
+          <b>{{ reactiveData.localModelName }}</b>
         </el-tooltip>
       </div>
       <el-upload
@@ -157,7 +161,7 @@
 </template>
 
 <script setup>
-import { ref, computed, getCurrentInstance } from "vue";
+import { ref, computed, getCurrentInstance, reactive } from "vue";
 import { modelList, geometryModelList } from "@/config/model.js";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import { getFileType, getAssetsFile } from "@/utils/utilityFunction.js";
@@ -175,6 +179,12 @@ const modelEditMap = {
     tooltip: "当前为多模型编辑模式：通过拖拽添加多个模型",
     draggable: true,
     switchType: "oneModel"
+  },
+  geometry: {
+    text: "几何体",
+    tooltip: "当前为几何体模型编辑模式：通过拖拽添加多个几何体模型",
+    draggable: false,
+    switchType: "oneModel"
   }
 };
 const store = useMeshEditStore();
@@ -191,16 +201,20 @@ const animationModelList = computed(() => {
 
 // 不同编辑模式鼠标style
 const modelTypeStyle = computed(() => {
-  return modeEditType.value == "many"
+  return reactiveData.modeEditType == "many"
     ? { textAlign: "center", cursor: "all-scroll" }
     : { textAlign: "center", cursor: "pointer" };
 });
 
-// 当前模型id
-const activeModelId = ref(9);
-const geometryVisible = ref(false);
-// 当前模型编辑模式 TODO:oneModel 单模型 many 多模型
-const modeEditType = ref("oneModel");
+const reactiveData = reactive({
+  // 当前模型ID
+  activeModelId: 9,
+  geometryVisible: false,
+  // 当前模型编辑模式 TODO:oneModel 单模型 many 多模型 geometry 几何体模型
+  modeEditType: "oneModel",
+  localModelName: null
+});
+
 // 当前模型信息
 const activeModel = ref({
   name: "变形金刚（3）",
@@ -212,8 +226,6 @@ const activeModel = ref({
   decomposeName: "transformers_3",
   key: "transformers-3"
 });
-//当前本地模型
-const localModelName = ref(null);
 
 // 切换当前模型编辑模式
 const switchActiveModelEdit = async switchType => {
@@ -222,19 +234,27 @@ const switchActiveModelEdit = async switchType => {
       confirmButtonText: "确定",
       cancelButtonText: "取消"
     }).then(() => {
-      modeEditType.value = switchType;
-      localModelName.value = null;
+      Object.assign(reactiveData, {
+        modeEditType: switchType,
+        localModelName: null,
+        geometryVisible: false
+      });
       store.changeDragType("manyModel");
       store.modelApi.clearSceneModel();
       ElMessage.success("切换成功：当前为多模型编辑模式");
     });
-  } else if (activeModelId.value) {
+  } else if (["geometry", "oneModel"].includes(switchType)) {
+    // 加载单模型
     $bus.emit("page-loading", true);
     try {
       const { load } = await store.modelApi.onSwitchModel(activeModel.value);
       if (load) {
-        modeEditType.value = switchType;
-      localModelName.value = null;
+        Object.assign(reactiveData, {
+          modeEditType: "oneModel",
+          activeModelId: activeModel.value.id,
+          localModelName: null,
+          geometryVisible: false
+        });
         $bus.emit("model-update");
         $bus.emit("page-loading", false);
         store.changeDragType("oneModel");
@@ -247,11 +267,14 @@ const switchActiveModelEdit = async switchType => {
 };
 //选择模型
 const onChangeModel = async model => {
-  if (model.id == activeModelId.value || modeEditType.value == "many") return false;
-  geometryVisible.value = false;
-  activeModelId.value = model.id;
-  localModelName.value = null;
+  if (model.id == reactiveData.activeModelId || reactiveData.modeEditType == "many") return false;
   activeModel.value = model;
+  Object.assign(reactiveData, {
+    activeModelId: model.id,
+    localModelName: null,
+    modeEditType: "oneModel",
+    geometryVisible: false
+  });
   $bus.emit("page-loading", true);
   try {
     const { load } = await store.modelApi.onSwitchModel(model);
@@ -266,15 +289,19 @@ const onChangeModel = async model => {
 
 // 添加几何模型
 const onAddGeometry = async () => {
-  geometryVisible.value = true;
-  localModelName.value = null;
-  activeModelId.value = null;
-  activeModel.value = {};
+  // activeModel.value = {};
+  Object.assign(reactiveData, {
+    activeModelId: null,
+    localModelName: null,
+    modeEditType: "geometry",
+    geometryVisible: true
+  });
   store.modelApi.clearSceneModel();
 };
 
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
+  // if (reactiveData.modeEditType == "many") return false;
   store.modelApi.setDragGeometryModel(model);
   store.changeDragType("geometry");
 };
@@ -290,7 +317,7 @@ const onDragModelStart = model => {
 
 // 选择本地模型文件
 const onUpload = async file => {
-  localModelName.value = file.name;
+  reactiveData.localModelName = file.name;
   const filePath = URL.createObjectURL(file.raw);
 
   const model = {
@@ -305,12 +332,15 @@ const onUpload = async file => {
     if (load) {
       $bus.emit("model-update");
       $bus.emit("page-loading", false);
-      activeModelId.value = null;
-      geometryVisible.value = false;
-      activeModel.value = {};
+
+      // activeModel.value = {};
+      Object.assign(reactiveData, {
+        activeModelId: null,
+        geometryVisible: false
+      });
     }
   } catch (err) {
-    localModelName.value = null;
+    reactiveData.localModelName = null;
     $bus.emit("page-loading", false);
   }
 };

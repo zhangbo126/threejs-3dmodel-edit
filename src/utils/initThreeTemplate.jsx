@@ -66,8 +66,6 @@ class renderModel {
       LoopRepeat: THREE.LoopRepeat,
       LoopPingPong: THREE.LoopPingPong
     };
-    // 模型骨架
-    this.skeletonHelper;
     // 网格辅助线
     this.gridHelper;
     // 坐标轴辅助线
@@ -339,19 +337,16 @@ class renderModel {
           switch (fileType) {
             case "glb":
               this.model = result.scene;
-              this.skeletonHelper = new THREE.SkeletonHelper(result.scene);
               break;
             case "fbx":
               this.model = result;
-              this.skeletonHelper = new THREE.SkeletonHelper(result);
               break;
             case "gltf":
               this.model = result.scene;
-              this.skeletonHelper = new THREE.SkeletonHelper(result.scene);
               break;
             case "obj":
               this.model = result;
-              this.skeletonHelper = new THREE.SkeletonHelper(result);
+             
               break;
             case "stl":
               const material = new THREE.MeshStandardMaterial();
@@ -364,8 +359,6 @@ class renderModel {
           this.getModelMaterialList(map);
           this.modelAnimation = result.animations || [];
           this.setModelPositionSize();
-          this.skeletonHelper.visible = false;
-          this.scene.add(this.skeletonHelper);
           this.glowMaterialList = this.modelMaterialList.map(v => v.name);
           this.scene.add(this.model);
           resolve(true);
@@ -461,8 +454,7 @@ class renderModel {
     this.animateClipAction = null;
     // 动画循环方式枚举
     this.loopMap = null;
-    // 模型骨架
-    this.skeletonHelper = null;
+ 
     // 网格辅助线
     this.gridHelper = null;
     // 坐标轴辅助线
@@ -789,7 +781,6 @@ class renderModel {
       positionY,
       positionZ,
       size,
-      skeletonHelper,
       visible,
       x,
       y,
@@ -816,9 +807,7 @@ class renderModel {
     this.model.rotation.set(rotationX, rotationY, rotationZ);
     // 开启阴影
     this.renderer.shadowMap.enabled = true;
-    // 骨骼辅助线
-    // 骨骼辅助线
-    this.skeletonHelper.visible = skeletonHelper;
+
   }
   // 处理标签渲染
   setSceneTagsRender() {
