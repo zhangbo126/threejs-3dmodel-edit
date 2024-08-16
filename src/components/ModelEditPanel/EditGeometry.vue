@@ -80,8 +80,8 @@ const activeGeometry = ref(null);
 const geometryConfigList = ref([]);
 
 const disabled = computed(() => {
-  const geometrylen = state.modelMaterialList.filter(v => v.userData.geometry);
-  return geometrylen == 0 ? false : true;
+  const geometryLen = state.modelMaterialList.filter(v => v.userData.geometry);
+  return geometryLen == 0 ? false : true;
 });
 
 const state = reactive({

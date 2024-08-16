@@ -65,7 +65,6 @@ import EditLaterStage from "./EditLaterStage.vue";
 import EditGeometry from "./EditGeometry.vue";
 import EditMoreModel from "./EditMoreModel.vue";
 import EditTags from "./EditTags.vue";
-import { useMeshEditStore } from "@/store/meshEditStore";
 
 const panelTabs = [
   {
@@ -115,7 +114,7 @@ const panelTabs = [
   }
 ];
 
-const activeTab = ref("EditMaterial");
+const activeTab = ref("EditMoreModel");
 const background = ref(null);
 const material = ref(null);
 const animation = ref(null);
@@ -125,7 +124,6 @@ const stage = ref(null);
 const geometry = ref(null);
 const tags = ref(null);
 const more = ref(null);
-const store = useMeshEditStore();
 
 // 获取所有面板配置
 const getPanelConfig = () => {
