@@ -115,7 +115,7 @@ const panelTabs = [
   }
 ];
 
-const activeTab = ref("EditMoreModel");
+const activeTab = ref("EditMaterial");
 const background = ref(null);
 const material = ref(null);
 const animation = ref(null);
