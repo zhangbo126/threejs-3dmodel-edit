@@ -53,7 +53,7 @@ class renderModel {
     this.modelAnimation;
     //模型动画对象
     this.animationMixer;
-    this.animationColock = new THREE.Clock();
+    this.animationClock = new THREE.Clock();
     // 动画帧
     this.animationFrame;
     // 轴动画帧
@@ -66,8 +66,6 @@ class renderModel {
       LoopRepeat: THREE.LoopRepeat,
       LoopPingPong: THREE.LoopPingPong
     };
-    // 模型骨架
-    this.skeletonHelper;
     // 网格辅助线
     this.gridHelper;
     // 坐标轴辅助线
@@ -135,7 +133,7 @@ class renderModel {
       this.setSceneTagsRender();
       //场景渲染
       this.sceneAnimation();
-      this.addEvenListMouseLisatener();
+      this.addEvenListMouseListener();
       reslove(load);
     });
   }
@@ -183,7 +181,7 @@ class renderModel {
   initScene() {
     this.scene = new THREE.Scene();
   }
-  addEvenListMouseLisatener() {
+  addEvenListMouseListener() {
     // 监听场景大小改变，跳转渲染尺寸
     this.onWindowResizesListener = this.onWindowResize.bind(this);
     window.addEventListener("resize", this.onWindowResizesListener);
@@ -339,19 +337,16 @@ class renderModel {
           switch (fileType) {
             case "glb":
               this.model = result.scene;
-              this.skeletonHelper = new THREE.SkeletonHelper(result.scene);
               break;
             case "fbx":
               this.model = result;
-              this.skeletonHelper = new THREE.SkeletonHelper(result);
               break;
             case "gltf":
               this.model = result.scene;
-              this.skeletonHelper = new THREE.SkeletonHelper(result.scene);
               break;
             case "obj":
               this.model = result;
-              this.skeletonHelper = new THREE.SkeletonHelper(result);
+
               break;
             case "stl":
               const material = new THREE.MeshStandardMaterial();
@@ -361,11 +356,9 @@ class renderModel {
             default:
               break;
           }
-          this.getModelMeaterialList(map);
+          this.getModelMaterialList(map);
           this.modelAnimation = result.animations || [];
           this.setModelPositionSize();
-          this.skeletonHelper.visible = false;
-          this.scene.add(this.skeletonHelper);
           this.glowMaterialList = this.modelMaterialList.map(v => v.name);
           this.scene.add(this.model);
           resolve(true);
@@ -452,7 +445,7 @@ class renderModel {
     this.modelAnimation = null;
     //模型动画对象
     this.animationMixer = null;
-    this.animationColock = null;
+    this.animationClock = null;
     // 动画帧
     this.animationFrame = null;
     // 轴动画帧
@@ -461,8 +454,7 @@ class renderModel {
     this.animateClipAction = null;
     // 动画循环方式枚举
     this.loopMap = null;
-    // 模型骨架
-    this.skeletonHelper = null;
+
     // 网格辅助线
     this.gridHelper = null;
     // 坐标轴辅助线
@@ -519,7 +511,7 @@ class renderModel {
     this.camera.updateProjectionMatrix();
   }
   // 获取当前模型材质
-  getModelMeaterialList() {
+  getModelMaterialList() {
     this.modelMaterialList = [];
     this.model.traverse(v => {
       if (v.isMesh) {
@@ -766,7 +758,7 @@ class renderModel {
   animationFrameFun() {
     this.animationFrame = requestAnimationFrame(() => this.animationFrameFun());
     if (this.animationMixer) {
-      this.animationMixer.update(this.animationColock.getDelta());
+      this.animationMixer.update(this.animationClock.getDelta());
     }
   }
   // 轴动画帧
@@ -789,7 +781,6 @@ class renderModel {
       positionY,
       positionZ,
       size,
-      skeletonHelper,
       visible,
       x,
       y,
@@ -816,9 +807,6 @@ class renderModel {
     this.model.rotation.set(rotationX, rotationY, rotationZ);
     // 开启阴影
     this.renderer.shadowMap.enabled = true;
-    // 骨骼辅助线
-    // 骨骼辅助线
-    this.skeletonHelper.visible = skeletonHelper;
   }
   // 处理标签渲染
   setSceneTagsRender() {

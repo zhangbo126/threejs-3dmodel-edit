@@ -269,7 +269,7 @@ const mapImageList = [
 	},
 	{
 		id: 94,
-		url: getAssetsFile('maps/11.jpg')
+		url: getAssetsFile('maps/11.png')
 
 	},
 	{

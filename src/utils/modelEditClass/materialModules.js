@@ -1,17 +1,17 @@
 /**
 	 * @describe 材质模块方法
-	 * @function getModelMeaterialList 获取当前模型材质
+	 * @function getModelMaterialList 获取当前模型材质
 	 * @function setModelPositionSize 设置模型定位缩放大小
 	 * @function getModelMaps 获取模型自带贴图
 	 * @function onSetModelMaterial 设置材质属性（网格,透明度，颜色，深度写入）
 	 * @function onSetModelMap 设置模型贴图（模型自带）
 	 * @function onSetSystemModelMap 设置模型贴图（系统贴图）
-	 * @function onChangeModelMeaterial 选择材质
+	 * @function onChangeModelMaterial 选择材质
 	 * @function onGetEditMeshList 获取最新材质信息列表
 	 * @function onChangeModelMeshType 切换材质类型
 	 * @function onSetGeometryMeshList 设置几何体模型材质
 	 * @function initModelMaterial 重置模型材质数据
-	 * @function onSetMeshVisibe 设置材质显隐
+	 * @function onSetMeshVisible 设置材质显隐
 	 */
 
 import * as THREE from 'three'
@@ -22,7 +22,7 @@ import { useMeshEditStore } from '@/store/meshEditStore'
 const store = useMeshEditStore()
 
 // 获取当前模型材质
-function getModelMeaterialList() {
+function getModelMaterialList() {
 	this.modelMaterialList = []
 	let i = 0;
 	this.model.traverse((v) => {
@@ -134,7 +134,7 @@ function onSetModelMaterial(config) {
 }
 
 // 修改材质显隐
-function onSetMeshVisibe(config) {
+function onSetMeshVisible(config) {
 	const mesh = this.scene.getObjectByProperty('uuid', config.uuid)
 	mesh.visible = config.visible
 }
@@ -153,7 +153,7 @@ function onSetModelMap({ mapId, meshName }) {
 
 // 设置模型贴图（系统贴图） 
 function onSetSystemModelMap({ id, url }) {
-	return new Promise((reslove) => {
+	return new Promise((resolve) => {
 		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		const texture = new THREE.TextureLoader().load(url)
@@ -170,13 +170,13 @@ function onSetSystemModelMap({ id, url }) {
 		// 设置当前材质来源唯一标记值key 用于预览处数据回填需要
 		mesh.meshFrom = id
 		texture.dispose()
-		reslove()
+		resolve()
 	})
 }
 
 // 设置模型贴图 (外部) 
 function onSetStorageModelMap(url, type) {
-	return new Promise(async (reslove) => {
+	return new Promise(async (resolve) => {
 		const uuid = store.selectMesh.uuid
 		const mesh = this.scene.getObjectByProperty('uuid', uuid)
 		// 根据 图片类型选择不同的加载器
@@ -199,12 +199,12 @@ function onSetStorageModelMap(url, type) {
 		newMaterial.map.magFilter = THREE.LinearFilter;
 		mesh.material = newMaterial
 		texture.dispose()
-		reslove()
+		resolve()
 	})
 
 }
 // 选择材质
-function onChangeModelMeaterial(name) {
+function onChangeModelMaterial(name) {
 	const mesh = this.model.getObjectByName(name)
 	this.outlinePass.selectedObjects = [mesh]
 	store.selectMeshAction(mesh)
@@ -226,6 +226,8 @@ function onMouseClickModel(event) {
 
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object
+		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
+		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
 		this.outlinePass.selectedObjects = [intersectedObject]
 		store.selectMeshAction(intersectedObject)
 		if (this.transformControls) {
@@ -341,19 +343,19 @@ function initModelMaterial() {
 
 
 export default {
-	getModelMeaterialList,
+	getModelMaterialList,
 	setModelPositionSize,
 	getModelMaps,
 	onSetModelMaterial,
 	onSetModelMap,
 	onSetSystemModelMap,
 	onSetStorageModelMap,
-	onChangeModelMeaterial,
+	onChangeModelMaterial,
 	onMouseClickModel,
 	onGetEditMeshList,
 	onChangeModelMeshType,
 	onSetGeometryMeshList,
-	onSetMeshVisibe,
+	onSetMeshVisible,
 	initModelMaterial,
 	setMaterialMeshParams
 }

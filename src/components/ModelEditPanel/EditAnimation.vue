@@ -7,8 +7,13 @@
     <!-- 动画列表 -->
     <div class="options" :class="optionDisabled">
       <el-scrollbar max-height="250px" v-if="state.modelAnimation.length">
-        <div class="option" :class="config.animationName == animation.name ? 'option-active' : ''"
-          @click="onChangeAnimationType(animation)" v-for="animation in state.modelAnimation" :key="animation.name">
+        <div
+          class="option"
+          :class="config.animationName == animation.name ? 'option-active' : ''"
+          @click="onChangeAnimationType(animation)"
+          v-for="animation in state.modelAnimation"
+          :key="animation.name"
+        >
           <el-space>
             <div class="icon-name">
               {{ animation.name }}
@@ -91,15 +96,14 @@
         </el-space>
       </div>
       <div class="option" :class="optionRotation">
-        <el-slider @input="onRotationAnimation" show-input v-model="config.rotationSpeed" :step="0.01" :min="1"
-          :max="10" />
+        <el-slider @input="onRotationAnimation" show-input v-model="config.rotationSpeed" :step="0.01" :min="1" :max="10" />
       </div>
     </div>
   </div>
 </template>
 <script setup>
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
-import { useMeshEditStore } from '@/store/meshEditStore'
+import { useMeshEditStore } from "@/store/meshEditStore";
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
@@ -110,7 +114,7 @@ const config = reactive({
   weight: 1, // 动作幅度
   rotationVisible: false, //轴动画开关
   rotationType: "y", // 轴类型
-  rotationSpeed: 1, // 旋转速度
+  rotationSpeed: 1 // 旋转速度
 });
 const optionDisabled = computed(() => {
   return config.visible ? "" : "disabled";
@@ -126,7 +130,7 @@ const state = reactive({
       return store.modelApi.modelAnimation;
     }
     return [];
-  }),
+  })
 });
 
 onMounted(() => {
@@ -134,10 +138,10 @@ onMounted(() => {
     config.animationName = state.modelAnimation[0].name;
   }
   // 监听模型变化
-  $bus.on("model-update", () => {
+  $bus.on("update-model", () => {
     if (state.modelAnimation.length) {
       const animationName = state.modelAnimation[0].name;
-      config.animationName = animationName
+      config.animationName = animationName;
     }
     // 重置动画数据
     Object.assign(config, {
@@ -147,7 +151,7 @@ onMounted(() => {
       weight: 1, // 动作幅度
       rotationVisible: false, //轴动画开关
       rotationType: "y", // 轴类型
-      rotationSpeed: 1, // 旋转速度
+      rotationSpeed: 1 // 旋转速度
     });
   });
 });
@@ -181,7 +185,7 @@ const onRotationType = () => {
 };
 
 defineExpose({
-  config,
+  config
 });
 </script>
 <style scoped lang="scss"></style>

@@ -13,9 +13,7 @@
           </el-icon>
           <span> 模型轴旋转 </span>
         </el-space>
-        <el-button type="primary" link icon="Refresh" @click="onResultRotate">
-          重置
-        </el-button>
+        <el-button type="primary" link icon="Refresh" @click="onResultRotate"> 重置 </el-button>
       </div>
       <div class="option">
         <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
@@ -40,9 +38,7 @@
           </el-icon>
           <span> 模型位置 </span>
         </el-space>
-        <el-button type="primary" link icon="Refresh" @click="onResultPosition">
-          重置
-        </el-button>
+        <el-button type="primary" link icon="Refresh" @click="onResultPosition"> 重置 </el-button>
       </div>
       <div class="option">
         <div class="grid-txt">
@@ -67,16 +63,6 @@
         <div class="grid-silder">
           <el-slider @input="onSetPosition" show-input v-model="config.positionZ" :min="-10" :max="10" :step="0.1" />
         </div>
-      </div>
-      <!-- 模型骨架 -->
-      <div class="option space-between">
-        <el-space>
-          <el-icon>
-            <Eleme />
-          </el-icon>
-          <span> 模型骨架 </span>
-        </el-space>
-        <el-switch v-model="config.skeletonHelper" @change="onSetModelHelper" />
       </div>
     </div>
     <!-- 网格辅助线 -->
@@ -127,16 +113,20 @@
         </div>
         <div>
           <el-button type="primary" link>分割数</el-button>
-          <el-input-number :controls="true" @change="onChangeGridHelperSize" v-model="config.divisions" :min="1"
-            :max="40" />
+          <el-input-number :controls="true" @change="onChangeGridHelperSize" v-model="config.divisions" :min="1" :max="40" />
         </div>
       </div>
       <!-- 网格颜色 -->
       <div class="option">
         <el-space>
           <el-button type="primary" link>网格颜色</el-button>
-          <el-color-picker color-format="hex" :predefine="predefineColors" @change="onChangeGridHelper"
-            @active-change="activeChangeColor" v-model="config.color" />
+          <el-color-picker
+            color-format="hex"
+            :predefine="predefineColors"
+            @change="onChangeGridHelper"
+            @active-change="activeChangeColor"
+            v-model="config.color"
+          />
         </el-space>
       </div>
     </div>
@@ -166,12 +156,11 @@
 <script setup>
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { PREDEFINE_COLORS } from "@/config/constant";
-import { useMeshEditStore } from '@/store/meshEditStore'
+import { useMeshEditStore } from "@/store/meshEditStore";
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   visible: true,
-  skeletonHelper: false,
   gridHelper: false,
   x: 0,
   y: -0.59,
@@ -183,8 +172,7 @@ const config = reactive({
   size: 6,
   color: "rgb(193,193,193)",
   axesHelper: false,
-  axesSize: 1.8,
-
+  axesSize: 1.8
 });
 const predefineColors = PREDEFINE_COLORS;
 const optionDisabled = computed(() => {
@@ -200,11 +188,10 @@ const axesDisabled = computed(() => {
 });
 
 onMounted(() => {
-  $bus.on("model-update", () => {
+  $bus.on("update-model", () => {
     // 重置动画数据
     Object.assign(config, {
       visible: true,
-      skeletonHelper: false,
       gridHelper: false,
       x: 0,
       y: -0.59,
@@ -216,17 +203,18 @@ onMounted(() => {
       size: 6,
       color: "rgb(193,193,193)",
       axesHelper: false,
-      axesSize: 1.8,
+      axesSize: 1.8
     });
   });
 });
-const onChangeAttributeSwitch = () => { };
+const onChangeAttributeSwitch = () => {};
 // 设置模型轴角度
 const onSetRotateOnAxis = (type, direction) => {
   const flag = direction == "right" ? true : false;
-  store.modelApi.onSetModelRotateOnAxis(type, flag)
+  store.modelApi.onSetModelRotateOnAxis(type, flag);
 };
-// 重置模型角度
+
+// 重置模型轴位置
 const onResultRotate = () => {
   store.modelApi.onResultModelRotateOnAxis();
 };
@@ -243,10 +231,7 @@ const onResultPosition = () => {
   store.modelApi.onResultModelPosition(config);
 };
 
-const onSetModelHelper = () => {
-  store.modelApi.onSetModelHelper(config.skeletonHelper);
-};
-const activeChangeColor = (color) => {
+const activeChangeColor = color => {
   config.color = color;
   store.modelApi.onSetModelGridHelper(config);
 };
@@ -263,21 +248,20 @@ const onChangeGridHelperSize = () => {
 const onChangeAxesHelper = () => {
   store.modelApi.onSetModelAxesHelper(config);
 };
-const getAttrbuteConfig = () => {
-  const { x, y, z } = store.modelApi.model.rotation
-  let rotationX = x
-  let rotationY = y
-  let rotationZ = z
+const getAttributeConfig = () => {
+  const { x, y, z } = store.modelApi.model.rotation;
+  let rotationX = x;
+  let rotationY = y;
+  let rotationZ = z;
   return {
     ...config,
     rotationX,
     rotationY,
-    rotationZ,
-
-  }
-}
+    rotationZ
+  };
+};
 defineExpose({
-  getAttrbuteConfig
+  getAttributeConfig
 });
 </script>
 

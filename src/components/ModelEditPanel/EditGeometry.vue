@@ -7,8 +7,13 @@
       <!-- 材质列表 -->
       <div class="options">
         <el-scrollbar max-height="300px">
-          <div class="option" :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
-            @click="onChangeMaterialType(mesh)" v-for="mesh in state.modelMaterialList" :key="mesh.uuid">
+          <div
+            class="option"
+            :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
+            @click="onChangeMaterialType(mesh)"
+            v-for="mesh in state.modelMaterialList"
+            :key="mesh.uuid"
+          >
             <div class="icon-name">
               {{ mesh.name }}
             </div>
@@ -36,13 +41,23 @@
             <el-button type="primary" link>{{ key }} </el-button>
           </div>
           <div class="grid-silder">
-            <el-slider show-input v-if="typeof activeGeometry[key] == 'number'" v-model="activeGeometry[key]"
-              :min="inputRange(key).min" :max="inputRange(key).max" :step="inputRange(key).step" @input="onSetGeometry" />
+            <el-slider
+              show-input
+              v-if="typeof activeGeometry[key] == 'number'"
+              v-model="activeGeometry[key]"
+              :min="inputRange(key).min"
+              :max="inputRange(key).max"
+              :step="inputRange(key).step"
+              @input="onSetGeometry"
+            />
             <div v-else-if="typeof activeGeometry[key] == 'string'">
               {{ activeGeometry[key] }}
             </div>
-            <el-switch @change="onSetGeometry" v-else-if="typeof activeGeometry[key] == 'boolean'"
-              v-model="activeGeometry[key]" />
+            <el-switch
+              @change="onSetGeometry"
+              v-else-if="typeof activeGeometry[key] == 'boolean'"
+              v-model="activeGeometry[key]"
+            />
           </div>
         </div>
       </div>
@@ -51,36 +66,36 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive,computed, watch} from "vue";
-import { useMeshEditStore } from '@/store/meshEditStore'
+import { ref, reactive, computed, watch } from "vue";
+import { useMeshEditStore } from "@/store/meshEditStore";
 import { ElMessage } from "element-plus";
 
 const store = useMeshEditStore();
 const config = reactive({
-  meaterialName: null,
-  type: null,
+  materialName: null,
+  type: null
 });
 
 const activeGeometry = ref(null);
 const geometryConfigList = ref([]);
 
 const disabled = computed(() => {
-  const geometrylen = state.modelMaterialList.filter((v) => v.userData.geometry);
-  return geometrylen == 0 ? false : true;
+  const geometryLen = state.modelMaterialList.filter(v => v.userData.geometry);
+  return geometryLen == 0 ? false : true;
 });
 
 const state = reactive({
   modelMaterialList: computed(() => store.modelApi.modelMaterialList),
-  selectMeshUuid: computed(() => store.selectMeshUuid),
+  selectMeshUuid: computed(() => store.selectMeshUuid)
 });
 watch(
   () => store.selectMeshUuid,
-  (val) => {
-    const { geometry } = state.modelMaterialList.find((v) => v.uuid == val) || {};
+  val => {
+    const { geometry } = state.modelMaterialList.find(v => v.uuid == val) || {};
     if (geometry) {
       const { type } = geometry;
       activeGeometry.value = {
-        ...geometry.parameters,
+        ...geometry.parameters
       };
       config.type = type;
       geometryConfigList.value = Object.keys(activeGeometry.value);
@@ -92,8 +107,8 @@ watch(
 
 // 选择材质
 const onChangeMaterialType = ({ name, material, geometry }) => {
-  config.meaterialName = material.name;
-  store.modelApi.onChangeModelMeaterial(name);
+  config.materialName = material.name;
+  store.modelApi.onChangeModelMaterial(name);
 };
 
 //修改材质信息
@@ -102,17 +117,17 @@ const onSetGeometry = () => {
 };
 
 // 删除材质
-const onDeleteGeometry = (uuid) => {
+const onDeleteGeometry = uuid => {
   store.modelApi.onDeleteGeometryMesh(uuid);
-  store.selectMeshAction({})
+  store.selectMeshAction({});
   ElMessage.success("删除成功");
 };
 
-const inputRange = (key) => {
+const inputRange = key => {
   let range = {
     min: 1,
     max: 80,
-    step: 0.01,
+    step: 0.01
   };
   if (
     [
@@ -128,24 +143,22 @@ const inputRange = (key) => {
       "outerRadius",
       "arc",
       "tube",
-      "p",
+      "p"
     ].includes(key)
   ) {
     range = {
       min: 0.1,
       max: 10,
-      step: 0.01,
+      step: 0.01
     };
   }
   if (
-    ["detail", 'capSegments', 'radialSegments', "thetaStart", "depthSegments", "widthSegments", "heightSegments"].includes(
-      key
-    )
+    ["detail", "capSegments", "radialSegments", "thetaStart", "depthSegments", "widthSegments", "heightSegments"].includes(key)
   ) {
     range = {
       min: 0,
       max: 10,
-      step: 1,
+      step: 1
     };
   }
   return range;

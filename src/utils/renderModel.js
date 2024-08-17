@@ -35,8 +35,8 @@ class renderModel {
 		this.model
 		// 几何体模型数组
 		this.geometryGroup = new THREE.Group()
-		// 几何体模型
-		this.geometryModel
+		// 多模型数组
+		this.manyModelGroup = new THREE.Group()
 		// 加载进度监听
 		this.loadingManager = new THREE.LoadingManager()
 		//文件加载器类型
@@ -51,7 +51,7 @@ class renderModel {
 		this.modelAnimation
 		//模型动画对象
 		this.animationMixer
-		this.animationColock = new THREE.Clock()
+		this.animationClock = new THREE.Clock()
 		//动画帧
 		this.animationFrame = null
 		// 轴动画帧
@@ -64,8 +64,7 @@ class renderModel {
 			LoopRepeat: THREE.LoopRepeat,
 			LoopPingPong: THREE.LoopPingPong
 		}
-		// 模型骨架
-		this.skeletonHelper
+
 		// 网格辅助线
 		this.gridHelper
 		// 坐标轴辅助线
@@ -131,11 +130,13 @@ class renderModel {
 		this.dragTag = {}
 		//当前标签列表
 		this.dragTagList = []
+		// 当前拖拽模型信息
+		this.activeDragManyModel = {}
 	}
 
 
 	init() {
-		return new Promise(async (reslove, reject) => {
+		return new Promise(async (resolve, reject) => {
 			//初始化渲染器
 			this.initRender()
 			//初始化相机
@@ -148,16 +149,15 @@ class renderModel {
 			this.createHelper()
 			// 创建灯光
 			this.createLight()
-			this.addEvenListMouseLisatener()
+			this.addEvenListMouseListener()
 			// 添加物体模型 TODO：初始化时需要默认一个
-			// https://images.wanjunshijie.com/demo/threeDemo2/glb/city.glb
 			//  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
 			const load = await this.setModel({ filePath: 'threeFile/glb/glb-9.glb', fileType: 'glb', decomposeName: 'transformers_3' })
 			// 创建效果合成器
 			this.createEffectComposer()
 			//场景渲染
 			this.sceneAnimation()
-			reslove(load)
+			resolve(load)
 		})
 	}
 	// 创建场景
@@ -246,7 +246,7 @@ class renderModel {
 		}
 	}
 	// 监听事件
-	addEvenListMouseLisatener() {
+	addEvenListMouseListener() {
 		//监听场景大小改变，跳转渲染尺寸
 		this.onWindowResizesListener = this.onWindowResizes.bind(this)
 		window.addEventListener("resize", this.onWindowResizesListener)
@@ -268,14 +268,12 @@ class renderModel {
 		this.css3dControls.enableDamping = true;
 		this.css3dControls.target.set(0, 0, 0);
 		this.css3dControls.update()
-
-
 	}
 	// 加载模型
 	setModel({ filePath, fileType, decomposeName }) {
 		return new Promise((resolve, reject) => {
 			this.loadingStatus = false
-			const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
+			// const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
 			let loader
 			if (['glb', 'gltf'].includes(fileType)) {
 				const dracoLoader = new DRACOLoader()
@@ -290,19 +288,16 @@ class renderModel {
 				switch (fileType) {
 					case 'glb':
 						this.model = result.scene
-						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
+
 						break;
 					case 'fbx':
 						this.model = result
-						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'gltf':
 						this.model = result.scene
-						this.skeletonHelper = new THREE.SkeletonHelper(result.scene)
 						break;
 					case 'obj':
 						this.model = result
-						this.skeletonHelper = new THREE.SkeletonHelper(result)
 						break;
 					case 'stl':
 						const material = new THREE.MeshStandardMaterial();
@@ -313,10 +308,9 @@ class renderModel {
 						break;
 				}
 				this.model.decomposeName = decomposeName
-				this.getModelMeaterialList()
+				this.getModelMaterialList()
 				this.setModelPositionSize()
-				this.skeletonHelper.visible = false
-				this.scene.add(this.skeletonHelper)
+
 				// 需要辉光的材质
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.scene.add(this.model)
@@ -375,7 +369,7 @@ class renderModel {
 	}
 	// 加载几何体模型
 	setGeometryModel(model) {
-		return new Promise((reslove, reject) => {
+		return new Promise((resolve, reject) => {
 			const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
 			// 计算鼠标在屏幕上的坐标
 			this.mouse.x = ((model.clientX - offsetLeft) / clientWidth) * 2 - 1
@@ -386,8 +380,8 @@ class renderModel {
 				// 在控制台输出鼠标在场景中的位置
 				const { type } = model
 				// 不需要赋值的key
-				const notGeometrykey = ['id', 'name', 'modelType', 'type']
-				const geometryData = Object.keys(model).filter(key => !notGeometrykey.includes(key)).map(v => model[v])
+				const notGeometryKey = ['id', 'name', 'modelType', 'type']
+				const geometryData = Object.keys(model).filter(key => !notGeometryKey.includes(key)).map(v => model[v])
 				// 创建几何体
 				const geometry = new THREE[type](...geometryData)
 				const colors = ['#FF4500', '#90EE90', '#00CED1', '#1E90FF', '#C71585', '#FF4500', '#FAD400', '#1F93FF', '#90F090', '#C71585']
@@ -410,8 +404,7 @@ class renderModel {
 				this.geometryGroup.add(mesh)
 				this.model = this.geometryGroup
 				this.onSetGeometryMeshList(mesh)
-				this.skeletonHelper.visible = false
-				this.skeletonHelper.dispose()
+
 				this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 				this.setModelMeshDrag({ transformType: true })
 				this.scene.add(this.model)
@@ -420,7 +413,7 @@ class renderModel {
 				const size = box.getSize(new THREE.Vector3());
 				this.controls.maxDistance = size.length() * 10
 				this.loadingStatus = true
-				reslove(true)
+				resolve(true)
 			} else {
 				ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
 			}
@@ -428,6 +421,7 @@ class renderModel {
 		})
 
 	}
+
 	// 模型加载进度条回调函数
 	onProgress(callback) {
 		if (typeof callback == 'function') {
@@ -565,28 +559,27 @@ class renderModel {
 	}
 	// 切换模型
 	onSwitchModel(model) {
-		return new Promise(async (reslove, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
 				// 加载几何模型
 				if (model.modelType && model.modelType == 'geometry') {
-					// 重置"灯光"模块数据
 					this.modelAnimation = []
 					this.camera.fov = 80
 					this.camera.updateProjectionMatrix()
 					const load = await this.setGeometryModel(model)
 					this.outlinePass.renderScene = this.geometryGroup
-					reslove()
+					resolve()
 				} else {
 					this.clearSceneModel()
 					// 重置"灯光"模块数据
-					this.onResettingLight({ ambientLight: true })
+					// this.onResettingLight({ ambientLight: true })
 					this.camera.fov = 50
 					this.geometryGroup.clear()
 					// 加载模型
 					const load = await this.setModel(model)
 					this.outlinePass.renderScene = this.model
 					// 模型加载成功返回 true
-					reslove({ load, filePath: model.filePath })
+					resolve({ load, filePath: model.filePath })
 				}
 			} catch {
 				reject()
@@ -613,11 +606,9 @@ class renderModel {
 		}
 
 		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
-
-
 	}
 	// 下载场景封面
-	onDownloadScenCover() {
+	onDownloadSceneCover() {
 		var link = document.createElement('a');
 		var canvas = this.renderer.domElement;
 		link.href = canvas.toDataURL("image/png");
@@ -698,15 +689,13 @@ class renderModel {
 		this.controls = null
 		// 模型
 		this.model = null
-		//几何体模型
-		this.geometryModel = null
 		//文件加载器类型
 		this.fileLoaderMap = null
 		//模型动画列表
 		this.modelAnimation = null
 		//模型动画对象
 		this.animationMixer = null
-		this.animationColock = null
+		this.animationClock = null
 		//动画帧
 		this.animationFrame = null
 		// 轴动画帧
@@ -715,8 +704,7 @@ class renderModel {
 		this.animateClipAction = null
 		// 动画循环方式枚举
 		this.loopMap = null
-		// 模型骨架
-		this.skeletonHelper = null
+
 		// 网格辅助线
 		this.gridHelper = null
 		// 坐标轴辅助线
@@ -766,32 +754,45 @@ class renderModel {
 		this.transformControls = null
 		this.dragGeometryModel = null
 		this.glowUnrealBloomPass = false
-
-
+		// 3d文字渲染器
+		this.css3DRenderer = null
+		// 3d文字控制器
+		this.css3dControls = null
+		// 当前拖拽标签信息
+		this.dragTag = {}
+		//当前标签列表
+		this.dragTagList = []
+		// 当前拖拽模型信息
+		this.activeDragManyModel = {}
 	}
-
-
-	/**
-	 * @describe 左侧面板操作方法
-	 * @function clearSceneModel 清除场景模型数据
-	 * @function setDragGeometryModel 设置当前被拖拽的几何模型
-	 */
 
 	// 清除场景模型数据
 	clearSceneModel() {
 		//先移除模型 材质释放内存
 		this.scene.traverse((v) => {
-			if (v.type === 'Mesh') {
+			if (['Mesh'].includes(v.type)) {
 				v.geometry.dispose();
 				v.material.dispose();
 			}
 		})
 		this.dragGeometryModel = {}
+		this.activeDragManyModel = {}
+		this.geometryGroup.clear()
+		this.scene.remove(this.geometryGroup)
+		this.manyModelGroup.clear()
+		this.scene.remove(this.manyModelGroup)
+
+		// 移除添加的多模型
+		const removeModelList = this.scene.children.filter(v => v.userData.type == 'manyModel')
+		removeModelList.forEach(v => {
+			this.scene.remove(v)
+		})
+		this.scene.remove(this.model)
+		this.model = null
 		//取消动画帧
 		cancelAnimationFrame(this.animationFrame)
 		cancelAnimationFrame(this.rotationAnimationFrame)
-		this.scene.remove(this.model)
-		this.model = null
+
 		this.glowUnrealBloomPass = false
 		this.glowMaterialList = []
 		this.modelMaterialList = []
@@ -811,8 +812,6 @@ class renderModel {
 			this.effectComposer.removePass(this.shaderPass)
 		}
 
-
-
 		this.renderer.toneMappingExposure = 2
 		this.outlinePass.selectedObjects = []
 		Object.assign(this.unrealBloomPass, {
@@ -821,8 +820,7 @@ class renderModel {
 			radius: 0,
 		})
 		this.shaderPass.material.uniforms.glowColor.value = new THREE.Color()
-		// 重置"辅助线/轴配置"模块数据
-		this.skeletonHelper.visible = false
+
 		const config = {
 			gridHelper: false,
 			x: 0,
@@ -848,9 +846,102 @@ class renderModel {
 	setDragGeometryModel(model) {
 		this.dragGeometryModel = model
 	}
+	// 设置当前被拖拽的多模型
+	setDragManyModel(model) {
+		this.activeDragManyModel = model
+	}
+	// 加载多模型
+	onLoadManyModel(model) {
+		return new Promise((resolve, reject) => {
+			const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container
+			const { filePath, fileType, name } = model
+			// 计算鼠标在屏幕上的坐标
+			this.mouse.x = ((model.clientX - offsetLeft) / clientWidth) * 2 - 1
+			this.mouse.y = -((model.clientY - offsetTop) / clientHeight) * 2 + 1
+			this.raycaster.setFromCamera(this.mouse, this.camera);
+			const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+			if (intersects.length > 0) {
+				this.loadingStatus = false
+				let loader
+				if (['glb', 'gltf'].includes(fileType)) {
+					const dracoLoader = new DRACOLoader()
+					dracoLoader.setDecoderPath(`draco/gltf/`)
+					dracoLoader.setDecoderConfig({ type: 'js' })
+					dracoLoader.preload()
+					loader = new GLTFLoader().setDRACOLoader(dracoLoader)
+				} else {
+					loader = this.fileLoaderMap[fileType]
+				}
+				let manyModel
+				loader.load(filePath, (result) => {
+					switch (fileType) {
+						case 'glb':
+							manyModel = result.scene
+							break;
+						case 'fbx':
+							manyModel = result
+							break;
+						case 'gltf':
+							manyModel = result.scene
+							break;
+						case 'obj':
+							manyModel = result
+							break;
+						case 'stl':
+							const material = new THREE.MeshStandardMaterial();
+							const mesh = new THREE.Mesh(result, material);
+							manyModel = mesh
+							break;
+						default:
+							break;
+					}
+					// 设置模型位置
+					const { x, y, z } = intersects[0].point
+					manyModel.position.set(x, y, z)
+					const box = new THREE.Box3().setFromObject(manyModel);
+					const size = box.getSize(new THREE.Vector3());
+					const maxSize = Math.max(size.x, size.y, size.z);
+					const targetSize = 1.2;
+					const scale = targetSize / (maxSize > 1 ? maxSize : .5);
+					manyModel.scale.set(scale, scale, scale)
+					manyModel.name = name
+					manyModel.userData = {
+						type: 'manyModel',
+						...manyModel.userData
+					}
+					this.manyModelGroup.add(manyModel)
+					this.model = this.manyModelGroup
+					this.outlinePass.renderScene = this.model
+					this.getModelMaterialList()
+					// 需要辉光的材质
+					this.glowMaterialList = this.modelMaterialList.map(v => v.name)
+					this.scene.add(this.model)
+					this.loadingStatus = true
+					resolve({ load: true })
 
+				}, (xhr) => {
+					this.modelProgressCallback(xhr.loaded)
+				}, (err) => {
+					ElMessage.error(err)
+					reject()
+				})
+			}
+			else {
+				reject()
+				ElMessage.warning('当前角度无法获取鼠标位置请调整“相机角度”在添加')
+			}
+		})
+	}
+	// 选择多模型切换
+	chooseManyModel(uuid) {
+		const chooseModel = this.scene.children.find(v => v.uuid == uuid)
+		// 设置当前编辑模型
+		this.model = chooseModel
+		this.outlinePass.renderScene = this.model
+		// 更新当前编辑的模型材质列表
+		this.getModelMaterialList()
 
-
+	}
 }
 
 Object.assign(renderModel.prototype, {
