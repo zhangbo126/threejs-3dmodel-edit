@@ -188,7 +188,7 @@ const axesDisabled = computed(() => {
 });
 
 onMounted(() => {
-  $bus.on("model-update", () => {
+  $bus.on("update-model", () => {
     // 重置动画数据
     Object.assign(config, {
       visible: true,
@@ -213,7 +213,8 @@ const onSetRotateOnAxis = (type, direction) => {
   const flag = direction == "right" ? true : false;
   store.modelApi.onSetModelRotateOnAxis(type, flag);
 };
-// 重置模型角度
+
+// 重置模型轴位置
 const onResultRotate = () => {
   store.modelApi.onResultModelRotateOnAxis();
 };
@@ -247,7 +248,7 @@ const onChangeGridHelperSize = () => {
 const onChangeAxesHelper = () => {
   store.modelApi.onSetModelAxesHelper(config);
 };
-const getAttrbuteConfig = () => {
+const getAttributeConfig = () => {
   const { x, y, z } = store.modelApi.model.rotation;
   let rotationX = x;
   let rotationY = y;
@@ -260,7 +261,7 @@ const getAttrbuteConfig = () => {
   };
 };
 defineExpose({
-  getAttrbuteConfig
+  getAttributeConfig
 });
 </script>
 

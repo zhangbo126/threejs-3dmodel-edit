@@ -51,7 +51,7 @@ class renderModel {
 		this.modelAnimation
 		//模型动画对象
 		this.animationMixer
-		this.animationColock = new THREE.Clock()
+		this.animationClock = new THREE.Clock()
 		//动画帧
 		this.animationFrame = null
 		// 轴动画帧
@@ -608,7 +608,7 @@ class renderModel {
 		if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight)
 	}
 	// 下载场景封面
-	onDownloadScenCover() {
+	onDownloadSceneCover() {
 		var link = document.createElement('a');
 		var canvas = this.renderer.domElement;
 		link.href = canvas.toDataURL("image/png");
@@ -695,7 +695,7 @@ class renderModel {
 		this.modelAnimation = null
 		//模型动画对象
 		this.animationMixer = null
-		this.animationColock = null
+		this.animationClock = null
 		//动画帧
 		this.animationFrame = null
 		// 轴动画帧

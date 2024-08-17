@@ -2,9 +2,7 @@
   <div class="edit-box">
     <div class="header">
       <span>后期处理</span>
-      <el-button type="primary" icon="Refresh" @click="onInitialize">
-        重置
-      </el-button>
+      <el-button type="primary" icon="Refresh" @click="onInitialize"> 重置 </el-button>
     </div>
     <!-- 辉光 -->
     <div class="options">
@@ -31,8 +29,13 @@
           <el-button type="primary" link>颜色</el-button>
         </div>
         <div class="grid-silder">
-          <el-color-picker color-format="hex" :predefine="PREDEFINE_COLORS" @change="onChangeColor"
-            @active-change="activeChangeColor" v-model="config.color" />
+          <el-color-picker
+            color-format="hex"
+            :predefine="PREDEFINE_COLORS"
+            @change="onChangeColor"
+            @active-change="activeChangeColor"
+            v-model="config.color"
+          />
         </div>
       </div>
       <div class="option">
@@ -70,8 +73,7 @@
           <span> 色调曝光度 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.toneMappingExposure" @input="onChangeFlow" :step="0.01" :min="0.5"
-            :max="10" />
+          <el-slider show-input v-model="config.toneMappingExposure" @input="onChangeFlow" :step="0.01" :min="0.5" :max="10" />
         </div>
       </div>
     </div>
@@ -95,8 +97,7 @@
           <span> 模型分解 </span>
         </el-space>
         <div class="grid-silder">
-          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0"
-            :max="800" />
+          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
         </div>
       </div>
       <div class="option" :class="moveDisable">
@@ -124,7 +125,7 @@
 </template>
 <script setup>
 import { reactive, computed, getCurrentInstance, onMounted } from "vue";
-import { useMeshEditStore } from '@/store/meshEditStore'
+import { useMeshEditStore } from "@/store/meshEditStore";
 import { PREDEFINE_COLORS } from "@/config/constant";
 
 const store = useMeshEditStore();
@@ -137,18 +138,17 @@ const optionsDisable = computed(() => {
 
 const decomposeDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
-  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
-  return (decomposeMesh.length <= 1) || decomposeMesh.length != modelMaterialList.length || config.manageFlage ? "disabled" : "";
+  const decomposeMesh = modelMaterialList.filter(v => v.type == "Mesh");
+  return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length || config.manageFlage ? "disabled" : "";
 });
 const moveDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
-  const decomposeMesh = modelMaterialList.filter((v) => v.type == "Mesh");
+  const decomposeMesh = modelMaterialList.filter(v => v.type == "Mesh");
   return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length ? "disabled" : "";
 });
 const manageDisable = computed(() => {
   return config.manageFlage ? "" : "disabled";
 });
-
 
 const config = reactive({
   glow: false,
@@ -156,23 +156,23 @@ const config = reactive({
   strength: 0.6,
   radius: 1,
   decompose: 0,
-  transformType: 'translate',
+  transformType: "translate",
   manageFlage: false,
   manageFlage: false,
   toneMappingExposure: 2,
-  color: ''
+  color: ""
 });
 onMounted(() => {
-  $bus.on("model-update", () => {
+  $bus.on("update-model", () => {
     Object.assign(config, {
       glow: false,
       threshold: 0.05,
       strength: 0.6,
       radius: 1,
       decompose: 0,
-      transformType: 'translate',
+      transformType: "translate",
       manageFlage: false,
-      toneMappingExposure: 2,
+      toneMappingExposure: 2
     });
   });
 });
@@ -180,8 +180,8 @@ onMounted(() => {
 const onChangeColor = () => {
   store.modelApi.onSetFlowColor(config.color);
 };
-const activeChangeColor = (color) => {
-  config.color = color
+const activeChangeColor = color => {
+  config.color = color;
   store.modelApi.onSetFlowColor(config.color);
 };
 const onChangeFlow = () => {
@@ -194,10 +194,9 @@ const onChangeStage = () => {
   config.decompose = 0;
   store.modelApi.setModelMeshDrag(config);
 };
-const onChangeTransform = (type) => {
+const onChangeTransform = type => {
   store.modelApi.setTransformControlsType(type);
 };
-
 
 const onInitialize = () => {
   Object.assign(config, {
@@ -206,21 +205,21 @@ const onInitialize = () => {
     strength: 0.6,
     radius: 1,
     decompose: 0,
-    transformType: 'translate',
+    transformType: "translate",
     manageFlage: false,
-    toneMappingExposure: 2,
+    toneMappingExposure: 2
   });
-  store.modelApi.initStageFlow()
-}
+  store.modelApi.initStageFlow();
+};
 
 const getStageConfig = () => {
   return {
     meshPositonList: store.modelApi.getMeshDragPosition(),
-    ...config,
+    ...config
   };
 };
 defineExpose({
-  getStageConfig,
+  getStageConfig
 });
 </script>
 <style lang="scss" scoped></style>

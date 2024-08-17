@@ -53,7 +53,7 @@ class renderModel {
     this.modelAnimation;
     //模型动画对象
     this.animationMixer;
-    this.animationColock = new THREE.Clock();
+    this.animationClock = new THREE.Clock();
     // 动画帧
     this.animationFrame;
     // 轴动画帧
@@ -346,7 +346,7 @@ class renderModel {
               break;
             case "obj":
               this.model = result;
-             
+
               break;
             case "stl":
               const material = new THREE.MeshStandardMaterial();
@@ -445,7 +445,7 @@ class renderModel {
     this.modelAnimation = null;
     //模型动画对象
     this.animationMixer = null;
-    this.animationColock = null;
+    this.animationClock = null;
     // 动画帧
     this.animationFrame = null;
     // 轴动画帧
@@ -454,7 +454,7 @@ class renderModel {
     this.animateClipAction = null;
     // 动画循环方式枚举
     this.loopMap = null;
- 
+
     // 网格辅助线
     this.gridHelper = null;
     // 坐标轴辅助线
@@ -758,7 +758,7 @@ class renderModel {
   animationFrameFun() {
     this.animationFrame = requestAnimationFrame(() => this.animationFrameFun());
     if (this.animationMixer) {
-      this.animationMixer.update(this.animationColock.getDelta());
+      this.animationMixer.update(this.animationClock.getDelta());
     }
   }
   // 轴动画帧
@@ -807,7 +807,6 @@ class renderModel {
     this.model.rotation.set(rotationX, rotationY, rotationZ);
     // 开启阴影
     this.renderer.shadowMap.enabled = true;
-
   }
   // 处理标签渲染
   setSceneTagsRender() {

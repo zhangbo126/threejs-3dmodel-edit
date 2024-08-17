@@ -186,7 +186,7 @@ const state = reactive({
 });
 
 onMounted(() => {
-  $bus.on("model-update", () => {
+  $bus.on("update-model", () => {
     // 重置动画数据
     Object.assign(config, {
       color: null,

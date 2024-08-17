@@ -22,8 +22,8 @@
             v-for="tag in tagList"
             :key="tag.name"
             :span="4"
-            @dragstart="(e) => onDragstart(e, tag)"
-            @drag="(e) => onDrag(e)"
+            @dragstart="e => onDragstart(e, tag)"
+            @drag="e => onDrag(e)"
           >
             <div class="tag-box">
               <div class="icon">
@@ -78,14 +78,7 @@
           <el-button type="primary" link>容器高度</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.height"
-            :min="1"
-            :max="500"
-            :step="1"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.height" :min="1" :max="500" :step="1" />
         </div>
       </div>
       <div class="option">
@@ -93,14 +86,7 @@
           <el-button type="primary" link>容器宽度</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.width"
-            :min="1"
-            :max="500"
-            :step="1"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.width" :min="1" :max="500" :step="1" />
         </div>
       </div>
       <div class="option">
@@ -108,14 +94,7 @@
           <el-button type="primary" link>字体大小</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.fontSize"
-            :min="1"
-            :max="50"
-            :step="0.1"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.fontSize" :min="1" :max="50" :step="0.1" />
         </div>
       </div>
       <div class="option">
@@ -123,14 +102,7 @@
           <el-button type="primary" link>标签坐标X</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.positionX"
-            :min="-50"
-            :max="50"
-            :step="0.01"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.positionX" :min="-50" :max="50" :step="0.01" />
         </div>
       </div>
       <div class="option">
@@ -138,14 +110,7 @@
           <el-button type="primary" link>标签坐标Y</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.positionY"
-            :min="-50"
-            :max="50"
-            :step="0.1"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.positionY" :min="-50" :max="50" :step="0.1" />
         </div>
       </div>
       <div class="option">
@@ -153,14 +118,7 @@
           <el-button type="primary" link>标签坐标Z</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.positionZ"
-            :min="-50"
-            :max="50"
-            :step="0.1"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.positionZ" :min="-50" :max="50" :step="0.1" />
         </div>
       </div>
       <div class="option">
@@ -190,12 +148,7 @@
           <el-button type="primary" link>字体颜色</el-button>
         </div>
         <div class="grid-silder">
-          <el-color-picker
-            color-format="hex"
-            :predefine="predefineColors"
-            @change="onChangeTagValue"
-            v-model="activeTag.color"
-          />
+          <el-color-picker color-format="hex" :predefine="predefineColors" @change="onChangeTagValue" v-model="activeTag.color" />
         </div>
       </div>
       <div class="option">
@@ -203,14 +156,7 @@
           <el-button type="primary" link>图标大小</el-button>
         </div>
         <div class="grid-silder">
-          <el-slider
-            @input="onChangeTagValue"
-            show-input
-            v-model="activeTag.iconSize"
-            :min="1"
-            :max="50"
-            :step="0.1"
-          />
+          <el-slider @input="onChangeTagValue" show-input v-model="activeTag.iconSize" :min="1" :max="50" :step="0.1" />
         </div>
       </div>
       <div class="option" :style="{ height: 'auto' }">
@@ -239,7 +185,7 @@ const store = useMeshEditStore();
 
 const predefineColors = PREDEFINE_COLORS;
 const config = reactive({
-  dragTagList: computed(() => store.modelApi.dragTagList),
+  dragTagList: computed(() => store.modelApi.dragTagList)
 });
 
 const tagList = computed(() => {
@@ -258,7 +204,7 @@ const onDragstart = (e, tag) => {
   store.changeDragType("tags");
 };
 // 拖拽中
-const onDrag = (event) => {
+const onDrag = event => {
   event.preventDefault();
 };
 
@@ -269,11 +215,11 @@ const onInitialize = () => {
 };
 
 //选择标签
-const onChooseTag = (tag) => {
+const onChooseTag = tag => {
   Object.assign(activeTag, { ...tag });
 };
 // 删除标签
-const onDeleteTag = (uuid) => {
+const onDeleteTag = uuid => {
   store.modelApi.deleteTag(uuid);
   activeTag.uuid = null;
 };

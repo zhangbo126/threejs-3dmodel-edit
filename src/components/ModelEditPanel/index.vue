@@ -55,7 +55,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, getCurrentInstance, onMounted } from "vue";
 import EditBackground from "./EditBackground.vue";
 import EditMaterial from "./EditMaterial.vue";
 import EditAnimation from "./EditAnimation.vue";
@@ -65,6 +65,7 @@ import EditLaterStage from "./EditLaterStage.vue";
 import EditGeometry from "./EditGeometry.vue";
 import EditMoreModel from "./EditMoreModel.vue";
 import EditTags from "./EditTags.vue";
+const { $bus } = getCurrentInstance().proxy;
 
 const panelTabs = [
   {
@@ -125,13 +126,19 @@ const geometry = ref(null);
 const tags = ref(null);
 const more = ref(null);
 
+onMounted(() => {
+  $bus.on("update-tab", chooseTab => {
+    activeTab.value = chooseTab;
+  });
+});
+
 // 获取所有面板配置
 const getPanelConfig = () => {
   return {
     background: background.value.config,
     material: material.value.getMeshConfig(),
     animation: animation.value.config,
-    attribute: attribute.value.getAttrbuteConfig(),
+    attribute: attribute.value.getAttributeConfig(),
     light: light.value.config,
     stage: stage.value.getStageConfig(),
     tags: tags.value.config

@@ -255,7 +255,7 @@ const switchActiveModelEdit = async switchType => {
           localModelName: null,
           geometryVisible: false
         });
-        $bus.emit("model-update");
+        $bus.emit("update-model");
         $bus.emit("page-loading", false);
         store.changeDragType("oneModel");
         ElMessage.success("切换成功：当前为单模型编辑模式");
@@ -279,7 +279,7 @@ const onChangeModel = async model => {
   try {
     const { load } = await store.modelApi.onSwitchModel(model);
     if (load) {
-      $bus.emit("model-update");
+      $bus.emit("update-model");
       $bus.emit("page-loading", false);
     }
   } catch (err) {
@@ -312,6 +312,7 @@ const onDrag = event => {
 
 // 拖拽模型开始
 const onDragModelStart = model => {
+  store.changeDragType("manyModel");
   store.modelApi.setDragManyModel(model);
 };
 
@@ -330,7 +331,7 @@ const onUpload = async file => {
     // TODO: 加载成功之后手动释放 否则会造成内存浪费
     URL.revokeObjectURL(filePath);
     if (load) {
-      $bus.emit("model-update");
+      $bus.emit("update-model");
       $bus.emit("page-loading", false);
 
       // activeModel.value = {};

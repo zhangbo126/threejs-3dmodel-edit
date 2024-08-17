@@ -82,7 +82,7 @@ const fullscreenStatus = ref(false);
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
     const fileInfo = choosePanel.value?.activeModel;
-    return fileInfo?.filePath ? true : false;
+    return fileInfo?.filePath && ["oneModel", "tags"].includes(store.modelType) ? true : false;
   }
   return false;
 });
@@ -115,7 +115,10 @@ const onDragDrop = async e => {
   if (dragGeometryModel.id && store.modelType == "geometry") {
     dragGeometryModel.clientX = clientX;
     dragGeometryModel.clientY = clientY;
+
     store.modelApi.onSwitchModel(dragGeometryModel);
+    // 更新当前编辑tab
+    $bus.emit("update-tab", "EditGeometry");
   }
   // 3d标签
   if (dragTag.id && store.modelType == "tags") {
@@ -131,9 +134,9 @@ const onDragDrop = async e => {
     try {
       const { load } = await store.modelApi.onLoadManyModel(activeDragManyModel);
       if (load) {
-        $bus.emit("model-update");
-        // 更新当前编辑的模型
-        // $bus.emit("manyModel-update", uuid);
+        $bus.emit("update-model");
+        // 更新当前编辑tab
+        $bus.emit("update-tab", "EditMoreModel");
         $bus.emit("page-loading", false);
       }
     } catch {
@@ -210,7 +213,7 @@ const onSaveConfig = () => {
 
 // 下载封面
 const onDownloadCover = () => {
-  store.modelApi.onDownloadScenCover();
+  store.modelApi.onDownloadSceneCover();
 };
 // 导出模型
 const onExportModelFile = type => {

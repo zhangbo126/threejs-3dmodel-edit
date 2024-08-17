@@ -226,6 +226,8 @@ function onMouseClickModel(event) {
 
 	if (intersects.length > 0) {
 		const intersectedObject = intersects[0].object
+		this.outlinePass.visibleEdgeColor = new THREE.Color('#FF8C00') // 可见边缘的颜色
+		this.outlinePass.hiddenEdgeColor = new THREE.Color('#8a90f3') // 不可见边缘的颜色
 		this.outlinePass.selectedObjects = [intersectedObject]
 		store.selectMeshAction(intersectedObject)
 		if (this.transformControls) {

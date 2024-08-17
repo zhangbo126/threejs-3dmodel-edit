@@ -5,35 +5,64 @@
     </div>
     <div class="options">
       <el-scrollbar height="200px">
-        <div
-          class="option"
-          :class="chooseModelUuid == item.uuid ? 'option-active' : ''"
-          @click="onChangeManyModel(item)"
-          v-for="item in manyModelList"
-          :key="item.uuid"
-        >
-          <div class="icon-name">
-            {{ item.name }}
+        <template v-if="manyModelList.length">
+          <div
+            class="option"
+            :class="chooseModelUuid == item.uuid ? 'option-active' : ''"
+            @click="onChangeManyModel(item)"
+            v-for="item in manyModelList"
+            :key="item.uuid"
+          >
+            <div class="icon-name">
+              {{ item.name }}
+            </div>
+            <el-space>
+              <div class="check" v-show="chooseModelUuid == item.uuid">
+                <el-icon size="20px" color="#2a3ff6">
+                  <Check />
+                </el-icon>
+              </div>
+              <div class="icon-delete" v-show="chooseModelUuid == item.uuid">
+                <el-icon size="18px" color="#2a3ff6">
+                  <Delete @click.stop="onDeleteManyModel(item.uuid)" />
+                </el-icon>
+              </div>
+            </el-space>
           </div>
-          <el-space>
-            <div class="check" v-show="chooseModelUuid == item.uuid">
-              <el-icon size="20px" color="#2a3ff6">
-                <Check />
-              </el-icon>
-            </div>
-            <div class="icon-delete">
-              <el-icon size="18px" color="#2a3ff6">
-                <Delete @click.stop="onDeleteManyModel(item.uuid)" />
-              </el-icon>
-            </div>
-          </el-space>
-        </div>
+        </template>
+        <el-empty v-else description="切换多模型“场景”拖拽添加模型" :image-size="100" />
       </el-scrollbar>
     </div>
     <div class="header">
       <span>模型编辑</span>
     </div>
     <div class="options" v-show="chooseModelUuid">
+      <div class="option space-between">
+        <el-space>
+          <el-icon>
+            <Setting />
+          </el-icon>
+          <span> 模型轴旋转 </span>
+        </el-space>
+        <el-button type="primary" link icon="Refresh" @click="onResultModelRotate"> 重置 </el-button>
+      </div>
+      <div class="option">
+        <el-space>
+          <el-button type="info" icon="RefreshRight" @click="onSetManyModelRotation('x', 'right')" />
+          <el-button type="primary" link>X轴</el-button>
+          <el-button type="info" icon="RefreshLeft" @click="onSetManyModelRotation('x', 'left')" />
+        </el-space>
+        <el-space>
+          <el-button type="info" icon="RefreshRight" @click="onSetManyModelRotation('y', 'right')" />
+          <el-button type="primary" link>Y轴</el-button>
+          <el-button type="info" icon="RefreshLeft" @click="onSetManyModelRotation('y', 'left')" />
+        </el-space>
+        <el-space>
+          <el-button type="info" icon="RefreshRight" @click="onSetManyModelRotation('z', 'right')" />
+          <el-button type="primary" link>Z轴</el-button>
+          <el-button type="info" icon="RefreshLeft" @click="onSetManyModelRotation('z', 'left')" />
+        </el-space>
+      </div>
       <div class="option space-between">
         <el-space>
           <el-icon>
@@ -71,7 +100,7 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, getCurrentInstance, onMounted } from "vue";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import { ElMessage } from "element-plus";
 
@@ -90,7 +119,6 @@ const config = reactive({
 const manyModelList = computed(() => {
   const manyModelGroup = store.modelApi.manyModelGroup;
   const manyList = manyModelGroup.children.map(v => {
-    // console.log(v, "================");
     return {
       name: v.name,
       uuid: v.uuid
@@ -108,19 +136,33 @@ const onChangeManyModel = item => {
   });
 };
 // 删除模型
-const onDeleteManyModel = () => {};
+const onDeleteManyModel = () => {
+  store.modelApi.deleteManyModel(chooseModelUuid.value);
+  ElMessage.success("删除成功");
+  chooseModelUuid.value = null;
+};
+
+// 设置模型轴位置
+const onSetManyModelRotation = (type, direction) => {
+  const flag = direction == "right" ? true : false;
+  store.modelApi.setManyModelRotation(type, flag, chooseModelUuid.value);
+};
+
+//重置模型轴配置
+const onResultModelRotate = () => {
+  store.modelApi.initManyModelRotation(chooseModelUuid.value);
+};
 
 // 修改模型位置
-const onSetModelPosition = () => {};
+const onSetModelPosition = () => {
+  store.modelApi.setManyModelPosition(config.position, chooseModelUuid.value);
+};
 
 //重置当前模型位置
 const onResultModelPosition = () => {
+  const initPosition = store.modelApi.initManyModelPosition(chooseModelUuid.value);
   Object.assign(config, {
-    position: {
-    x: 0,
-    y: 0,
-    z: 0
-  }
+    position: initPosition
   });
 };
 </script>

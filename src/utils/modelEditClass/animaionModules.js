@@ -34,7 +34,7 @@ function onSetModelAnimaion({ animationName, loop, timeScale, weight }) {
 function animationFrameFun() {
 	this.animationFrame = requestAnimationFrame(() => this.animationFrameFun())
 	if (this.animationMixer) {
-		this.animationMixer.update(this.animationColock.getDelta())
+		this.animationMixer.update(this.animationClock.getDelta())
 	}
 }
 // 清除动画
