@@ -73,6 +73,13 @@ function getModelAnimaionList(result) {
 	this.modelAnimation = result.animations || []
 }
 
+// 获取多模型动画
+function getManyModelAnimationList(animations) {
+	if (Array.isArray(animations)) {
+		this.modelAnimation = this.modelAnimation.concat(animations)
+	}
+}
+
 export default {
 	onStartModelAnimaion,
 	onSetModelAnimaion,
@@ -81,5 +88,6 @@ export default {
 	onSetRotation,
 	onSetRotationType,
 	rotationAnimationFun,
-	getModelAnimaionList
+	getModelAnimaionList,
+	getManyModelAnimationList
 }

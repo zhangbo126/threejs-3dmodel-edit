@@ -895,6 +895,9 @@ class renderModel {
 						default:
 							break;
 					}
+					// console.log(result, '================')
+					this.getManyModelAnimationList(result.animations)
+
 					// 设置模型位置
 					const { x, y, z } = intersects[0].point
 					manyModel.position.set(x, y, z)
@@ -917,6 +920,7 @@ class renderModel {
 					this.glowMaterialList = this.modelMaterialList.map(v => v.name)
 					this.scene.add(this.model)
 					this.loadingStatus = true
+
 					resolve({ load: true })
 
 				}, (xhr) => {
