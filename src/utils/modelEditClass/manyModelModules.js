@@ -6,6 +6,7 @@
 	 * @function initManyModelRotation 重置模型轴位置
 	 * @function setManyModelPosition 修改当前模型位置
 	 * @function initManyModelPosition 重置模型位置
+	 * @function setManyModelScale 设置模型位置
 
  */
 import * as THREE from 'three'
@@ -17,17 +18,19 @@ function chooseManyModel(uuid) {
 	this.outlinePass.visibleEdgeColor = new THREE.Color('#409eff') // 可见边缘的颜色
 	this.outlinePass.hiddenEdgeColor = new THREE.Color('#0099cc') // 不可见边缘的颜色
 	this.outlinePass.selectedObjects = [manyModel]
-
+	// console.log(manyModel, '===============')
 	if (manyModel) {
-		const { position, rotation, userData } = manyModel.clone()
+		const { position, rotation, userData, scale } = manyModel.clone()
 		manyModel.userData = {
 			...userData,
 			position,
-			rotation
+			rotation,
+			scale
 		}
 		return {
 			position: { ...position },
-			rotation: { ...rotation }
+			rotation: { ...rotation },
+			scale: scale.x
 		}
 	}
 	return {}
@@ -35,12 +38,16 @@ function chooseManyModel(uuid) {
 
 function deleteManyModel(uuid) {
 	const manyModel = this.scene.getObjectByProperty('uuid', uuid)
+	if (!manyModel) return
+
 	this.manyModelGroup.remove(manyModel)
 	this.outlinePass.selectedObjects = []
 }
 
 function setManyModelRotation(type, flag, uuid) {
 	const manyModel = this.scene.getObjectByProperty('uuid', uuid)
+	if (!manyModel) return
+
 	const maxAxis = Math.PI / 2
 	const { x, y, z } = manyModel.rotation
 	const endPosition = {
@@ -57,6 +64,8 @@ function setManyModelRotation(type, flag, uuid) {
 
 function initManyModelRotation(uuid) {
 	const manyModel = this.scene.getObjectByProperty('uuid', uuid)
+	if (!manyModel) return
+
 	const { userData: { rotation } } = manyModel
 	manyModel.rotation.set(rotation.x, rotation.y, rotation.z)
 }
@@ -64,6 +73,8 @@ function initManyModelRotation(uuid) {
 
 function setManyModelPosition(position, uuid) {
 	const manyModel = this.scene.getObjectByProperty('uuid', uuid)
+	if (!manyModel) return
+
 	const Tween = new TWEEN.Tween(manyModel.position)
 	const endPosition = {
 		x: position.x,
@@ -86,6 +97,22 @@ function initManyModelPosition(uuid) {
 	}
 }
 
+function setManyModelScale(uuid, scale) {
+	const manyModel = this.scene.getObjectByProperty('uuid', uuid)
+	if (!manyModel) return
+	const Tween = new TWEEN.Tween(manyModel.scale)
+	const endPosition = {
+		x: scale,
+		y: scale,
+		z: scale
+	}
+	Tween.to(endPosition, 500)
+	Tween.onUpdate((val) => {
+		manyModel.scale.set(val.x || 0, val.y || 0, val.z || 0)
+	})
+	Tween.start();
+}
+
 
 
 export default {
@@ -94,5 +121,6 @@ export default {
 	setManyModelRotation,
 	initManyModelRotation,
 	setManyModelPosition,
-	initManyModelPosition
+	initManyModelPosition,
+	setManyModelScale
 }
