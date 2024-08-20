@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
-    name: 'layout',
+    name: 'EditView',
     path: '/',
-    component: () => import('@/views/layouts/index.vue'),
+    component: () => import('@/layouts/EditView.vue'),
     children: [
       {
         path: '/',
@@ -30,6 +30,19 @@ const routes = [
         component: () => import('@/views/modelBase/index.vue')
       }
     ]
+  }, {
+    name: 'H5View',
+    path: '/h5view',
+    component: () => import('@/layouts/H5View.vue'),
+    children: [
+      {
+        path: '/h5vrPage',
+        name: 'H5vrPage',
+        meta: { keepAlive: false },
+        component: () => import('@/views/vrPage/index.vue')
+      },
+    ]
+
   }
 ]
 const base = import.meta.env.VITE_APP_BASE_URL
