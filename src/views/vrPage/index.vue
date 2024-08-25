@@ -1,35 +1,30 @@
 <template>
-  <div class="vr-page">
+  <div id="vr-page">
     <div id="vr-model"></div>
-    <!-- <el-button @click="openVR">打开摄像头</el-button> -->
+    <video id="video" playsinline muted autoplay></video>
   </div>
 </template>
-<script setup name="arPage">
+<script setup name="vrPage">
 import { onMounted } from "vue";
-import { useMeshEditStore } from "@/store/meshEditStore";
-import renderModel from "@/utils/renderModel";
-
-const store = useMeshEditStore();
-const openVR = () => {
-  store.modelApi.openCameraAR();
-};
+import vrRenderModel from "@/utils/vrRenderModel";
 onMounted(async () => {
-  const modelApi = new renderModel("#vr-model");
+  const modelApi = new vrRenderModel("#vr-model");
   const load = await modelApi.init();
-  store.setModelApi(modelApi);
-  if (load) {
-    store.modelApi.openCameraAR();
-  }
 });
 </script>
 
 <style lang="scss" scoped>
-.vr-pag {
+#vr-page {
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  #vr-model {
+    width: 100%;
+    height: 100%;
+  }
 }
-#vr-model {
-  width: calc(100%);
-  height: calc(100vh);
+#video {
+  display: none;
+  object-fit: cover;
 }
 </style>
