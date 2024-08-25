@@ -31,6 +31,7 @@ export default defineConfig(mode => {
         input: {
           index: resolve(__dirname, "index.html"),
           preview: resolve(__dirname, "preview.html"),
+          modelIframe: resolve(__dirname, "modelIframe.html"),
           vrPage: resolve(__dirname, "vrPage.html")
         },
         output: {
