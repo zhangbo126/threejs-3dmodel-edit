@@ -14,6 +14,7 @@ import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
+import { USDZExporter } from "three/addons/exporters/USDZExporter.js";
 import { ElMessage } from "element-plus";
 import { onlyKey, getAssetsFile } from "@/utils/utilityFunction";
 import modulesPrototype from "./modelEditClass/index";
@@ -609,54 +610,72 @@ class renderModel {
   }
   // 导出模型
   onExporterModel(type) {
-    const exporter = new GLTFExporter();
-    const options = {
-      trs: true, // 是否保留位置、旋转、缩放信息
-      animations: this.modelAnimation, // 导出的动画
-      binary: type == "glb" ? true : false, // 是否以二进制格式输出
-      embedImages: true, //是否嵌入贴图
-      onlyVisible: true, //是否只导出可见物体
-      includeCustomExtensions: true
-    };
-    exporter.parse(
-      this.scene,
-      function (result) {
-        if (result instanceof ArrayBuffer) {
-          // 将结果保存为GLB二进制文件
-          saveArrayBuffer(result, `${new Date().toLocaleString()}.glb`);
-        } else {
-          // 将结果保存为GLTF JSON文件
-          saveString(JSON.stringify(result), `${new Date().toLocaleString()}.gltf`);
-        }
-        function saveArrayBuffer(buffer, filename) {
-          // 将二进制数据保存为文件
-          const blob = new Blob([buffer], { type: "application/octet-stream" });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = filename;
-          link.click();
-          URL.revokeObjectURL(url);
-          ElMessage.success("导出成功");
-        }
-        function saveString(text, filename) {
-          // 将字符串数据保存为文件
-          const blob = new Blob([text], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = filename;
-          link.click();
-          URL.revokeObjectURL(url);
-          ElMessage.success("导出成功");
-        }
-      },
-      err => {
-        ElMessage.error(err);
-      },
-      options
-    );
+    console.log(type);
+    if (type == "usdz") {
+      const exporter = new USDZExporter();
+      exporter.parse(this.scene, usdz => {
+        // console.log(usdz, "==================");
+        // 将导出的 USDZ 数据保存为文件或进行其他操作
+        const blob = new Blob([usdz], { type: "model/vnd.usdz+zip" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${new Date().toLocaleString()}.usdz`;
+        link.click();
+        URL.revokeObjectURL(url);
+        ElMessage.success("导出成功");
+      });
+    } else {
+      const exporter = new GLTFExporter();
+      const options = {
+        trs: true, // 是否保留位置、旋转、缩放信息
+        animations: this.modelAnimation, // 导出的动画
+        binary: type == "glb" ? true : false, // 是否以二进制格式输出
+        embedImages: true, //是否嵌入贴图
+        onlyVisible: true, //是否只导出可见物体
+        includeCustomExtensions: true
+      };
+      exporter.parse(
+        this.scene,
+        result => {
+          if (result instanceof ArrayBuffer) {
+            // 将结果保存为GLB二进制文件
+            saveArrayBuffer(result, `${new Date().toLocaleString()}.glb`);
+          } else {
+            // 将结果保存为GLTF JSON文件
+            saveString(JSON.stringify(result), `${new Date().toLocaleString()}.gltf`);
+          }
+          function saveArrayBuffer(buffer, filename) {
+            // 将二进制数据保存为文件
+            const blob = new Blob([buffer], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+            ElMessage.success("导出成功");
+          }
+          function saveString(text, filename) {
+            // 将字符串数据保存为文件
+            const blob = new Blob([text], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+            ElMessage.success("导出成功");
+          }
+        },
+        err => {
+          ElMessage.error(err);
+        },
+        options
+      );
+    }
   }
+
   // 清除模型数据
   onClearModelData() {
     cancelAnimationFrame(this.rotationAnimationFrame);

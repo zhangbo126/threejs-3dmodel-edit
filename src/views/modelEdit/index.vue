@@ -19,6 +19,7 @@
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
                 <el-dropdown-item @click="onExportModelFile('glb')">导出模型(.glb)格式</el-dropdown-item>
                 <el-dropdown-item @click="onExportModelFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
+                <el-dropdown-item @click="onExportModelFile('usdz')">导出模型(.usdz)格式</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
