@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /dist
+/threejs-3dmodel-edit
 yarn
 /tests/e2e/videos/
 /tests/e2e/screenshots/
