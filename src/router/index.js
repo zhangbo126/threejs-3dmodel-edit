@@ -1,43 +1,56 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 const routes = [
   {
-    name: 'layout',
-    path: '/',
-    component: () => import('@/views/layouts/index.vue'),
+    name: "EditView",
+    path: "/",
+    component: () => import("@/layouts/EditView.vue"),
     children: [
       {
-        path: '/',
-        name: 'modelEdit',
+        path: "/",
+        name: "modelEdit",
         meta: { keepAlive: true },
-        component: () => import('@/views/modelEdit/index.vue')
+        component: () => import("@/views/modelEdit/index.vue")
       },
       {
-        path: '/preview',
-        name: 'modelPreview',
+        path: "/preview",
+        name: "modelPreview",
         meta: { keepAlive: false },
-        component: () => import('@/views/modelPreview/index.vue')
+        component: () => import("@/views/modelPreview/index.vue")
       },
       {
-        path: '/modelIframe',
-        name: 'modelIframe',
+        path: "/modelIframe",
+        name: "modelIframe",
         meta: { keepAlive: false },
-        component: () => import('@/views/modelIframe/index.vue')
+        component: () => import("@/views/modelIframe/index.vue")
       },
       {
-        path: '/modelBase',
-        name: 'modelBase',
+        path: "/modelBase",
+        name: "modelBase",
         meta: { keepAlive: false },
-        component: () => import('@/views/modelBase/index.vue')
+        component: () => import("@/views/modelBase/index.vue")
+      }
+    ]
+  },
+  {
+    path: "/vrView",
+    name: "VrView",
+    component: () => import("@/layouts/VrView.vue"),
+    children: [
+      {
+        path: "/vrPage",
+        name: "vrPage",
+        meta: { keepAlive: false },
+        component: () => import("@/views/vrPage/index.vue")
       }
     ]
   }
-]
-const base = import.meta.env.VITE_APP_BASE_URL
+];
+const base = import.meta.env.VITE_APP_BASE_URL;
 const router = createRouter({
   history: createWebHistory(base),
   base,
-  model: 'hash',
+  model: "hash",
   routes
-})
+});
 
-export default router
+export default router;

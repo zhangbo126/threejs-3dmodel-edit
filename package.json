@@ -36,6 +36,7 @@
     "@babel/eslint-parser": "^7.12.16",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vue/babel-plugin-jsx": "^1.1.5",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-e2e-cypress": "~5.0.0",

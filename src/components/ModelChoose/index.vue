@@ -5,7 +5,7 @@
       <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType]?.tooltip" placement="top">
         <el-button
           type="primary"
-          icon="Refresh"
+          icon="Switch"
           @click="switchActiveModelEdit(modelEditMap[reactiveData.modeEditType]?.switchType)"
         >
           切换场景

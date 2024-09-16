@@ -96,6 +96,23 @@
           <el-slider @input="onSetModelPosition" show-input v-model="config.position.z" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
+      <!-- 模型缩放 -->
+      <div class="option">
+        <el-space>
+          <el-icon>
+            <Odometer />
+          </el-icon>
+          <span> 模型缩放 </span>
+        </el-space>
+      </div>
+      <div class="option">
+        <div class="grid-txt">
+          <el-button type="primary" link>缩放值</el-button>
+        </div>
+        <div class="grid-silder">
+          <el-slider @input="onSetModelScale" show-input v-model="config.scale" :min="0.01" :max="5" :step="0.01" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -113,7 +130,8 @@ const config = reactive({
     x: 0,
     y: 0,
     z: 0
-  }
+  },
+  scale: 0
 });
 
 const manyModelList = computed(() => {
@@ -130,9 +148,10 @@ const manyModelList = computed(() => {
 // 选择模型
 const onChangeManyModel = item => {
   chooseModelUuid.value = item.uuid;
-  const { position } = store.modelApi.chooseManyModel(item.uuid);
+  const { position, scale } = store.modelApi.chooseManyModel(item.uuid);
   Object.assign(config, {
-    position
+    position,
+    scale
   });
 };
 // 删除模型
@@ -164,6 +183,11 @@ const onResultModelPosition = () => {
   Object.assign(config, {
     position: initPosition
   });
+};
+
+// 设置模型缩放
+const onSetModelScale = () => {
+  store.modelApi.setManyModelScale(chooseModelUuid.value, config.scale);
 };
 </script>
 <style scoped lang="scss">
