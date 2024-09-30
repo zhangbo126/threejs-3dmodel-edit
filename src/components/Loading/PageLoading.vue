@@ -2,13 +2,11 @@
   <div id="loading-mark" v-if="props.loading">
     <div class="loading-box">
       <div class="loading">
-        <img src='@/assets/image/loading.svg' />
+        <img src="@/assets/image/loading.svg" />
         <div class="progress-txt">
-          当前模型已加载 <b>{{ props.percentage }}</b> M
+          当前模型已加载 <b>{{ props.percentage }}</b>
         </div>
-        <div class="loading-txt">
-          模型文件首次加载时间较长请耐心等待.....
-        </div>
+        <div class="loading-txt">模型文件首次加载时间较长请耐心等待.....</div>
       </div>
     </div>
   </div>
@@ -17,12 +15,12 @@
 const props = defineProps({
   percentage: {
     type: Number,
-    default: 0,
+    default: 0
   },
   loading: {
     type: Boolean,
-    default: false,
-  },
+    default: false
+  }
 });
 </script>
 <style scoped lang="scss">
