@@ -87,6 +87,25 @@ const handleConfigBtn = computed(() => {
   }
   return false;
 });
+
+// 页面资源刷新
+const updateResources = () => {
+  const env = import.meta.env.VITE_APP_BASE_URL;
+  if (env == "production")
+    ElMessageBox.confirm(
+      "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常点击“强刷页面”按钮强刷页面即可",
+      "提示",
+      {
+        confirmButtonText: "关闭弹框",
+        cancelButtonText: " 强刷页面"
+      }
+    )
+      .then(() => {})
+      .catch(() => {
+        location.reload(true);
+      });
+};
+
 // 重置相机位置
 const onResetCamera = () => {
   store.modelApi.onResetModelCamera();
@@ -228,6 +247,8 @@ const addEventListenerFullscreen = e => {
 };
 
 onMounted(async () => {
+  updateResources();
+
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);

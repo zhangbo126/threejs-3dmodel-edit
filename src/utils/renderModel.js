@@ -298,8 +298,6 @@ class renderModel {
           this.getModelAnimaionList(result);
         },
         xhr => {
-          console.log(xhr);
-
           this.modelProgressCallback(xhr.loaded, xhr.total);
         },
         err => {
@@ -942,7 +940,7 @@ class renderModel {
             resolve({ load: true });
           },
           xhr => {
-            this.modelProgressCallback(xhr.loaded);
+            this.modelProgressCallback(xhr.loaded, xhr.total);
           },
           err => {
             ElMessage.error(err);

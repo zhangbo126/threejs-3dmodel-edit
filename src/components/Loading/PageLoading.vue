@@ -14,7 +14,7 @@
 <script setup>
 const props = defineProps({
   percentage: {
-    type: Number,
+    type: [Number, String],
     default: 0
   },
   loading: {
