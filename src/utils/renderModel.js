@@ -298,7 +298,9 @@ class renderModel {
           this.getModelAnimaionList(result);
         },
         xhr => {
-          this.modelProgressCallback(xhr.loaded);
+          console.log(xhr);
+
+          this.modelProgressCallback(xhr.loaded, xhr.total);
         },
         err => {
           ElMessage.error("文件错误");
@@ -475,16 +477,17 @@ class renderModel {
     this.spotLightHelper.visible = false;
     this.scene.add(this.spotLightHelper);
 
-    // 模型平面
-    const geometry = new THREE.PlaneGeometry(4, 4);
-    var groundMaterial = new THREE.MeshStandardMaterial({ color: "#000000" });
-    this.planeGeometry = new THREE.Mesh(geometry, groundMaterial);
-    this.planeGeometry.rotation.x = -Math.PI / 2;
-    this.planeGeometry.position.set(0, -1.2, 0);
+    const geometry = new THREE.PlaneGeometry(2000, 2000);
+    const planeMaterial = new THREE.ShadowMaterial({ color: 0x000000, opacity: 0.5 });
 
-    // 让地面接收阴影
+    this.planeGeometry = new THREE.Mesh(geometry, planeMaterial);
+    this.planeGeometry.rotation.x = -Math.PI / 2;
+
+    this.planeGeometry.position.set(0, -1.2, 0);
     this.planeGeometry.receiveShadow = true;
-    this.planeGeometry.visible = false;
+    this.planeGeometry.material.side = THREE.DoubleSide;
+    this.planeGeometry.material.color.set("#23191F");
+    this.planeGeometry.geometry.verticesNeedUpdate = true;
     this.scene.add(this.planeGeometry);
   }
   // 创建效果合成器

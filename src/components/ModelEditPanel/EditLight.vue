@@ -5,46 +5,6 @@
       <el-button type="primary" icon="Refresh" @click="onInitialize"> 重置 </el-button>
     </div>
     <el-scrollbar height="calc(100vh - 130px)">
-      <!-- 光源平面 -->
-      <div class="options">
-        <div class="option space-between">
-          <el-space>
-            <el-icon>
-              <Odometer />
-            </el-icon>
-            <span>光源平面</span>
-          </el-space>
-          <el-switch v-model="config.planeGeometry" @change="onChangePlaneGeometry" />
-        </div>
-        <div class="option" :class="planetDisabled">
-          <el-space>
-            <span>平面颜色</span>
-            <el-color-picker
-              color-format="hex"
-              v-model="config.planeColor"
-              :predefine="predefineColors"
-              @change="onChangePlaneGeometry"
-              @active-change="changePlaneGeometryColor"
-            />
-          </el-space>
-        </div>
-        <div class="option" :class="planetDisabled">
-          <div class="grid-txt">
-            <el-button type="primary" link>宽度</el-button>
-          </div>
-          <div class="grid-silder">
-            <el-slider show-input @input="onChangePlaneGeometry" v-model="config.planeWidth" :min="0" :max="100" :step="0.1" />
-          </div>
-        </div>
-        <div class="option" :class="planetDisabled">
-          <div class="grid-txt">
-            <el-button type="primary" link>高度</el-button>
-          </div>
-          <div class="grid-silder">
-            <el-slider show-input @input="onChangePlaneGeometry" v-model="config.planeHeight" :min="0" :max="100" :step="0.1" />
-          </div>
-        </div>
-      </div>
       <!-- 环境光 -->
       <div class="options">
         <div class="option space-between">
@@ -380,11 +340,6 @@ import { PREDEFINE_COLORS } from "@/config/constant";
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
-  //光源平面
-  planeGeometry: false,
-  planeColor: "#000000",
-  planeWidth: 7,
-  planeHeight: 7,
   //环境光
   ambientLight: true,
   ambientLightColor: "#fff",
@@ -438,10 +393,6 @@ const spotDisabled = computed(() => {
   const { spotLight } = config;
   return spotLight ? "" : "disabled";
 });
-const planetDisabled = computed(() => {
-  const { planeGeometry } = config;
-  return planeGeometry ? "" : "disabled";
-});
 
 const state = reactive({
   modelApi: computed(() => store.modelApi)
@@ -470,10 +421,6 @@ const changeDirectionalLightColor = directionalLightColor => {
 
 // 设置平行光
 const onChangeDirectionalLight = () => {
-  if (config.directionalLight) {
-    config.planeGeometry = true;
-    state.modelApi.onSetModelPlaneGeometry(config);
-  }
   state.modelApi.onSetModelDirectionalLight(config);
 };
 
@@ -494,29 +441,11 @@ const changeSpotLightColor = spotLightColor => {
 };
 // 设置聚光灯
 const onChangeSpotLight = () => {
-  if (config.spotLight) {
-    config.planeGeometry = true;
-    state.modelApi.onSetModelPlaneGeometry(config);
-  }
   state.modelApi.onSetModelSpotLight(config);
-};
-
-const changePlaneGeometryColor = planeColor => {
-  config.planeColor = planeColor;
-  state.modelApi.onSetModelPlaneGeometry(config);
-};
-// 设置模型平面
-const onChangePlaneGeometry = () => {
-  state.modelApi.onSetModelPlaneGeometry(config);
 };
 
 const initLightData = () => {
   Object.assign(config, {
-    //光源平面
-    planeGeometry: false,
-    planeColor: "#000000",
-    planeWidth: 7,
-    planeHeight: 7,
     //环境光
     ambientLight: true,
     ambientLightColor: "#fff",

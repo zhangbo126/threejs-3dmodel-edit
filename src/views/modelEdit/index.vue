@@ -235,9 +235,8 @@ onMounted(async () => {
     loading.value = value;
   });
   // 模型加载进度条
-  store.modelApi.onProgress(progressNum => {
-    progress.value = Number((progressNum / 1024 / 1024).toFixed(2));
-    // console.log('模型已加载' + progress.value + 'M')
+  store.modelApi.onProgress((progressNum, totalSize) => {
+    progress.value = Number((totalSize / progressNum) * 100).toFixed(0) + "%";
   });
   const load = await modelApi.init();
   if (load) {
