@@ -90,7 +90,7 @@ const handleConfigBtn = computed(() => {
 
 // 页面资源刷新
 const updateResources = () => {
-  const env = import.meta.env.NODE_ENV;
+  const env = import.meta.env.VITE_USER_NODE_ENV;
   if (env == "production")
     ElMessageBox.confirm(
       "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常点击“强刷页面”按钮强刷页面即可",
@@ -102,7 +102,7 @@ const updateResources = () => {
     )
       .then(() => {})
       .catch(() => {
-        location.reload(true);
+        location.replace(location.href);
       });
 };
 
@@ -257,7 +257,7 @@ onMounted(async () => {
   });
   // 模型加载进度条
   store.modelApi.onProgress((progressNum, totalSize) => {
-    progress.value = Number((totalSize / progressNum) * 100).toFixed(0) + "%";
+    progress.value = Number((progressNum / totalSize) * 100).toFixed(0) + "%";
   });
   const load = await modelApi.init();
   if (load) {
