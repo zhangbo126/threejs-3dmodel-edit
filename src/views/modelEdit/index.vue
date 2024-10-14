@@ -100,7 +100,8 @@ const updateResources = () => {
         closeOnClickModal: false,
         closeOnPressEscape: false,
         distinguishCancelAndClose: true,
-        confirmButtonText: "关闭弹框"
+        confirmButtonText: "关闭弹框",
+        showCancelButton: false
       }
     )
       .then(() => {})
@@ -257,11 +258,12 @@ onMounted(async () => {
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);
   $bus.on("page-loading", value => {
+    progress.value = 0;
     loading.value = value;
   });
   // 模型加载进度条
   store.modelApi.onProgress((progressNum, totalSize) => {
-    progress.value = Number((progressNum / totalSize) * 100).toFixed(0) + "%";
+    progress.value = Number(((progressNum / totalSize) * 100).toFixed(0));
   });
   const load = await modelApi.init();
   if (load) {
