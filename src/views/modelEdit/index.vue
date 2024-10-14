@@ -79,6 +79,7 @@ const editPanel = ref(null);
 const choosePanel = ref(null);
 const implantDialog = ref(null);
 const fullscreenStatus = ref(false);
+const loadingTimeout = ref(null);
 
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
@@ -258,8 +259,15 @@ onMounted(async () => {
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);
   $bus.on("page-loading", value => {
-    progress.value = 0;
-    loading.value = value;
+    clearTimeout(loadingTimeout.value);
+    if (value) {
+      loading.value = value;
+    } else {
+      loadingTimeout.value = setTimeout(() => {
+        loading.value = value;
+        progress.value = 0;
+      }, 500);
+    }
   });
   // 模型加载进度条
   store.modelApi.onProgress((progressNum, totalSize) => {
@@ -278,6 +286,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   store.modelApi.onClearModelData();
   document.removeEventListener("fullscreenchange", addEventListenerFullscreen);
+  clearTimeout(loadingTimeout.value);
 });
 </script>
 
