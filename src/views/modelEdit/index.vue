@@ -93,20 +93,19 @@ const updateResources = () => {
   const env = import.meta.env.VITE_USER_NODE_ENV;
   if (env == "production") {
     ElMessageBox.confirm(
-      "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常点击“强刷页面”按钮强刷页面即可",
+      "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常使用“ctrl+f5”强刷页面即可",
       "提示",
       {
         showClose: false,
         closeOnClickModal: false,
         closeOnPressEscape: false,
         distinguishCancelAndClose: true,
-        confirmButtonText: "关闭弹框",
-        cancelButtonText: " 强刷页面"
+        confirmButtonText: "关闭弹框"
       }
     )
       .then(() => {})
       .catch(() => {
-        location.replace(location.href);
+        location.reload(true);
       });
   }
 };
