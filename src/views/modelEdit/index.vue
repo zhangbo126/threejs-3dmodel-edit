@@ -79,6 +79,7 @@ const editPanel = ref(null);
 const choosePanel = ref(null);
 const implantDialog = ref(null);
 const fullscreenStatus = ref(false);
+const loadingTimeout = ref(null);
 
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
@@ -91,19 +92,24 @@ const handleConfigBtn = computed(() => {
 // 页面资源刷新
 const updateResources = () => {
   const env = import.meta.env.VITE_USER_NODE_ENV;
-  if (env == "production")
+  if (env == "production") {
     ElMessageBox.confirm(
-      "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常点击“强刷页面”按钮强刷页面即可",
+      "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常使用“ctrl+f5”强刷页面即可",
       "提示",
       {
+        showClose: false,
+        closeOnClickModal: false,
+        closeOnPressEscape: false,
+        distinguishCancelAndClose: true,
         confirmButtonText: "关闭弹框",
-        cancelButtonText: " 强刷页面"
+        showCancelButton: false
       }
     )
       .then(() => {})
       .catch(() => {
-        location.replace(location.href);
+        location.reload(true);
       });
+  }
 };
 
 // 重置相机位置
@@ -253,11 +259,19 @@ onMounted(async () => {
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);
   $bus.on("page-loading", value => {
-    loading.value = value;
+    clearTimeout(loadingTimeout.value);
+    if (value) {
+      loading.value = value;
+    } else {
+      loadingTimeout.value = setTimeout(() => {
+        loading.value = value;
+        progress.value = 0;
+      }, 500);
+    }
   });
   // 模型加载进度条
   store.modelApi.onProgress((progressNum, totalSize) => {
-    progress.value = Number((progressNum / totalSize) * 100).toFixed(0) + "%";
+    progress.value = Number(((progressNum / totalSize) * 100).toFixed(0));
   });
   const load = await modelApi.init();
   if (load) {
@@ -272,6 +286,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   store.modelApi.onClearModelData();
   document.removeEventListener("fullscreenchange", addEventListenerFullscreen);
+  clearTimeout(loadingTimeout.value);
 });
 </script>
 

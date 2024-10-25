@@ -4,7 +4,14 @@
       <div class="loading">
         <img src="@/assets/image/loading.svg" />
         <div class="progress-txt">
-          当前模型已加载 <b>{{ props.percentage }}</b>
+          当前模型已加载 <b>{{ props.percentage }}%</b>
+          <el-progress
+            :text-inside="true"
+            :show-text="false"
+            :stroke-width="20"
+            status="exception"
+            :percentage="props.percentage"
+          />
         </div>
         <div class="loading-txt">模型文件首次加载时间较长请耐心等待.....</div>
       </div>
