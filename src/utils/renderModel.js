@@ -611,7 +611,6 @@ class renderModel {
   }
   // 导出模型
   onExporterModel(type) {
-    console.log(type);
     if (type == "usdz") {
       const exporter = new USDZExporter();
       exporter.parse(this.scene, usdz => {
@@ -637,7 +636,7 @@ class renderModel {
         includeCustomExtensions: true
       };
       exporter.parse(
-        this.scene,
+        this.model,
         result => {
           if (result instanceof ArrayBuffer) {
             // 将结果保存为GLB二进制文件
