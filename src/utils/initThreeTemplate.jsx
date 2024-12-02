@@ -628,7 +628,7 @@ class renderModel {
   setModelLaterStage() {
     const { stage } = this.config;
     if (!stage) return false;
-    const { threshold, strength, radius, toneMappingExposure, meshPositonList, color } = stage;
+    const { threshold, strength, radius, toneMappingExposure, meshPositionList, color } = stage;
     // 设置辉光效果
     if (stage.glow) {
       this.unrealBloomPass.threshold = threshold;
@@ -644,7 +644,7 @@ class renderModel {
       this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
     }
     // 模型材质位置
-    meshPositonList.forEach(v => {
+    meshPositionList.forEach(v => {
       const mesh = this.model.getObjectByProperty("name", v.name);
       const { rotation, scale, position } = v;
       mesh.rotation.set(rotation.x, rotation.y, rotation.z);
@@ -666,9 +666,9 @@ class renderModel {
     // 平行光
     if (light.directionalLight) {
       const directionalLight = new THREE.DirectionalLight(light.directionalLightColor, light.directionalLightIntensity);
-      const { x, y, z } = lightPosition(light.directionalHorizontal, light.directionalVertical, light.directionalSistance);
+      const { x, y, z } = lightPosition(light.directionalHorizontal, light.directionalVertical, light.directionalSistine);
       directionalLight.position.set(x, y, z);
-      directionalLight.castShadow = light.directionaShadow;
+      directionalLight.castShadow = light.directionShadow;
       directionalLight.visible = light.directionalLight;
       this.scene.add(directionalLight);
       const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.5);
@@ -679,7 +679,7 @@ class renderModel {
     if (light.pointLight) {
       const pointLight = new THREE.PointLight(light.pointLightColor, light.pointLightIntensity, 100);
       pointLight.visible = light.pointLight;
-      const { x, y, z } = lightPosition(light.pointHorizontal, light.pointVertical, light.pointSistance);
+      const { x, y, z } = lightPosition(light.pointHorizontal, light.pointVertical, light.pointDistance);
       pointLight.position.set(x, y, z);
       this.scene.add(pointLight);
       // 创建点光源辅助线
@@ -705,7 +705,7 @@ class renderModel {
       spotLight.shadow.focus = light.spotFocus;
       spotLight.castShadow = light.spotCastShadow;
       spotLight.distance = light.spotDistance;
-      const { x, y, z } = lightPosition(light.spotHorizontal, light.spotVertical, light.spotSistance);
+      const { x, y, z } = lightPosition(light.spotHorizontal, light.spotVertical, light.spotSistine);
       spotLight.position.set(x, y, z);
       this.scene.add(spotLight);
       //创建聚光灯辅助线
@@ -830,7 +830,7 @@ class renderModel {
           width
         } = v;
         // 创建3d标签
-        const tagvMode = createApp({
+        const tagsMode = createApp({
           render() {
             return (
               <div>
@@ -855,7 +855,7 @@ class renderModel {
           }
         });
 
-        const vNode = tagvMode.mount(document.createElement("div"));
+        const vNode = tagsMode.mount(document.createElement("div"));
         element.appendChild(vNode.$el);
         let cssObject = new CSS3DObject(element);
         cssObject.position.set(positionX, positionY, positionZ);

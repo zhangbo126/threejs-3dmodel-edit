@@ -301,7 +301,6 @@ const onAddGeometry = async () => {
 
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
-  // if (reactiveData.modeEditType == "many") return false;
   store.modelApi.setDragGeometryModel(model);
   store.changeDragType("geometry");
 };

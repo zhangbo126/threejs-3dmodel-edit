@@ -295,7 +295,7 @@ class renderModel {
           this.scene.add(this.model);
           this.loadingStatus = true;
           resolve(true);
-          this.getModelAnimaionList(result);
+          this.getModelAnimationList(result);
         },
         xhr => {
           this.modelProgressCallback(xhr.loaded, xhr.total);

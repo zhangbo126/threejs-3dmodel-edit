@@ -65,7 +65,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "@/utils/renderModel";
 import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading.vue";
-import { MODEL_PRIVEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
+import { MODEL_PREVIEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import * as THREE from "three";
 
@@ -177,7 +177,7 @@ const onPreview = () => {
   modelConfig.fileInfo = choosePanel.value?.activeModel;
   //判断是否是外部模型
   if (modelConfig.fileInfo.filePath) {
-    $local.set(MODEL_PRIVEW_CONFIG, modelConfig);
+    $local.set(MODEL_PREVIEW_CONFIG, modelConfig);
     const { href } = router.resolve({ path: "/preview" });
     window.open(href, "_blank");
   } else {
