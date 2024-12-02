@@ -15,7 +15,7 @@
       </div>
       <div class="lr-box">
         <el-space>
-          <el-button type="primary" icon="Tickets" @click="onSavaDragdata">保存数据</el-button>
+          <el-button type="primary" icon="Tickets" @click="onSavaDragData">保存数据</el-button>
         </el-space>
       </div>
     </header>
@@ -48,7 +48,7 @@
         <div class="content" @drop="onDrop" @dragover.prevent>
           <draggable-container :adsorbParent="true" :disabled="true" v-if="dragModelList.length">
             <draggable-resizable-item
-              @onDragActived="onDragActived"
+              @onDragActive="onDragActive"
               @onDragDeactivated="onDragDeactivated"
               @contextmenu.prevent="onContextmenu"
               v-for="drag in dragModelList"
@@ -58,7 +58,7 @@
           </draggable-container>
           <div class="empty-tip" v-else>请拖拽添加多个!!!</div>
           <!-- 右键菜单 -->
-          <right-context-menu :rightMenuPositon="rightMenuPositon" @onDelete="onDeleteDrag"></right-context-menu>
+          <right-context-menu :rightMenuPosition="rightMenuPosition" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
         <!-- <el-empty description="拖拽添加多个" /> -->
       </div>
@@ -69,7 +69,7 @@
 import { DraggableContainer } from "vue3-draggable-resizable";
 import DraggableResizableItem from "@/components/DraggableResizableItem/index.vue";
 import RightContextMenu from "@/components/RightContextMenu/index.vue";
-import { MODEL_BASE_DATA, MODEL_BASE_DRAGE_DATA } from "@/config/constant";
+import { MODEL_BASE_DATA, MODEL_BASE_DRAGS_DATA } from "@/config/constant";
 import { deepCopy, onlyKey } from "@/utils/utilityFunction";
 import { ref, getCurrentInstance, onMounted, nextTick } from "vue";
 import { ElMessage } from "element-plus";
@@ -80,7 +80,8 @@ const modelBaseList = ref($local.get(MODEL_BASE_DATA));
 const dragModelList = ref([]);
 // 当前选中的内容
 const dragActive = ref(null);
-const rightMenuPositon = ref({});
+const rightMenuPosition = ref({});
+
 // 拖拽开始
 const onDragStart = (event, model) => {
   dragActive.value = deepCopy(model);
@@ -119,7 +120,7 @@ const onDrop = event => {
 };
 
 // 选中拖拽元素
-const onDragActived = drag => {
+const onDragActive = drag => {
   dragActive.value = drag;
 };
 // 取消选中拖拽元素
@@ -130,7 +131,7 @@ const onDragDeactivated = modelKey => {
 };
 // 鼠标右键事件
 const onContextmenu = e => {
-  rightMenuPositon.value = {
+  rightMenuPosition.value = {
     x: e.clientX,
     y: e.clientY,
     modelKey: dragActive.value.modelKey
@@ -145,12 +146,12 @@ const onDeleteDrag = modelKey => {
 
 // 获取拖拽数据列表
 const getDragDataList = () => {
-  dragModelList.value = $local.get(MODEL_BASE_DRAGE_DATA) || [];
+  dragModelList.value = $local.get(MODEL_BASE_DRAGS_DATA) || [];
 };
 
 // 保存拖拽数据
-const onSavaDragdata = () => {
-  $local.set(MODEL_BASE_DRAGE_DATA, dragModelList.value);
+const onSavaDragData = () => {
+  $local.set(MODEL_BASE_DRAGS_DATA, dragModelList.value);
   ElMessage.success("更新成功");
 };
 

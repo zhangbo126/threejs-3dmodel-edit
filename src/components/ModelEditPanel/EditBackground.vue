@@ -156,7 +156,7 @@
                     <el-button type="primary" link>强度</el-button>
                   </div>
                 </el-space>
-                <div class="grid-silder">
+                <div class="grid-sidle">
                   <el-slider show-input @input="onChangeViewConfig" v-model="config.intensity" :min="0" :max="1" :step="0.01" />
                 </div>
               </div>
@@ -166,7 +166,7 @@
                     <el-button type="primary" link> 模糊</el-button>
                   </div>
                 </el-space>
-                <div class="grid-silder">
+                <div class="grid-sidle">
                   <el-slider show-input @input="onChangeViewConfig" v-model="config.blurriness" :min="0" :max="1" :step="0.01" />
                 </div>
               </div>

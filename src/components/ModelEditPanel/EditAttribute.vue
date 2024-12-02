@@ -44,7 +44,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>X 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onSetPosition" show-input v-model="config.positionX" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
@@ -52,7 +52,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>Y 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onSetPosition" show-input v-model="config.positionY" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
@@ -60,7 +60,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>Z 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onSetPosition" show-input v-model="config.positionZ" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
@@ -83,7 +83,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>X 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input @input="onChangeGridHelper" v-model="config.x" :min="-2" :max="4" :step="0.01" />
         </div>
       </div>
@@ -92,7 +92,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>Y 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input @input="onChangeGridHelper" v-model="config.y" :min="-2" :max="4" :step="0.01" />
         </div>
       </div>
@@ -101,7 +101,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>Z 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input @input="onChangeGridHelper" v-model="config.z" :min="-2" :max="4" :step="0.01" />
         </div>
       </div>
@@ -145,7 +145,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>轴长度</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeAxesHelper" v-model="config.axesSize" :min="1" :max="10" :step="0.2" />
         </div>
       </div>

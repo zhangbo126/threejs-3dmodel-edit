@@ -2,6 +2,13 @@
 
 <a href='https://gitee.com/ZHANG_6666/Three.js3D/stargazers'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/star.svg?theme=dark' alt='star'></img></a> <a href='https://gitee.com/ZHANG_6666/Three.js3D/members'><img src='https://gitee.com/ZHANG_6666/Three.js3D/badge/fork.svg?theme=dark' alt='fork'></img></a>
 
+<a target="_black" href="https://github.com/zhangbo126/threejs-3dmodel-edit">
+<img alt="github-starts" src="https://img.shields.io/github/stars/zhangbo126/threejs-3dmodel-edit?style=social">
+</a>
+<a target="_black" href="https://github.com/zhangbo126/threejs-3dmodel-edit">
+<img alt="github-fork" src="https://img.shields.io/github/forks/zhangbo126/threejs-3dmodel-edit?style=social">
+</a>
+
 ### 📦️ 分支介绍
 
 1. master: `Vue3+Pinia+Javascript` (最新的功能 issues 和修复的 bug 都在这个分支)

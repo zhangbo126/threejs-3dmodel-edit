@@ -2,21 +2,21 @@
 import { defineComponent, h, watch } from "vue";
 export default defineComponent({
   props: {
-    rightMenuPositon: {
+    rightMenuPosition: {
       type: Object,
-      default: {},
-    },
+      default: {}
+    }
   },
   data() {
     return {
       mouseX: 0,
       mouseY: 0,
       display: "none",
-      modelKey: null,
+      modelKey: null
     };
   },
   watch: {
-    rightMenuPositon: {
+    rightMenuPosition: {
       handler(val) {
         const { x, y, modelKey } = val;
         const { innerWidth, innerHeight } = window;
@@ -26,8 +26,8 @@ export default defineComponent({
         this.modelKey = modelKey;
         document.addEventListener("mouseup", this.onMouseup, false);
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   methods: {
     onDelete() {
@@ -39,7 +39,7 @@ export default defineComponent({
         this.display = "none";
         document.removeEventListener("mouseup", this.onMouseup);
       }
-    },
+    }
   },
   render() {
     return h(
@@ -48,7 +48,7 @@ export default defineComponent({
         style={{
           top: this.mouseY + "px",
           left: this.mouseX + "px",
-          display: this.display,
+          display: this.display
         }}
       >
         <li class="right-menu-item" onClick={this.onDelete}>
@@ -56,14 +56,12 @@ export default defineComponent({
             <el-icon size={14} color={"#6bacf2"}>
               <Delete></Delete>
             </el-icon>
-            <el-text type="primary" >
-              删除
-            </el-text>
+            <el-text type="primary">删除</el-text>
           </el-space>
         </li>
       </ul>
     );
-  },
+  }
 });
 </script>
 <style lang="scss" scoped>

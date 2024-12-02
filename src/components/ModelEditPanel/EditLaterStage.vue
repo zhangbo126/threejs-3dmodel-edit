@@ -28,7 +28,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>颜色</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-color-picker
             color-format="hex"
             :predefine="PREDEFINE_COLORS"
@@ -42,7 +42,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>强度</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input v-model="config.strength" @input="onChangeFlow" :step="0.01" :min="0" :max="8" />
         </div>
       </div>
@@ -50,7 +50,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>半径</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input v-model="config.radius" @input="onChangeFlow" :step="0.01" :min="0" :max="5" />
         </div>
       </div>
@@ -58,7 +58,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>阈值</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input v-model="config.threshold" @input="onChangeFlow" :step="0.01" :min="0" :max="1" />
         </div>
       </div>
@@ -72,7 +72,7 @@
           </el-icon>
           <span> 色调曝光度 </span>
         </el-space>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input v-model="config.toneMappingExposure" @input="onChangeFlow" :step="0.01" :min="0.5" :max="10" />
         </div>
       </div>
@@ -96,7 +96,7 @@
           </el-icon>
           <span> 模型分解 </span>
         </el-space>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
         </div>
       </div>
@@ -107,12 +107,12 @@
           </el-icon>
           <span> 模型材质操作 </span>
         </el-space>
-        <div class="grid-silder">
-          <el-switch v-model="config.manageFlage" @change="onChangeStage" />
+        <div class="grid-sidle">
+          <el-switch v-model="config.manageFlag" @change="onChangeStage" />
         </div>
       </div>
       <div class="option" :class="manageDisable">
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-radio-group v-model="config.transformType" @change="onChangeTransform">
             <el-radio-button value="translate">拖拽</el-radio-button>
             <el-radio-button value="rotate">旋转</el-radio-button>
@@ -139,7 +139,7 @@ const optionsDisable = computed(() => {
 const decomposeDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
   const decomposeMesh = modelMaterialList.filter(v => v.type == "Mesh");
-  return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length || config.manageFlage ? "disabled" : "";
+  return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length || config.manageFlag ? "disabled" : "";
 });
 const moveDisable = computed(() => {
   const modelMaterialList = store.modelApi.modelMaterialList;
@@ -147,7 +147,7 @@ const moveDisable = computed(() => {
   return decomposeMesh.length <= 1 || decomposeMesh.length != modelMaterialList.length ? "disabled" : "";
 });
 const manageDisable = computed(() => {
-  return config.manageFlage ? "" : "disabled";
+  return config.manageFlag ? "" : "disabled";
 });
 
 const config = reactive({
@@ -157,8 +157,8 @@ const config = reactive({
   radius: 1,
   decompose: 0,
   transformType: "translate",
-  manageFlage: false,
-  manageFlage: false,
+  manageFlag: false,
+  manageFlag: false,
   toneMappingExposure: 2,
   color: ""
 });
@@ -171,7 +171,7 @@ onMounted(() => {
       radius: 1,
       decompose: 0,
       transformType: "translate",
-      manageFlage: false,
+      manageFlag: false,
       toneMappingExposure: 2
     });
   });
@@ -206,7 +206,7 @@ const onInitialize = () => {
     radius: 1,
     decompose: 0,
     transformType: "translate",
-    manageFlage: false,
+    manageFlag: false,
     toneMappingExposure: 2
   });
   store.modelApi.initStageFlow();
@@ -214,7 +214,7 @@ const onInitialize = () => {
 
 const getStageConfig = () => {
   return {
-    meshPositonList: store.modelApi.getMeshDragPosition(),
+    meshPositionList: store.modelApi.getMeshDragPosition(),
     ...config
   };
 };

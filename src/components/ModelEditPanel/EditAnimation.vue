@@ -42,7 +42,7 @@
         </el-space>
       </div>
       <div class="option">
-        <el-radio-group v-model="config.loop" @change="onUplateAnimation">
+        <el-radio-group v-model="config.loop" @change="onUpdateAnimation">
           <el-radio-button value="LoopOnce">只执行一次</el-radio-button>
           <el-radio-button value="LoopRepeat">无限循环</el-radio-button>
           <el-radio-button value="LoopPingPong">来回循环</el-radio-button>
@@ -57,7 +57,7 @@
         </el-space>
       </div>
       <div class="option">
-        <el-slider show-input v-model="config.timeScale" @change="onUplateAnimation" :step="0.01" :min="0" :max="1" />
+        <el-slider show-input v-model="config.timeScale" @change="onUpdateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
       <div class="option">
         <el-space>
@@ -68,7 +68,7 @@
         </el-space>
       </div>
       <div class="option">
-        <el-slider show-input v-model="config.weight" @change="onUplateAnimation" :step="0.01" :min="0" :max="1" />
+        <el-slider show-input v-model="config.weight" @change="onUpdateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
     </div>
     <!-- 轴动画 -->
@@ -160,7 +160,7 @@ onMounted(() => {
 const onChangeAnimationSwitch = () => {
   const { visible } = config;
   if (visible) {
-    onUplateAnimation();
+    onUpdateAnimation();
   } else {
     store.modelApi.onClearAnimation();
   }
@@ -168,11 +168,11 @@ const onChangeAnimationSwitch = () => {
 // 选择动画
 const onChangeAnimationType = ({ name }) => {
   config.animationName = name;
-  store.modelApi.onStartModelAnimaion(config);
+  store.modelApi.onStartModelAnimation(config);
 };
 // 更新模型状态
-const onUplateAnimation = () => {
-  store.modelApi.onStartModelAnimaion(config);
+const onUpdateAnimation = () => {
+  store.modelApi.onStartModelAnimation(config);
 };
 
 // 设置模型轴动画

@@ -101,13 +101,13 @@ export const MODEL_DECOMPOSE = {
 };
 
 // 模型预览缓存本地key
-export const MODEL_PRIVEW_CONFIG = "MODEL_PRIVEW_CONFIG";
+export const MODEL_PREVIEW_CONFIG = "MODEL_PREVIEW_CONFIG";
 
 // 模型库数据缓存key
 export const MODEL_BASE_DATA = "MODEL_BASE_DATA";
 
 // 模型库拖拽列表数据缓存 key
-export const MODEL_BASE_DRAGE_DATA = "MODEL_BASE_DRAGE_DATA";
+export const MODEL_BASE_DRAGS_DATA = "MODEL_BASE_DRAGS_DATA";
 
 // 模型初始化数据
 export const MODEL_DEFAULT_CONFIG = {
@@ -160,21 +160,21 @@ export const MODEL_DEFAULT_CONFIG = {
     directionalLightIntensity: 1,
     directionalHorizontal: -1.26,
     directionalVertical: -3.85,
-    directionalSistance: 2.98,
-    directionaShadow: true,
+    directionalSistine: 2.98,
+    directionShadow: true,
     pointLight: false,
     pointLightHelper: true,
     pointLightColor: "#1E90FF",
     pointLightIntensity: 1,
     pointHorizontal: -4.21,
     pointVertical: -4.1,
-    pointSistance: 2.53,
+    pointDistance: 2.53,
     spotLight: false,
     spotLightColor: "#323636",
     spotLightIntensity: 400,
     spotHorizontal: -3.49,
     spotVertical: -4.37,
-    spotSistance: 4.09,
+    spotSistine: 4.09,
     spotAngle: 0.5,
     spotPenumbra: 1,
     spotFocus: 1,
@@ -183,7 +183,7 @@ export const MODEL_DEFAULT_CONFIG = {
     spotDistance: 20
   },
   stage: {
-    meshPositonList: [],
+    meshPositionList: [],
     glow: false,
     threshold: 0.05,
     strength: 0.6,
