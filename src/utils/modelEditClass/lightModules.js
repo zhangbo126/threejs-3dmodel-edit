@@ -18,10 +18,10 @@ function onSetModelAmbientLight({ ambientLight, ambientLightColor, ambientLightI
 // 设置平行光
 function onSetModelDirectionalLight(config) {
   const {
-    directionaShadow,
+    directionShadow,
     directionalHorizontal,
     directionalVertical,
-    directionalSistance,
+    directionalSistine,
     directionalLight,
     directionalLightColor,
     directionalLightIntensity,
@@ -30,21 +30,21 @@ function onSetModelDirectionalLight(config) {
   this.directionalLight.visible = directionalLight;
   this.directionalLightHelper.visible = directionalLightHelper && directionalLight;
   this.directionalLight.intensity = directionalLightIntensity;
-  this.directionalLight.castShadow = directionaShadow;
+  this.directionalLight.castShadow = directionShadow;
   this.directionalLight.color.set(directionalLightColor);
-  const { x, y, z } = lightPosition(directionalHorizontal, directionalVertical, directionalSistance);
+  const { x, y, z } = lightPosition(directionalHorizontal, directionalVertical, directionalSistine);
   this.directionalLight.position.set(x, y, z);
   this.directionalLightHelper.update();
 }
 // 设置点光源
 function onSetModelPointLight(config) {
-  const { pointHorizontal, pointVertical, pointSistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } =
+  const { pointHorizontal, pointVertical, pointDistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } =
     config;
   this.pointLight.visible = pointLight;
   this.pointLightHelper.visible = pointLight && pointLightHelper;
   this.pointLight.intensity = pointLightIntensity;
   this.pointLight.color.set(pointLightColor);
-  const { x, y, z } = lightPosition(pointHorizontal, pointVertical, pointSistance);
+  const { x, y, z } = lightPosition(pointHorizontal, pointVertical, pointDistance);
   this.pointLight.position.set(x, y, z);
   this.pointLightHelper.update();
 }
@@ -62,7 +62,7 @@ function onSetModelSpotLight(config) {
     spotLightIntensity,
     spotHorizontal,
     spotVertical,
-    spotSistance
+    spotSistine
   } = config;
   this.spotLight.visible = spotLight;
   this.spotLightHelper.visible = spotLight && spotLightHelper;
@@ -73,7 +73,7 @@ function onSetModelSpotLight(config) {
   this.spotLight.castShadow = spotCastShadow;
   this.spotLight.distance = spotDistance;
   this.spotLight.color.set(spotLightColor);
-  const { x, y, z } = lightPosition(spotHorizontal, spotVertical, spotSistance);
+  const { x, y, z } = lightPosition(spotHorizontal, spotVertical, spotSistine);
   this.spotLight.position.set(x, y, z);
   this.spotLightHelper.update();
 }
@@ -95,8 +95,8 @@ function onResettingLight({ ambientLight }) {
     directionalLightIntensity: 1,
     directionalHorizontal: -1.26,
     directionalVertical: -3.85,
-    directionalSistance: 2.98,
-    directionaShadow: true,
+    directionalSistine: 2.98,
+    directionShadow: true,
     //点光源
     pointLight: false,
     pointLightHelper: true,
@@ -104,14 +104,14 @@ function onResettingLight({ ambientLight }) {
     pointLightIntensity: 1,
     pointHorizontal: -4.21,
     pointVertical: -4.1,
-    pointSistance: 2.53,
+    pointDistance: 2.53,
     //聚光灯
     spotLight: false,
     spotLightColor: "#323636",
     spotLightIntensity: 400,
     spotHorizontal: -3.49,
     spotVertical: -4.37,
-    spotSistance: 4.09,
+    spotSistine: 4.09,
     spotAngle: 0.5,
     spotPenumbra: 1,
     spotFocus: 1,

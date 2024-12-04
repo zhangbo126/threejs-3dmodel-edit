@@ -77,7 +77,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>容器高度</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.height" :min="1" :max="500" :step="1" />
         </div>
       </div>
@@ -85,7 +85,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>容器宽度</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.width" :min="1" :max="500" :step="1" />
         </div>
       </div>
@@ -93,7 +93,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>字体大小</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.fontSize" :min="1" :max="50" :step="0.1" />
         </div>
       </div>
@@ -101,7 +101,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>标签坐标X</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.positionX" :min="-50" :max="50" :step="0.01" />
         </div>
       </div>
@@ -109,7 +109,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>标签坐标Y</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.positionY" :min="-50" :max="50" :step="0.1" />
         </div>
       </div>
@@ -117,7 +117,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>标签坐标Z</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.positionZ" :min="-50" :max="50" :step="0.1" />
         </div>
       </div>
@@ -125,7 +125,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>背景颜色</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-color-picker
             color-format="hex"
             :predefine="predefineColors"
@@ -136,7 +136,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>图标颜色</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-color-picker
             color-format="hex"
             :predefine="predefineColors"
@@ -147,7 +147,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>字体颜色</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-color-picker color-format="hex" :predefine="predefineColors" @change="onChangeTagValue" v-model="activeTag.color" />
         </div>
       </div>
@@ -155,7 +155,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>图标大小</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onChangeTagValue" show-input v-model="activeTag.iconSize" :min="1" :max="50" :step="0.1" />
         </div>
       </div>
@@ -163,7 +163,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>标签内容</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-input
             type="textarea"
             :autosize="{ minRows: 3, maxRows: 3 }"

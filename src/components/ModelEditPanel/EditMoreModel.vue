@@ -76,7 +76,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>X 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onSetModelPosition" show-input v-model="config.position.x" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
@@ -84,7 +84,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>Y 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onSetModelPosition" show-input v-model="config.position.y" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
@@ -92,7 +92,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>Z 轴</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider @input="onSetModelPosition" show-input v-model="config.position.z" :min="-10" :max="10" :step="0.1" />
         </div>
       </div>
@@ -109,7 +109,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>缩放值</el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidler">
           <el-slider @input="onSetModelScale" show-input v-model="config.scale" :min="0.01" :max="5" :step="0.01" />
         </div>
       </div>

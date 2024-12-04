@@ -75,15 +75,15 @@
           <div class="grid-txt">
             <el-button type="primary" link>是否开启阴影</el-button>
           </div>
-          <div class="grid-silder">
-            <el-switch v-model="config.directionaShadow" @change="onChangeDirectionalLight" />
+          <div class="grid-sidle">
+            <el-switch v-model="config.directionShadow" @change="onChangeDirectionalLight" />
           </div>
           <!-- 辅助线 -->
           <el-space>
             <div class="grid-txt">
               <el-button type="primary" link>辅助线</el-button>
             </div>
-            <div class="grid-silder">
+            <div class="grid-sidle">
               <el-switch v-model="config.directionalLightHelper" @change="onChangeDirectionalLight" />
             </div>
           </el-space>
@@ -93,7 +93,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>水平方向</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider
               show-input
               @input="onChangeDirectionalLight"
@@ -109,7 +109,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>垂直方向</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider
               show-input
               @input="onChangeDirectionalLight"
@@ -125,11 +125,11 @@
           <div class="grid-txt">
             <el-button type="primary" link>光源距离</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider
               show-input
               @input="onChangeDirectionalLight"
-              v-model="config.directionalSistance"
+              v-model="config.directionalSistine"
               :min="0"
               :max="10"
               :step="0.01"
@@ -154,7 +154,7 @@
             <div class="grid-txt">
               <el-button type="primary" link>辅助线</el-button>
             </div>
-            <div class="grid-silder">
+            <div class="grid-sidle">
               <el-switch v-model="config.pointLightHelper" @change="onChangePointLight" />
             </div>
           </el-space>
@@ -185,7 +185,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>水平方向</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider
               show-input
               @input="onChangePointLight"
@@ -201,7 +201,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>垂直方向</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangePointLight" v-model="config.pointVertical" :min="-10" :max="10" :step="0.1" />
           </div>
         </div>
@@ -210,8 +210,8 @@
           <div class="grid-txt">
             <el-button type="primary" link>光源距离</el-button>
           </div>
-          <div class="grid-silder">
-            <el-slider show-input @input="onChangePointLight" v-model="config.pointSistance" :min="0" :max="10" :step="0.1" />
+          <div class="grid-sidle">
+            <el-slider show-input @input="onChangePointLight" v-model="config.pointDistance" :min="0" :max="10" :step="0.1" />
           </div>
         </div>
       </div>
@@ -252,7 +252,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>是否开启阴影</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-switch v-model="config.spotCastShadow" @change="onChangeSpotLight" />
           </div>
           <!-- 辅助线 -->
@@ -260,7 +260,7 @@
             <div class="grid-txt">
               <el-button type="primary" link>辅助线</el-button>
             </div>
-            <div class="grid-silder">
+            <div class="grid-sidle">
               <el-switch v-model="config.spotLightHelper" @change="onChangeSpotLight" />
             </div>
           </el-space>
@@ -270,7 +270,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>水平方向</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangeSpotLight" v-model="config.spotHorizontal" :min="-10" :max="10" :step="0.1" />
           </div>
         </div>
@@ -279,7 +279,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>垂直方向</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangeSpotLight" v-model="config.spotVertical" :min="-10" :max="10" :step="0.1" />
           </div>
         </div>
@@ -288,8 +288,8 @@
           <div class="grid-txt">
             <el-button type="primary" link>光源距离</el-button>
           </div>
-          <div class="grid-silder">
-            <el-slider show-input @input="onChangeSpotLight" v-model="config.spotSistance" :min="0" :max="10" :step="0.1" />
+          <div class="grid-sidle">
+            <el-slider show-input @input="onChangeSpotLight" v-model="config.spotSistine" :min="0" :max="10" :step="0.1" />
           </div>
         </div>
         <!-- 光线照射范围 -->
@@ -297,7 +297,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>光线照射范围</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangeSpotLight" v-model="config.spotAngle" :min="0" :max="2" :step="0.01" />
           </div>
         </div>
@@ -306,7 +306,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>边缘聚光度</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangeSpotLight" v-model="config.spotPenumbra" :min="0" :max="1" :step="0.01" />
           </div>
         </div>
@@ -315,7 +315,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>投影聚焦度</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangeSpotLight" v-model="config.spotFocus" :min="0" :max="3" :step="0.01" />
           </div>
         </div>
@@ -324,7 +324,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>光源照射距离</el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider show-input @input="onChangeSpotLight" v-model="config.spotDistance" :min="1" :max="500" :step="1" />
           </div>
         </div>
@@ -351,8 +351,8 @@ const config = reactive({
   directionalLightIntensity: 5,
   directionalHorizontal: -1.26,
   directionalVertical: -3.85,
-  directionalSistance: 2.98,
-  directionaShadow: true,
+  directionalSistine: 2.98,
+  directionShadow: true,
   //点光源
   pointLight: false,
   pointLightHelper: true,
@@ -360,14 +360,14 @@ const config = reactive({
   pointLightIntensity: 10,
   pointHorizontal: -4.21,
   pointVertical: -4.1,
-  pointSistance: 2.53,
+  pointDistance: 2.53,
   //聚光灯
   spotLight: false,
   spotLightColor: "#00BABD",
   spotLightIntensity: 900,
   spotHorizontal: -3.49,
   spotVertical: -4.37,
-  spotSistance: 4.09,
+  spotSistine: 4.09,
   spotAngle: 0.5,
   spotPenumbra: 1,
   spotFocus: 1,
@@ -457,8 +457,8 @@ const initLightData = () => {
     directionalLightIntensity: 5,
     directionalHorizontal: -1.26,
     directionalVertical: -3.85,
-    directionalSistance: 2.98,
-    directionaShadow: true,
+    directionalSistine: 2.98,
+    directionShadow: true,
     //点光源
     pointLight: false,
     pointLightHelper: true,
@@ -466,14 +466,14 @@ const initLightData = () => {
     pointLightIntensity: 10,
     pointHorizontal: -4.21,
     pointVertical: -4.1,
-    pointSistance: 2.53,
+    pointDistance: 2.53,
     //聚光灯
     spotLight: false,
     spotLightColor: "#00BABD",
     spotLightIntensity: 900,
     spotHorizontal: -3.49,
     spotVertical: -4.37,
-    spotSistance: 4.09,
+    spotSistine: 4.09,
     spotAngle: 0.5,
     spotPenumbra: 1,
     spotFocus: 1,

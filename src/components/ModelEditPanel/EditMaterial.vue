@@ -88,7 +88,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>透明度 </el-button>
         </div>
-        <div class="grid-silder">
+        <div class="grid-sidle">
           <el-slider
             show-input
             @input="onChangeMaterial"

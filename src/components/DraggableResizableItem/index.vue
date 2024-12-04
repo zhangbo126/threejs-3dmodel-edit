@@ -17,10 +17,7 @@
     @activated="activatedHandle"
     @deactivated="deactivatedHandle"
   >
-    <tree-component
-      :width="props.config.width"
-      :height="props.config.height"
-    ></tree-component>
+    <tree-component :width="props.config.width" :height="props.config.height"></tree-component>
     <div :class="dragMask" class="mask"></div>
   </draggable-resizable>
 </template>
@@ -31,28 +28,28 @@ import { ref } from "vue";
 const props = defineProps({
   config: {
     type: Object,
-    default: {},
-  },
+    default: {}
+  }
 });
 
-const emit = defineEmits(["onDragActived", "onDragDeactivated"]);
+const emit = defineEmits(["onDragActive", "onDragDeactivated"]);
 
 const dragMask = ref("");
 // 开始拖拽
-const dragHandle = (e) => {
+const dragHandle = e => {
   dragMask.value = "mask-dragging";
 };
 // 拖拽结束
-const dragEndHandle = (e) => {
+const dragEndHandle = e => {
   dragMask.value = "mask-dragactive";
 };
 // 选中
-const activatedHandle = (e) => {
+const activatedHandle = e => {
   dragMask.value = "mask-dragactive";
-  emit("onDragActived", props.config);
+  emit("onDragActive", props.config);
 };
 // 取消选中
-const deactivatedHandle = (e) => {
+const deactivatedHandle = e => {
   dragMask.value = "";
   emit("onDragDeactivated", props.config.modelKey);
 };

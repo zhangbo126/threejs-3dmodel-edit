@@ -35,7 +35,7 @@ function create3dTags() {
     const backgroundColor = "rgba(0,127,127," + (Math.random() * 0.5 + 0.25) + ")";
     const len = this.dragTagList.length + 1;
     // 创建3d标签
-    const tagvMode = createApp({
+    const tagsMode = createApp({
       render() {
         return (
           <div>
@@ -53,7 +53,7 @@ function create3dTags() {
       }
     });
 
-    const vNode = tagvMode.mount(document.createElement("div"));
+    const vNode = tagsMode.mount(document.createElement("div"));
     element.appendChild(vNode.$el);
 
     let cssObject = new CSS3DObject(element);

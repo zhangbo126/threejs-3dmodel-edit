@@ -40,7 +40,7 @@
           <div class="grid-txt">
             <el-button type="primary" link>{{ key }} </el-button>
           </div>
-          <div class="grid-silder">
+          <div class="grid-sidle">
             <el-slider
               show-input
               v-if="typeof activeGeometry[key] == 'number'"
