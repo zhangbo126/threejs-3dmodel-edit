@@ -168,6 +168,7 @@ class renderModel {
     const { clientHeight, clientWidth } = this.container;
     this.camera = new THREE.PerspectiveCamera(45, clientWidth / clientHeight, 0.25, 2000);
     // this.camera.near = 0.1
+
     const { camera } = this.config;
     if (!camera) return false;
     const { x, y, z } = camera;
