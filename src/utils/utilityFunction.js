@@ -137,3 +137,22 @@ export function getFileType(fileName) {
 export function getAssetsFile(filePath) {
   return new URL(`../assets/${filePath}`, import.meta.url).href;
 }
+
+/**
+ * 查找场景中的指定对象
+ * @param {THREE.Scene} scene - Three.js 场景
+ * @param {Object} options - 查找选项
+ * @param {Function} [options.type] - 按类型查找，例如 TransformControls
+ * @returns {THREE.Object3D|null} 找到的对象，如果没找到则返回 null
+ */
+export function findObjectInScene(scene, { type }) {
+  let found = null;
+
+  scene.traverse(object => {
+    if (type && object.type === type) {
+      found = object;
+    }
+  });
+
+  return found;
+}

@@ -6,6 +6,8 @@
 import * as THREE from "three";
 import { toRaw } from "vue";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import { TransformControls } from "three/addons/controls/TransformControls.js";
+import { findObjectInScene } from "@/utils/utilityFunction.js";
 import { useMeshEditStore } from "@/store/meshEditStore";
 
 const store = useMeshEditStore();
@@ -292,8 +294,8 @@ function onMouseClickModel(event) {
       if (!dragPosition) {
         intersectedObject.userData.dragPosition = position;
       }
-
-      this.transformControls.position.copy(position);
+      const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
+      transformControlsPlane.position.copy(position);
       this.transformControls.attach(intersectedObject);
     }
   } else if (!this.transformControls) {

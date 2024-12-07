@@ -100,7 +100,7 @@
           <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
         </div>
       </div>
-      <!-- <div class="option" :class="moveDisable">
+      <div class="option" :class="moveDisable">
         <el-space>
           <el-icon>
             <Rank :size="20" />
@@ -119,7 +119,7 @@
             <el-radio-button value="scale">缩放</el-radio-button>
           </el-radio-group>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>

@@ -16,6 +16,7 @@
 
 import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
+import { findObjectInScene } from "@/utils/utilityFunction.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { MODEL_DECOMPOSE } from "@/config/constant.js";
 
@@ -129,6 +130,12 @@ function setModelMeshDrag({ manageFlag }) {
 
     const gizmo = this.transformControls.getHelper();
     this.scene.add(gizmo);
+  } else {
+    this.transformControls.detach();
+    const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
+    if (transformControlsPlane) {
+      this.scene.remove(transformControlsPlane);
+    }
   }
 }
 
@@ -187,7 +194,10 @@ function initStageFlow() {
   // 清除变换控制器
   if (this.transformControls) {
     this.transformControls.detach();
-    this.transformControls.dispose();
+    const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
+    if (transformControlsPlane) {
+      this.scene.remove(transformControlsPlane);
+    }
     this.scene.remove(this.transformControls);
     this.transformControls = null;
   }
