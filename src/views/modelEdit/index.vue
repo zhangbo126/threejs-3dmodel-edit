@@ -133,39 +133,45 @@ const initModelBaseData = () => {
   }
 };
 
-// 当前拖拽结束TODO：geometry（几何体模型） tags(3d标签) manyModel(多模型)
+// 处理拖拽结束事件
 const onDragDrop = async e => {
   const { dragGeometryModel, dragTag, activeDragManyModel } = store.modelApi;
   const { clientX, clientY } = e;
-  // 几何体
-  if (dragGeometryModel.id && store.modelType == "geometry") {
-    dragGeometryModel.clientX = clientX;
-    dragGeometryModel.clientY = clientY;
 
+  // 更新拖拽位置
+  const updateDragPosition = model => {
+    model.clientX = clientX;
+    model.clientY = clientY;
+  };
+
+  // 处理几何体模型
+  if (dragGeometryModel.id && store.modelType === "geometry") {
+    updateDragPosition(dragGeometryModel);
     store.modelApi.onSwitchModel(dragGeometryModel);
-    // 更新当前编辑tab
     $bus.emit("update-tab", "EditGeometry");
   }
-  // 3d标签
-  if (dragTag.id && store.modelType == "tags") {
-    dragTag.clientX = clientX;
-    dragTag.clientY = clientY;
+
+  // 处理3D标签
+  if (dragTag.id && store.modelType === "tags") {
+    updateDragPosition(dragTag);
     store.modelApi.create3dTags(dragTag);
   }
-  // 多模型
-  if (store.modelType == "manyModel") {
-    activeDragManyModel.clientX = clientX;
-    activeDragManyModel.clientY = clientY;
-    $bus.emit("page-loading", true);
+
+  // 处理多模型
+  if (store.modelType === "manyModel") {
+    updateDragPosition(activeDragManyModel);
+
     try {
+      $bus.emit("page-loading", true);
       const { load } = await store.modelApi.onLoadManyModel(activeDragManyModel);
+
       if (load) {
         $bus.emit("update-model");
-        // 更新当前编辑tab
         $bus.emit("update-tab", "EditMoreModel");
-        $bus.emit("page-loading", false);
       }
-    } catch {
+    } catch (error) {
+      console.error("加载多模型失败:", error);
+    } finally {
       $bus.emit("page-loading", false);
     }
   }

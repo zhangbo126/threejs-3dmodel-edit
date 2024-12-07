@@ -1,47 +1,55 @@
+// Vue相关
 import { defineComponent, h, createApp } from "vue";
-import * as THREE from "three"; //导入整个 three.js核心库
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 import { ElIcon, ElMessage } from "element-plus";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"; //导入控制器模块，轨道控制器
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"; //导入GLTF模块，模型解析器,根据文件格式来定
+import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+
+// Three.js核心
+import * as THREE from "three";
+
+// Three.js控制器和加载器
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+
+// Three.js后期处理
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
-import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
-import { CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
-import { CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
+import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
+
+// Three.js渲染器
+import { CSS3DObject, CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
+
+// 项目配置和工具函数
 import { vertexShader, fragmentShader } from "@/config/constant.js";
 import { mapImageList } from "@/config/model";
 import { lightPosition, onlyKey, debounce, getAssetsFile } from "@/utils/utilityFunction";
 
 /**
  * @describe three.js 组件数据初始化方法
- * @param config 组件参数配置信息
+ * @param {Object} config 组件参数配置信息
+ * @param {String} elementId 容器元素ID
  */
-
 class renderModel {
   constructor(config, elementId) {
+    // 基础配置
     this.config = config;
-
     this.container = document.querySelector("#" + elementId);
-    // 相机
-    this.camera;
-    // 场景
-    this.scene;
-    //渲染器
-    this.renderer;
-    // 控制器
-    this.controls;
-    // 模型
-    this.model;
-    //文件加载器类型
+
+    // 场景相关
+    this.scene = null;
+    this.camera = null;
+    this.renderer = null;
+    this.controls = null;
+    this.model = null;
+
+    // 加载器配置
     this.fileLoaderMap = {
       glb: new GLTFLoader(),
       fbx: new FBXLoader(this.loadingManager),
@@ -49,93 +57,82 @@ class renderModel {
       obj: new OBJLoader(this.loadingManager),
       stl: new STLLoader()
     };
-    //模型动画列表
-    this.modelAnimation;
-    //模型动画对象
-    this.animationMixer;
+
+    // 动画相关
+    this.modelAnimation = null;
+    this.animationMixer = null;
     this.animationClock = new THREE.Clock();
-    // 动画帧
-    this.animationFrame;
-    // 轴动画帧
-    this.rotationAnimationFrame;
-    // 动画构造器
+    this.animationFrame = null;
+    this.rotationAnimationFrame = null;
     this.animateClipAction = null;
-    // 动画循环方式枚举
     this.loopMap = {
       LoopOnce: THREE.LoopOnce,
       LoopRepeat: THREE.LoopRepeat,
       LoopPingPong: THREE.LoopPingPong
     };
-    // 网格辅助线
-    this.gridHelper;
-    // 坐标轴辅助线
-    this.axesHelper;
-    //模型平面
-    this.planeGeometry;
-    //模型材质列表
-    this.modelMaterialList;
-    // 效果合成器
-    this.effectComposer;
-    this.outlinePass;
-    // 动画渲染器
-    this.renderAnimation;
-    // 碰撞检测
-    this.raycaster = new THREE.Raycaster();
-    // 鼠标位置
-    this.mouse = new THREE.Vector2();
-    // 模型自带贴图
-    this.modelTextureMap;
-    // 辉光效果合成器
-    this.glowComposer;
-    // 辉光渲染器
-    this.unrealBloomPass;
-    // 辉光着色器
-    this.shaderPass;
-    // 需要辉光的材质
-    this.glowMaterialList;
+
+    // 辅助工具
+    this.gridHelper = null;
+    this.axesHelper = null;
+    this.planeGeometry = null;
+
+    // 材质与贴图
+    this.modelMaterialList = null;
+    this.modelTextureMap = null;
+    this.glowMaterialList = null;
     this.materials = {};
-    // 窗口变化监听事件
-    this.onWindowResizesListener;
-    // 鼠标移动
-    this.onMouseMoveListener;
-    // 3d文字控制器
+
+    // 后期处理
+    this.effectComposer = null;
+    this.outlinePass = null;
+    this.renderAnimation = null;
+    this.glowComposer = null;
+    this.unrealBloomPass = null;
+    this.shaderPass = null;
+
+    // 交互相关
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+    this.onWindowResizesListener = null;
+    this.onMouseMoveListener = null;
+
+    // CSS3D渲染
     this.css3dControls = null;
-    // 3d文字渲染器
     this.css3DRenderer = null;
   }
-  init() {
-    return new Promise(async (reslove, reject) => {
-      //初始化渲染器
+
+  async init() {
+    try {
+      // 初始化基础场景
       this.initRender();
-      // //初始化相机
       this.initCamera();
-      //初始化场景
       this.initScene();
-      //初始化控制器，控制摄像头,控制器一定要在渲染器后
       this.initControls();
 
+      // 加载模型
       const load = await this.loadModel(this.config.fileInfo);
-      // 创建效果合成器
-      this.createEffectComposer();
-      // 设置背景信息
-      this.setSceneBackground();
-      // 设置模型材质信息
-      this.setModelMeaterial();
-      // 设置后期/操作信息
-      this.setModelLaterStage();
-      // 设置灯光信息
-      this.setSceneLight();
-      // 设置模型动画信息
-      this.setModelAnimation();
-      // 设置模型轴/辅助线信息
-      this.setModelAxleLine();
-      // 设置场景标签信息
-      this.setSceneTagsRender();
-      //场景渲染
+
+      // 设置场景效果
+      await Promise.all([
+        this.createEffectComposer(),
+        this.setSceneBackground(),
+        this.setModelMaterial(),
+        this.setModelLaterStage(),
+        this.setSceneLight(),
+        this.setModelAnimation(),
+        this.setModelAxleLine(),
+        this.setSceneTagsRender()
+      ]);
+
+      // 启动渲染
       this.sceneAnimation();
       this.addEvenListMouseListener();
-      reslove(load);
-    });
+
+      return load;
+    } catch (error) {
+      console.error("初始化3D场景失败:", error);
+      throw error;
+    }
   }
   // 创建渲染器
   initRender() {
@@ -262,49 +259,73 @@ class renderModel {
   // 创建效果合成器
   createEffectComposer() {
     const { clientHeight, clientWidth } = this.container;
+    const pixelRatio = this.renderer.getPixelRatio();
+    const renderSize = new THREE.Vector2(clientWidth, clientHeight);
+
+    // 主效果合成器
     this.effectComposer = new EffectComposer(this.renderer);
+
+    // 基础渲染通道
     const renderPass = new RenderPass(this.scene, this.camera);
     this.effectComposer.addPass(renderPass);
-    this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.scene, this.camera);
-    this.outlinePass.visibleEdgeColor = new THREE.Color("#FF8C00"); // 可见边缘的颜色
-    this.outlinePass.hiddenEdgeColor = new THREE.Color("#8a90f3"); // 不可见边缘的颜色
-    this.outlinePass.edgeGlow = 2.0; // 发光强度
-    this.outlinePass.edgeThickness = 1; // 边缘浓度
-    this.outlinePass.edgeStrength = 4; // 边缘的强度，值越高边框范围越大
-    this.outlinePass.pulsePeriod = 100; // 闪烁频率，值越大频率越低
-    this.effectComposer.addPass(this.outlinePass);
-    let outputPass = new OutputPass();
-    this.effectComposer.addPass(outputPass);
 
-    let effectFXAA = new ShaderPass(FXAAShader);
-    const pixelRatio = this.renderer.getPixelRatio();
+    // 轮廓通道
+    this.outlinePass = new OutlinePass(renderSize, this.scene, this.camera);
+    this.configureOutlinePass();
+    this.effectComposer.addPass(this.outlinePass);
+
+    // 输出通道
+    this.effectComposer.addPass(new OutputPass());
+
+    // FXAA抗锯齿通道
+    const effectFXAA = new ShaderPass(FXAAShader);
     effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
     effectFXAA.renderToScreen = true;
     effectFXAA.needsSwap = true;
     this.effectComposer.addPass(effectFXAA);
 
-    //创建辉光效果
-    this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(clientWidth, clientHeight), 0, 0, 0);
+    // 辉光通道
+    this.setupBloomEffect(clientWidth, clientHeight);
+
+    // 自定义着色器通道
+    this.setupShaderPass();
+  }
+
+  configureOutlinePass() {
+    this.outlinePass.visibleEdgeColor = new THREE.Color("#FF8C00");
+    this.outlinePass.hiddenEdgeColor = new THREE.Color("#8a90f3");
+    this.outlinePass.edgeGlow = 2.0;
+    this.outlinePass.edgeThickness = 1;
+    this.outlinePass.edgeStrength = 4;
+    this.outlinePass.pulsePeriod = 100;
+  }
+
+  setupBloomEffect(width, height) {
+    // 创建辉光通道
+    this.unrealBloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0, 0, 0);
+
     // 辉光合成器
-    const renderTargetParameters = {
+    const renderTarget = new THREE.WebGLRenderTarget(width * 2, height * 2, {
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false
-    };
-    const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters);
-    this.glowComposer = new EffectComposer(this.renderer, glowRender);
+    });
+
+    this.glowComposer = new EffectComposer(this.renderer, renderTarget);
     this.glowComposer.renderToScreen = false;
     this.glowComposer.addPass(new RenderPass(this.scene, this.camera));
     this.glowComposer.addPass(this.unrealBloomPass);
-    // 着色器
+  }
+
+  setupShaderPass() {
     this.shaderPass = new ShaderPass(
       new THREE.ShaderMaterial({
         uniforms: {
           baseTexture: { value: null },
           bloomTexture: { value: this.glowComposer.renderTarget2.texture },
           tDiffuse: { value: null },
-          glowColor: { value: null }
+          glowColor: { value: new THREE.Color() }
         },
         vertexShader,
         fragmentShader,
@@ -313,7 +334,6 @@ class renderModel {
       "baseTexture"
     );
 
-    this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
     this.shaderPass.renderToScreen = true;
     this.shaderPass.needsSwap = true;
     this.effectComposer.addPass(this.shaderPass);
@@ -346,7 +366,6 @@ class renderModel {
               break;
             case "obj":
               this.model = result;
-
               break;
             case "stl":
               const material = new THREE.MeshStandardMaterial();
@@ -373,120 +392,109 @@ class renderModel {
     });
   }
   onWindowResize() {
+    // 获取容器尺寸
     const { clientHeight, clientWidth } = this.container;
-    //调整屏幕大小
-    this.camera.aspect = clientWidth / clientHeight; //摄像机宽高比例
-    this.camera.updateProjectionMatrix(); //相机更新矩阵，将3d内容投射到2d面上转换
+    const pixelRatio = this.renderer.getPixelRatio();
+
+    // 更新相机参数
+    this.camera.aspect = clientWidth / clientHeight;
+    this.camera.updateProjectionMatrix();
+
+    // 更新渲染器尺寸
     this.renderer.setSize(clientWidth, clientHeight);
     this.css3DRenderer.setSize(clientWidth, clientHeight);
+
+    // 更新后期处理效果
     if (this.effectComposer) {
-      // 假设抗锯齿效果是EffectComposer中的第一个pass
-      var pass = this.effectComposer.passes[3];
-      const pixelRatio = this.renderer.getPixelRatio();
-      pass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
+      const fxaaPass = this.effectComposer.passes[3];
+      if (fxaaPass && fxaaPass.uniforms) {
+        fxaaPass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
+      }
       this.effectComposer.setSize(clientWidth, clientHeight);
     }
 
-    if (this.glowComposer) this.glowComposer.setSize(clientWidth, clientHeight);
+    // 更新辉光效果
+    if (this.glowComposer) {
+      this.glowComposer.setSize(clientWidth, clientHeight);
+    }
   }
   // 清除模型数据
   onClearModelData() {
-    cancelAnimationFrame(this.rotationAnimationFrame);
-    cancelAnimationFrame(this.renderAnimation);
-    cancelAnimationFrame(this.animationFrame);
-    const { tags } = this.config;
+    // 取消所有动画帧
+    [this.rotationAnimationFrame, this.renderAnimation, this.animationFrame].forEach(frame => {
+      if (frame) cancelAnimationFrame(frame);
+    });
+
+    // 清除场景中的网格和材质
     this.scene.traverse(v => {
       if (v.type === "Mesh") {
-        v.geometry.dispose();
-        v.material.dispose();
+        v.geometry?.dispose();
+        v.material?.dispose();
       }
-      // 清除场景标签
-      // if (v instanceof CSS3DObject && tags.dragTagList.length) {
-      // 	this.scene.remove(v)
-      // 	// var element = v.element;
-      // 	// if (element && element.parentNode) {
-      // 	// 	element.parentNode.removeChild(element);
-      // 	// }
-      // }
     });
-    this.scene.clear();
-    this.renderer.clear();
-    this.renderer.dispose();
-    this.camera.clear();
-    if (this.gridHelper) {
-      this.gridHelper.clear();
-      this.gridHelper.dispose();
-    }
-    if (this.axesHelper) {
-      this.axesHelper.clear();
-      this.axesHelper.dispose();
-    }
 
-    if (this.effectComposer) this.effectComposer.dispose();
-    if (this.glowComposer) this.glowComposer.dispose();
-    this.container.removeEventListener("mousemove", this.onMouseMoveListener);
+    // 清除辅助对象
+    [this.gridHelper, this.axesHelper].forEach(helper => {
+      if (helper) {
+        helper.clear();
+        helper.dispose();
+      }
+    });
+
+    // 清除渲染器和合成器
+    [this.effectComposer, this.glowComposer].forEach(composer => {
+      composer?.dispose();
+    });
+
+    // 移除事件监听
+    this.container?.removeEventListener("mousemove", this.onMouseMoveListener);
     window.removeEventListener("resize", this.onWindowResizesListener);
 
-    this.config = null;
-    this.container = null;
-    // 相机
-    this.camera = null;
-    // 场景
-    this.scene = null;
-    //渲染器
-    this.renderer = null;
-    // 控制器
-    this.controls = null;
-    // 模型
-    this.model = null;
-    //文件加载器类型
-    this.fileLoaderMap = null;
-    //模型动画列表
-    this.modelAnimation = null;
-    //模型动画对象
-    this.animationMixer = null;
-    this.animationClock = null;
-    // 动画帧
-    this.animationFrame = null;
-    // 轴动画帧
-    this.rotationAnimationFrame = null;
-    // 动画构造器
-    this.animateClipAction = null;
-    // 动画循环方式枚举
-    this.loopMap = null;
+    // 清除场景和渲染器
+    this.scene?.clear();
+    this.renderer?.clear();
+    this.renderer?.dispose();
+    this.camera?.clear();
 
-    // 网格辅助线
-    this.gridHelper = null;
-    // 坐标轴辅助线
-    this.axesHelper = null;
-    //模型平面
-    this.planeGeometry = null;
-    //模型材质列表
-    this.modelMaterialList = null;
-    // 效果合成器
-    this.effectComposer = null;
-    this.outlinePass = null;
-    // 动画渲染器
-    this.renderAnimation = null;
-    // 碰撞检测
-    this.raycaster == null;
-    // 鼠标位置
-    this.mouse = null;
-    // 模型自带贴图
-    this.modelTextureMap = null;
-    // 辉光效果合成器
-    this.glowComposer = null;
-    // 辉光渲染器
-    this.unrealBloomPass = null;
-    // 辉光合成器
-    this.shaderPass = null;
-    // 需要辉光的材质
-    this.glowMaterialList = null;
-    this.materials = null;
-    // 3d文字控制器
-    this.css3dControls = null;
-    // 3d文字渲染器
-    this.css3DRenderer = null;
+    // 重置所有属性为null
+    const properties = [
+      "config",
+      "container",
+      "camera",
+      "scene",
+      "renderer",
+      "controls",
+      "model",
+      "fileLoaderMap",
+      "modelAnimation",
+      "animationMixer",
+      "animationClock",
+      "animationFrame",
+      "rotationAnimationFrame",
+      "animateClipAction",
+      "loopMap",
+      "gridHelper",
+      "axesHelper",
+      "planeGeometry",
+      "modelMaterialList",
+      "effectComposer",
+      "outlinePass",
+      "renderAnimation",
+      "raycaster",
+      "mouse",
+      "modelTextureMap",
+      "glowComposer",
+      "unrealBloomPass",
+      "shaderPass",
+      "glowMaterialList",
+      "materials",
+      "css3dControls",
+      "css3DRenderer"
+    ];
+
+    properties.forEach(prop => {
+      this[prop] = null;
+    });
   }
 
   // 设置模型定位缩放大小
@@ -559,7 +567,7 @@ class renderModel {
     }
   }
   // 处理模型材质数据回填
-  setModelMeaterial() {
+  setModelMaterial() {
     const { material } = this.config;
     if (!material || !material.meshList) return false;
     const mapIdList = mapImageList.map(v => v.id);
@@ -811,118 +819,139 @@ class renderModel {
   // 处理标签渲染
   setSceneTagsRender() {
     const { tags } = this.config;
-    if (tags && tags.dragTagList.length) {
-      this.container.appendChild(this.css3DRenderer.domElement);
-      tags.dragTagList.forEach(v => {
-        let element = document.createElement("div");
-        const {
-          backgroundColor,
-          color,
-          fontSize,
-          height,
-          iconColor,
-          iconName,
-          iconSize,
-          innerText,
-          positionX,
-          positionY,
-          positionZ,
-          width
-        } = v;
-        // 创建3d标签
-        const tagsMode = createApp({
-          render() {
-            return (
-              <div>
-                <div
-                  className="element-tag"
-                  style={{
-                    width: width + "px",
-                    height: height + "px",
-                    fontSize: fontSize + "px",
-                    color: color,
-                    backgroundColor,
-                    boxShadow: `0px 0px 4px ${backgroundColor}`
-                  }}
-                >
-                  <span className="tag-txt">{innerText}</span>
-                </div>
-                <div className="tag-icon">
-                  <ElIcon>{h(ElementPlusIconsVue[iconName])}</ElIcon>
-                </div>
-              </div>
-            );
-          }
-        });
+    if (!tags?.dragTagList?.length) return;
 
-        const vNode = tagsMode.mount(document.createElement("div"));
-        element.appendChild(vNode.$el);
-        let cssObject = new CSS3DObject(element);
-        cssObject.position.set(positionX, positionY, positionZ);
-        cssObject.scale.set(0.01, 0.01, 0.01);
-        const iconElement = element.querySelector(".tag-icon");
-        iconElement.style.fontSize = iconSize + "px";
-        iconElement.style.color = iconColor;
-        this.scene.add(cssObject);
+    this.container.appendChild(this.css3DRenderer.domElement);
+
+    const createTagElement = tagConfig => {
+      const {
+        backgroundColor,
+        color,
+        fontSize,
+        height,
+        iconColor,
+        iconName,
+        iconSize,
+        innerText,
+        positionX,
+        positionY,
+        positionZ,
+        width
+      } = tagConfig;
+
+      const element = document.createElement("div");
+
+      // 创建标签组件
+      const TagComponent = createApp({
+        render() {
+          return (
+            <div>
+              <div
+                className="element-tag"
+                style={{
+                  width: `${width}px`,
+                  height: `${height}px`,
+                  fontSize: `${fontSize}px`,
+                  color,
+                  backgroundColor,
+                  boxShadow: `0px 0px 4px ${backgroundColor}`
+                }}
+              >
+                <span className="tag-txt">{innerText}</span>
+              </div>
+              <div
+                className="tag-icon"
+                style={{
+                  fontSize: `${iconSize}px`,
+                  color: iconColor
+                }}
+              >
+                <ElIcon>{h(ElementPlusIconsVue[iconName])}</ElIcon>
+              </div>
+            </div>
+          );
+        }
       });
-    }
+
+      // 挂载组件
+      const vNode = TagComponent.mount(document.createElement("div"));
+      element.appendChild(vNode.$el);
+
+      // 创建3D对象
+      const cssObject = new CSS3DObject(element);
+      cssObject.position.set(positionX, positionY, positionZ);
+      cssObject.scale.set(0.01, 0.01, 0.01);
+
+      return cssObject;
+    };
+
+    // 批量创建标签并添加到场景
+    tags.dragTagList.forEach(tagConfig => {
+      const tagObject = createTagElement(tagConfig);
+      this.scene.add(tagObject);
+    });
   }
 }
 
 /**
- * @describe 动态创建3d模型组件的方法
- * @param config 组件参数配置信息
+ * 动态创建3D模型组件
+ * @param {Object} config - 组件配置参数
+ * @returns {Object} Vue组件
  */
-
 function createThreeDComponent(config) {
-  // 创建一个元素ID
-  const elementId = "answer" + onlyKey(5, 10);
+  const elementId = `three-model-${onlyKey(5, 10)}`;
   let modelApi = null;
+
   return defineComponent({
-    data() {
-      return {
-        loading: false
-      };
+    name: "ThreeDComponent",
+
+    props: {
+      width: [String, Number],
+      height: [String, Number]
     },
-    props: ["width", "height"],
+
+    data: () => ({
+      loading: false
+    }),
+
     watch: {
       $props: {
-        handler(val) {
-          if (modelApi) {
-            debounce(modelApi.onWindowResize(), 200);
-          }
+        handler: () => {
+          modelApi?.onWindowResize && debounce(modelApi.onWindowResize, 200)();
         },
-        immediate: false,
         deep: true
       }
     },
+
     render() {
-      if (this.width && this.height) {
-        return h(
-          <div
-            v-zLoading={this.loading}
-            style={{
-              width: this.width - 10 + "px",
-              height: this.height - 10 + "px",
-              pointerEvents: "none"
-            }}
-            id={elementId}
-          ></div>
-        );
-      } else {
-        return h(<div v-zLoading={this.loading} style={{ width: "100%", height: "100%" }} id={elementId}></div>);
-      }
+      const style = {
+        width: this.width ? `${this.width - 10}px` : "100%",
+        height: this.height ? `${this.height - 10}px` : "100%",
+        pointerEvents: this.width && this.height ? "none" : undefined
+      };
+
+      return h("div", {
+        id: elementId,
+        style,
+        "v-z-loading": this.loading
+      });
     },
+
     async mounted() {
-      this.loading = true;
-      modelApi = new renderModel(config, elementId);
-      const load = await modelApi.init();
-      if (load) {
+      try {
+        this.loading = true;
+        modelApi = new renderModel(config, elementId);
+        await modelApi.init();
+      } catch (err) {
+        console.error("3D模型加载失败:", err);
+      } finally {
         this.loading = false;
       }
     },
+
     beforeUnmount() {
-      modelApi.onClearModelData();
+      modelApi?.onClearModelData();
+      modelApi = null;
     }
   });
 }

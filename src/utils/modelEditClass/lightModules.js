@@ -1,21 +1,36 @@
 /**
- * @describe 灯光模块方法
- * @function onSetModelAmbientLight 设置环境光
- * @function onSetModelDirectionalLight 设置平行光
- * @function onSetModelPointLight 设置点光源
- * @function onSetModelSpotLight 设置聚光灯
- * @function onResettingLight 重置场景灯光
+ * 灯光模块方法集合
+ *
+ * @module LightModules
+ * @description 包含场景中各种光源的控制方法
+ *
+ * @exports {Object} default - 导出的方法集合
+ * @property {Function} onSetModelAmbientLight - 环境光控制
+ * @property {Function} onSetModelDirectionalLight - 平行光控制
+ * @property {Function} onSetModelPointLight - 点光源控制
+ * @property {Function} onSetModelSpotLight - 聚光灯控制
+ * @property {Function} onResettingLight - 重置所有光源
  */
-import * as THREE from "three";
+
 import { lightPosition } from "@/utils/utilityFunction";
 
-// 设置环境光
+/**
+ * 设置环境光参数
+ * @param {Object} params - 环境光配置参数
+ * @param {boolean} params.ambientLight - 是否启用环境光
+ * @param {string} params.ambientLightColor - 环境光颜色
+ * @param {number} params.ambientLightIntensity - 环境光强度
+ */
 function onSetModelAmbientLight({ ambientLight, ambientLightColor, ambientLightIntensity }) {
   this.ambientLight.visible = ambientLight;
   this.ambientLight.intensity = ambientLightIntensity;
   this.ambientLight.color.set(ambientLightColor);
 }
-// 设置平行光
+
+/**
+ * 设置平行光参数
+ * @param {Object} config - 平行光配置参数
+ */
 function onSetModelDirectionalLight(config) {
   const {
     directionShadow,
@@ -27,28 +42,40 @@ function onSetModelDirectionalLight(config) {
     directionalLightIntensity,
     directionalLightHelper
   } = config;
+
   this.directionalLight.visible = directionalLight;
   this.directionalLightHelper.visible = directionalLightHelper && directionalLight;
   this.directionalLight.intensity = directionalLightIntensity;
   this.directionalLight.castShadow = directionShadow;
   this.directionalLight.color.set(directionalLightColor);
-  const { x, y, z } = lightPosition(directionalHorizontal, directionalVertical, directionalSistine);
-  this.directionalLight.position.set(x, y, z);
+
+  const position = lightPosition(directionalHorizontal, directionalVertical, directionalSistine);
+  this.directionalLight.position.set(position.x, position.y, position.z);
   this.directionalLightHelper.update();
 }
-// 设置点光源
+
+/**
+ * 设置点光源参数
+ * @param {Object} config - 点光源配置参数
+ */
 function onSetModelPointLight(config) {
   const { pointHorizontal, pointVertical, pointDistance, pointLight, pointLightColor, pointLightIntensity, pointLightHelper } =
     config;
+
   this.pointLight.visible = pointLight;
   this.pointLightHelper.visible = pointLight && pointLightHelper;
   this.pointLight.intensity = pointLightIntensity;
   this.pointLight.color.set(pointLightColor);
-  const { x, y, z } = lightPosition(pointHorizontal, pointVertical, pointDistance);
-  this.pointLight.position.set(x, y, z);
+
+  const position = lightPosition(pointHorizontal, pointVertical, pointDistance);
+  this.pointLight.position.set(position.x, position.y, position.z);
   this.pointLightHelper.update();
 }
-// 设置聚光灯
+
+/**
+ * 设置聚光灯参数
+ * @param {Object} config - 聚光灯配置参数
+ */
 function onSetModelSpotLight(config) {
   const {
     spotDistance,
@@ -64,6 +91,7 @@ function onSetModelSpotLight(config) {
     spotVertical,
     spotSistine
   } = config;
+
   this.spotLight.visible = spotLight;
   this.spotLightHelper.visible = spotLight && spotLightHelper;
   this.spotLight.intensity = spotLightIntensity;
@@ -73,22 +101,30 @@ function onSetModelSpotLight(config) {
   this.spotLight.castShadow = spotCastShadow;
   this.spotLight.distance = spotDistance;
   this.spotLight.color.set(spotLightColor);
-  const { x, y, z } = lightPosition(spotHorizontal, spotVertical, spotSistine);
-  this.spotLight.position.set(x, y, z);
+
+  const position = lightPosition(spotHorizontal, spotVertical, spotSistine);
+  this.spotLight.position.set(position.x, position.y, position.z);
   this.spotLightHelper.update();
 }
 
-// 重置场景灯光
+/**
+ * 重置所有光源到默认状态
+ * @param {Object} params - 重置参数
+ * @param {boolean} params.ambientLight - 是否启用环境光
+ */
 function onResettingLight({ ambientLight }) {
-  const config = {
+  const defaultConfig = {
+    // 基础场景配置
     planeColor: "#939393",
     planeWidth: 7,
     planeHeight: 7,
-    //环境光
+
+    // 环境光配置
     ambientLight,
     ambientLightColor: "#fff",
     ambientLightIntensity: 0.8,
-    //平行光
+
+    // 平行光配置
     directionalLight: false,
     directionalLightHelper: true,
     directionalLightColor: "#1E90FF",
@@ -97,7 +133,8 @@ function onResettingLight({ ambientLight }) {
     directionalVertical: -3.85,
     directionalSistine: 2.98,
     directionShadow: true,
-    //点光源
+
+    // 点光源配置
     pointLight: false,
     pointLightHelper: true,
     pointLightColor: "#1E90FF",
@@ -105,7 +142,8 @@ function onResettingLight({ ambientLight }) {
     pointHorizontal: -4.21,
     pointVertical: -4.1,
     pointDistance: 2.53,
-    //聚光灯
+
+    // 聚光灯配置
     spotLight: false,
     spotLightColor: "#323636",
     spotLightIntensity: 400,
@@ -119,10 +157,11 @@ function onResettingLight({ ambientLight }) {
     spotLightHelper: true,
     spotDistance: 20
   };
-  this.onSetModelAmbientLight(config);
-  this.onSetModelDirectionalLight(config);
-  this.onSetModelPointLight(config);
-  this.onSetModelSpotLight(config);
+
+  this.onSetModelAmbientLight(defaultConfig);
+  this.onSetModelDirectionalLight(defaultConfig);
+  this.onSetModelPointLight(defaultConfig);
+  this.onSetModelSpotLight(defaultConfig);
 }
 
 export default {
