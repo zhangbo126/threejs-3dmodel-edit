@@ -65,7 +65,6 @@ class renderModel {
       LoopRepeat: THREE.LoopRepeat,
       LoopPingPong: THREE.LoopPingPong
     };
-
     // 网格辅助线
     this.gridHelper;
     // 坐标轴辅助线
