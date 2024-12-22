@@ -1,23 +1,28 @@
+<!-- eslint-disable vue/valid-v-model -->
 <template>
   <draggable-resizable
     class="draggable-resizable"
     classNameDragging="dragging"
     classNameActive="active"
-    :initW="props.config.width"
-    :initH="props.config.height"
-    v-model:x="props.config.x"
-    v-model:y="props.config.y"
-    v-model:w="props.config.width"
-    v-model:h="props.config.height"
+    :initW="config.width"
+    :initH="config.height"
+    :x="config.x"
+    :y="config.y"
+    :w="config.width"
+    :h="config.height"
     :parent="false"
     :resizable="true"
     :draggable="true"
+    @update:x="val => (config.x = val)"
+    @update:y="val => (config.y = val)"
+    @update:w="val => (config.width = val)"
+    @update:h="val => (config.height = val)"
     @drag-end="dragEndHandle"
     @dragging="dragHandle"
     @activated="activatedHandle"
     @deactivated="deactivatedHandle"
   >
-    <tree-component :width="props.config.width" :height="props.config.height"></tree-component>
+    <tree-component :width="config.width" :height="config.height"></tree-component>
     <div :class="dragMask" class="mask"></div>
   </draggable-resizable>
 </template>
@@ -25,7 +30,7 @@
 import DraggableResizable from "vue3-draggable-resizable";
 import createThreeDComponent from "@/utils/initThreeTemplate";
 import { ref } from "vue";
-const props = defineProps({
+const { config } = defineProps({
   config: {
     type: Object,
     default: {}
@@ -46,15 +51,15 @@ const dragEndHandle = e => {
 // 选中
 const activatedHandle = e => {
   dragMask.value = "mask-dragactive";
-  emit("onDragActive", props.config);
+  emit("onDragActive", config);
 };
 // 取消选中
 const deactivatedHandle = e => {
   dragMask.value = "";
-  emit("onDragDeactivated", props.config.modelKey);
+  emit("onDragDeactivated", config.modelKey);
 };
 
-const treeComponent = createThreeDComponent(props.config);
+const treeComponent = createThreeDComponent(config);
 </script>
 
 <style lang="scss" scoped>

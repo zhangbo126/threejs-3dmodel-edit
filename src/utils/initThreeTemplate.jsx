@@ -41,7 +41,6 @@ class renderModel {
     // 基础配置
     this.config = config;
     this.container = document.querySelector("#" + elementId);
-
     // 场景相关
     this.scene = null;
     this.camera = null;
@@ -181,7 +180,7 @@ class renderModel {
   }
   addEvenListMouseListener() {
     // 监听场景大小改变，跳转渲染尺寸
-    this.onWindowResizesListener = this.onWindowResize.bind(this);
+    this.onWindowResizesListener = this.onWindowResize;
     window.addEventListener("resize", this.onWindowResizesListener);
   }
   // 创建控制器
@@ -392,7 +391,7 @@ class renderModel {
       );
     });
   }
-  onWindowResize() {
+  onWindowResize = () => {
     // 获取容器尺寸
     const { clientHeight, clientWidth } = this.container;
     const pixelRatio = this.renderer.getPixelRatio();
@@ -418,7 +417,7 @@ class renderModel {
     if (this.glowComposer) {
       this.glowComposer.setSize(clientWidth, clientHeight);
     }
-  }
+  };
   // 清除模型数据
   onClearModelData() {
     // 取消所有动画帧

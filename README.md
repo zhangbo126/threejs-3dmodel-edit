@@ -21,6 +21,8 @@
 ```
  yarn  / yarn serve  / yarn build(yarn build:pro)
 
+ pnpm install / pnpm serve / pnpm build(pnpm build:pro)
+
 ```
 
 ### 🎨 预览
@@ -38,9 +40,9 @@
 
 | 名称                     | 版本    | 名称         | 版本  |
 | ------------------------ | ------- | ------------ | ----- |
-| Vue                      | 3.2.x   | Axios        | 1.5.0 |
+| Vue                      | 3.5.13  | Axios        | 1.5.0 |
 | Vite                     | 4.3.x   | Element-plus | 2.4.x |
-| Three                    | 0.167.x | Pinia        | 2.1.x |
+| Three                    | 0.169.x | Pinia        | 2.1.x |
 | Vue3-Draggable-Resizable | 1.6.x   | Mitt         | 3.0.x |
 | 详见 `package.json`      | 😁      | 🥰           | 🤗    |
 
@@ -48,8 +50,9 @@
 
 | 名称 | 版本    | 名称    | 版本   |
 | ---- | ------- | ------- | ------ |
-| node | 18.19.0 | npm     | 10.2.3 |
+| node | 21.3.0  | npm     | 10.2.4 |
 | yarn | 1.22.21 | windows | 10     |
+| pnpm | 9.15.1  | windows | 10     |
 
 ### 🍻 问题/功能
 
