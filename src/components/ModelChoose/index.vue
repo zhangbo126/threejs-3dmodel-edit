@@ -1,12 +1,14 @@
 <template>
   <div class="model-choose">
     <div class="header">
-      <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType]?.text }}</span>
-      <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType]?.tooltip" placement="top">
+      <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType].text }}</span>
+      <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType].tooltip" placement="top">
         <el-button
           type="primary"
           icon="Switch"
-          @click="switchActiveModelEdit(modelEditMap[reactiveData.modeEditType]?.switchType)"
+          @click="
+            switchActiveModelEdit(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].switchType)
+          "
         >
           切换场景
         </el-button>
@@ -26,7 +28,7 @@
       <el-scrollbar max-height="210px">
         <el-row>
           <el-col
-            :draggable="modelEditMap[reactiveData.modeEditType]?.draggable"
+            :draggable="(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].draggable) || false"
             :style="modelTypeStyle"
             :span="12"
             v-for="model in ordinaryModelList"
@@ -60,7 +62,7 @@
       <el-scrollbar max-height="210px">
         <el-row>
           <el-col
-            :draggable="modelEditMap[reactiveData.modeEditType]?.draggable"
+            :draggable="modelEditMap[reactiveData.modeEditType].draggable"
             :style="modelTypeStyle"
             :span="12"
             v-for="model in animationModelList"
