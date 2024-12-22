@@ -20,7 +20,7 @@ import { onlyKey, getAssetsFile } from "@/utils/utilityFunction";
 import modulesPrototype from "./modelEditClass/index";
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from "@/config/constant.js";
-
+import { findObjectInScene } from "@/utils/utilityFunction";
 class renderModel {
   constructor(selector) {
     this.container = document.querySelector(selector);
@@ -574,7 +574,8 @@ class renderModel {
           // 模型加载成功返回 true
           resolve({ load, filePath: model.filePath });
         }
-      } catch {
+      } catch (err) {
+        console.log(err, "==================");
         reject();
       }
     });
@@ -813,7 +814,10 @@ class renderModel {
     this.materials = {};
     if (this.transformControls) {
       this.transformControls.detach();
-      this.transformControls.dispose();
+      const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
+      if (transformControlsPlane) {
+        this.scene.remove(transformControlsPlane);
+      }
       this.scene.remove(this.transformControls);
       this.transformControls = null;
     }
