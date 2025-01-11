@@ -1,164 +1,166 @@
 <template>
   <div class="model-choose">
-    <div class="header">
-      <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType].text }}</span>
-      <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType].tooltip" placement="top">
-        <el-button
-          type="primary"
-          icon="Switch"
-          @click="
-            switchActiveModelEdit(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].switchType)
-          "
-        >
-          切换场景
-        </el-button>
-      </el-tooltip>
-    </div>
-    <!-- 普通模型 -->
-    <div class="options">
-      <div class="option">
-        <el-space>
-          <el-icon>
-            <Orange />
-          </el-icon>
-          <span>普通模型</span>
-        </el-space>
-      </div>
-      <!-- 模型列表 -->
-      <el-scrollbar max-height="210px">
-        <el-row>
-          <el-col
-            :draggable="(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].draggable) || false"
-            :style="modelTypeStyle"
-            :span="12"
-            v-for="model in ordinaryModelList"
-            @dragstart="e => onDragModelStart(model)"
-            @drag="e => onDrag(e)"
-            :key="model.id"
+    <el-scrollbar max-height="calc(100vh - 72px)">
+      <div class="header">
+        <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType].text }}</span>
+        <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType].tooltip" placement="top">
+          <el-button
+            type="primary"
+            icon="Switch"
+            @click="
+              switchActiveModelEdit(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].switchType)
+            "
           >
-            <el-image
-              draggable="false"
-              @click.prevent="onChangeModel(model)"
-              class="el-img"
-              :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
-              :src="model.icon"
-              fit="cover"
-            />
-          </el-col>
-        </el-row>
-      </el-scrollbar>
-    </div>
-    <!-- 动画模型 -->
-    <div class="options">
-      <div class="option">
-        <el-space>
-          <el-icon>
-            <Paperclip />
-          </el-icon>
-          <span>动画模型</span>
-        </el-space>
+            切换场景
+          </el-button>
+        </el-tooltip>
       </div>
-      <!-- 模型列表 -->
-      <el-scrollbar max-height="210px">
-        <el-row>
-          <el-col
-            :draggable="modelEditMap[reactiveData.modeEditType].draggable"
-            :style="modelTypeStyle"
-            :span="12"
-            v-for="model in animationModelList"
-            @dragstart="e => onDragModelStart(model)"
-            @drag="e => onDrag(e)"
-            :key="model.id"
-          >
-            <el-image
-              draggable="false"
-              @click="onChangeModel(model)"
-              class="el-img"
-              :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
-              :src="model.icon"
-              fit="cover"
-            />
-          </el-col>
-        </el-row>
-      </el-scrollbar>
-    </div>
-    <!-- 几何体模型 -->
-    <div class="options">
-      <div class="option">
-        <el-space>
-          <el-icon>
-            <SwitchFilled />
-          </el-icon>
-          <span>几何体模型</span>
-          <span :style="{ color: '#18c174 ' }" v-if="reactiveData.geometryVisible">(可拖拽添加多个)</span>
-        </el-space>
-      </div>
-      <!-- 模型列表 -->
-      <el-scrollbar max-height="120px">
-        <el-row v-if="reactiveData.geometryVisible">
-          <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
-            <div
-              class="geometry"
-              :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
-              draggable="true"
-              @dragstart="e => onDragstart(e, model)"
+      <!-- 普通模型 -->
+      <div class="options">
+        <div class="option">
+          <el-space>
+            <el-icon>
+              <Orange />
+            </el-icon>
+            <span>普通模型</span>
+          </el-space>
+        </div>
+        <!-- 模型列表 -->
+        <el-scrollbar max-height="210px">
+          <el-row>
+            <el-col
+              :draggable="(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].draggable) || false"
+              :style="modelTypeStyle"
+              :span="12"
+              v-for="model in ordinaryModelList"
+              @dragstart="e => onDragModelStart(model)"
               @drag="e => onDrag(e)"
+              :key="model.id"
             >
-              <div class="geometry-name">
-                <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
-                  <b> {{ model.name }}</b>
-                </el-tooltip>
+              <el-image
+                draggable="false"
+                @click.prevent="onChangeModel(model)"
+                class="el-img"
+                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
+                :src="model.icon"
+                fit="cover"
+              />
+            </el-col>
+          </el-row>
+        </el-scrollbar>
+      </div>
+      <!-- 动画模型 -->
+      <div class="options">
+        <div class="option">
+          <el-space>
+            <el-icon>
+              <Paperclip />
+            </el-icon>
+            <span>动画模型</span>
+          </el-space>
+        </div>
+        <!-- 模型列表 -->
+        <el-scrollbar max-height="210px">
+          <el-row>
+            <el-col
+              :draggable="modelEditMap[reactiveData.modeEditType].draggable"
+              :style="modelTypeStyle"
+              :span="12"
+              v-for="model in animationModelList"
+              @dragstart="e => onDragModelStart(model)"
+              @drag="e => onDrag(e)"
+              :key="model.id"
+            >
+              <el-image
+                draggable="false"
+                @click="onChangeModel(model)"
+                class="el-img"
+                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
+                :src="model.icon"
+                fit="cover"
+              />
+            </el-col>
+          </el-row>
+        </el-scrollbar>
+      </div>
+      <!-- 几何体模型 -->
+      <div class="options">
+        <div class="option">
+          <el-space>
+            <el-icon>
+              <SwitchFilled />
+            </el-icon>
+            <span>几何体模型</span>
+            <span :style="{ color: '#18c174 ' }" v-if="reactiveData.geometryVisible">(可拖拽添加多个)</span>
+          </el-space>
+        </div>
+        <!-- 模型列表 -->
+        <el-scrollbar max-height="120px">
+          <el-row v-if="reactiveData.geometryVisible">
+            <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
+              <div
+                class="geometry"
+                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
+                draggable="true"
+                @dragstart="e => onDragstart(e, model)"
+                @drag="e => onDrag(e)"
+              >
+                <div class="geometry-name">
+                  <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
+                    <b> {{ model.name }}</b>
+                  </el-tooltip>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+          <div class="geometry-box" v-else>
+            <div class="geometry-add" @click="onAddGeometry">
+              <div class="icon">
+                <el-icon :size="44">
+                  <Plus />
+                </el-icon>
+                <div><span>添加几何体模型</span></div>
               </div>
             </div>
-          </el-col>
-        </el-row>
-        <div class="geometry-box" v-else>
-          <div class="geometry-add" @click="onAddGeometry">
+          </div>
+        </el-scrollbar>
+      </div>
+      <!-- 外部模型 -->
+      <div class="options">
+        <div class="option">
+          <el-space>
+            <el-icon>
+              <UploadFilled />
+            </el-icon>
+            <span>外部模型</span>
+          </el-space>
+        </div>
+        <!-- 模型内容 -->
+        <div class="file-name">
+          <span>当前模型:</span>
+          <el-tooltip effect="dark" :content="reactiveData.localModelName" placement="top">
+            <b>{{ reactiveData.localModelName }}</b>
+          </el-tooltip>
+        </div>
+        <el-upload
+          action=""
+          accept=".glb,.obj,.gltf,.fbx,.stl"
+          class="file-box"
+          :show-file-list="false"
+          :auto-upload="false"
+          :on-change="onUpload"
+        >
+          <div class="upload">
             <div class="icon">
               <el-icon :size="44">
                 <Plus />
               </el-icon>
-              <div><span>添加几何体模型</span></div>
+              <div><span>请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
             </div>
           </div>
-        </div>
-      </el-scrollbar>
-    </div>
-    <!-- 外部模型 -->
-    <div class="options">
-      <div class="option">
-        <el-space>
-          <el-icon>
-            <UploadFilled />
-          </el-icon>
-          <span>外部模型</span>
-        </el-space>
+        </el-upload>
       </div>
-      <!-- 模型内容 -->
-      <div class="file-name">
-        <span>当前模型:</span>
-        <el-tooltip effect="dark" :content="reactiveData.localModelName" placement="top">
-          <b>{{ reactiveData.localModelName }}</b>
-        </el-tooltip>
-      </div>
-      <el-upload
-        action=""
-        accept=".glb,.obj,.gltf,.fbx,.stl"
-        class="file-box"
-        :show-file-list="false"
-        :auto-upload="false"
-        :on-change="onUpload"
-      >
-        <div class="upload">
-          <div class="icon">
-            <el-icon :size="44">
-              <Plus />
-            </el-icon>
-            <div><span>请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
-          </div>
-        </div>
-      </el-upload>
-    </div>
+    </el-scrollbar>
   </div>
 </template>
 
