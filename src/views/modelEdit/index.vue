@@ -279,7 +279,9 @@ onMounted(async () => {
   store.modelApi.onProgress((progressNum, totalSize) => {
     progress.value = Number(((progressNum / totalSize) * 100).toFixed(0));
   });
+
   const load = await modelApi.init();
+
   if (load) {
     loading.value = false;
     progress.value = 0;
