@@ -212,7 +212,7 @@ const modelTypeStyle = computed(() => {
 
 const reactiveData = reactive({
   // 当前模型ID
-  activeModelId: 9,
+  activeModelId: 7,
   geometryVisible: false,
   // 当前模型编辑模式 TODO:oneModel 单模型 many 多模型 geometry 几何体模型
   modeEditType: "oneModel",

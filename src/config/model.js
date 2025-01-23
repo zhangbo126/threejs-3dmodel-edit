@@ -22,8 +22,8 @@ const modelList = [
   },
 
   {
-    name: "钢铁侠",
-    key: "IronMan",
+    name: "小米su7",
+    key: "su7",
     fileType: "glb",
     id: 7,
     animation: false,

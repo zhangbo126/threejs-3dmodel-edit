@@ -151,7 +151,7 @@ class renderModel {
       this.addEvenListMouseListener();
       // 添加物体模型 TODO：初始化时需要默认一个
       //  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
-      const load = await this.setModel({ filePath: "threeFile/glb/glb-9.glb", fileType: "glb", decomposeName: "transformers_3" });
+      const load = await this.setModel({ filePath: "threeFile/glb/glb-7.glb", fileType: "glb" });
       // 创建效果合成器
       this.createEffectComposer();
       //场景渲染
@@ -173,7 +173,7 @@ class renderModel {
   // 创建相机
   initCamera() {
     const { clientHeight, clientWidth } = this.container;
-    this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 1, 2000);
+    this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 1, 10000);
   }
   // 创建渲染器
   initRender() {
