@@ -184,6 +184,7 @@ import { PREDEFINE_COLORS } from "@/config/constant";
 import { backgroundList, viewImageList } from "@/config/model.js";
 import { getFileType, getAssetsFile } from "@/utils/utilityFunction";
 import { ElMessage } from "element-plus";
+
 const store = useMeshEditStore();
 const config = reactive({
   visible: true,

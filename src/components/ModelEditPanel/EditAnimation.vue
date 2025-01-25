@@ -104,6 +104,8 @@
 <script setup>
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
 import { useMeshEditStore } from "@/store/meshEditStore";
+import { UPDATE_MODEL } from "@/config/constant";
+
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
@@ -116,6 +118,7 @@ const config = reactive({
   rotationType: "y", // 轴类型
   rotationSpeed: 1 // 旋转速度
 });
+
 const optionDisabled = computed(() => {
   return config.visible ? "" : "disabled";
 });
@@ -138,7 +141,7 @@ onMounted(() => {
     config.animationName = state.modelAnimation[0].name;
   }
   // 监听模型变化
-  $bus.on("update-model", () => {
+  $bus.on(UPDATE_MODEL, () => {
     if (state.modelAnimation.length) {
       const animationName = state.modelAnimation[0].name;
       config.animationName = animationName;

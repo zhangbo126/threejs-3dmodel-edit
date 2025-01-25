@@ -19,7 +19,7 @@ export const useMeshEditStore = defineStore("useMeshEditStore", {
     selectMeshAction(selectMesh) {
       this.selectMesh = selectMesh;
     },
-    changeDragType(modelType) {
+    setActiveEditModelType(modelType) {
       this.modelType = modelType;
     }
   }
