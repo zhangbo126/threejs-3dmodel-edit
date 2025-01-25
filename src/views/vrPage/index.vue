@@ -7,6 +7,7 @@
 <script setup name="vrPage">
 import { onMounted } from "vue";
 import vrRenderModel from "@/utils/vrRenderModel";
+
 onMounted(async () => {
   const modelApi = new vrRenderModel("#vr-model");
   const load = await modelApi.init();

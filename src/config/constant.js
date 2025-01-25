@@ -109,6 +109,12 @@ export const MODEL_BASE_DATA = "MODEL_BASE_DATA";
 // 模型库拖拽列表数据缓存 key
 export const MODEL_BASE_DRAGS_DATA = "MODEL_BASE_DRAGS_DATA";
 
+// 更新模型事件标识
+export const UPDATE_MODEL = "update-model";
+
+// 页面加载状态事件标识
+export const PAGE_LOADING = "page-loading";
+
 // 模型初始化数据
 export const MODEL_DEFAULT_CONFIG = {
   background: {

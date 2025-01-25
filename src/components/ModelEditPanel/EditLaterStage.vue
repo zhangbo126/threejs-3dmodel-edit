@@ -126,7 +126,7 @@
 <script setup>
 import { reactive, computed, getCurrentInstance, onMounted } from "vue";
 import { useMeshEditStore } from "@/store/meshEditStore";
-import { PREDEFINE_COLORS } from "@/config/constant";
+import { PREDEFINE_COLORS, UPDATE_MODEL } from "@/config/constant";
 
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -163,7 +163,7 @@ const config = reactive({
   color: ""
 });
 onMounted(() => {
-  $bus.on("update-model", () => {
+  $bus.on(UPDATE_MODEL, () => {
     Object.assign(config, {
       glow: false,
       threshold: 0.05,

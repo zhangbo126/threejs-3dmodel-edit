@@ -60,7 +60,6 @@
           <!-- 右键菜单 -->
           <right-context-menu :rightMenuPosition="rightMenuPosition" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
-        <!-- <el-empty description="拖拽添加多个" /> -->
       </div>
     </div>
   </div>

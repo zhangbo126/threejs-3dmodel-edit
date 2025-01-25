@@ -109,7 +109,7 @@
         <div class="grid-txt">
           <el-button type="primary" link>缩放值</el-button>
         </div>
-        <div class="grid-sidler">
+        <div class="grid-sidle">
           <el-slider @input="onSetModelScale" show-input v-model="config.scale" :min="0.01" :max="5" :step="0.01" />
         </div>
       </div>
@@ -117,7 +117,7 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, computed, getCurrentInstance, onMounted } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import { ElMessage } from "element-plus";
 

@@ -155,7 +155,7 @@
 
 <script setup>
 import { reactive, computed, onMounted, getCurrentInstance } from "vue";
-import { PREDEFINE_COLORS } from "@/config/constant";
+import { PREDEFINE_COLORS, UPDATE_MODEL } from "@/config/constant";
 import { useMeshEditStore } from "@/store/meshEditStore";
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
@@ -188,7 +188,7 @@ const axesDisabled = computed(() => {
 });
 
 onMounted(() => {
-  $bus.on("update-model", () => {
+  $bus.on(UPDATE_MODEL, () => {
     // 重置动画数据
     Object.assign(config, {
       visible: true,

@@ -21,6 +21,7 @@ import modulesPrototype from "./modelEditClass/index";
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from "@/config/constant.js";
 import { findObjectInScene } from "@/utils/utilityFunction";
+const colors = ["#FF4500", "#90EE90", "#00CED1", "#1E90FF", "#C71585", "#FF4500", "#FAD400", "#1F93FF", "#90F090", "#C71585"];
 class renderModel {
   constructor(selector) {
     this.container = document.querySelector(selector);
@@ -151,7 +152,7 @@ class renderModel {
       this.addEvenListMouseListener();
       // 添加物体模型 TODO：初始化时需要默认一个
       //  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
-      const load = await this.setModel({ filePath: "threeFile/glb/glb-9.glb", fileType: "glb", decomposeName: "transformers_3" });
+      const load = await this.setModel({ filePath: "threeFile/glb/glb-7.glb", fileType: "glb" });
       // 创建效果合成器
       this.createEffectComposer();
       //场景渲染
@@ -173,7 +174,7 @@ class renderModel {
   // 创建相机
   initCamera() {
     const { clientHeight, clientWidth } = this.container;
-    this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 1, 2000);
+    this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 1, 10000);
   }
   // 创建渲染器
   initRender() {
@@ -266,7 +267,6 @@ class renderModel {
           switch (fileType) {
             case "glb":
               this.model = result.scene;
-
               break;
             case "fbx":
               this.model = result;
@@ -365,18 +365,7 @@ class renderModel {
           .map(v => model[v]);
         // 创建几何体
         const geometry = new THREE[type](...geometryData);
-        const colors = [
-          "#FF4500",
-          "#90EE90",
-          "#00CED1",
-          "#1E90FF",
-          "#C71585",
-          "#FF4500",
-          "#FAD400",
-          "#1F93FF",
-          "#90F090",
-          "#C71585"
-        ];
+
         // 随机颜色
         const meshColor = colors[Math.ceil(Math.random() * 10)];
         const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(meshColor), side: THREE.DoubleSide });
@@ -491,8 +480,12 @@ class renderModel {
   createEffectComposer() {
     if (!this.container) return false;
     const { clientHeight, clientWidth } = this.container;
-    this.effectComposer = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(clientWidth, clientHeight));
-    // this.effectComposer = new EffectComposer(this.renderer)
+    this.effectComposer = new EffectComposer(
+      this.renderer,
+      new THREE.WebGLRenderTarget(clientWidth, clientHeight, {
+        samples: 4 // 增加采样次数来提高抗锯齿效果
+      })
+    );
     const renderPass = new RenderPass(this.scene, this.camera);
 
     this.effectComposer.addPass(renderPass);
@@ -508,11 +501,15 @@ class renderModel {
     let outputPass = new OutputPass();
     this.effectComposer.addPass(outputPass);
 
+    // 增强FXAA抗锯齿效果
     let effectFXAA = new ShaderPass(FXAAShader);
     const pixelRatio = this.renderer.getPixelRatio();
     effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
     effectFXAA.renderToScreen = true;
     effectFXAA.needsSwap = true;
+    // 调整FXAA参数以增强抗锯齿效果
+    effectFXAA.material.uniforms.tDiffuse.value = 1.0;
+    effectFXAA.enabled = true;
     this.effectComposer.addPass(effectFXAA);
 
     //创建辉光效果
@@ -521,7 +518,8 @@ class renderModel {
     const renderTargetParameters = {
       minFilter: THREE.LinearFilter,
       format: THREE.RGBAFormat,
-      stencilBuffer: false
+      stencilBuffer: false,
+      samples: 4 // 为辉光效果也添加抗锯齿
     };
     const glowRender = new THREE.WebGLRenderTarget(clientWidth * 2, clientHeight * 2, renderTargetParameters);
     this.glowComposer = new EffectComposer(this.renderer, glowRender);
@@ -913,7 +911,6 @@ class renderModel {
               default:
                 break;
             }
-            // console.log(result, '================')
             this.getManyModelAnimationList(result.animations);
 
             // 设置模型位置
