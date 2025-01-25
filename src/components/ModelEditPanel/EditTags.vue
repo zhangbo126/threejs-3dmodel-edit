@@ -201,7 +201,7 @@ const activeTag = reactive({});
 // 拖拽标签开始
 const onDragstart = (e, tag) => {
   store.modelApi.setDragTag(tag);
-  store.changeDragType("tags");
+  store.setActiveEditModelType("tags");
 };
 // 拖拽中
 const onDrag = event => {

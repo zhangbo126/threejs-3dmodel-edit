@@ -65,7 +65,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "@/utils/renderModel";
 import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading.vue";
-import { MODEL_PREVIEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG } from "@/config/constant";
+import { MODEL_PREVIEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG, UPDATE_MODEL, PAGE_LOADING } from "@/config/constant";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import * as THREE from "three";
 
@@ -84,6 +84,7 @@ const loadingTimeout = ref(null);
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
     const fileInfo = choosePanel.value?.activeModel;
+    console.log(fileInfo.filePath, store.modelType);
     return fileInfo?.filePath && ["oneModel", "tags"].includes(store.modelType) ? true : false;
   }
   return false;
@@ -162,17 +163,17 @@ const onDragDrop = async e => {
     updateDragPosition(activeDragManyModel);
 
     try {
-      $bus.emit("page-loading", true);
+      $bus.emit(PAGE_LOADING, true);
       const { load } = await store.modelApi.onLoadManyModel(activeDragManyModel);
 
       if (load) {
-        $bus.emit("update-model");
+        $bus.emit(UPDATE_MODEL);
         $bus.emit("update-tab", "EditMoreModel");
       }
     } catch (error) {
       console.error("加载多模型失败:", error);
     } finally {
-      $bus.emit("page-loading", false);
+      $bus.emit(PAGE_LOADING, false);
     }
   }
 };
@@ -264,7 +265,7 @@ onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);
-  $bus.on("page-loading", value => {
+  $bus.on(PAGE_LOADING, value => {
     clearTimeout(loadingTimeout.value);
     if (value) {
       loading.value = value;

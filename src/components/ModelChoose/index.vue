@@ -170,6 +170,7 @@ import { modelList, geometryModelList } from "@/config/model.js";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import { getFileType, getAssetsFile } from "@/utils/utilityFunction.js";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { UPDATE_MODEL, PAGE_LOADING } from "@/config/constant";
 
 const modelEditMap = {
   oneModel: {
@@ -243,13 +244,13 @@ const switchActiveModelEdit = async switchType => {
         localModelName: null,
         geometryVisible: false
       });
-      store.changeDragType("manyModel");
+      store.setActiveEditModelType("manyModel");
       store.modelApi.clearSceneModel();
       ElMessage.success("切换成功：当前为多模型编辑模式");
     });
   } else if (["geometry", "oneModel"].includes(switchType)) {
     // 加载单模型
-    $bus.emit("page-loading", true);
+    $bus.emit(PAGE_LOADING, true);
     try {
       const { load } = await store.modelApi.onSwitchModel(activeModel.value);
       if (load) {
@@ -259,13 +260,13 @@ const switchActiveModelEdit = async switchType => {
           localModelName: null,
           geometryVisible: false
         });
-        $bus.emit("update-model");
-        $bus.emit("page-loading", false);
-        store.changeDragType("oneModel");
+        $bus.emit(UPDATE_MODEL);
+        $bus.emit(PAGE_LOADING, false);
+        store.setActiveEditModelType("oneModel");
         ElMessage.success("切换成功：当前为单模型编辑模式");
       }
     } catch (err) {
-      $bus.emit("page-loading", false);
+      $bus.emit(PAGE_LOADING, false);
     }
   }
 };
@@ -273,27 +274,28 @@ const switchActiveModelEdit = async switchType => {
 const onChangeModel = async model => {
   if (model.id == reactiveData.activeModelId || reactiveData.modeEditType == "many") return false;
   activeModel.value = model;
+  store.setActiveEditModelType("oneModel");
   Object.assign(reactiveData, {
     activeModelId: model.id,
     localModelName: null,
     modeEditType: "oneModel",
     geometryVisible: false
   });
-  $bus.emit("page-loading", true);
+
+  $bus.emit(PAGE_LOADING, true);
   try {
     const { load } = await store.modelApi.onSwitchModel(model);
     if (load) {
-      $bus.emit("update-model");
-      $bus.emit("page-loading", false);
+      $bus.emit(UPDATE_MODEL);
+      $bus.emit(PAGE_LOADING, false);
     }
   } catch (err) {
-    $bus.emit("page-loading", false);
+    $bus.emit(PAGE_LOADING, false);
   }
 };
 
 // 添加几何模型
 const onAddGeometry = async () => {
-  // activeModel.value = {};
   Object.assign(reactiveData, {
     activeModelId: null,
     localModelName: null,
@@ -306,7 +308,7 @@ const onAddGeometry = async () => {
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
   store.modelApi.setDragGeometryModel(model);
-  store.changeDragType("geometry");
+  store.setActiveEditModelType("geometry");
 };
 // 拖拽中
 const onDrag = event => {
@@ -315,7 +317,7 @@ const onDrag = event => {
 
 // 拖拽模型开始
 const onDragModelStart = model => {
-  store.changeDragType("manyModel");
+  store.setActiveEditModelType("manyModel");
   store.modelApi.setDragManyModel(model);
 };
 
@@ -328,14 +330,14 @@ const onUpload = async file => {
     filePath,
     fileType: getFileType(file.name)
   };
-  $bus.emit("page-loading", true);
+  $bus.emit(PAGE_LOADING, true);
   try {
     const { load, filePath } = await store.modelApi.onSwitchModel(model);
     // TODO: 加载成功之后手动释放 否则会造成内存浪费
     URL.revokeObjectURL(filePath);
     if (load) {
-      $bus.emit("update-model");
-      $bus.emit("page-loading", false);
+      $bus.emit(UPDATE_MODEL);
+      $bus.emit(PAGE_LOADING, false);
 
       // activeModel.value = {};
       Object.assign(reactiveData, {
@@ -345,7 +347,7 @@ const onUpload = async file => {
     }
   } catch (err) {
     reactiveData.localModelName = null;
-    $bus.emit("page-loading", false);
+    $bus.emit(PAGE_LOADING, false);
   }
 };
 

@@ -153,7 +153,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, getCurrentInstance, watch } from "vue";
 import { useMeshEditStore } from "@/store/meshEditStore";
-import { PREDEFINE_COLORS, meshTypeList } from "@/config/constant";
+import { PREDEFINE_COLORS, meshTypeList, UPDATE_MODEL } from "@/config/constant";
 import { getFileType } from "@/utils/utilityFunction";
 import { mapImageList } from "@/config/model";
 import * as THREE from "three";
@@ -186,7 +186,7 @@ const state = reactive({
 });
 
 onMounted(() => {
-  $bus.on("update-model", () => {
+  $bus.on(UPDATE_MODEL, () => {
     // 重置动画数据
     Object.assign(config, {
       color: null,

@@ -6,7 +6,6 @@
 import * as THREE from "three";
 import { toRaw } from "vue";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
-import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { findObjectInScene } from "@/utils/utilityFunction.js";
 import { useMeshEditStore } from "@/store/meshEditStore";
 
