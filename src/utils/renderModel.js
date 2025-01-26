@@ -150,9 +150,7 @@ class renderModel {
       // 创建灯光
       this.createLight();
       this.addEvenListMouseListener();
-      // 添加物体模型 TODO：初始化时需要默认一个
-      //  https://threejs.org/examples/models/gltf/LittlestTokyo.glb
-      const load = await this.setModel({ filePath: "threeFile/glb/glb-7.glb", fileType: "glb" });
+      const load = await this.loadModel({ filePath: "threeFile/glb/glb-7.glb", fileType: "glb" });
       // 创建效果合成器
       this.createEffectComposer();
       //场景渲染
@@ -247,10 +245,9 @@ class renderModel {
     this.css3dControls.update();
   }
   // 加载模型
-  setModel({ filePath, fileType, decomposeName }) {
-    return new Promise((resolve, reject) => {
+  loadModel({ filePath, fileType, decomposeName }) {
+    return new Promise(resolve => {
       this.loadingStatus = false;
-      // const THREE_PATH = `https://unpkg.com/three@0.${THREE.REVISION}.x`;
       let loader;
       if (["glb", "gltf"].includes(fileType)) {
         const dracoLoader = new DRACOLoader();
@@ -489,6 +486,7 @@ class renderModel {
     const renderPass = new RenderPass(this.scene, this.camera);
 
     this.effectComposer.addPass(renderPass);
+
     this.outlinePass = new OutlinePass(new THREE.Vector2(clientWidth, clientHeight), this.model, this.camera);
     this.outlinePass.visibleEdgeColor = new THREE.Color("#FF8C00"); // 可见边缘的颜色
     this.outlinePass.hiddenEdgeColor = new THREE.Color("#8a90f3"); // 不可见边缘的颜色
@@ -557,17 +555,13 @@ class renderModel {
           this.modelAnimation = [];
           this.camera.fov = 80;
           this.camera.updateProjectionMatrix();
-          const load = await this.setGeometryModel(model);
+          await this.setGeometryModel(model);
           this.outlinePass.renderScene = this.geometryGroup;
           resolve();
         } else {
           this.clearSceneModel();
-          // 重置"灯光"模块数据
-          // this.onResettingLight({ ambientLight: true })
-          this.camera.fov = 50;
-          this.geometryGroup.clear();
           // 加载模型
-          const load = await this.setModel(model);
+          const load = await this.loadModel(model);
           this.outlinePass.renderScene = this.model;
           // 模型加载成功返回 true
           resolve({ load, filePath: model.filePath });
@@ -716,7 +710,6 @@ class renderModel {
     this.animateClipAction = null;
     // 动画循环方式枚举
     this.loopMap = null;
-
     // 网格辅助线
     this.gridHelper = null;
     // 坐标轴辅助线
@@ -752,7 +745,6 @@ class renderModel {
     // 辉光效果合成器
     if (this.glowComposer) {
       this.glowComposer.renderer.clear();
-      this.glowComposer.renderer.dispose();
     }
     this.glowComposer = null;
     // 辉光渲染器
@@ -780,7 +772,8 @@ class renderModel {
 
   // 清除场景模型数据
   clearSceneModel() {
-    //先移除模型 材质释放内存
+    this.camera.fov = 50;
+    // 先移除模型 材质释放内存
     this.scene.traverse(v => {
       if (["Mesh"].includes(v.type)) {
         v.geometry.dispose();
@@ -791,8 +784,8 @@ class renderModel {
     this.activeDragManyModel = {};
     this.geometryGroup.clear();
     this.scene.remove(this.geometryGroup);
-    this.manyModelGroup.clear();
     this.scene.remove(this.manyModelGroup);
+    this.manyModelGroup.clear();
 
     // 移除添加的多模型
     const removeModelList = this.scene.children.filter(v => v.userData.type == "manyModel");
@@ -801,6 +794,7 @@ class renderModel {
     });
     this.scene.remove(this.model);
     this.model = null;
+
     //取消动画帧
     cancelAnimationFrame(this.animationFrame);
     cancelAnimationFrame(this.rotationAnimationFrame);
@@ -809,6 +803,7 @@ class renderModel {
     this.glowMaterialList = [];
     this.modelMaterialList = [];
     this.originalMaterials.clear();
+
     this.materials = {};
     if (this.transformControls) {
       this.transformControls.detach();
@@ -819,16 +814,14 @@ class renderModel {
       this.scene.remove(this.transformControls);
       this.transformControls = null;
     }
-    if (this.glowComposer) {
-      this.glowComposer.renderer.clear();
-      this.glowComposer.renderer.dispose();
-    }
+
     if (this.effectComposer) {
       this.effectComposer.removePass(this.shaderPass);
     }
 
     this.renderer.toneMappingExposure = 2;
     this.outlinePass.selectedObjects = [];
+
     Object.assign(this.unrealBloomPass, {
       threshold: 0,
       strength: 0,
@@ -850,7 +843,8 @@ class renderModel {
       axesHelper: false,
       axesSize: 1.8
     };
-    this.onResettingLight({ ambientLight: false });
+    this.onResettingLight({ ambientLight: true });
+
     this.onSetModelGridHelper(config);
     this.onSetModelGridHelperSize(config);
     this.onSetModelAxesHelper(config);
