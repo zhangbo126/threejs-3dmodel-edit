@@ -215,18 +215,18 @@ const reactiveData = reactive({
   // 当前模型ID
   activeModelId: 7,
   geometryVisible: false,
-  // 当前模型编辑模式 TODO:oneModel 单模型 many 多模型 geometry 几何体模型
+  // 当前模型编辑模式:oneModel 单模型 many 多模型 geometry 几何体模型
   modeEditType: "oneModel",
   localModelName: null
 });
 
 // 当前模型信息
 const activeModel = ref({
-  name: "变形金刚（3）",
+  name: "su7",
   fileType: "glb",
-  id: 9,
+  id: 7,
   animation: false,
-  filePath: "threeFile/glb/glb-9.glb",
+  filePath: "threeFile/glb/glb-7.glb",
   icon: getAssetsFile("model-icon/4.png"),
   decomposeName: "transformers_3",
   key: "transformers-3"

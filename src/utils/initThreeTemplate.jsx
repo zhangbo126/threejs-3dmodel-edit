@@ -187,7 +187,7 @@ class renderModel {
   initControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enablePan = true;
-    this.controls.enabled = true;
+    this.controls.enableDamping = true;
     this.controls.target.set(0, 0, 0);
 
     //标签控制器
@@ -263,7 +263,12 @@ class renderModel {
     const renderSize = new THREE.Vector2(clientWidth, clientHeight);
 
     // 主效果合成器
-    this.effectComposer = new EffectComposer(this.renderer);
+    this.effectComposer = new EffectComposer(
+      this.renderer,
+      new THREE.WebGLRenderTarget(clientWidth, clientHeight, {
+        samples: 4 // 增加采样次数来提高抗锯齿效果
+      })
+    );
 
     // 基础渲染通道
     const renderPass = new RenderPass(this.scene, this.camera);
@@ -282,6 +287,8 @@ class renderModel {
     effectFXAA.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
     effectFXAA.renderToScreen = true;
     effectFXAA.needsSwap = true;
+    effectFXAA.material.uniforms.tDiffuse.value = 1.0;
+    effectFXAA.enabled = true;
     this.effectComposer.addPass(effectFXAA);
 
     // 辉光通道
@@ -540,8 +547,8 @@ class renderModel {
     if (!background) return false;
     // 设置背景
     if (background.visible) {
-      const { color, image, viewImg, intensity, blurriness } = background;
-      switch (background.type) {
+      const { color, image, viewImg, intensity, blurriness, type = 3 } = background;
+      switch (type) {
         case 1:
           this.scene.background = new THREE.Color(color);
           break;
@@ -573,13 +580,14 @@ class renderModel {
     const mapIdList = mapImageList.map(v => v.id);
     material.meshList.forEach(v => {
       const mesh = this.model.getObjectByProperty("name", v.meshName);
+      if (!mesh) return false;
       const { color, opacity, depthWrite, wireframe, visible, type } = v;
-      const { map } = mesh.material;
-      if (material.materialType) {
+      const { map } = mesh?.material || {};
+      if (material.materialType && map) {
         mesh.material = new THREE[type]({
           map
         });
-      } else {
+      } else if (mesh.material) {
         mesh.material.map = map;
       }
       // 处理修改了贴图的材质
@@ -654,6 +662,7 @@ class renderModel {
     // 模型材质位置
     meshPositionList.forEach(v => {
       const mesh = this.model.getObjectByProperty("name", v.name);
+      if (!mesh) return;
       const { rotation, scale, position } = v;
       mesh.rotation.set(rotation.x, rotation.y, rotation.z);
       mesh.scale.set(scale.x, scale.y, scale.z);
@@ -904,16 +913,13 @@ function createThreeDComponent(config) {
 
   return defineComponent({
     name: "ThreeDComponent",
-
     props: {
       width: [String, Number],
       height: [String, Number]
     },
-
     data: () => ({
       loading: false
     }),
-
     watch: {
       $props: {
         handler: () => {
@@ -922,19 +928,13 @@ function createThreeDComponent(config) {
         deep: true
       }
     },
-
     render() {
       const style = {
         width: this.width ? `${this.width - 10}px` : "100%",
         height: this.height ? `${this.height - 10}px` : "100%",
         pointerEvents: this.width && this.height ? "none" : undefined
       };
-
-      return h("div", {
-        id: elementId,
-        style,
-        "v-z-loading": this.loading
-      });
+      return <div id={elementId} style={style} v-zLoading={this.loading}></div>;
     },
 
     async mounted() {

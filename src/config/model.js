@@ -32,7 +32,7 @@ const modelList = [
   },
 
   {
-    name: "人物（男）",
+    name: "沙发",
     key: "characterMan",
     fileType: "glb",
     id: 8,
@@ -41,7 +41,7 @@ const modelList = [
     icon: getAssetsFile("model-icon/3.png")
   },
   {
-    name: "变形金刚（3）",
+    name: "手机",
     key: "transformers-3",
     fileType: "glb",
     id: 9,
@@ -51,7 +51,7 @@ const modelList = [
     decomposeName: "transformers_3"
   },
   {
-    name: "变形金刚（1）",
+    name: "篮球",
     key: "transformers-1",
     fileType: "glb",
     id: 10,
@@ -136,16 +136,6 @@ const modelList = [
     animation: true,
     filePath: "threeFile/glb/glb-25.glb",
     icon: getAssetsFile("model-icon/18.png")
-  },
-  {
-    name: "火男",
-    key: "hyottoko",
-    fileType: "glb",
-    id: 26,
-    animation: true,
-    filePath: "threeFile/glb/glb-26.glb",
-    scale: 0.02,
-    icon: getAssetsFile("model-icon/16.png")
   }
 ];
 
