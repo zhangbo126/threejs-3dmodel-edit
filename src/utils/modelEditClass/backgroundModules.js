@@ -26,12 +26,10 @@ function pauseVideo() {
  */
 function setSceneTexture(texture, config = {}) {
   const { intensity = 1, blurriness = 0, isEnvironment = false } = config;
-
   if (texture) {
     this.scene.background = texture;
     this.scene.backgroundIntensity = intensity;
     this.scene.backgroundBlurriness = blurriness;
-
     if (isEnvironment) {
       this.scene.environment = texture;
     }

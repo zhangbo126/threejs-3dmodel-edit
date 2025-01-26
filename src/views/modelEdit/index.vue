@@ -84,7 +84,6 @@ const loadingTimeout = ref(null);
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
     const fileInfo = choosePanel.value?.activeModel;
-    console.log(fileInfo.filePath, store.modelType);
     return fileInfo?.filePath && ["oneModel", "tags"].includes(store.modelType) ? true : false;
   }
   return false;

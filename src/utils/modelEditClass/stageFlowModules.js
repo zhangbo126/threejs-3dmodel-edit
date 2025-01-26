@@ -54,8 +54,6 @@ function onSetUnrealBloomPass(config) {
     this.unrealBloomPass.radius = 0;
     this.renderer.toneMappingExposure = toneMappingExposure;
     this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
-    this.glowComposer.renderer.clear();
-    this.glowComposer.renderer.dispose();
     this.effectComposer.removePass(this.shaderPass);
   }
 }
@@ -184,12 +182,10 @@ function initStageFlow() {
     strength: 0,
     radius: 0
   });
-
+  this.glowComposer.renderer.clear();
   // 清除辉光效果
   this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
   this.glowUnrealBloomPass = false;
-  this.glowComposer.renderer.clear();
-  this.glowComposer.renderer.dispose();
 
   // 清除变换控制器
   if (this.transformControls) {
