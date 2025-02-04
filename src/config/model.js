@@ -268,12 +268,7 @@ const mapImageList = [
   {
     id: 87,
     url: getAssetsFile("maps/19.jpg")
-  },
-  {
-    id: 222,
-    url: getAssetsFile("maps/20.jpg")
-  },
-  ...viewImageList
+  }
 ];
 
 // 几何体模型列表

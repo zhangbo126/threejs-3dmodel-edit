@@ -680,6 +680,10 @@ class renderModel {
         v.geometry.dispose();
         v.material.dispose();
       }
+      if (v.isMesh) {
+        v.geometry.dispose();
+        v.material.dispose();
+      }
     });
     this.scene.clear();
     this.renderer.dispose();
