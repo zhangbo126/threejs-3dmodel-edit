@@ -1,5 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# 运行 lint-staged（只检查暂存区的文件）
-npx lint-staged
+pnpm run lint
+pnpm run format
