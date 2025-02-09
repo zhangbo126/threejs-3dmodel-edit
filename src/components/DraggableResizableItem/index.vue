@@ -2,10 +2,10 @@
 <template>
   <draggable-resizable
     class="draggable-resizable"
-    classNameDragging="dragging"
-    classNameActive="active"
-    :initW="config.width"
-    :initH="config.height"
+    class-name-dragging="dragging"
+    class-name-active="active"
+    :init-w="config.width"
+    :init-h="config.height"
     :x="config.x"
     :y="config.y"
     :w="config.width"
