@@ -46,7 +46,7 @@
       </el-scrollbar>
       <div id="drag-content">
         <div class="content" @drop="onDrop" @dragover.prevent>
-          <draggable-container :adsorbParent="true" :disabled="true" v-if="dragModelList.length">
+          <draggable-container :adsorb-parent="true" :disabled="true" v-if="dragModelList.length">
             <draggable-resizable-item
               @onDragActive="onDragActive"
               @onDragDeactivated="onDragDeactivated"
@@ -58,7 +58,7 @@
           </draggable-container>
           <div class="empty-tip" v-else>请拖拽添加多个!!!</div>
           <!-- 右键菜单 -->
-          <right-context-menu :rightMenuPosition="rightMenuPosition" @onDelete="onDeleteDrag"></right-context-menu>
+          <right-context-menu :right-menu-position="rightMenuPosition" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
       </div>
     </div>
