@@ -24,7 +24,7 @@ const session = {
     if (!key) {
       return null;
     }
-    var obj = JSON.parse(sessionStorage.getItem(key));
+    let obj = JSON.parse(sessionStorage.getItem(key));
     return obj;
   },
 
@@ -70,7 +70,7 @@ const local = {
     if (!key) {
       return null;
     }
-    var obj = JSON.parse(localStorage.getItem(key));
+    let obj = JSON.parse(localStorage.getItem(key));
     return obj;
   },
 
