@@ -3,6 +3,4 @@
     <router-view />
   </el-config-provider>
 </template>
-<script setup>
-</script>
-
+<script setup></script>
