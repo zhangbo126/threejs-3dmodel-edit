@@ -8,7 +8,7 @@
       </li>
       <li class="info-item">
         <span class="label">描述:</span>
-        <span class="content">提供更加高级真实的模型展示效果，支持高精度3D模型展示，多场景渲染模型，材质真实度还原</span>
+        <span class="content">为3D模型在浏览器端提供高质量、高真实度的渲染解决方案，以提升用户的视觉体验和交互效果。</span>
       </li>
       <li class="info-item">
         <span class="label">技术栈:</span>
