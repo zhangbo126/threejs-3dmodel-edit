@@ -89,28 +89,28 @@ const handleConfigBtn = computed(() => {
   return false;
 });
 
-// 页面资源刷新
-const updateResources = () => {
-  const env = import.meta.env.VITE_USER_NODE_ENV;
-  if (env == "production") {
-    ElMessageBox.confirm(
-      "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常使用“ctrl+f5”强刷页面即可",
-      "提示",
-      {
-        showClose: false,
-        closeOnClickModal: false,
-        closeOnPressEscape: false,
-        distinguishCancelAndClose: true,
-        confirmButtonText: "关闭弹框",
-        showCancelButton: false
-      }
-    )
-      .then(() => {})
-      .catch(() => {
-        location.reload(true);
-      });
-  }
-};
+// // 页面资源刷新
+// const updateResources = () => {
+//   const env = import.meta.env.VITE_USER_NODE_ENV;
+//   if (env == "production") {
+//     ElMessageBox.confirm(
+//       "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常使用“ctrl+f5”强刷页面即可",
+//       "提示",
+//       {
+//         showClose: false,
+//         closeOnClickModal: false,
+//         closeOnPressEscape: false,
+//         distinguishCancelAndClose: true,
+//         confirmButtonText: "关闭弹框",
+//         showCancelButton: false
+//       }
+//     )
+//       .then(() => {})
+//       .catch(() => {
+//         location.reload(true);
+//       });
+//   }
+// };
 
 // 重置相机位置
 const onResetCamera = () => {
@@ -259,8 +259,6 @@ const addEventListenerFullscreen = e => {
 };
 
 onMounted(async () => {
-  updateResources();
-
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);

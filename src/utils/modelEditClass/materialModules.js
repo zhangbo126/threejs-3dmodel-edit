@@ -363,7 +363,7 @@ function onSetGeometryMeshList() {
   this.modelMaterialList = [];
   this.model.traverse(v => {
     if (!v.isMesh || !v.material) return;
-
+    console.log(v);
     v.castShadow = true;
     v.frustumCulled = false;
 

@@ -584,7 +584,7 @@ class renderModel {
     this.css3DRenderer.setSize(clientWidth, clientHeight);
     if (this.effectComposer) {
       // 假设抗锯齿效果是EffectComposer中的第一个pass
-      var pass = this.effectComposer.passes[3];
+      let pass = this.effectComposer.passes[3];
       const pixelRatio = this.renderer.getPixelRatio();
       pass.uniforms.resolution.value.set(1 / (clientWidth * pixelRatio), 1 / (clientHeight * pixelRatio));
       this.effectComposer.setSize(clientWidth, clientHeight);
@@ -594,8 +594,8 @@ class renderModel {
   }
   // 下载场景封面
   onDownloadSceneCover() {
-    var link = document.createElement("a");
-    var canvas = this.renderer.domElement;
+    let link = document.createElement("a");
+    let canvas = this.renderer.domElement;
     link.href = canvas.toDataURL("image/png");
     link.download = `${new Date().toLocaleString()}.png`;
     link.click();
@@ -677,6 +677,10 @@ class renderModel {
     window.removeEventListener("resize", this.onWindowResizesListener);
     this.scene.traverse(v => {
       if (v.type === "Mesh") {
+        v.geometry.dispose();
+        v.material.dispose();
+      }
+      if (v.isMesh) {
         v.geometry.dispose();
         v.material.dispose();
       }
