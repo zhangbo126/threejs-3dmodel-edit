@@ -1,5 +1,5 @@
-import ModelEditPanel from './ModelEditPanel/index.vue'
-import ModelChoose from './ModelChoose/index.vue'
-import ImplantCodeDialog from './ImplantCodeDialog/index.vue'
+import ModelEditPanel from "./ModelEditPanel/index.vue";
+import ModelChoose from "./ModelChoose/index.vue";
+import ImplantCodeDialog from "./ImplantCodeDialog/index.vue";
 
-export { ModelEditPanel, ModelChoose, ImplantCodeDialog }
+export { ModelEditPanel, ModelChoose, ImplantCodeDialog };

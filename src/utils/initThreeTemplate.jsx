@@ -733,7 +733,7 @@ class renderModel {
     // 模型平面
     if (light.planeGeometry) {
       const geometry = new THREE.PlaneGeometry(light.planeWidth, light.planeHeight);
-      var groundMaterial = new THREE.MeshStandardMaterial({
+      let groundMaterial = new THREE.MeshStandardMaterial({
         color: light.planeColor
       });
       const planeGeometry = new THREE.Mesh(geometry, groundMaterial);
@@ -928,14 +928,6 @@ function createThreeDComponent(config) {
         deep: true
       }
     },
-    render() {
-      const style = {
-        width: this.width ? `${this.width - 10}px` : "100%",
-        height: this.height ? `${this.height - 10}px` : "100%",
-        pointerEvents: this.width && this.height ? "none" : undefined
-      };
-      return <div id={elementId} style={style} v-zLoading={this.loading}></div>;
-    },
 
     async mounted() {
       try {
@@ -952,6 +944,14 @@ function createThreeDComponent(config) {
     beforeUnmount() {
       modelApi?.onClearModelData();
       modelApi = null;
+    },
+    render() {
+      const style = {
+        width: this.width ? `${this.width - 10}px` : "100%",
+        height: this.height ? `${this.height - 10}px` : "100%",
+        pointerEvents: this.width && this.height ? "none" : undefined
+      };
+      return <div id={elementId} style={style} v-zLoading={this.loading}></div>;
     }
   });
 }
