@@ -11,8 +11,6 @@
     "build": "vite build --mode development",
     "build:pro": "vite build --mode production",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.vue src",
-    "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx,.vue src --fix",
     "lint:lint-staged": "lint-staged",
     "prepare": "husky install"
   },
