@@ -94,7 +94,7 @@
 
 ### 🥰又或者该项目能满足你的需求,也可联系咨询作者购买vx:answer_2027
 
-三维模型高级场景渲染器 : [https://threejs-advanced-rendering](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-advanced-rendering/) |
+三维模型高级场景渲染器 : [https://threejs-advanced-rendering](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-advanced-rendering/)
 
 ### 👷 界面
 
