@@ -119,15 +119,7 @@ const modelList = [
     icon: getAssetsFile("model-icon/9.png"),
     decomposeName: "transformers_2"
   },
-  {
-    name: "恶魔",
-    key: "emo-2",
-    fileType: "glb",
-    id: 24,
-    animation: false,
-    filePath: "threeFile/glb/glb-24.glb",
-    icon: getAssetsFile("model-icon/11.png")
-  },
+
   {
     name: "牛头酋长",
     key: "taurenchieftain",
