@@ -248,6 +248,7 @@ function onChangeModelMaterial(name) {
   if (!mesh) return null;
 
   this.outlinePass.selectedObjects = [toRaw(mesh)];
+  console.log(this.outlinePass);
   store.selectMeshAction(mesh);
   return mesh;
 }
