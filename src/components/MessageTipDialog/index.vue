@@ -1,18 +1,18 @@
 <template>
   <el-dialog v-model="visible" width="600px" :close-on-click-modal="false">
-    <p class="tip-message">为了开源项目可持续性发展，以下↓项目 如有需要请咨询联系作者vx: <b>answer_2027</b></p>
+    <p class="tip-message">3D模型可视化编辑系统的升级版(↓)</p>
     <ul class="info-list">
       <li class="info-item">
         <span class="label">项目名称:</span>
-        <span class="content">三维模型高级场景渲染器</span>
+        <span class="content">3D模型场景编辑器</span>
       </li>
       <li class="info-item">
         <span class="label">描述:</span>
-        <span class="content">为3D模型在浏览器端提供高质量、高真实度的渲染解决方案，以提升用户的视觉体验和交互效果。</span>
+        <span class="content"> 提供更加强大灵活便捷流畅的3D模型场景操作编辑功能 </span>
       </li>
       <li class="info-item">
         <span class="label">技术栈:</span>
-        <span class="content">Three.js173+Vue3.0+Typescript+Vite</span>
+        <span class="content">Three.js174+Vue3.0+Typescript+Vite</span>
       </li>
       <li class="info-item">
         <span class="label">在线地址：</span>
@@ -21,9 +21,9 @@
           type="primary"
           :underline="false"
           target="_blank"
-          href="https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-advanced-rendering"
+          href="https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-model-edit-pro/"
         >
-          https://threejs-advanced-rendering</el-link
+          https://threejs-model-edit-pro</el-link
         >
       </li>
     </ul>
