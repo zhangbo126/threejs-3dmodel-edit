@@ -96,7 +96,7 @@
 
 <!-- Start of Selection -->
 
-**3D模型场景编辑器 : [淘宝链接](https://item.taobao.com/item.htm?ft=t&id=906085738255&spm=a21dvs.23580594.0.0.621e2c1brvhsYX)**
+**3D模型场景编辑器(Vue3/React18): [获取授权](https://item.taobao.com/item.htm?ft=t&id=906085738255&spm=a21dvs.23580594.0.0.621e2c1brvhsYX)**
 
 <!-- End of Selection -->
 
