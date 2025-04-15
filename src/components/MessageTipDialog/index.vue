@@ -12,7 +12,7 @@
       </li>
       <li class="info-item">
         <span class="label">技术栈:</span>
-        <span class="content">Three.js174+Vue3.0+Typescript+Vite</span>
+        <span class="content">Three.js175+Vue3.0/Three.js175+React18</span>
       </li>
       <li class="info-item">
         <span class="label">在线地址：</span>
