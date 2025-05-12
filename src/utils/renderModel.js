@@ -172,7 +172,7 @@ class renderModel {
   // 创建相机
   initCamera() {
     const { clientHeight, clientWidth } = this.container;
-    this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 1, 10000);
+    this.camera = new THREE.PerspectiveCamera(50, clientWidth / clientHeight, 0.05, 10000);
   }
   // 创建渲染器
   initRender() {
