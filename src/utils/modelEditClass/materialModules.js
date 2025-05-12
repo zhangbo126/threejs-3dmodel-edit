@@ -248,7 +248,6 @@ function onChangeModelMaterial(name) {
   if (!mesh) return null;
 
   this.outlinePass.selectedObjects = [toRaw(mesh)];
-  console.log(this.outlinePass);
   store.selectMeshAction(mesh);
   return mesh;
 }
@@ -272,7 +271,7 @@ function onMouseClickModel(event) {
   if (!model) return false;
 
   const intersects = this.raycaster
-    .intersectObjects(model.children, true)
+    .intersectObjects(toRaw(model.children), true)
     .filter(item => item.object.isMesh && item.object.material);
 
   if (intersects.length > 0) {
@@ -364,10 +363,8 @@ function onSetGeometryMeshList() {
   this.modelMaterialList = [];
   this.model.traverse(v => {
     if (!v.isMesh || !v.material) return;
-    console.log(v);
     v.castShadow = true;
     v.frustumCulled = false;
-
     this.modelMaterialList.push(v);
     this.originalMaterials.set(v.uuid, v.material);
     v.mapId = v.name;
