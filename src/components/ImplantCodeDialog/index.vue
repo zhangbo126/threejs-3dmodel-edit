@@ -28,8 +28,8 @@ import { IFRAME_PREVIEW } from "@/config/constant";
 const visible = ref(false);
 const codeString = ref(null);
 const iframeConfig = reactive({
-  width: 400,
-  height: 300
+  width: 700,
+  height: 400
 });
 
 const codeIframe = computed(() => {
