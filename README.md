@@ -96,7 +96,7 @@
 
 <!-- Start of Selection -->
 
-**[3D模型场景编辑器(Vue3/React18)](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-model-edit-pro/):** [获取授权](https://item.taobao.com/item.htm?ft=t&id=906085738255&spm=a21dvs.23580594.0.0.621e2c1brvhsYX)
+**[3D模型场景编辑器(Vue3/React18)](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dscene-docs/):** [获取授权](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dscene-docs/)
 
 <!-- End of Selection -->
 
