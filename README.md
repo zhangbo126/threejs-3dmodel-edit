@@ -96,7 +96,7 @@
 
 <!-- Start of Selection -->
 
-**[3D模型场景编辑器(Vue3/React18)](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-model-edit-pro/):** [获取授权](https://item.taobao.com/item.htm?ft=t&id=906085738255&spm=a21dvs.23580594.0.0.621e2c1brvhsYX)
+**[3D模型场景编辑器(Vue3/React18)](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dscene-docs/):** [获取授权](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dscene-docs/)
 
 <!-- End of Selection -->
 
@@ -109,7 +109,107 @@
 ![输入图片说明](public/image/6.png)
 ![输入图片说明](public/image/7.png)
 ![输入图片说明](public/image/8.png)
+## 主要目录结构
+### 1. 核心文件
+- App.vue : 应用程序的根组件，包含路由视图和消息提示对话框
+- main.js : 应用程序入口文件，负责初始化 Vue 应用、注册全局组件、指令和插件
+### 2. /assets 目录
+存放静态资源文件：
 
+- image/ : 图片资源
+- maps/ : 贴图资源
+- model-icon/ : 模型图标资源
+### 3. /components 目录
+包含可复用的组件：
+
+- DraggableResizableItem/ : 可拖拽和调整大小的组件
+- ImplantCodeDialog/ : 代码植入对话框组件
+- Loading/ : 加载状态组件
+- MessageTipDialog/ : 消息提示对话框组件
+- ModelChoose/ : 模型选择组件
+- ModelEditPanel/ : 模型编辑面板组件
+- RightContextMenu/ : 右键上下文菜单组件
+- index.js : 组件导出文件
+### 4. /config 目录
+配置文件：
+
+- constant.js : 常量定义，包含着色器代码等
+- model.js : 模型配置，包含模型列表、背景列表和贴图列表
+### 5. /layouts 目录
+布局组件：
+
+- EditView.vue : 编辑视图布局
+- VrView.vue : VR视图布局
+### 6. /router 目录
+路由配置：
+
+- index.js : 路由定义和配置
+### 7. /store 目录
+状态管理：
+
+- meshEditStore.js : 模型编辑状态管理
+- pinia.js : Pinia 状态管理配置
+### 8. /style 目录
+样式文件：
+
+- globe.scss : 全局样式
+- index.scss : 样式入口文件
+### 9. /utils 目录
+工具函数和类：
+
+- directive.js : 自定义指令，如加载状态指令
+- globalComponent.js : 全局组件注册
+- globalProperties.js : 全局属性和方法
+- indexedDB.js : IndexedDB 数据库操作
+- initThreeTemplate.jsx : Three.js 场景初始化模板
+- renderModel.js : 模型渲染工具
+- storage.js : 本地存储工具
+- utilityFunction.js : 通用工具函数
+- vrRenderModel.js : VR 模型渲染工具 /utils/modelEditClass 目录
+模型编辑相关的类和模块：
+
+- index.js : 模块导出文件，整合所有模型编辑功能
+- animationModules.js : 动画模块，处理模型动画
+- backgroundModules.js : 背景模块，处理场景背景
+- geometryModules.js : 几何体模块，处理模型几何形状
+- helperModules.js : 辅助工具模块，提供网格、坐标轴等辅助功能
+- lightModules.js : 灯光模块，处理场景光照
+- manyModelModules.js : 多模型管理模块，处理多个模型的操作
+- materialModules.js : 材质模块，处理模型材质
+- stageFlowModules.js : 后期效果模块，处理辉光等后期效果
+- tagsModules.jsx : 标注模块，处理模型标注
+### 10. /views 目录
+视图组件：
+
+- modelBase/ : 模型基础视图
+- modelEdit/ : 模型编辑视图
+- modelIframe/ : 模型 iframe 视图
+- modelPreview/ : 模型预览视图
+- vrPage/ : VR 页面视图
+## 核心功能模块详解
+### 1. 渲染模块
+- initThreeTemplate.jsx : 提供完整的 Three.js 场景初始化和渲染功能，包括相机、场景、渲染器、控制器、后期处理等
+- vrRenderModel.js : 专门用于 VR 场景的渲染，支持摄像头捕获和模型叠加
+### 2. 模型编辑模块
+- modelEditClass/ : 提供丰富的模型编辑功能
+  - lightModules.js : 控制环境光、平行光、点光源和聚光灯
+  - animationModules.js : 处理模型动画播放、控制和旋转
+  - stageFlowModules.js : 提供辉光效果、模型拆分和材质拖拽功能
+  - helperModules.js : 提供模型旋转、位置调整和辅助工具控制
+  - manyModelModules.js : 管理多个模型的选择、删除、变换等操作
+### 3. 存储模块
+- storage.js : 提供 localStorage 和 sessionStorage 的封装
+- indexedDB.js : 提供 IndexedDB 数据库操作
+### 4. 全局功能
+- globalProperties.js : 注册全局事件总线和存储方法
+- globalComponent.js : 注册 Element Plus 图标组件
+- directive.js : 提供自定义指令，如加载状态指令
+## 项目特点
+1. 基于 Vue 3 : 使用 Vue 3 的组合式 API 和 Pinia 状态管理
+2. Three.js 集成 : 深度集成 Three.js 实现 3D 模型渲染和编辑
+3. 模块化设计 : 将功能拆分为多个模块，便于维护和扩展
+4. VR 支持 : 支持 VR 模式，可以通过摄像头实现 AR 效果
+5. 丰富的编辑功能 : 支持模型材质、光照、动画、后期效果等多方面的编辑
 ### 🍻 相关链接
 
 ###### Three.js:[https://threejs.org/](https://threejs.org/)
