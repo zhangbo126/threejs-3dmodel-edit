@@ -1,6 +1,7 @@
 import * as THREE from "three"; //导入整个 three.js核心库
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"; //导入控制器模块，轨道控制器
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"; //导入GLTF模块，模型解析器,根据文件格式来定
+import { TIFFLoader } from "three/examples/jsm/loaders/TIFFLoader"; //导入GLTF模块，模型解析器,根据文件格式来定
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
@@ -47,7 +48,9 @@ class renderModel {
       fbx: new FBXLoader(this.loadingManager),
       gltf: new GLTFLoader(),
       obj: new OBJLoader(this.loadingManager),
-      stl: new STLLoader()
+      stl: new STLLoader(),
+      tif: new TIFFLoader(this.loadingManager),
+      tiff: new TIFFLoader(this.loadingManager)
     };
     //模型动画列表
     this.modelAnimation;
@@ -280,6 +283,10 @@ class renderModel {
               this.model = mesh;
               break;
             default:
+              const tiffGeometry = new THREE.PlaneGeometry();
+              const tiffMaterial = new THREE.MeshStandardMaterial( { map: result } );
+              const tiffMesh = new THREE.Mesh(tiffGeometry, tiffMaterial);
+              this.model = tiffMesh;
               break;
           }
           this.model.decomposeName = decomposeName;
