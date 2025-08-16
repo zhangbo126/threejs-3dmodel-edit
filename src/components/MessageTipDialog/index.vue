@@ -21,9 +21,9 @@
           type="primary"
           :underline="false"
           target="_blank"
-          href="https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dscene-docs/"
+          href="https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-model-edit-pro/"
         >
-          https://threejs-3dscene-docs</el-link
+          https://threejs-3dscene-pro</el-link
         >
       </li>
     </ul>
