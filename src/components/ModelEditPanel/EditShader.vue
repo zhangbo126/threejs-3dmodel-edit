@@ -21,7 +21,7 @@
       <span> 场景着色器 </span>
     </div>
     <div class="options">
-      <div class="shader-list">
+      <div class="shader-list" v-if="shaderList.length > 0">
         <div
           class="shader-item"
           :class="{ 'option-active': currentShaderUuid === item.onlyUuid }"
@@ -35,6 +35,7 @@
           </el-icon>
         </div>
       </div>
+      <el-empty description="暂无场景着色器" v-else />
     </div>
     <div class="header">
       <span> 着色器编辑 </span>
@@ -124,7 +125,7 @@ const changeCurrentShader = item => {
 
 // 删除着色器
 const deleteShader = item => {
-  store.modelApi.shaderModules.deleteShader(item.uuid);
+  store.modelApi.shaderModules.deleteShader(item.onlyUuid);
 };
 </script>
 
