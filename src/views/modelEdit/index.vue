@@ -89,29 +89,6 @@ const handleConfigBtn = computed(() => {
   return false;
 });
 
-// // 页面资源刷新
-// const updateResources = () => {
-//   const env = import.meta.env.VITE_USER_NODE_ENV;
-//   if (env == "production") {
-//     ElMessageBox.confirm(
-//       "本网站采用“腾讯云静态网站托管”每次更新资源可能存在缓存问题,若页面内容显示异常使用“ctrl+f5”强刷页面即可",
-//       "提示",
-//       {
-//         showClose: false,
-//         closeOnClickModal: false,
-//         closeOnPressEscape: false,
-//         distinguishCancelAndClose: true,
-//         confirmButtonText: "关闭弹框",
-//         showCancelButton: false
-//       }
-//     )
-//       .then(() => {})
-//       .catch(() => {
-//         location.reload(true);
-//       });
-//   }
-// };
-
 // 重置相机位置
 const onResetCamera = () => {
   store.modelApi.onResetModelCamera();
@@ -135,7 +112,7 @@ const initModelBaseData = () => {
 
 // 处理拖拽结束事件
 const onDragDrop = async e => {
-  const { dragGeometryModel, dragTag, activeDragManyModel } = store.modelApi;
+  const { dragGeometryModel, activeDragManyModel, dragTag } = store.modelApi;
   const { clientX, clientY } = e;
 
   // 更新拖拽位置
@@ -152,7 +129,7 @@ const onDragDrop = async e => {
   }
 
   // 处理3D标签
-  if (dragTag.id && store.modelType === "tags") {
+  if (dragTag?.id && store.modelType === "tags") {
     updateDragPosition(dragTag);
     store.modelApi.create3dTags(dragTag);
   }
@@ -174,6 +151,11 @@ const onDragDrop = async e => {
     } finally {
       $bus.emit(PAGE_LOADING, false);
     }
+  }
+
+  // 处理着色器
+  if (store.modelType === "shader") {
+    store.modelApi.shaderModules.createShader({ clientX, clientY });
   }
 };
 // 预览
@@ -262,6 +244,7 @@ onMounted(async () => {
   loading.value = true;
   const modelApi = new renderModel("#model");
   store.setModelApi(modelApi);
+
   $bus.on(PAGE_LOADING, value => {
     clearTimeout(loadingTimeout.value);
     if (value) {

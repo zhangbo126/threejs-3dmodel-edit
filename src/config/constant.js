@@ -277,3 +277,13 @@ export const meshTypeList = [
     opacity: true
   }
 ];
+
+export const SHADER_METHOD_ENUM = {
+  CreateWarningShader: "CreateWarningShader",
+  CreateCompassShader: "CreateCompassShader",
+  CreateRadarShader: "CreateRadarShader",
+  CreateWallShader: "CreateWallShader",
+  CreateApertureShader: "CreateApertureShader",
+  CreateFlickerWarning: "CreateFlickerWarning",
+  CreateWarningApertureShader: "CreateWarningApertureShader"
+};

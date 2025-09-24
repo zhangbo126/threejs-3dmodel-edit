@@ -21,6 +21,8 @@ import modulesPrototype from "./modelEditClass/index";
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from "@/config/constant.js";
 import { findObjectInScene } from "@/utils/utilityFunction";
+import shaderModules from "./modelEditClass/shaderModules";
+
 const colors = ["#FF4500", "#90EE90", "#00CED1", "#1E90FF", "#C71585", "#FF4500", "#FAD400", "#1F93FF", "#90F090", "#C71585"];
 class renderModel {
   constructor(selector) {
@@ -133,6 +135,8 @@ class renderModel {
     this.dragTagList = [];
     // 当前拖拽模型信息
     this.activeDragManyModel = {};
+    // 着色器模块实例
+    this.shaderModules = new shaderModules();
   }
 
   init() {
@@ -163,11 +167,13 @@ class renderModel {
     this.scene = new THREE.Scene();
     const texture = new THREE.TextureLoader().load(getAssetsFile("image/view-4.png"));
     texture.mapping = THREE.EquirectangularReflectionMapping;
+    this.scene.SRGBColorSpace = THREE.SRGBColorSpace;
     this.scene.background = texture;
     this.scene.environment = texture;
     this.scene.backgroundIntensity = 1;
     this.scene.backgroundBlurriness = 1;
     texture.dispose();
+  
   }
   // 创建相机
   initCamera() {
@@ -213,6 +219,7 @@ class renderModel {
         this.controls.update();
       }
       TWEEN.update();
+      this.shaderModules.updateAllShaderTime();
       // 3d标签渲染器
       if (this.dragTagList.length) {
         this.css3DRenderer.render(this.scene, this.camera);

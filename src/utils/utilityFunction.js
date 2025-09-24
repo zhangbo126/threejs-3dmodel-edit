@@ -1,3 +1,8 @@
+import * as THREE from "three";
+import { useMeshEditStore } from "@/store/meshEditStore";
+
+const store = useMeshEditStore();
+
 /**
  * 节流函数 - 在一定时间内只能触发一次
  * @param {Function} func 要执行的回调函数
@@ -156,3 +161,73 @@ export function findObjectInScene(scene, { type }) {
 
   return found;
 }
+
+/**
+ * 获取鼠标在3D场景中的位置
+ * @param {number} clientX - 鼠标X坐标
+ * @param {number} clientY - 鼠标Y坐标
+ * @returns {THREE.Vector3 | null} - 返回3D坐标位置，如果未找到则返回null
+ */
+export const getMousePosition = (clientX, clientY) => {
+  if (!store.modelApi || !store.modelApi.scene || !store.modelApi.camera || !store.modelApi.container) {
+    return null;
+  }
+
+  const { scene, camera, container } = store.modelApi;
+  const { clientHeight, clientWidth, offsetLeft, offsetTop } = container;
+
+  // 计算鼠标在屏幕上的标准化坐标 (-1 到 1)
+  const mouse = new THREE.Vector2();
+  mouse.x = ((clientX - offsetLeft) / clientWidth) * 2 - 1;
+  mouse.y = -((clientY - offsetTop) / clientHeight) * 2 + 1;
+
+  // 创建射线投射器
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+
+  // 与场景中的所有对象进行射线检测
+  const intersects = raycaster.intersectObjects(scene.children, true);
+
+  if (intersects.length > 0) {
+    // 返回第一个相交点的3D坐标
+    return intersects[0].point;
+  }
+
+  // 如果没有相交，返回射线与Y=0平面的交点作为默认值
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const intersectionPoint = new THREE.Vector3();
+  raycaster.ray.intersectPlane(plane, intersectionPoint);
+
+  return intersectionPoint;
+};
+
+/**
+ * 获取场景中所有shader类型的材质
+ * @param {THREE.Scene} [scene] - Three.js场景对象，如果不传则使用store中的场景
+ * @returns {Array} - 返回shader材质列表，格式：[{name: '材质名称', uuid: '材质UUID'}]
+ */
+export const getShaderMaterials = (scene) => {
+  const targetScene = scene || store.modelApi?.scene;
+  
+  if (!targetScene) {
+    console.warn('场景对象不存在');
+    return [];
+  }
+
+  const shaderMaterials = [];
+
+  targetScene.traverse(object => {
+    if (object instanceof THREE.Mesh && 
+        object.userData?.type === 'Shader' && 
+        object.material) {
+      shaderMaterials.push({
+        name: object.name || '未命名Shader',
+        onlyUuid: object.userData.onlyUuid,
+        uuid: object.uuid
+      });
+    }
+  });
+
+  return shaderMaterials;
+};
+
