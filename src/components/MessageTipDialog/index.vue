@@ -12,7 +12,7 @@
       </li>
       <li class="info-item">
         <span class="label">技术栈:</span>
-        <span class="content">Three.js176+Vue3.0/Three.js176+React18</span>
+        <span class="content">Three.js180+Vue3.0/Three.js180+React18</span>
       </li>
       <li class="info-item">
         <span class="label">在线地址：</span>
@@ -21,9 +21,9 @@
           type="primary"
           :underline="false"
           target="_blank"
-          href="https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dscene-docs/"
+          href="https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-model-edit-pro/"
         >
-          https://threejs-3dscene-docs</el-link
+          https://threejs-3dscene-pro</el-link
         >
       </li>
     </ul>
