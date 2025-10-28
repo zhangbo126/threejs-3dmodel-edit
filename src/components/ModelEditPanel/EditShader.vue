@@ -45,25 +45,25 @@
         <div class="shader-info-item">
           <div class="label">位置</div>
           <el-space>
-            <el-input-number v-model="currentShaderInfo.position.x" :controls="true" />
-            <el-input-number v-model="currentShaderInfo.position.y" :controls="true" />
-            <el-input-number v-model="currentShaderInfo.position.z" :controls="true" />
+            <el-input-number v-model="currentShaderInfo.position.x" :controls="false" :precision="2" />
+            <el-input-number v-model="currentShaderInfo.position.y" :controls="false" :precision="2" />
+            <el-input-number v-model="currentShaderInfo.position.z" :controls="false" :precision="2" />
           </el-space>
         </div>
         <div class="shader-info-item">
           <div class="label">旋转</div>
           <el-space>
-            <el-input-number v-model="currentShaderInfo.rotation.x" :controls="true" />
-            <el-input-number v-model="currentShaderInfo.rotation.y" :controls="true" />
-            <el-input-number v-model="currentShaderInfo.rotation.z" :controls="true" />
+            <el-input-number v-model="currentShaderInfo.rotation.x" :controls="false" :precision="2" />
+            <el-input-number v-model="currentShaderInfo.rotation.y" :controls="false" :precision="2" />
+            <el-input-number v-model="currentShaderInfo.rotation.z" :controls="false" :precision="2" />
           </el-space>
         </div>
         <div class="shader-info-item">
           <div class="label">缩放</div>
           <el-space>
-            <el-input-number v-model="currentShaderInfo.scale.x" :controls="true" />
-            <el-input-number v-model="currentShaderInfo.scale.y" :controls="false" />
-            <el-input-number v-model="currentShaderInfo.scale.z" :controls="true" />
+            <el-input-number v-model="currentShaderInfo.scale.x" :controls="false" :precision="2" />
+            <el-input-number v-model="currentShaderInfo.scale.y" :controls="false" :precision="2" />
+            <el-input-number v-model="currentShaderInfo.scale.z" :controls="false" :precision="2" />
           </el-space>
         </div>
       </div>
