@@ -126,7 +126,7 @@ class vrRenderModel {
       let loader;
       if (["glb", "gltf"].includes(fileType)) {
         const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath(`draco/gltf/`);
+        dracoLoader.setDecoderPath(`draco/`);
         dracoLoader.setDecoderConfig({ type: "js" });
         dracoLoader.preload();
         loader = new GLTFLoader().setDRACOLoader(dracoLoader);
