@@ -228,14 +228,14 @@ watch(
 // 切换材质类型
 const onChangeMeshType = e => {
   const activeMesh = meshTypeList.find(v => v.type == e);
-  state.modelApi.onChangeModelMeshType(activeMesh);
+  store.modelApi.materialModules.onChangeModelMeshType(activeMesh);
 };
 
 // 选择材质
 const onChangeMaterialType = mesh => {
   const { name } = mesh;
   config.meshName = name;
-  const activeMesh = state.modelApi.onChangeModelMaterial(name);
+  const activeMesh = store.modelApi.materialModules.onChangeModelMaterial(name);
   const { color, wireframe, depthWrite, opacity } = activeMesh.material;
   Object.assign(config, {
     color: new THREE.Color(color).getStyle(),
@@ -274,19 +274,19 @@ const getModelMaps = mesh => {
 };
 
 const onChangeMaterial = () => {
-  state.modelApi.onSetModelMaterial(config);
+  store.modelApi.materialModules.onSetModelMaterial(config);
 };
 
 // 设置材质显隐
 const onSetMeshVisible = mesh => {
   mesh.visible = !mesh.visible;
-  state.modelApi.onSetMeshVisible(mesh);
+  store.modelApi.materialModules.onSetMeshVisible(mesh);
 };
 
 //修改当前材质贴图
 const onChangeModelMap = map => {
   activeMapId.value = map.mapId;
-  state.modelApi.onSetModelMap(map);
+  store.modelApi.materialModules.onSetModelMap(map);
   ElMessage.success("当前材质贴图修改成功");
 };
 // 修改当前材质贴图
@@ -297,7 +297,7 @@ const onChangeSystemModelMap = async map => {
     // 修改当前材质列表的贴图ID
     const mesh = state.modelMaterialList.find(v => v.uuid == store.selectMeshUuid) || {};
     mesh.mapId = map.id;
-    state.modelApi.onSetSystemModelMap(map);
+    store.modelApi.materialModules.onSetSystemModelMap(map);
     ElMessage.success("当前材质贴图修改成功");
   } finally {
     loading.value = false;
@@ -307,7 +307,7 @@ const onChangeSystemModelMap = async map => {
 // 上传外部贴图
 const onUploadTexture = async file => {
   const filePath = URL.createObjectURL(file.raw);
-  await state.modelApi.onSetStorageModelMap(filePath, getFileType(file.name));
+  await store.modelApi.materialModules.onSetStorageModelMap(filePath, getFileType(file.name));
   URL.revokeObjectURL(filePath);
   ElMessage.success("当前材质贴图修改成功");
 };
@@ -323,13 +323,13 @@ const onInitialize = () => {
   });
   activeMeshType.value = "";
   activeMapId.value = null;
-  state.modelApi.initModelMaterial();
+  store.modelApi.materialModules.initModelMaterial();
 };
 
 const getMeshConfig = () => {
   return {
     materialType: activeMeshType.value,
-    meshList: state.modelApi.onGetEditMeshList()
+    meshList: store.modelApi.materialModules.onGetEditMeshList()
   };
 };
 defineExpose({

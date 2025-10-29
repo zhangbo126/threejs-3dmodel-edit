@@ -22,6 +22,9 @@ import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader } from "@/config/constant.js";
 import { findObjectInScene } from "@/utils/utilityFunction";
 import shaderModules from "./modelEditClass/shaderModules";
+import backgroundModules from "./modelEditClass/backgroundModules";
+import lightModules from "./modelEditClass/lightModules";
+import materialModules from "./modelEditClass/materialModules";
 
 const colors = ["#FF4500", "#90EE90", "#00CED1", "#1E90FF", "#C71585", "#FF4500", "#FAD400", "#1F93FF", "#90F090", "#C71585"];
 class renderModel {
@@ -52,7 +55,7 @@ class renderModel {
       stl: new STLLoader()
     };
     //模型动画列表
-    this.modelAnimation;
+    this.modelAnimation = [];
     //模型动画对象
     this.animationMixer;
     this.animationClock = new THREE.Clock();
@@ -135,12 +138,18 @@ class renderModel {
     this.dragTagList = [];
     // 当前拖拽模型信息
     this.activeDragManyModel = {};
+    // 背景模块实例
+    this.backgroundModules = new backgroundModules();
     // 着色器模块实例
     this.shaderModules = new shaderModules();
+    // 灯光模块实例
+    this.lightModules = new lightModules();
+    // 材质模块实例
+    this.materialModules = new materialModules();
   }
 
   init() {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
       //初始化渲染器
       this.initRender();
       //初始化相机
@@ -173,7 +182,6 @@ class renderModel {
     this.scene.backgroundIntensity = 1;
     this.scene.backgroundBlurriness = 1;
     texture.dispose();
-  
   }
   // 创建相机
   initCamera() {
@@ -184,7 +192,7 @@ class renderModel {
   initRender() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); //设置抗锯齿
     //设置屏幕像素比
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     //渲染的尺寸大小
     const { clientHeight, clientWidth } = this.container;
     this.renderer.setSize(clientWidth, clientHeight);
@@ -233,7 +241,7 @@ class renderModel {
     this.onWindowResizesListener = this.onWindowResizes.bind(this);
     window.addEventListener("resize", this.onWindowResizesListener);
     // 鼠标点击
-    this.onMouseClickListener = this.onMouseClickModel.bind(this);
+    this.onMouseClickListener = this.materialModules.onMouseClickModel.bind(this);
     this.container.addEventListener("click", this.onMouseClickListener);
   }
   // 创建控制器
@@ -265,6 +273,7 @@ class renderModel {
       } else {
         loader = this.fileLoaderMap[fileType];
       }
+      this.model?.dispose()
       loader.load(
         filePath,
         result => {
@@ -290,8 +299,8 @@ class renderModel {
               break;
           }
           this.model.decomposeName = decomposeName;
-          this.getModelMaterialList();
-          this.setModelPositionSize();
+          this.materialModules.getModelMaterialList();
+          this.materialModules.setModelPositionSize();
 
           // 需要辉光的材质
           this.glowMaterialList = this.modelMaterialList.map(v => v.name);
@@ -352,7 +361,7 @@ class renderModel {
   }
   // 加载几何体模型
   setGeometryModel(model) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const { clientHeight, clientWidth, offsetLeft, offsetTop } = this.container;
       // 计算鼠标在屏幕上的坐标
       this.mouse.x = ((model.clientX - offsetLeft) / clientWidth) * 2 - 1;
@@ -388,7 +397,7 @@ class renderModel {
         mesh.userData.geometry = true;
         this.geometryGroup.add(mesh);
         this.model = this.geometryGroup;
-        this.onSetGeometryMeshList(mesh);
+        this.materialModules.onSetGeometryMeshList(mesh);
 
         this.glowMaterialList = this.modelMaterialList.map(v => v.name);
         this.setModelMeshDrag({ transformType: true });
@@ -562,6 +571,7 @@ class renderModel {
           this.modelAnimation = [];
           this.camera.fov = 80;
           this.camera.updateProjectionMatrix();
+          console.log(model);
           await this.setGeometryModel(model);
           this.outlinePass.renderScene = this.geometryGroup;
           resolve();
@@ -574,7 +584,7 @@ class renderModel {
           resolve({ load, filePath: model.filePath });
         }
       } catch (err) {
-        console.log(err, "==================");
+        console.log(err);
         reject();
       }
     });
@@ -613,7 +623,6 @@ class renderModel {
     if (type == "usdz") {
       const exporter = new USDZExporter();
       exporter.parse(this.scene, usdz => {
-        // console.log(usdz, "==================");
         // 将导出的 USDZ 数据保存为文件或进行其他操作
         const blob = new Blob([usdz], { type: "model/vnd.usdz+zip" });
         const url = URL.createObjectURL(blob);
@@ -854,7 +863,7 @@ class renderModel {
       axesHelper: false,
       axesSize: 1.8
     };
-    this.onResettingLight({ ambientLight: true });
+    this.lightModules.onResettingLight({ ambientLight: true });
 
     this.onSetModelGridHelper(config);
     this.onSetModelGridHelperSize(config);
@@ -935,7 +944,7 @@ class renderModel {
             this.manyModelGroup.add(manyModel);
             this.model = this.manyModelGroup;
             this.outlinePass.renderScene = this.model;
-            this.getModelMaterialList();
+            this.materialModules.getModelMaterialList();
             // 需要辉光的材质
             this.glowMaterialList = this.modelMaterialList.map(v => v.name);
             this.scene.add(this.model);
@@ -964,7 +973,7 @@ class renderModel {
     this.model = chooseModel;
     this.outlinePass.renderScene = this.model;
     // 更新当前编辑的模型材质列表
-    this.getModelMaterialList();
+    this.materialModules.getModelMaterialList();
   }
 }
 

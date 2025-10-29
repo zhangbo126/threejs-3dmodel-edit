@@ -214,13 +214,13 @@ const onChangeType = type => {
   });
   switch (type) {
     case 1:
-      store.modelApi.onSetSceneColor(config.color);
+      store.modelApi.backgroundModules.onSetSceneColor(config.color);
       break;
     case 2:
-      store.modelApi.onSetSceneImage(config.image);
+      store.modelApi.backgroundModules.onSetSceneImage(config.image);
       break;
     case 3:
-      store.modelApi.onSetSceneViewImage(config);
+      store.modelApi.backgroundModules.onSetSceneViewImage(config);
       break;
     default:
       break;
@@ -230,7 +230,7 @@ const onChangeType = type => {
 const onChangeImage = ({ id, url }) => {
   config.image = url;
   activeBackgroundId.value = id;
-  store.modelApi.onSetSceneImage(url);
+  store.modelApi.backgroundModules.onSetSceneImage(url);
 };
 //选择全景图
 const onChangeViewImage = async ({ id, url }) => {
@@ -238,7 +238,7 @@ const onChangeViewImage = async ({ id, url }) => {
     loading.value = true;
     config.viewImg = url;
     activeViewImageId.value = id;
-    await store.modelApi.onSetSceneViewImage(config);
+    await store.modelApi.backgroundModules.onSetSceneViewImage(config);
   } finally {
     loading.value = false;
     ElMessage.success("操作成功");
@@ -248,44 +248,44 @@ const onChangeViewImage = async ({ id, url }) => {
 // 上传外部图片
 const onUploadTexture = async file => {
   const filePath = URL.createObjectURL(file.raw);
-  await store.modelApi.onSetStorageViewImage(filePath, getFileType(file.name));
+  await store.modelApi.backgroundModules.onSetStorageViewImage(filePath, getFileType(file.name));
   URL.revokeObjectURL(filePath);
   ElMessage.success("操作成功");
 };
 
 //上传外部视频
 const onUploadTextureVideo = async file => {
-  await store.modelApi.onSetStorageViewVideo(file);
+  await store.modelApi.backgroundModules.onSetStorageViewVideo(file);
   ElMessage.success("操作成功");
 };
 
 // 颜色面板值发生变化
 const activeChangeColor = color => {
   config.color = color;
-  store.modelApi.onSetSceneColor(config.color);
+  store.modelApi.backgroundModules.onSetSceneColor(config.color);
 };
 //选择颜色
 const onChangeColor = () => {
-  store.modelApi.onSetSceneColor(config.color);
+  store.modelApi.backgroundModules.onSetSceneColor(config.color);
 };
 
 // 修改全景图配置
 const onChangeViewConfig = () => {
-  store.modelApi.onSetSceneViewConfig(config);
+  store.modelApi.backgroundModules.onSetSceneViewConfig(config);
 };
 
 const onChangeBgSwitch = () => {
   const { type, visible, image, viewImg } = config;
-  if (!visible) return store.modelApi.onSetSceneColor("#000");
+  if (!visible) return store.modelApi.backgroundModules.onSetSceneColor("#000");
   switch (type) {
     case 1:
-      store.modelApi.onSetSceneColor(config.color);
+      store.modelApi.backgroundModules.onSetSceneColor(config.color);
       break;
     case 2:
-      store.modelApi.onSetSceneImage(image);
+      store.modelApi.backgroundModules.onSetSceneImage(image);
       break;
     case 3:
-      store.modelApi.onSetSceneViewImage(config);
+      store.modelApi.backgroundModules.onSetSceneViewImage(config);
       break;
     default:
       break;

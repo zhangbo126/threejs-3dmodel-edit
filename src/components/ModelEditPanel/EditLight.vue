@@ -406,42 +406,42 @@ onMounted(() => {
 
 const changeAmbientLightColor = ambientLightColor => {
   config.ambientLightColor = ambientLightColor;
-  state.modelApi.onSetModelAmbientLight(config);
+  state.modelApi.lightModules.onSetModelAmbientLight(config);
 };
 
 // 设置环境光
 const onChangeAmbientLight = () => {
-  state.modelApi.onSetModelAmbientLight(config);
+  state.modelApi.lightModules.onSetModelAmbientLight(config);
 };
 
 const changeDirectionalLightColor = directionalLightColor => {
   config.directionalLightColor = directionalLightColor;
-  state.modelApi.onSetModelDirectionalLight(config);
+  state.modelApi.lightModules.onSetModelDirectionalLight(config);
 };
 
 // 设置平行光
 const onChangeDirectionalLight = () => {
-  state.modelApi.onSetModelDirectionalLight(config);
+  state.modelApi.lightModules.onSetModelDirectionalLight(config);
 };
 
 const changePointLightColor = pointLightColor => {
   config.pointLightColor = pointLightColor;
-  state.modelApi.onSetModelPointLight(config);
+  state.modelApi.lightModules.onSetModelPointLight(config);
 };
 
 // 设置点光源
 const onChangePointLight = () => {
-  state.modelApi.onSetModelPointLight(config);
+  state.modelApi.lightModules.onSetModelPointLight(config);
 };
 
 // 设置聚颜色
 const changeSpotLightColor = spotLightColor => {
   config.spotLightColor = spotLightColor;
-  state.modelApi.onSetModelSpotLight(config);
+  state.modelApi.lightModules.onSetModelSpotLight(config);
 };
 // 设置聚光灯
 const onChangeSpotLight = () => {
-  state.modelApi.onSetModelSpotLight(config);
+  state.modelApi.lightModules.onSetModelSpotLight(config);
 };
 
 const initLightData = () => {
@@ -485,7 +485,7 @@ const initLightData = () => {
 
 const onInitialize = () => {
   initLightData();
-  state.modelApi.onResettingLight({ ambientLight: true });
+  state.modelApi.lightModules.onResettingLight({ ambientLight: true });
 };
 
 defineExpose({
