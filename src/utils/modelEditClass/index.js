@@ -4,12 +4,8 @@
  */
 
 // 场景基础模块
-import backgroundModules from "./backgroundModules"; // 背景环境
-import lightModules from "./lightModules"; // 光照系统
 import helperModules from "./helperModules"; // 辅助工具
-
 // 模型处理模块
-import materialModules from "./materialModules"; // 材质系统
 import geometryModules from "./geometryModules"; // 几何体系统
 import manyModelModules from "./manyModelModules"; // 多模型管理
 
@@ -21,12 +17,7 @@ import tagsModules from "./tagsModules.jsx"; // 标注系统
 // 导出所有模块功能
 export default {
   // 场景基础
-  ...backgroundModules,
-  ...lightModules,
   ...helperModules,
-
-  // 模型处理
-  ...materialModules,
   ...geometryModules,
   ...manyModelModules,
 

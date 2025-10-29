@@ -130,10 +130,9 @@ function setModelMeshDrag({ manageFlag }) {
     this.scene.add(gizmo);
   } else {
     this.transformControls?.detach();
-    const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
-    if (transformControlsPlane) {
-      this.scene.remove(transformControlsPlane);
-    }
+    this.transformControls?.dispose();
+    this.scene.remove(this.transformControls);
+    this.transformControls = null;
   }
 }
 
