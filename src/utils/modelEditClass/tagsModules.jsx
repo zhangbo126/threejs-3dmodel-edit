@@ -12,7 +12,6 @@
  * @property {Function} updateTagElement - 更新标注点样式和位置
  */
 
-import * as THREE from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
 import { onlyKey } from "@/utils/utilityFunction";
