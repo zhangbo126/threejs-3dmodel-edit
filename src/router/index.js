@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 const routes = [
   {
     name: "EditView",
@@ -47,9 +47,7 @@ const routes = [
 ];
 const base = import.meta.env.VITE_APP_BASE_URL;
 const router = createRouter({
-  history: createWebHistory(base),
-  base,
-  model: "hash",
+  history: createWebHashHistory(base),
   routes
 });
 

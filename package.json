@@ -10,6 +10,7 @@
     "serve": "vite",
     "build": "vite build --mode development",
     "build:pro": "vite build --mode production",
+    "build:open": "vite build --mode open",
     "test:e2e": "vue-cli-service test:e2e",
     "lint:lint-staged": "lint-staged",
     "prepare": "husky install"

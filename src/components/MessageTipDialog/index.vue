@@ -4,11 +4,11 @@
     <ul class="info-list">
       <li class="info-item">
         <span class="label">项目名称:</span>
-        <span class="content">3D模型场景编辑器</span>
+        <span class="content"> ThreeFlowX（3D低代码场景编辑器）</span>
       </li>
       <li class="info-item">
         <span class="label">描述:</span>
-        <span class="content"> 提供更加强大灵活便捷流畅的3D模型场景操作编辑功能 </span>
+        <span class="content"> 提供更加强大灵活便捷流畅高性能的3D模型场景操作编辑功能 </span>
       </li>
       <li class="info-item">
         <span class="label">技术栈:</span>
