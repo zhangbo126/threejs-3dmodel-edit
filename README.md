@@ -28,8 +28,7 @@
 ### 🎨 预览
 
 - 1.注意:部分模型文件较大,首次加载需要等待较长时间
-- 2.线上访问:[https://zhangbo126.github.io/threejs-3dmodel-edit/](https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dmodel-edit/)
-- 3.关于打包部署服务端:在 vite.config.js 里修改 base 路径来适配当前的域名路径
+- 2.关于打包部署服务端:在 vite.config.js 里修改 base 路径来适配当前的域名路径
 
 ### 项目地址
 
@@ -92,7 +91,7 @@
 
 ![输入图片说明](public/image/code.jpg)
 
-### 🥰又或者该↓项目能满足你的需求,也可联系咨询作者购买vx:answer_2027
+### 🥰又或者该↓项目能满足你的需求,也可联系咨询作者
 
 <!-- Start of Selection -->
 
