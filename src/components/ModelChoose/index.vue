@@ -144,7 +144,7 @@
         </div>
         <el-upload
           action=""
-          accept=".glb,.obj,.gltf,.fbx,.stl"
+          :accept="fileAccept"
           class="file-box"
           :show-file-list="false"
           :auto-upload="false"
@@ -155,7 +155,7 @@
               <el-icon :size="44">
                 <Plus />
               </el-icon>
-              <div><span>请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
+              <div><span>请选择(目前仅支持{{fileAccept}}格式)</span></div>
             </div>
           </div>
         </el-upload>
@@ -195,6 +195,10 @@ const modelEditMap = {
 const store = useMeshEditStore();
 const { $bus } = getCurrentInstance().proxy;
 
+// 支持文件类型
+const fileAccept = computed(() => {
+  return Object.keys(store.modelApi.fileLoaderMap || {}).map(key => `.${key}`).join(",");
+});
 //普通模型
 const ordinaryModelList = computed(() => {
   return modelList.filter(v => !v.animation);
