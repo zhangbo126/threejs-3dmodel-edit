@@ -8,7 +8,7 @@
       </li>
       <li class="info-item">
         <span class="label">描述:</span>
-        <span class="content"> 提供更加强大灵活便捷流畅高性能的3D模型场景操作编辑功能 </span>
+        <span class="content"> 提供灵活且强大的3D低代码编辑能力，支持Mac/Windows/Linux多平台桌面应用 </span>
       </li>
       <li class="info-item">
         <span class="label">技术栈:</span>
