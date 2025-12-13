@@ -111,7 +111,7 @@ const { $bus } = getCurrentInstance().proxy;
 const config = reactive({
   visible: false,
   animationName: null, //动画名称
-  loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
+  loop: "LoopRepeat", // 循环方式 LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
   timeScale: 1, // 播放速度
   weight: 1, // 动作幅度
   rotationVisible: false, //轴动画开关
@@ -149,7 +149,7 @@ onMounted(() => {
     // 重置动画数据
     Object.assign(config, {
       visible: false,
-      loop: "LoopRepeat", // 循环方式 TODO:LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
+      loop: "LoopRepeat", // 循环方式 LoopOnce 执行一次 LoopRepeat 循环执行  LoopPingPong 来回执行
       timeScale: 1, // 播放速度
       weight: 1, // 动作幅度
       rotationVisible: false, //轴动画开关

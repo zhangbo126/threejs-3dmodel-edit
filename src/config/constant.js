@@ -287,3 +287,12 @@ export const SHADER_METHOD_ENUM = {
   CreateFlickerWarning: "CreateFlickerWarning",
   CreateWarningApertureShader: "CreateWarningApertureShader"
 };
+
+// 模型类型枚举
+export const MODEL_TYPE_ENUM = {
+  OneModel: "oneModel",
+  ManyModel: "manyModel",
+  Geometry: "geometry",
+  Tags: "tags",
+  Shader: "shader"
+};

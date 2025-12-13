@@ -76,6 +76,7 @@ import { ref, computed, reactive } from "vue";
 import { shaderConfigList } from "@/config/model";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import { getShaderMaterials } from "@/utils/utilityFunction";
+import { MODEL_TYPE_ENUM } from "@/config/constant";
 
 const store = useMeshEditStore();
 // 拖拽着色器列表
@@ -106,7 +107,7 @@ const currentShaderInfo = reactive({
 // 拖拽开始
 const onDragStart = item => {
   store.modelApi.shaderModules.setDragShader(item);
-  store.setActiveEditModelType("shader");
+  store.setActiveEditModelType(MODEL_TYPE_ENUM.Shader);
 };
 
 // 当前选中着色器

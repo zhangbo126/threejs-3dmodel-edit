@@ -171,7 +171,7 @@ import { modelList, geometryModelList } from "@/config/model.js";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import { getFileType, getAssetsFile } from "@/utils/utilityFunction.js";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { UPDATE_MODEL, PAGE_LOADING } from "@/config/constant";
+import { UPDATE_MODEL, PAGE_LOADING, MODEL_TYPE_ENUM } from "@/config/constant";
 
 const modelEditMap = {
   oneModel: {
@@ -245,7 +245,7 @@ const switchActiveModelEdit = async switchType => {
         localModelName: null,
         geometryVisible: false
       });
-      store.setActiveEditModelType("manyModel");
+      store.setActiveEditModelType(MODEL_TYPE_ENUM.ManyModel);
       store.modelApi.clearSceneModel();
       ElMessage.success("切换成功：当前为多模型编辑模式");
     });
@@ -263,7 +263,7 @@ const switchActiveModelEdit = async switchType => {
         });
         $bus.emit(UPDATE_MODEL);
         $bus.emit(PAGE_LOADING, false);
-        store.setActiveEditModelType("oneModel");
+        store.setActiveEditModelType(MODEL_TYPE_ENUM.OneModel);
         ElMessage.success("切换成功：当前为单模型编辑模式");
       }
     } catch (err) {
@@ -275,7 +275,7 @@ const switchActiveModelEdit = async switchType => {
 const onChangeModel = async model => {
   if (model.id == reactiveData.activeModelId || reactiveData.modeEditType == "many") return false;
   activeModel.value = model;
-  store.setActiveEditModelType("oneModel");
+  store.setActiveEditModelType(MODEL_TYPE_ENUM.OneModel);
   Object.assign(reactiveData, {
     activeModelId: model.id,
     localModelName: null,
@@ -309,7 +309,7 @@ const onAddGeometry = async () => {
 // 拖拽几何模型开始
 const onDragstart = (e, model) => {
   store.modelApi.setDragGeometryModel(model);
-  store.setActiveEditModelType("geometry");
+  store.setActiveEditModelType(MODEL_TYPE_ENUM.Geometry);
 };
 // 拖拽中
 const onDrag = event => {
@@ -318,7 +318,7 @@ const onDrag = event => {
 
 // 拖拽模型开始
 const onDragModelStart = model => {
-  store.setActiveEditModelType("manyModel");
+  store.setActiveEditModelType(MODEL_TYPE_ENUM.ManyModel);
   store.modelApi.setDragManyModel(model);
 };
 
@@ -334,7 +334,7 @@ const onUpload = async file => {
   $bus.emit(PAGE_LOADING, true);
   try {
     const { load, filePath } = await store.modelApi.onSwitchModel(model);
-    // TODO: 加载成功之后手动释放 否则会造成内存浪费
+    // 加载成功之后手动释放 否则会造成内存浪费
     URL.revokeObjectURL(filePath);
     if (load) {
       $bus.emit(UPDATE_MODEL);

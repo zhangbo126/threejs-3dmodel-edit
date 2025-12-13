@@ -1,8 +1,6 @@
 import * as THREE from "three";
 import { useMeshEditStore } from "@/store/meshEditStore";
 
-const store = useMeshEditStore();
-
 /**
  * 节流函数 - 在一定时间内只能触发一次
  * @param {Function} func 要执行的回调函数
@@ -169,6 +167,7 @@ export function findObjectInScene(scene, { type }) {
  * @returns {THREE.Vector3 | null} - 返回3D坐标位置，如果未找到则返回null
  */
 export const getMousePosition = (clientX, clientY) => {
+  const store = useMeshEditStore();
   if (!store.modelApi || !store.modelApi.scene || !store.modelApi.camera || !store.modelApi.container) {
     return null;
   }
@@ -207,6 +206,7 @@ export const getMousePosition = (clientX, clientY) => {
  * @returns {Array} - 返回shader材质列表，格式：[{name: '材质名称', uuid: '材质UUID'}]
  */
 export const getShaderMaterials = (scene) => {
+  const store = useMeshEditStore();
   const targetScene = scene || store.modelApi?.scene;
   
   if (!targetScene) {

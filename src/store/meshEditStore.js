@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { MODEL_TYPE_ENUM } from "@/config/constant";
 
 export const useMeshEditStore = defineStore("useMeshEditStore", {
   state: () => ({
@@ -7,7 +8,7 @@ export const useMeshEditStore = defineStore("useMeshEditStore", {
     //当前材质
     selectMesh: {},
     // 当前drag拖拽类型:oneModel:单模型  manyModel:多模型 geometry:几何体模型 tags:3d文本标签
-    modelType: "oneModel"
+    modelType:  MODEL_TYPE_ENUM.OneModel || ""
   }),
   getters: {
     selectMeshUuid: state => state.selectMesh.uuid

@@ -19,7 +19,7 @@ import { ElMessage } from "element-plus";
 import { onlyKey, getAssetsFile } from "@/utils/utilityFunction";
 import modulesPrototype from "./modelEditClass/index";
 import TWEEN from "@tweenjs/tween.js";
-import { vertexShader, fragmentShader } from "@/config/constant.js";
+import { vertexShader, fragmentShader, MODEL_TYPE_ENUM } from "@/config/constant.js";
 import { findObjectInScene } from "@/utils/utilityFunction";
 import shaderModules from "./modelEditClass/shaderModules";
 import backgroundModules from "./modelEditClass/backgroundModules";
@@ -567,7 +567,7 @@ class renderModel {
     return new Promise(async (resolve, reject) => {
       try {
         // 加载几何模型
-        if (model.modelType && model.modelType == "geometry") {
+        if (model.modelType && model.modelType == MODEL_TYPE_ENUM.Geometry) {
           this.modelAnimation = [];
           this.camera.fov = 80;
           this.camera.updateProjectionMatrix();
@@ -808,7 +808,7 @@ class renderModel {
     this.manyModelGroup.clear();
 
     // 移除添加的多模型
-    const removeModelList = this.scene.children.filter(v => v.userData.type == "manyModel");
+    const removeModelList = this.scene.children.filter(v => v.userData.type == MODEL_TYPE_ENUM.ManyModel);
     removeModelList.forEach(v => {
       this.scene.remove(v);
     });
@@ -938,7 +938,7 @@ class renderModel {
             manyModel.scale.set(scale, scale, scale);
             manyModel.name = name;
             manyModel.userData = {
-              type: "manyModel",
+              type: MODEL_TYPE_ENUM.ManyModel,
               ...manyModel.userData
             };
             this.manyModelGroup.add(manyModel);
