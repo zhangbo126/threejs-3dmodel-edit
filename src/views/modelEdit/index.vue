@@ -65,7 +65,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import renderModel from "@/utils/renderModel";
 import { modelList } from "@/config/model";
 import PageLoading from "@/components/Loading/PageLoading.vue";
-import { MODEL_PREVIEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG, UPDATE_MODEL, PAGE_LOADING } from "@/config/constant";
+import { MODEL_PREVIEW_CONFIG, MODEL_BASE_DATA, MODEL_DEFAULT_CONFIG, UPDATE_MODEL, PAGE_LOADING, MODEL_TYPE_ENUM } from "@/config/constant";
 import { useMeshEditStore } from "@/store/meshEditStore";
 import * as THREE from "three";
 
@@ -84,7 +84,7 @@ const loadingTimeout = ref(null);
 const handleConfigBtn = computed(() => {
   if (editPanel.value) {
     const fileInfo = choosePanel.value?.activeModel;
-    return fileInfo?.filePath && ["oneModel", "tags"].includes(store.modelType) ? true : false;
+    return fileInfo?.filePath && [MODEL_TYPE_ENUM.OneModel, MODEL_TYPE_ENUM.Tags].includes(store.modelType) ? true : false;
   }
   return false;
 });
@@ -122,20 +122,20 @@ const onDragDrop = async e => {
   };
 
   // 处理几何体模型
-  if (dragGeometryModel.id && store.modelType === "geometry") {
+  if (dragGeometryModel.id && store.modelType === MODEL_TYPE_ENUM.Geometry) {
     updateDragPosition(dragGeometryModel);
     store.modelApi.onSwitchModel(dragGeometryModel);
     $bus.emit("update-tab", "EditGeometry");
   }
 
   // 处理3D标签
-  if (dragTag?.id && store.modelType === "tags") {
+  if (dragTag?.id && store.modelType === MODEL_TYPE_ENUM.Tags) {
     updateDragPosition(dragTag);
     store.modelApi.create3dTags(dragTag);
   }
 
   // 处理多模型
-  if (store.modelType === "manyModel") {
+  if (store.modelType === MODEL_TYPE_ENUM.ManyModel) {
     updateDragPosition(activeDragManyModel);
 
     try {
@@ -154,7 +154,7 @@ const onDragDrop = async e => {
   }
 
   // 处理着色器
-  if (store.modelType === "shader") {
+  if (store.modelType === MODEL_TYPE_ENUM.Shader) {
     store.modelApi.shaderModules.createShader({ clientX, clientY });
   }
 };

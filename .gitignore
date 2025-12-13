@@ -5,6 +5,7 @@ node_modules
 yarn
 /tests/e2e/videos/
 /tests/e2e/screenshots/
+open
 
 
 # local env files

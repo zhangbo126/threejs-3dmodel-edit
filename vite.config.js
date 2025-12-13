@@ -29,7 +29,7 @@ export default defineConfig(mode => {
       port: 9999
     },
     build: {
-      outDir: "threejs-3dmodel-edit",
+      outDir: "open",
       assetsDir: "static",
       emptyOutDir: true,
       minify: "esbuild",

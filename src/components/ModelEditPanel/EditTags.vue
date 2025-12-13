@@ -178,7 +178,7 @@
 <script setup>
 import { reactive, computed, defineExpose } from "vue";
 import { useMeshEditStore } from "@/store/meshEditStore";
-import { PREDEFINE_COLORS } from "@/config/constant";
+import { PREDEFINE_COLORS, MODEL_TYPE_ENUM } from "@/config/constant";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 
 const store = useMeshEditStore();
@@ -201,7 +201,7 @@ const activeTag = reactive({});
 // 拖拽标签开始
 const onDragstart = (e, tag) => {
   store.modelApi.setDragTag(tag);
-  store.setActiveEditModelType("tags");
+  store.setActiveEditModelType(MODEL_TYPE_ENUM.Tags);
 };
 // 拖拽中
 const onDrag = event => {

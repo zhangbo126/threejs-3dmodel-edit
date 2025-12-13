@@ -1,6 +1,6 @@
 import { getAssetsFile } from "@/utils/utilityFunction";
 import * as THREE from "three";
-import { SHADER_METHOD_ENUM } from "./constant";
+import { SHADER_METHOD_ENUM, MODEL_TYPE_ENUM } from "./constant";
 const modelList = [
   {
     name: "人物(女)",
@@ -270,7 +270,7 @@ const geometryModelList = [
   {
     id: 30,
     name: "立方缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "BoxGeometry",
     width: 1, // X轴上面的宽度
     height: 1, // Y轴上面的高度
@@ -282,7 +282,7 @@ const geometryModelList = [
   {
     id: 31,
     name: "胶囊几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "CapsuleGeometry",
     radius: 0.5, // 胶囊半径
     length: 0.5, //中间区域的长度
@@ -292,7 +292,7 @@ const geometryModelList = [
   {
     id: 32,
     name: "圆形缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "CircleGeometry",
     radius: 0.5, // 半径
     segments: 32, //分段（三角面）的数量
@@ -302,7 +302,7 @@ const geometryModelList = [
   {
     id: 33,
     name: "圆锥缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "ConeGeometry",
     radius: 0.5, // 半径
     height: 1, //圆锥的高度
@@ -315,7 +315,7 @@ const geometryModelList = [
   {
     id: 34,
     name: "圆锥缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "CylinderGeometry",
     radiusTop: 0.5,
     radiusBottom: 0.5,
@@ -329,7 +329,7 @@ const geometryModelList = [
   {
     id: 35,
     name: "十二面缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "DodecahedronGeometry",
     radius: 0.5,
     detail: 0
@@ -337,7 +337,7 @@ const geometryModelList = [
   {
     id: 36,
     name: "二十面缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "IcosahedronGeometry",
     radius: 0.5,
     detail: 0
@@ -345,7 +345,7 @@ const geometryModelList = [
   {
     id: 37,
     name: "八面缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "OctahedronGeometry",
     radius: 0.5,
     detail: 0
@@ -353,7 +353,7 @@ const geometryModelList = [
   {
     id: 38,
     name: "平面缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "PlaneGeometry",
     width: 1, // X轴上面的宽度
     height: 1, // Y轴上面的高度
@@ -363,7 +363,7 @@ const geometryModelList = [
   {
     id: 39,
     name: "圆环缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "RingGeometry",
     innerRadius: 0.44,
     outerRadius: 0.67,
@@ -375,7 +375,7 @@ const geometryModelList = [
   {
     id: 40,
     name: "球缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "SphereGeometry",
     radius: 0.5,
     widthSegments: 32,
@@ -388,7 +388,7 @@ const geometryModelList = [
   {
     id: 41,
     name: "四面缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "TetrahedronGeometry",
     radius: 0.5,
     detail: 0
@@ -396,7 +396,7 @@ const geometryModelList = [
   {
     id: 42,
     name: "圆环缓冲几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "TorusGeometry",
     radius: 0.5,
     tube: 0.1,
@@ -407,7 +407,7 @@ const geometryModelList = [
   {
     id: 43,
     name: "圆环缓冲扭结几何体",
-    modelType: "geometry",
+    modelType: MODEL_TYPE_ENUM.Geometry,
     type: "TorusKnotGeometry",
     radius: 0.5,
     tube: 0.1,
