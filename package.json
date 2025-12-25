@@ -4,6 +4,7 @@
   "author": {
     "name": "answer"
   },
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -40,6 +41,7 @@
     "@babel/plugin-proposal-optional-chaining-assign": "^7.25.9",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
+    "@tailwindcss/vite": "^4.1.18",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
@@ -50,6 +52,7 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "autoprefixer": "^10.4.23",
     "cypress": "^9.7.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
@@ -69,6 +72,7 @@
     "stylelint-config-recommended-vue": "^1.5.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-config-standard-scss": "^13.1.0",
+    "tailwindcss": "^4.1.13",
     "unplugin-auto-import": "^0.16.4",
     "unplugin-vue-components": "^0.25.1",
     "vite-plugin-html": "^3.2.2"

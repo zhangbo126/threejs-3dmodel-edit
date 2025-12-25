@@ -4,7 +4,6 @@
  * @function set   修改数据库
  * @function get   获取数据库
  */
-import { isRef, isReactive, toRaw } from "vue";
 
 let indexedDb = window.indexedDB;
 let name = "threeEdit";
@@ -62,31 +61,6 @@ function putArray(data) {
         "Saved state to IndexedDB. " + (performance.now() - start).toFixed(2) + "ms"
       );
     };
-
-    // 先获取历史记录
-    // const getRequest = objectStore.get('MODEL_EDIT_RECORD');
-    // getRequest.onsuccess = (e) => {
-
-    // 	const result = e.target.result
-    // 	// 如果偶历史记录则
-    // 	if (result && Array.isArray(result.historyRecord)) {
-    // 		putData.historyRecord = result.historyRecord.concat([putData.activeRecord])
-    // 	} else {
-    // 		putData.historyRecord = [putData.activeRecord]
-    // 	}
-    // 	delete putData.activeRecord
-    // 	const putRequest = objectStore.put(putData);
-
-    // 	putRequest.onsuccess = () => {
-    // 		reslove()
-    // 		console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB. ' + (performance.now() - start).toFixed(2) + 'ms');
-    // 	};
-
-    // }
-    // getRequest.onerror = (event) => {
-    // 	console.error('IndexedDB', event);
-    // 	reject(event)
-    // }
   });
 }
 function getArray() {
