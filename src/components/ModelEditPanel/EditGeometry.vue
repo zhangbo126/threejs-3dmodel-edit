@@ -1,64 +1,63 @@
 <template>
-  <div class="edit-box">
+  <div class="h-[calc(100vh-90px)]">
     <template v-if="disabled">
-      <div class="header">
+      <div
+        class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+      >
         <span>几何体模型材质列表</span>
       </div>
       <!-- 材质列表 -->
-      <div class="options">
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
         <el-scrollbar max-height="300px">
           <div
-            class="option"
-            :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
+            class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+            :class="state.selectMeshUuid == mesh.uuid ? 'bg-[#27282f]' : ''"
             @click="onChangeMaterialType(mesh)"
             v-for="mesh in state.modelMaterialList"
             :key="mesh.uuid"
           >
-            <div class="icon-name">
+            <div class="flex items-center w-[240px] max-w-[240px] overflow-hidden text-ellipsis whitespace-nowrap">
               {{ mesh.name }}
             </div>
             <el-space>
-              <div class="check" v-show="state.selectMeshUuid == mesh.uuid">
+              <div v-show="state.selectMeshUuid == mesh.uuid">
                 <el-icon size="20px" color="#2a3ff6">
                   <Check />
                 </el-icon>
               </div>
-              <div class="icon-delete">
-                <el-icon size="18px" color="#2a3ff6">
-                  <Delete @click.stop="onDeleteGeometry(mesh.uuid)" />
-                </el-icon>
-              </div>
+              <el-icon size="18px" color="#2a3ff6">
+                <Delete @click.stop="onDeleteGeometry(mesh.uuid)" />
+              </el-icon>
             </el-space>
           </div>
         </el-scrollbar>
       </div>
-      <div class="header">
+      <div
+        class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+      >
         <span>几何体模型编辑</span>
       </div>
-      <div class="options">
-        <div class="option" v-for="key in geometryConfigList" :key="key">
-          <div class="grid-txt">
-            <el-button type="primary" link>{{ key }} </el-button>
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <div
+          class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+          v-for="key in geometryConfigList"
+          :key="key"
+        >
+          <el-button type="primary" link>{{ key }} </el-button>
+
+          <el-slider
+            show-input
+            v-if="typeof activeGeometry[key] == 'number'"
+            v-model="activeGeometry[key]"
+            :min="inputRange(key).min"
+            :max="inputRange(key).max"
+            :step="inputRange(key).step"
+            @input="onSetGeometry"
+          />
+          <div v-else-if="typeof activeGeometry[key] == 'string'">
+            {{ activeGeometry[key] }}
           </div>
-          <div class="grid-sidle">
-            <el-slider
-              show-input
-              v-if="typeof activeGeometry[key] == 'number'"
-              v-model="activeGeometry[key]"
-              :min="inputRange(key).min"
-              :max="inputRange(key).max"
-              :step="inputRange(key).step"
-              @input="onSetGeometry"
-            />
-            <div v-else-if="typeof activeGeometry[key] == 'string'">
-              {{ activeGeometry[key] }}
-            </div>
-            <el-switch
-              @change="onSetGeometry"
-              v-else-if="typeof activeGeometry[key] == 'boolean'"
-              v-model="activeGeometry[key]"
-            />
-          </div>
+          <el-switch @change="onSetGeometry" v-else-if="typeof activeGeometry[key] == 'boolean'" v-model="activeGeometry[key]" />
         </div>
       </div>
     </template>
@@ -108,7 +107,7 @@ watch(
 // 选择材质
 const onChangeMaterialType = ({ name, material, geometry }) => {
   config.materialName = material.name;
-  store.modelApi.onChangeModelMaterial(name);
+  store.modelApi.materialModules.onChangeModelMaterial(name);
 };
 
 //修改材质信息
@@ -164,20 +163,3 @@ const inputRange = key => {
   return range;
 };
 </script>
-<style scoped lang="scss">
-.icon-name {
-  width: 240px;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.option {
-  justify-content: space-between;
-}
-.grid-txt {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-</style>

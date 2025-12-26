@@ -14,6 +14,8 @@ import "element-plus/theme-chalk/src/index.scss";
 // import 'default-passive-events'
 
 import "@/style/index.scss";
+import "@/style/tailwindcss.css";
+
 const app = createApp(App);
 app.use(ElementPlus, { size: "small", zIndex: 3000 });
 app.use(GlobalProperties);

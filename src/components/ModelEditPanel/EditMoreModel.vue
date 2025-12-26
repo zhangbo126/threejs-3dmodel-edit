@@ -1,28 +1,30 @@
 <template>
-  <div class="edit-box">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span> 多模型列表 </span>
     </div>
-    <div class="options">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
       <el-scrollbar height="200px">
         <template v-if="manyModelList.length">
           <div
-            class="option"
-            :class="chooseModelUuid == item.uuid ? 'option-active' : ''"
+            class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+            :class="chooseModelUuid == item.uuid ? 'bg-[#27282f]' : ''"
             @click="onChangeManyModel(item)"
             v-for="item in manyModelList"
             :key="item.uuid"
           >
-            <div class="icon-name">
+            <div class="flex items-center w-[240px] max-w-[240px] overflow-hidden text-ellipsis whitespace-nowrap">
               {{ item.name }}
             </div>
             <el-space>
-              <div class="check" v-show="chooseModelUuid == item.uuid">
+              <div v-show="chooseModelUuid == item.uuid">
                 <el-icon size="20px" color="#2a3ff6">
                   <Check />
                 </el-icon>
               </div>
-              <div class="icon-delete" v-show="chooseModelUuid == item.uuid">
+              <div v-show="chooseModelUuid == item.uuid">
                 <el-icon size="18px" color="#2a3ff6">
                   <Delete @click.stop="onDeleteManyModel(item.uuid)" />
                 </el-icon>
@@ -33,11 +35,13 @@
         <el-empty v-else description="切换多模型“场景”拖拽添加模型" :image-size="100" />
       </el-scrollbar>
     </div>
-    <div class="header">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span>模型编辑</span>
     </div>
-    <div class="options" v-show="chooseModelUuid">
-      <div class="option space-between">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" v-show="chooseModelUuid">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Setting />
@@ -46,7 +50,7 @@
         </el-space>
         <el-button type="primary" link icon="Refresh" @click="onResultModelRotate"> 重置 </el-button>
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-button type="info" icon="RefreshRight" @click="onSetManyModelRotation('x', 'right')" />
           <el-button type="primary" link>X轴</el-button>
@@ -63,7 +67,7 @@
           <el-button type="info" icon="RefreshLeft" @click="onSetManyModelRotation('z', 'left')" />
         </el-space>
       </div>
-      <div class="option space-between">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Location />
@@ -72,32 +76,20 @@
         </el-space>
         <el-button type="primary" link icon="Refresh" @click="onResultModelPosition"> 重置 </el-button>
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>X 轴</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetModelPosition" show-input v-model="config.position.x" :min="-10" :max="10" :step="0.1" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>X 轴</el-button>
+        <el-slider @input="onSetModelPosition" show-input v-model="config.position.x" :min="-10" :max="10" :step="0.1" />
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>Y 轴</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetModelPosition" show-input v-model="config.position.y" :min="-10" :max="10" :step="0.1" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>Y 轴</el-button>
+        <el-slider @input="onSetModelPosition" show-input v-model="config.position.y" :min="-10" :max="10" :step="0.1" />
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>Z 轴</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetModelPosition" show-input v-model="config.position.z" :min="-10" :max="10" :step="0.1" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>Z 轴</el-button>
+        <el-slider @input="onSetModelPosition" show-input v-model="config.position.z" :min="-10" :max="10" :step="0.1" />
       </div>
       <!-- 模型缩放 -->
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Odometer />
@@ -105,13 +97,9 @@
           <span> 模型缩放 </span>
         </el-space>
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>缩放值</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetModelScale" show-input v-model="config.scale" :min="0.01" :max="5" :step="0.01" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>缩放值</el-button>
+        <el-slider @input="onSetModelScale" show-input v-model="config.scale" :min="0.01" :max="5" :step="0.01" />
       </div>
     </div>
   </div>
@@ -190,20 +178,3 @@ const onSetModelScale = () => {
   store.modelApi.setManyModelScale(chooseModelUuid.value, config.scale);
 };
 </script>
-<style scoped lang="scss">
-.icon-name {
-  width: 240px;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.option {
-  justify-content: space-between;
-}
-.grid-txt {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-</style>

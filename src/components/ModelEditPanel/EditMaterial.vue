@@ -1,11 +1,11 @@
 <template>
-  <div class="edit-box" v-zLoading="loading">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]" v-zLoading="loading">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
       <span>材质类型</span>
       <el-button type="primary" icon="Refresh" @click="onInitialize"> 重置 </el-button>
     </div>
-    <div class="options">
-      <div class="option">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <span>当前材质类型：</span>
           <el-select
@@ -25,15 +25,15 @@
         </el-space>
       </div>
     </div>
-    <div class="header">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
       <span>材质</span>
     </div>
     <!-- 材质列表 -->
-    <div class="options">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
       <el-scrollbar max-height="200px">
         <div
-          class="option"
-          :class="state.selectMeshUuid == mesh.uuid ? 'option-active' : ''"
+          class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+          :class="state.selectMeshUuid == mesh.uuid ? 'bg-[#27282f]' : ''"
           @click.stop="onChangeMaterialType(mesh)"
           v-for="mesh in state.modelMaterialList"
           :key="mesh.uuid"
@@ -45,10 +45,10 @@
             <el-icon size="18" @click="onSetMeshVisible(mesh)" v-else>
               <Hide />
             </el-icon>
-            <div class="icon-name">
+            <div class="flex items-center">
               {{ mesh.name }}
             </div>
-            <div class="check" v-show="state.selectMeshUuid == mesh.uuid">
+            <div v-show="state.selectMeshUuid == mesh.uuid">
               <el-icon size="20px" color="#2a3ff6">
                 <Check />
               </el-icon>
@@ -58,9 +58,9 @@
       </el-scrollbar>
     </div>
     <!-- 材质属性 -->
-    <div class="header">材质属性</div>
-    <div class="options" :class="optionDisabled">
-      <div class="option space-between">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">材质属性</div>
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-button type="primary" link>材质颜色</el-button>
           <el-color-picker color-format="rgb" :predefine="PREDEFINE_COLORS" @change="onChangeMaterial" v-model="config.color" />
@@ -84,11 +84,8 @@
           <el-switch @change="onChangeMaterial" v-model="config.wireframe"></el-switch>
         </el-space>
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>透明度 </el-button>
-        </div>
-        <div class="grid-sidle">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>透明度 </el-button>
           <el-slider
             show-input
             @input="onChangeMaterial"
@@ -98,21 +95,20 @@
             :max="1"
             :step="0.01"
           />
-        </div>
       </div>
     </div>
-    <div class="header">当前材质自带贴图</div>
-    <div class="options">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">当前材质自带贴图</div>
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
       <el-scrollbar max-height="140px">
         <el-row justify="center" align="middle" :style="{ minHeight: '120px' }">
           <el-col :span="10" :offse="4" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
             <div
               @click="onChangeModelMap(activeMeshMap)"
-              :class="activeMapId == activeMeshMap.mapId ? 'active' : ''"
-              class="mesh-image"
+              class="relative box-border max-w-[140px] text-[0] cursor-pointer opacity-60"
+              :class="activeMapId == activeMeshMap.mapId ? 'border-[2px] border-[#18c174] opacity-100' : ''"
             >
-              <el-image :src="activeMeshMap.url" class="mesh-map" fit="cover"> </el-image>
-              <div class="select" v-if="activeMapId == activeMeshMap.mapId">
+              <el-image :src="activeMeshMap.url" class="relative h-[100px] max-h-[100px] m-[8px_9px]" fit="cover"> </el-image>
+              <div class="absolute inset-0 flex items-center justify-center w-[40px] h-[40px] m-auto" v-if="activeMapId == activeMeshMap.mapId">
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
               </div>
             </div>
@@ -133,14 +129,14 @@
         </el-row>
       </el-scrollbar>
     </div>
-    <div class="header">系统贴图</div>
-    <div class="options" :class="optionDisabled">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">系统贴图</div>
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
       <el-scrollbar max-height="230px">
         <el-row>
           <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in mapImageList" :key="map.id">
-            <div @click="onChangeSystemModelMap(map)" class="image-box" :class="activeMapId == map.id ? 'active' : ''">
-              <el-image :src="map.url" class="el-map" fit="cover" />
-              <div class="select" v-if="activeMapId == map.id">
+            <div @click="onChangeSystemModelMap(map)" class="relative box-border flex items-center justify-center w-[90px] h-[90px] cursor-pointer opacity-60" :class="activeMapId == map.id ? 'border-[2px] border-[#18c174] opacity-100' : ''">
+              <el-image :src="map.url" class="max-h-[70px] p-[6px]" fit="cover" />
+              <div class="absolute inset-0 flex items-center justify-center w-[40px] h-[40px] m-auto" v-if="activeMapId == map.id">
                 <el-icon color="#18c174" :size="26"><Select /></el-icon>
               </div>
             </div>
@@ -336,57 +332,3 @@ defineExpose({
   getMeshConfig
 });
 </script>
-<style scoped lang="scss">
-.options {
-  max-width: 380px;
-}
-.image-box {
-  position: relative;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 90px;
-  height: 90px;
-  cursor: pointer;
-  opacity: 0.6;
-  .el-map {
-    max-height: 70px;
-    padding: 6px;
-  }
-}
-.select {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin: auto;
-}
-.not-load {
-  padding: 20px 0;
-  font-size: 16px;
-  color: #ffffff;
-  text-align: center;
-}
-.mesh-image {
-  position: relative;
-  box-sizing: border-box;
-  max-width: 140px;
-  font-size: 0;
-  cursor: pointer;
-  opacity: 0.6;
-  .mesh-map {
-    position: relative;
-    height: 100px;
-    max-height: 100px;
-    margin: 8px 9px;
-  }
-}
-.active {
-  border: 2px solid #18c174;
-  opacity: 1;
-}
-</style>

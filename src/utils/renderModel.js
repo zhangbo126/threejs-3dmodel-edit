@@ -792,83 +792,208 @@ class renderModel {
 
   // 清除场景模型数据
   clearSceneModel() {
-    this.camera.fov = 50;
-    // 先移除模型 材质释放内存
-    this.scene.traverse(v => {
-      if (["Mesh"].includes(v.type)) {
-        v.geometry.dispose();
-        v.material.dispose();
+    try {
+      this.camera.fov = 50;
+
+      // 1. 先停止所有动画和动画帧
+      if (this.animationMixer) {
+        this.animationMixer.stopAllAction();
+        this.animationMixer = null;
+      }
+      cancelAnimationFrame(this.animationFrame);
+      cancelAnimationFrame(this.rotationAnimationFrame);
+
+      // 2. 递归释放场景中所有几何体、材质和纹理资源
+      this.disposeSceneObjects();
+
+      // 3. 清理几何体和多模型组
+      this.dragGeometryModel = {};
+      this.activeDragManyModel = {};
+
+      // 安全清理几何体组
+      if (this.geometryGroup) {
+        this.geometryGroup.clear();
+        this.scene.remove(this.geometryGroup);
+      }
+
+      // 安全清理多模型组
+      if (this.manyModelGroup) {
+        this.manyModelGroup.clear();
+        this.scene.remove(this.manyModelGroup);
+      }
+
+      // 4. 移除场景中的多模型
+      const removeModelList = this.scene.children.filter(v =>
+        v.userData && v.userData.type === MODEL_TYPE_ENUM.ManyModel
+      );
+      removeModelList.forEach(v => {
+        this.scene.remove(v);
+      });
+
+      // 5. 移除主模型
+      if (this.model) {
+        this.scene.remove(this.model);
+        this.model = null;
+      }
+
+      // 6. 重置材质相关状态
+      this.glowUnrealBloomPass = false;
+      this.glowMaterialList = [];
+      this.modelMaterialList = [];
+      this.originalMaterials.clear();
+      this.materials = {};
+
+      // 7. 清理变换控制器
+      if (this.transformControls) {
+        this.transformControls.detach();
+        const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
+        if (transformControlsPlane) {
+          this.scene.remove(transformControlsPlane);
+        }
+        this.scene.remove(this.transformControls);
+        this.transformControls = null;
+      }
+
+      // 8. 清理效果合成器
+      if (this.effectComposer && this.shaderPass) {
+        this.effectComposer.removePass(this.shaderPass);
+      }
+
+      // 9. 重置渲染器和后期处理参数
+      this.renderer.toneMappingExposure = 2;
+      if (this.outlinePass) {
+        this.outlinePass.selectedObjects = [];
+      }
+
+      if (this.unrealBloomPass) {
+        Object.assign(this.unrealBloomPass, {
+          threshold: 0,
+          strength: 0,
+          radius: 0
+        });
+      }
+
+      if (this.shaderPass && this.shaderPass.material && this.shaderPass.material.uniforms) {
+        this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
+      }
+
+      // 10. 重置网格和坐标轴配置
+      const config = {
+        gridHelper: false,
+        x: 0,
+        y: -0.59,
+        z: -0.1,
+        positionX: 0,
+        positionY: -1,
+        positionZ: 0,
+        divisions: 18,
+        size: 6,
+        color: "rgb(193,193,193)",
+        axesHelper: false,
+        axesSize: 1.8
+      };
+
+      if (this.lightModules && typeof this.lightModules.onResettingLight === 'function') {
+        this.lightModules.onResettingLight({ ambientLight: true });
+      }
+
+      if (typeof this.onSetModelGridHelper === 'function') {
+        this.onSetModelGridHelper(config);
+      }
+      if (typeof this.onSetModelGridHelperSize === 'function') {
+        this.onSetModelGridHelperSize(config);
+      }
+      if (typeof this.onSetModelAxesHelper === 'function') {
+        this.onSetModelAxesHelper(config);
+      }
+      if (typeof this.clearSceneTags === 'function') {
+        this.clearSceneTags();
+      }
+
+      // 11. 强制垃圾回收（如果可用）
+      if (typeof window !== 'undefined' && window.gc) {
+        window.gc();
+      }
+
+    } catch (error) {
+      console.warn('Error during scene cleanup:', error);
+    }
+  }
+
+  // 递归释放场景中所有几何体、材质和纹理资源
+  disposeSceneObjects() {
+    if (!this.scene) return;
+
+    this.scene.traverse((object) => {
+      try {
+        // 释放几何体
+        if (object.geometry) {
+          object.geometry.dispose();
+        }
+
+        // 释放材质及其纹理
+        if (object.material) {
+          this.disposeMaterial(object.material);
+        }
+
+        // 释放LOD对象的几何体和材质
+        if (object.isLOD) {
+          object.levels.forEach((level) => {
+            if (level.object) {
+              if (level.object.geometry) {
+                level.object.geometry.dispose();
+              }
+              if (level.object.material) {
+                this.disposeMaterial(level.object.material);
+              }
+            }
+          });
+        }
+
+        // 释放骨骼和蒙皮数据
+        if (object.isSkinnedMesh) {
+          if (object.skeleton) {
+            object.skeleton.dispose();
+          }
+        }
+
+      } catch (error) {
+        console.warn('Error disposing object:', object, error);
       }
     });
-    this.dragGeometryModel = {};
-    this.activeDragManyModel = {};
-    this.geometryGroup.clear();
-    this.scene.remove(this.geometryGroup);
-    this.scene.remove(this.manyModelGroup);
-    this.manyModelGroup.clear();
+  }
 
-    // 移除添加的多模型
-    const removeModelList = this.scene.children.filter(v => v.userData.type == MODEL_TYPE_ENUM.ManyModel);
-    removeModelList.forEach(v => {
-      this.scene.remove(v);
-    });
-    this.scene.remove(this.model);
-    this.model = null;
+  // 释放材质及其相关资源
+  disposeMaterial(material) {
+    if (!material) return;
 
-    //取消动画帧
-    cancelAnimationFrame(this.animationFrame);
-    cancelAnimationFrame(this.rotationAnimationFrame);
+    try {
+      // 处理材质数组
+      const materials = Array.isArray(material) ? material : [material];
 
-    this.glowUnrealBloomPass = false;
-    this.glowMaterialList = [];
-    this.modelMaterialList = [];
-    this.originalMaterials.clear();
+      materials.forEach((mat) => {
+        if (!mat) return;
 
-    this.materials = {};
-    if (this.transformControls) {
-      this.transformControls.detach();
-      const transformControlsPlane = findObjectInScene(this.scene, { type: "TransformControlsPlane" });
-      if (transformControlsPlane) {
-        this.scene.remove(transformControlsPlane);
-      }
-      this.scene.remove(this.transformControls);
-      this.transformControls = null;
+        // 释放纹理
+        if (mat.map) mat.map.dispose();
+        if (mat.normalMap) mat.normalMap.dispose();
+        if (mat.roughnessMap) mat.roughnessMap.dispose();
+        if (mat.metalnessMap) mat.metalnessMap.dispose();
+        if (mat.emissiveMap) mat.emissiveMap.dispose();
+        if (mat.aoMap) mat.aoMap.dispose();
+        if (mat.alphaMap) mat.alphaMap.dispose();
+        if (mat.bumpMap) mat.bumpMap.dispose();
+        if (mat.displacementMap) mat.displacementMap.dispose();
+        if (mat.envMap) mat.envMap.dispose();
+        if (mat.lightMap) mat.lightMap.dispose();
+
+        // 释放材质本身
+        mat.dispose();
+      });
+
+    } catch (error) {
+      console.warn('Error disposing material:', material, error);
     }
-
-    if (this.effectComposer) {
-      this.effectComposer.removePass(this.shaderPass);
-    }
-
-    this.renderer.toneMappingExposure = 2;
-    this.outlinePass.selectedObjects = [];
-
-    Object.assign(this.unrealBloomPass, {
-      threshold: 0,
-      strength: 0,
-      radius: 0
-    });
-    this.shaderPass.material.uniforms.glowColor.value = new THREE.Color();
-
-    const config = {
-      gridHelper: false,
-      x: 0,
-      y: -0.59,
-      z: -0.1,
-      positionX: 0,
-      positionY: -1,
-      positionZ: 0,
-      divisions: 18,
-      size: 6,
-      color: "rgb(193,193,193)",
-      axesHelper: false,
-      axesSize: 1.8
-    };
-    this.lightModules.onResettingLight({ ambientLight: true });
-
-    this.onSetModelGridHelper(config);
-    this.onSetModelGridHelperSize(config);
-    this.onSetModelAxesHelper(config);
-    this.clearSceneTags();
   }
   // 设置当前被拖拽的几何模型
   setDragGeometryModel(model) {

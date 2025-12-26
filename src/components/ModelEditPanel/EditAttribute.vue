@@ -1,12 +1,14 @@
 <template>
-  <div class="edit-box">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span>辅助线/轴配置</span>
       <el-switch v-model="config.visible" @change="onChangeAttributeSwitch" />
     </div>
     <!-- 模型旋转 -->
-    <div class="options" :class="optionDisabled">
-      <div class="option space-between">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Setting />
@@ -15,23 +17,23 @@
         </el-space>
         <el-button type="primary" link icon="Refresh" @click="onResultRotate"> 重置 </el-button>
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('x', 'right')" />
         <el-button type="primary" link>X轴</el-button>
         <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('x', 'left')" />
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('y', 'right')" />
         <el-button type="primary" link>Y轴</el-button>
         <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('y', 'left')" />
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-button type="info" icon="RefreshRight" @click="onSetRotateOnAxis('z', 'right')" />
         <el-button type="primary" link>Z轴</el-button>
         <el-button type="info" icon="RefreshLeft" @click="onSetRotateOnAxis('z', 'left')" />
       </div>
       <!-- 模型位置 -->
-      <div class="option space-between">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Location />
@@ -40,34 +42,28 @@
         </el-space>
         <el-button type="primary" link icon="Refresh" @click="onResultPosition"> 重置 </el-button>
       </div>
-      <div class="option">
-        <div class="grid-txt">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <div class="mr-[10px]">
           <el-button type="primary" link>X 轴</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetPosition" show-input v-model="config.positionX" :min="-10" :max="10" :step="0.1" />
-        </div>
+        <el-slider @input="onSetPosition" show-input v-model="config.positionX" :min="-10" :max="10" :step="0.1" />
       </div>
-      <div class="option">
-        <div class="grid-txt">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <div class="mr-[10px]">
           <el-button type="primary" link>Y 轴</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetPosition" show-input v-model="config.positionY" :min="-10" :max="10" :step="0.1" />
-        </div>
+        <el-slider @input="onSetPosition" show-input v-model="config.positionY" :min="-10" :max="10" :step="0.1" />
       </div>
-      <div class="option">
-        <div class="grid-txt">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <div class="mr-[10px]">
           <el-button type="primary" link>Z 轴</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider @input="onSetPosition" show-input v-model="config.positionZ" :min="-10" :max="10" :step="0.1" />
-        </div>
+        <el-slider @input="onSetPosition" show-input v-model="config.positionZ" :min="-10" :max="10" :step="0.1" />
       </div>
     </div>
     <!-- 网格辅助线 -->
-    <div class="options" :class="optionDisabled">
-      <div class="option space-between">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Grid />
@@ -77,36 +73,30 @@
         <el-switch v-model="config.gridHelper" @change="onChangeGridHelper" />
       </div>
     </div>
-    <div class="options" :class="gridDisabled">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="gridDisabled">
       <!-- x轴 -->
-      <div class="option">
-        <div class="grid-txt">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <div class="mr-[10px]">
           <el-button type="primary" link>X 轴</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider show-input @input="onChangeGridHelper" v-model="config.x" :min="-2" :max="4" :step="0.01" />
-        </div>
+        <el-slider show-input @input="onChangeGridHelper" v-model="config.x" :min="-2" :max="4" :step="0.01" />
       </div>
       <!-- Y轴 -->
-      <div class="option">
-        <div class="grid-txt">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <div class="mr-[10px]">
           <el-button type="primary" link>Y 轴</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider show-input @input="onChangeGridHelper" v-model="config.y" :min="-2" :max="4" :step="0.01" />
-        </div>
+        <el-slider show-input @input="onChangeGridHelper" v-model="config.y" :min="-2" :max="4" :step="0.01" />
       </div>
       <!-- Z轴 -->
-      <div class="option">
-        <div class="grid-txt">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <div class="mr-[10px]">
           <el-button type="primary" link>Z 轴</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider show-input @input="onChangeGridHelper" v-model="config.z" :min="-2" :max="4" :step="0.01" />
-        </div>
+        <el-slider show-input @input="onChangeGridHelper" v-model="config.z" :min="-2" :max="4" :step="0.01" />
       </div>
       <!-- 网格数量/大小 -->
-      <div class="option">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <div>
           <el-button type="primary" link>大小</el-button>
           <el-input-number :controls="true" @change="onChangeGridHelperSize" v-model="config.size" :min="1" :max="40" />
@@ -117,7 +107,7 @@
         </div>
       </div>
       <!-- 网格颜色 -->
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-button type="primary" link>网格颜色</el-button>
           <el-color-picker
@@ -131,8 +121,8 @@
       </div>
     </div>
     <!-- 坐标轴辅助线 -->
-    <div class="options" :class="optionDisabled">
-      <div class="option space-between">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Rank />
@@ -141,13 +131,14 @@
         </el-space>
         <el-switch v-model="config.axesHelper" @change="onChangeAxesHelper" />
       </div>
-      <div class="option" :class="axesDisabled">
-        <div class="grid-txt">
+      <div
+        class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+        :class="axesDisabled"
+      >
+        <div class="mr-[10px]">
           <el-button type="primary" link>轴长度</el-button>
         </div>
-        <div class="grid-sidle">
-          <el-slider @input="onChangeAxesHelper" v-model="config.axesSize" :min="1" :max="10" :step="0.2" />
-        </div>
+        <el-slider @input="onChangeAxesHelper" v-model="config.axesSize" :min="1" :max="10" :step="0.2" />
       </div>
     </div>
   </div>
@@ -264,5 +255,3 @@ defineExpose({
   getAttributeConfig
 });
 </script>
-
-<style lang="scss" scoped></style>

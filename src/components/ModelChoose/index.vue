@@ -1,7 +1,7 @@
 <template>
-  <div class="model-choose">
+  <div class="min-w-[305px] h-[calc(100vh-35px)] bg-[#1b1c23]">
     <el-scrollbar max-height="calc(100vh - 72px)">
-      <div class="header">
+      <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
         <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType].text }}</span>
         <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType].tooltip" placement="top">
           <el-button
@@ -16,8 +16,8 @@
         </el-tooltip>
       </div>
       <!-- 普通模型 -->
-      <div class="options">
-        <div class="option">
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
           <el-space>
             <el-icon>
               <Orange />
@@ -40,8 +40,8 @@
               <el-image
                 draggable="false"
                 @click.prevent="onChangeModel(model)"
-                class="el-img"
-                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
+                class="box-border w-[145px] h-[88px] mb-[4px] opacity-50"
+                :class="reactiveData.activeModelId == model.id ? 'border-[3px] border-[#18c174] opacity-100' : ''"
                 :src="model.icon"
                 fit="cover"
               />
@@ -50,8 +50,8 @@
         </el-scrollbar>
       </div>
       <!-- 动画模型 -->
-      <div class="options">
-        <div class="option">
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
           <el-space>
             <el-icon>
               <Paperclip />
@@ -74,8 +74,8 @@
               <el-image
                 draggable="false"
                 @click="onChangeModel(model)"
-                class="el-img"
-                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
+                class="box-border w-[145px] h-[88px] mb-[4px] opacity-50"
+                :class="reactiveData.activeModelId == model.id ? 'border-[3px] border-[#18c174] opacity-100' : ''"
                 :src="model.icon"
                 fit="cover"
               />
@@ -84,8 +84,8 @@
         </el-scrollbar>
       </div>
       <!-- 几何体模型 -->
-      <div class="options">
-        <div class="option">
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
           <el-space>
             <el-icon>
               <SwitchFilled />
@@ -99,13 +99,13 @@
           <el-row v-if="reactiveData.geometryVisible">
             <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
               <div
-                class="geometry"
-                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
+                class="flex flex-col items-center justify-center h-[70px] m-[4px_2px] text-[12px] text-white text-center cursor-all-scroll border border-[#dcdfe6]"
+                :class="reactiveData.activeModelId == model.id ? 'border-[3px] border-[#18c174] opacity-100' : ''"
                 draggable="true"
                 @dragstart="e => onDragstart(e, model)"
                 @drag="e => onDrag(e)"
               >
-                <div class="geometry-name">
+                <div>
                   <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
                     <b> {{ model.name }}</b>
                   </el-tooltip>
@@ -113,21 +113,21 @@
               </div>
             </el-col>
           </el-row>
-          <div class="geometry-box" v-else>
-            <div class="geometry-add" @click="onAddGeometry">
+          <div class="relative box-border flex justify-center px-[20px] overflow-hidden text-[#8c939d] text-center" v-else>
+            <div class="flex items-center justify-center w-[228px] h-[108px] cursor-pointer border border-dashed border-[#dcdfe6] rounded-[6px] hover:text-[#409eff] hover:border-[#409eff]" @click="onAddGeometry">
               <div class="icon">
                 <el-icon :size="44">
                   <Plus />
                 </el-icon>
-                <div><span>添加几何体模型</span></div>
+                <div><span class="text-[14px]">添加几何体模型</span></div>
               </div>
             </div>
           </div>
         </el-scrollbar>
       </div>
       <!-- 外部模型 -->
-      <div class="options">
-        <div class="option">
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
           <el-space>
             <el-icon>
               <UploadFilled />
@@ -136,7 +136,7 @@
           </el-space>
         </div>
         <!-- 模型内容 -->
-        <div class="file-name">
+        <div class="overflow-hidden text-[14px] text-white text-center text-ellipsis whitespace-nowrap">
           <span>当前模型:</span>
           <el-tooltip effect="dark" :content="reactiveData.localModelName" placement="top">
             <b>{{ reactiveData.localModelName }}</b>
@@ -145,17 +145,17 @@
         <el-upload
           action=""
           accept=".glb,.obj,.gltf,.fbx,.stl"
-          class="file-box"
+          class="relative box-border flex justify-center px-[20px] overflow-hidden text-[#8c939d] text-center cursor-pointer"
           :show-file-list="false"
           :auto-upload="false"
           :on-change="onUpload"
         >
-          <div class="upload">
+          <div class="flex items-center justify-center w-[228px] h-[100px] border border-dashed border-[#dcdfe6] rounded-[6px] hover:text-[#409eff] hover:border-[#409eff]">
             <div class="icon">
               <el-icon :size="44">
                 <Plus />
               </el-icon>
-              <div><span>请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
+              <div><span class="text-[14px]">请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
             </div>
           </div>
         </el-upload>
@@ -357,100 +357,3 @@ defineExpose({
 });
 </script>
 
-<style lang="scss">
-.model-choose {
-  min-width: 305px;
-  height: calc(100vh - 35px) !important;
-  background-color: #1b1c23;
-  .el-img {
-    box-sizing: border-box;
-    width: 145px;
-    height: 88px;
-    margin-bottom: 4px;
-    opacity: 0.5;
-  }
-  .active-model {
-    border: 3px solid #18c174 !important;
-    opacity: 1;
-  }
-  .geometry {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 70px;
-    margin: 4px 2px;
-    font-size: 12px;
-    color: #ffffff;
-    text-align: center;
-    cursor: all-scroll;
-    border: 1px solid #dcdfe6;
-  }
-  .geometry-box {
-    position: relative;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    padding: 0 20px;
-    overflow: hidden;
-    color: #8c939d;
-    text-align: center;
-    .geometry-add {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 228px;
-      height: 108px;
-      cursor: pointer;
-      border: 1px dashed #dcdfe6;
-      border-radius: 6px;
-      .icon {
-        span {
-          font-size: 14px;
-        }
-      }
-      &:hover {
-        color: #409eff;
-        border-color: #409eff;
-      }
-    }
-  }
-  .file-box {
-    position: relative;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    padding: 10px 20px;
-    overflow: hidden;
-    color: #8c939d;
-    text-align: center;
-    cursor: pointer;
-    .upload {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 228px;
-      height: 100px;
-      border: 1px dashed #dcdfe6;
-      border-radius: 6px;
-      .icon {
-        span {
-          font-size: 14px;
-        }
-      }
-      &:hover {
-        color: #409eff;
-        border-color: #409eff;
-      }
-    }
-  }
-  .file-name {
-    overflow: hidden;
-    font-size: 14px;
-    color: #ffffff;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-</style>

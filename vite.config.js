@@ -2,11 +2,14 @@ import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { resolve } from "path";
+import tailwindcss from "@tailwindcss/vite";
 
-export default defineConfig(mode => {
+export default defineConfig(async mode => {
   const { VITE_APP_BASE_URL } = loadEnv(mode.mode, process.cwd());
+
+
   return {
-    plugins: [vue(), vueJsx()],
+    plugins: [vue(), vueJsx(), tailwindcss()],
     css: {
       preprocessorOptions: {
         scss: {

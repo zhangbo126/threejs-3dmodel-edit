@@ -1,14 +1,19 @@
 <template>
-  <div class="edit-box" v-zLoading="loading">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]" v-zLoading="loading">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span>背景</span>
       <el-switch v-model="config.visible" @change="onChangeBgSwitch" />
     </div>
     <!-- 图片 -->
-    <div class="options" :class="optionsDisable">
-      <div class="option" @click="onChangeType(2)">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionsDisable">
+      <div
+        class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+        @click="onChangeType(2)"
+      >
         <el-space>
-          <div class="icon-name">
+          <div class="flex items-center">
             <el-space>
               <el-icon>
                 <Picture />
@@ -16,10 +21,10 @@
               <span> 图片</span>
             </el-space>
           </div>
-          <div class="action-txt">
+          <div>
             <el-button type="primary" link>选择图片</el-button>
           </div>
-          <div class="check" v-show="config.type == 2">
+          <div v-show="config.type == 2">
             <el-icon size="20px" color="#2a3ff6">
               <Check />
             </el-icon>
@@ -31,8 +36,8 @@
           <el-col :style="{ textAlign: 'center' }" :span="6" v-for="background in backgroundList" :key="background.id">
             <el-image
               @click="onChangeImage(background)"
-              class="el-img"
-              :class="activeBackgroundId == background.id ? 'active' : ''"
+              class="w-[78px] h-[40px] mb-[4px] cursor-pointer"
+              :class="activeBackgroundId == background.id ? 'border-[2px] border-[#18c174]' : ''"
               :src="background.url"
               fit="cover"
             />
@@ -41,10 +46,13 @@
       </el-scrollbar>
     </div>
     <!-- 颜色 -->
-    <div class="options" :class="optionsDisable">
-      <div class="option" @click="onChangeType(1)">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionsDisable">
+      <div
+        class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+        @click="onChangeType(1)"
+      >
         <el-space>
-          <div class="icon-name">
+          <div class="flex items-center">
             <el-space>
               <el-icon>
                 <DataAnalysis />
@@ -52,7 +60,7 @@
               <span> 颜色</span>
             </el-space>
           </div>
-          <div class="action">
+          <div>
             <el-color-picker
               :predefine="predefineColors"
               @change="onChangeColor"
@@ -60,7 +68,7 @@
               v-model="config.color"
             />
           </div>
-          <div class="check" v-show="config.type == 1">
+          <div v-show="config.type == 1">
             <el-icon size="20px" color="#2a3ff6">
               <Check />
             </el-icon>
@@ -69,10 +77,13 @@
       </div>
     </div>
     <!-- 全景图 -->
-    <div class="options" :class="optionsDisable">
-      <div class="option" @click="onChangeType(3)">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionsDisable">
+      <div
+        class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+        @click="onChangeType(3)"
+      >
         <el-space>
-          <div class="icon-name">
+          <div class="flex items-center">
             <el-space>
               <el-icon>
                 <CameraFilled />
@@ -80,10 +91,10 @@
               <span> 全景图</span>
             </el-space>
           </div>
-          <div class="action-txt">
+          <div>
             <el-button type="primary" link>选择图片</el-button>
           </div>
-          <div class="check" v-show="config.type == 3">
+          <div v-show="config.type == 3">
             <el-icon size="20px" color="#2a3ff6">
               <Check />
             </el-icon>
@@ -95,8 +106,8 @@
           <el-col :span="6" :style="{ textAlign: 'center' }" v-for="view in viewImageList" :key="view.id">
             <el-image
               @click="onChangeViewImage(view)"
-              class="el-view"
-              :class="activeViewImageId == view.id ? 'active' : ''"
+              class="w-[60px] h-[60px] mb-[8px] cursor-pointer"
+              :class="activeViewImageId == view.id ? 'border-[2px] border-[#18c174]' : ''"
               :src="view.url"
               fit="cover"
             />
@@ -104,8 +115,8 @@
         </el-row>
         <el-row v-show="config.type == 3">
           <el-col>
-            <div class="option">
-              <div class="icon-name">
+            <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+              <div class="flex items-center">
                 <el-space>
                   <span>外部资源</span>
                 </el-space>
@@ -121,26 +132,30 @@
                 :auto-upload="false"
                 :on-change="onUploadTexture"
               >
-                <div class="texture-add">
-                  <div class="icon">
+                <div
+                  class="flex items-center justify-center w-[118px] h-[108px] cursor-pointer border border-dashed border-[#dcdfe6] rounded-[6px] hover:border-[#409eff]"
+                >
+                  <div class="flex flex-col items-center text-white hover:text-[#409eff]">
                     <el-tooltip effect="dark" content="该功能仅作预览，数据无法保存" placement="top">
                       <el-icon size="60">
                         <UploadFilled />
                       </el-icon>
                     </el-tooltip>
-                    <span>加载外部全景图</span>
+                    <span class="text-[14px]">加载外部全景图</span>
                   </div>
                 </div>
               </el-upload>
               <el-upload action="" accept=".mp4" :show-file-list="false" :auto-upload="false" :on-change="onUploadTextureVideo">
-                <div class="texture-add">
-                  <div class="icon">
+                <div
+                  class="flex items-center justify-center w-[118px] h-[108px] cursor-pointer border border-dashed border-[#dcdfe6] rounded-[6px] hover:border-[#409eff]"
+                >
+                  <div class="flex flex-col items-center text-white hover:text-[#409eff]">
                     <el-tooltip effect="dark" content="该功能仅作预览，数据无法保存" placement="top">
                       <el-icon size="60">
                         <VideoCameraFilled />
                       </el-icon>
                     </el-tooltip>
-                    <span>加载外部视频</span>
+                    <span class="text-[14px]">加载外部视频</span>
                   </div>
                 </div>
               </el-upload>
@@ -149,26 +164,30 @@
         </el-row>
         <el-row v-show="config.type == 3">
           <el-col>
-            <div class="options">
-              <div class="option">
-                <el-space>
-                  <div class="grid-txt">
-                    <el-button type="primary" link>强度</el-button>
-                  </div>
-                </el-space>
-                <div class="grid-sidle">
-                  <el-slider show-input @input="onChangeViewConfig" v-model="config.intensity" :min="0" :max="1" :step="0.01" />
-                </div>
+            <div class="box-border max-w-[380px] bg-[#1b1c23]">
+              <div class="box-border flex items-center my-[10px] h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+                <el-button type="primary" link>强度</el-button>
+                <el-slider
+                  class="!w-full"
+                  show-input
+                  @input="onChangeViewConfig"
+                  v-model="config.intensity"
+                  :min="0"
+                  :max="1"
+                  :step="0.01"
+                />
               </div>
-              <div class="option">
-                <el-space>
-                  <div class="grid-txt">
-                    <el-button type="primary" link> 模糊</el-button>
-                  </div>
-                </el-space>
-                <div class="grid-sidle">
-                  <el-slider show-input @input="onChangeViewConfig" v-model="config.blurriness" :min="0" :max="1" :step="0.01" />
-                </div>
+              <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+                <el-button type="primary" link> 模糊</el-button>
+                <el-slider
+                  class="!w-full"
+                  show-input
+                  @input="onChangeViewConfig"
+                  v-model="config.blurriness"
+                  :min="0"
+                  :max="1"
+                  :step="0.01"
+                />
               </div>
             </div>
           </el-col>
@@ -296,58 +315,3 @@ defineExpose({
   config
 });
 </script>
-<style lang="scss" scoped>
-.add-img {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 180px;
-  height: 78px;
-  cursor: pointer;
-  border: 1px dashed #414141;
-}
-.img-privew {
-  padding: 0 26px;
-  cursor: pointer;
-}
-.el-img {
-  width: 78px;
-  height: 40px;
-  margin-bottom: 4px;
-  cursor: pointer;
-}
-.el-view {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-.active {
-  border: 2px solid #18c174;
-}
-.texture-add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 118px;
-  height: 108px;
-  cursor: pointer;
-  border: 1px dashed #dcdfe6;
-  border-radius: 6px;
-  .icon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #ffffff;
-    span {
-      font-size: 14px;
-    }
-  }
-  &:hover {
-    border-color: #409eff;
-    .icon {
-      color: #409eff;
-    }
-  }
-}
-</style>
