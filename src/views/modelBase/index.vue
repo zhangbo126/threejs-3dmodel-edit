@@ -1,11 +1,11 @@
 <template>
-  <div class="model-base">
+  <div>
     <!-- 头部区域 -->
-    <header class="base-header">
-      <div class="lf-box">
+    <header class="box-border flex items-center justify-between w-full h-[45px] px-[20px] font-medium text-white text-center bg-[#010c1d] shadow-[0_2px_8px_0_rgba(0,0,0,0.1)]">
+      <div>
         <el-button type="primary" @click="$router.push({ path: '/' })" icon="DArrowLeft">返回编辑器</el-button>
       </div>
-      <div class="center-box">
+      <div class="flex items-center text-[22px]">
         <el-space>
           <el-icon>
             <Film />
@@ -13,16 +13,16 @@
           <p>3D组件模型库</p>
         </el-space>
       </div>
-      <div class="lr-box">
+      <div>
         <el-space>
           <el-button type="primary" icon="Tickets" @click="onSavaDragData">保存数据</el-button>
         </el-space>
       </div>
     </header>
     <!-- 内容区 -->
-    <div class="base-container">
-      <el-scrollbar :max-height="'calc(100vh - 45px)'" class="base-menu">
-        <ul class="menu-list">
+    <div class="flex">
+      <el-scrollbar :max-height="'calc(100vh - 45px)'" class="box-border w-[230px] h-[calc(100vh-45px)] p-[10px] bg-[#18181c]">
+        <ul>
           <li
             v-for="model in modelBaseList"
             :key="model.fileInfo.id"
@@ -30,12 +30,13 @@
             @dragstart="e => onDragStart(e, model)"
             @drag="e => onDrag(e)"
             @dragend="onDragEnd"
+            class="box-border mb-[10px] text-[14px] text-white cursor-all-scroll border border-[#323332] rounded-[3px] hover:border-[2px] hover:border-[#18c174]"
           >
-            <div class="model-image">
+            <div class="p-[10px_18px] text-[0]">
               <el-image draggable="false" fit="scale-down" :src="model.fileInfo.icon"></el-image>
             </div>
-            <div class="model-info">
-              <div class="model-name">
+            <div class="box-border flex items-center justify-center h-[30px] px-[8px] bg-[#232324]">
+              <div class="overflow-hidden text-center text-ellipsis whitespace-nowrap">
                 <el-tooltip effect="dark" :content="model.fileInfo.name" placement="top">
                   <span>{{ model.fileInfo.name }}</span>
                 </el-tooltip>
@@ -44,8 +45,8 @@
           </li>
         </ul>
       </el-scrollbar>
-      <div id="drag-content">
-        <div class="content" @drop="onDrop" @dragover.prevent>
+      <div id="drag-content" class="box-border flex w-full h-[calc(100vh-45px)] border-[5px] border-black">
+        <div class="relative w-full overflow-hidden bg-[#18181c] bg-[linear-gradient(#18181c_14px,transparent_0),linear-gradient(90deg,transparent_14px,#86909c_0)] bg-[size:15px_15px,15px_15px]" @drop="onDrop" @dragover.prevent>
           <draggable-container :adsorb-parent="true" :disabled="true" v-if="dragModelList.length">
             <draggable-resizable-item
               @onDragActive="onDragActive"
@@ -56,7 +57,7 @@
               :config="drag"
             ></draggable-resizable-item>
           </draggable-container>
-          <div class="empty-tip" v-else>请拖拽添加多个!!!</div>
+          <div class="flex items-center justify-center w-full h-full text-[20px] text-[#18c174] tracking-[10px]" v-else>请拖拽添加多个!!!</div>
           <!-- 右键菜单 -->
           <right-context-menu :right-menu-position="rightMenuPosition" @onDelete="onDeleteDrag"></right-context-menu>
         </div>
@@ -169,102 +170,3 @@ onMounted(async () => {
   });
 });
 </script>
-<style scoped lang="scss">
-.model-base {
-  .base-header {
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 45px;
-    padding: 0 20px;
-    font-weight: 500;
-    color: #ffffff;
-    text-align: center;
-    background-color: #010c1d;
-    box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
-    .center-box {
-      display: flex;
-      align-items: center;
-      font-size: 22px;
-    }
-  }
-  .base-container {
-    display: flex;
-    .base-menu {
-      box-sizing: border-box;
-      width: 230px;
-      height: calc(100vh - 45px);
-      padding: 10px;
-      background-color: #18181c;
-      .menu-list {
-        li {
-          box-sizing: border-box;
-          margin-bottom: 10px;
-          font-size: 14px;
-          color: #ffffff;
-          cursor: all-scroll;
-          border: 1px solid #323332;
-          border-radius: 3px;
-          &:hover {
-            border: 2px solid #18c174;
-          }
-          .model-image {
-            padding: 10px 18px;
-            font-size: 0;
-          }
-          .model-info {
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 30px;
-            padding: 0 8px;
-            background-color: #232324;
-            .model-name {
-              overflow: hidden;
-              text-align: center;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
-          }
-        }
-      }
-    }
-    #drag-content {
-      box-sizing: border-box;
-      display: flex;
-      flex-flow: row;
-      width: 100%;
-      height: calc(100vh - 45px);
-      border: 5px solid #000000;
-      .content {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-        background-color: #18181c;
-        background-image: linear-gradient(#18181c 14px, transparent 0), linear-gradient(90deg, transparent 14px, #86909c 0);
-        background-size:
-          15px 15px,
-          15px 15px;
-        .empty-tip {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100%;
-          font-size: 20px;
-          color: #18c174;
-          letter-spacing: 10px;
-        }
-        .drag-box {
-          .drag-image {
-            font-size: 0;
-          }
-        }
-      }
-    }
-  }
-}
-</style>

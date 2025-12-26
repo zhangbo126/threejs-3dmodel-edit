@@ -1,12 +1,14 @@
 <template>
-  <div class="edit-box">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span>后期处理</span>
       <el-button type="primary" icon="Refresh" @click="onInitialize"> 重置 </el-button>
     </div>
     <!-- 辉光 -->
-    <div class="options">
-      <div class="option space-between">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Sunny />
@@ -23,12 +25,10 @@
         </el-tooltip>
       </div>
     </div>
-    <div class="options" :class="optionsDisable">
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>颜色</el-button>
-        </div>
-        <div class="grid-sidle">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionsDisable">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>颜色</el-button>
+        <div>
           <el-color-picker
             color-format="hex"
             :predefine="PREDEFINE_COLORS"
@@ -38,46 +38,34 @@
           />
         </div>
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>强度</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider show-input v-model="config.strength" @input="onChangeFlow" :step="0.01" :min="0" :max="8" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>强度</el-button>
+        <el-slider show-input v-model="config.strength" class="!w-full" @input="onChangeFlow" :step="0.01" :min="0" :max="8" />
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>半径</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider show-input v-model="config.radius" @input="onChangeFlow" :step="0.01" :min="0" :max="5" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>半径</el-button>
+        <el-slider show-input v-model="config.radius" class="!w-full" @input="onChangeFlow" :step="0.01" :min="0" :max="5" />
       </div>
-      <div class="option">
-        <div class="grid-txt">
-          <el-button type="primary" link>阈值</el-button>
-        </div>
-        <div class="grid-sidle">
-          <el-slider show-input v-model="config.threshold" @input="onChangeFlow" :step="0.01" :min="0" :max="1" />
-        </div>
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+        <el-button type="primary" link>阈值</el-button>
+        <el-slider show-input v-model="config.threshold" class="!w-full" @input="onChangeFlow" :step="0.01" :min="0" :max="1" />
       </div>
     </div>
     <!-- 曝光度 -->
-    <div class="options">
-      <div class="option space-between">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Umbrella />
           </el-icon>
-          <span> 色调曝光度 </span>
+          <span class="min-w-[80px]"> 色调曝光度 </span>
         </el-space>
-        <div class="grid-sidle">
           <el-slider show-input v-model="config.toneMappingExposure" @input="onChangeFlow" :step="0.01" :min="0.5" :max="10" />
-        </div>
       </div>
     </div>
-    <div class="header">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <el-space>
         <span>模型操作</span>
         <el-tooltip v-if="decomposeDisable == 'disabled'" effect="dark" content="当前模型不可进行以下操作" placement="top">
@@ -88,37 +76,38 @@
       </el-space>
     </div>
     <!-- 模型拆分 -->
-    <div class="options">
-      <div class="option space-between" :class="decomposeDisable">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div
+        class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+        :class="decomposeDisable"
+      >
         <el-space>
           <el-icon>
             <Cpu />
           </el-icon>
-          <span> 模型分解 </span>
+          <span class="min-w-[70px]"> 模型分解 </span>
         </el-space>
-        <div class="grid-sidle">
-          <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
-        </div>
+
+        <el-slider show-input v-model="config.decompose" @input="onChangeDecompose" :step="0.01" :min="0" :max="800" />
       </div>
-      <div class="option" :class="moveDisable">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer" :class="moveDisable">
         <el-space>
           <el-icon>
             <Rank :size="20" />
           </el-icon>
           <span> 模型材质操作 </span>
-        </el-space>
-        <div class="grid-sidle">
           <el-switch v-model="config.manageFlag" @change="onChangeStage" />
-        </div>
+        </el-space>
       </div>
-      <div class="option" :class="manageDisable">
-        <div class="grid-sidle">
-          <el-radio-group v-model="config.transformType" @change="onChangeTransform">
-            <el-radio-button value="translate">拖拽</el-radio-button>
-            <el-radio-button value="rotate">旋转</el-radio-button>
-            <el-radio-button value="scale">缩放</el-radio-button>
-          </el-radio-group>
-        </div>
+      <div
+        class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+        :class="manageDisable"
+      >
+        <el-radio-group v-model="config.transformType" @change="onChangeTransform">
+          <el-radio-button value="translate">拖拽</el-radio-button>
+          <el-radio-button value="rotate">旋转</el-radio-button>
+          <el-radio-button value="scale">缩放</el-radio-button>
+        </el-radio-group>
       </div>
     </div>
   </div>
@@ -222,4 +211,3 @@ defineExpose({
   getStageConfig
 });
 </script>
-<style lang="scss" scoped></style>

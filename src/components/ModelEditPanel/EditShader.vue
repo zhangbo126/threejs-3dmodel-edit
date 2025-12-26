@@ -1,12 +1,14 @@
 <template>
-  <div class="edit-box">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span>着色器列表 </span>
     </div>
-    <div class="options">
-      <div class="shader-drag-list">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div class="flex flex-wrap gap-[10px] p-[10px]">
         <div
-          class="shader-item"
+          class="text-[12px] w-[82px] h-[40px] leading-[40px] flex items-center justify-center cursor-move text-white p-[10px] bg-[#2a2f45] rounded-[6px] shadow-[0_2px_8px_rgba(0,0,0,0.2)] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]"
           :draggable="true"
           v-for="item in shaderDragList"
           :key="item.id"
@@ -17,14 +19,16 @@
         </div>
       </div>
     </div>
-    <div class="header">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span> 场景着色器 </span>
     </div>
-    <div class="options">
-      <div class="shader-list" v-if="shaderList.length > 0">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div class="flex-wrap gap-[10px]" v-if="shaderList.length > 0">
         <div
-          class="shader-item"
-          :class="{ 'option-active': currentShaderUuid === item.onlyUuid }"
+          class="text-[12px] text-white h-[30px] px-[10px] text-center flex justify-between items-center cursor-pointer"
+          :class="{ 'bg-[#27282f]': currentShaderUuid === item.onlyUuid }"
           @click="changeCurrentShader(item)"
           v-for="item in shaderList"
           :key="item.id"
@@ -37,33 +41,35 @@
       </div>
       <el-empty description="暂无场景着色器" v-else />
     </div>
-    <div class="header">
+    <div
+      class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]"
+    >
       <span> 着色器编辑 </span>
     </div>
-    <div class="options" v-if="currentShaderUuid">
-      <div class="shader-info">
-        <div class="shader-info-item">
-          <div class="label">位置</div>
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" v-if="currentShaderUuid">
+      <div class="flex flex-col gap-[10px] border-t border-[#2a2f45] p-[8px]">
+        <div class="flex items-center">
+          <div class="min-w-[50px] text-white text-[12px]">位置</div>
           <el-space>
-            <el-input-number v-model="currentShaderInfo.position.x" :controls="false" :precision="2" />
-            <el-input-number v-model="currentShaderInfo.position.y" :controls="false" :precision="2" />
-            <el-input-number v-model="currentShaderInfo.position.z" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.position.x" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.position.y" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.position.z" :controls="false" :precision="2" />
           </el-space>
         </div>
-        <div class="shader-info-item">
-          <div class="label">旋转</div>
+        <div class="flex items-center">
+          <div class="min-w-[50px] text-white text-[12px]">旋转</div>
           <el-space>
-            <el-input-number v-model="currentShaderInfo.rotation.x" :controls="false" :precision="2" />
-            <el-input-number v-model="currentShaderInfo.rotation.y" :controls="false" :precision="2" />
-            <el-input-number v-model="currentShaderInfo.rotation.z" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.rotation.x" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.rotation.y" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.rotation.z" :controls="false" :precision="2" />
           </el-space>
         </div>
-        <div class="shader-info-item">
-          <div class="label">缩放</div>
+        <div class="flex items-center">
+          <div class="min-w-[50px] text-white text-[12px]">缩放</div>
           <el-space>
-            <el-input-number v-model="currentShaderInfo.scale.x" :controls="false" :precision="2" />
-            <el-input-number v-model="currentShaderInfo.scale.y" :controls="false" :precision="2" />
-            <el-input-number v-model="currentShaderInfo.scale.z" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.scale.x" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.scale.y" :controls="false" :precision="2" />
+            <el-input-number class="!w-[100px]" v-model="currentShaderInfo.scale.z" :controls="false" :precision="2" />
           </el-space>
         </div>
       </div>
@@ -129,59 +135,3 @@ const deleteShader = item => {
   store.modelApi.shaderModules.deleteShader(item.onlyUuid);
 };
 </script>
-
-<style scoped lang="scss">
-.shader-drag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
-  .shader-item {
-    font-size: 12px;
-    width: 60px;
-    height: 40px;
-    line-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: move;
-    color: #fff;
-    padding: 10px;
-    background-color: #2a2f45;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-}
-.shader-list {
-  flex-wrap: wrap;
-  gap: 10px;
-  .shader-item {
-    font-size: 12px;
-    color: #fff;
-    height: 30px;
-    padding: 0px 10px;
-    text-align: center;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-  }
-}
-.shader-info {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-top: 1px solid #2a2f45;
-  padding: 8px;
-  .shader-info-item {
-    display: flex;
-    align-items: center;
-    .label {
-      width: 50px;
-      color: #fff;
-      font-size: 12px;
-    }
-  }
-}
-</style>

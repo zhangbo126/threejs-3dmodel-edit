@@ -1,24 +1,24 @@
 <template>
-  <div class="edit-box">
-    <div class="header">
+  <div class="h-[calc(100vh-90px)]">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
       <span>模型动画</span>
       <el-switch v-model="config.visible" @change="onChangeAnimationSwitch" />
     </div>
     <!-- 动画列表 -->
-    <div class="options" :class="optionDisabled">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
       <el-scrollbar max-height="250px" v-if="state.modelAnimation.length">
         <div
-          class="option"
-          :class="config.animationName == animation.name ? 'option-active' : ''"
+          class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer"
+          :class="config.animationName == animation.name ? 'bg-[#27282f]' : ''"
           @click="onChangeAnimationType(animation)"
           v-for="animation in state.modelAnimation"
           :key="animation.name"
         >
           <el-space>
-            <div class="icon-name">
+            <div class="flex items-center">
               {{ animation.name }}
             </div>
-            <div class="check" v-show="config.animationName == animation.name">
+            <div v-show="config.animationName == animation.name">
               <el-icon size="20px" color="#2a3ff6">
                 <Check />
               </el-icon>
@@ -29,11 +29,11 @@
       <el-empty v-else description="暂无动画" :image-size="120" />
     </div>
     <!-- 动画配置 -->
-    <div class="header">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
       <span>动画配置</span>
     </div>
-    <div class="options" :class="optionDisabled">
-      <div class="option">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Switch />
@@ -41,14 +41,14 @@
           <span> 循环方式 </span>
         </el-space>
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-radio-group v-model="config.loop" @change="onUpdateAnimation">
           <el-radio-button value="LoopOnce">只执行一次</el-radio-button>
           <el-radio-button value="LoopRepeat">无限循环</el-radio-button>
           <el-radio-button value="LoopPingPong">来回循环</el-radio-button>
         </el-radio-group>
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <VideoPlay />
@@ -56,10 +56,10 @@
           <span> 播放速度 </span>
         </el-space>
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-slider show-input v-model="config.timeScale" @change="onUpdateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-space>
           <el-icon>
             <Sort />
@@ -67,17 +67,17 @@
           <span> 动作幅度 </span>
         </el-space>
       </div>
-      <div class="option">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
         <el-slider show-input v-model="config.weight" @change="onUpdateAnimation" :step="0.01" :min="0" :max="1" />
       </div>
     </div>
     <!-- 轴动画 -->
-    <div class="header">
+    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
       <span>轴动画</span>
       <el-switch v-model="config.rotationVisible" @change="onRotationAnimation" />
     </div>
-    <div class="options">
-      <div class="option" :class="optionRotation">
+    <div class="box-border max-w-[380px] bg-[#1b1c23]">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer" :class="optionRotation">
         <el-space>
           <span> 轴方向 </span>
           <el-radio-group v-model="config.rotationType" @change="onRotationType">
@@ -87,7 +87,7 @@
           </el-radio-group>
         </el-space>
       </div>
-      <div class="option" :class="optionRotation">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer" :class="optionRotation">
         <el-space>
           <el-icon>
             <VideoPlay />
@@ -95,7 +95,7 @@
           <span> 播放速度 </span>
         </el-space>
       </div>
-      <div class="option" :class="optionRotation">
+      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer" :class="optionRotation">
         <el-slider @input="onRotationAnimation" show-input v-model="config.rotationSpeed" :step="0.01" :min="1" :max="10" />
       </div>
     </div>
@@ -191,4 +191,3 @@ defineExpose({
   config
 });
 </script>
-<style scoped lang="scss"></style>

@@ -1,9 +1,32 @@
-// Converted to Tailwind classes:
-// .grid-txt -> flex flex-wrap items-center
-// .grid-sidle -> flex-[5] pl-[10px]
-// .grid-style -> min-w-[110px]
-// .element-tag -> overflow-hidden font-['Helvetica','sans-serif'] text-[6px] leading-none text-center cursor-pointer shadow-[0_0_4px_rgb(0_255_255_/_.5)]
-// .tag-icon -> text-[12px] text-white text-center pointer-events-auto cursor-pointer
+.grid-txt {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.grid-sidle {
+	flex: 5;
+	padding-left: 10px;
+}
+.grid-style {
+	min-width: 110px;
+}
+.element-tag {
+	overflow: hidden;
+	font-family: Helvetica, sans-serif;
+	font-size: 6px;
+	line-height: normal;
+	text-align: center;
+	cursor: pointer;
+	box-shadow: 0 0 4px rgb(0 255 255 / 50%);
+	
+}
+.tag-icon {
+	font-size: 12px;
+	color: #ffffff;
+	text-align: center;
+	pointer-events: auto;
+	cursor: pointer;
+}
 
 
 

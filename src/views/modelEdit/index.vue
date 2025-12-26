@@ -1,13 +1,13 @@
 <template>
-  <div class="model-page">
+  <div class="w-full bg-[#1b1c23]">
     <!-- 头部操作栏 -->
-    <header class="model-header">
-      <div class="header-lf">
+    <header class="box-border flex items-center justify-between w-full h-[35px] px-[10px] font-medium text-white text-center  bg-[#010c1d] shadow-[0_2px_8px_0_rgba(0,0,0,0.1)]">
+      <div class="text-[14px]">
         <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
         <span>作者:answer </span>
         <span>当前Three.js版本:{{ THREE.REVISION }}</span>
       </div>
-      <div class="header-lr">
+      <div>
         <el-space>
           <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })"> 模型库 </el-button>
           <el-button type="primary" icon="Document" v-if="handleConfigBtn" @click="onSaveConfig">保存数据</el-button>
@@ -30,12 +30,12 @@
         </el-space>
       </div>
     </header>
-    <div class="model-container">
+    <div class="flex">
       <!-- 模型列表 -->
       <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
-      <div id="model" @drop="onDragDrop" ref="model" @dragover.prevent>
-        <div class="camera-icon">
+      <div id="model" @drop="onDragDrop" ref="model" @dragover.prevent class="relative w-[calc(100%-630px)] h-[calc(100vh-35px)]">
+        <div class="absolute top-[10px] left-[calc(100%-50%)] cursor-pointer">
           <el-tooltip effect="dark" content="居中" placement="top">
             <el-icon :size="18" color="#fff" @click="onResetCamera">
               <Aim />
@@ -45,7 +45,7 @@
         <div id="mesh-txt"></div>
       </div>
       <!-- 右侧编辑栏 -->
-      <div class="edit-panel" :style="{ minWidth: '380px' }">
+      <div class="min-w-[380px]">
         <model-edit-panel ref="editPanel" v-if="store.modelApi.model"></model-edit-panel>
       </div>
     </div>
@@ -279,95 +279,3 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-.model-page {
-  width: 100%;
-  background-color: #1b1c23;
-  .model-header {
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 35px;
-    padding: 0 10px;
-    font-weight: 500;
-    color: #ffffff;
-    text-align: center;
-    text-shadow: 5px 3px 5px #c11212;
-    background-color: #010c1d;
-    box-shadow: 0 2px 8px 0 rgb(0 0 0 / 10%);
-    .header-lf {
-      font-size: 14px;
-    }
-  }
-  .model-container {
-    display: flex;
-    #model {
-      position: relative;
-      width: calc(100% - 630px);
-      height: calc(100vh - 35px);
-      .camera-icon {
-        position: absolute;
-        top: 10px;
-        left: calc(100% - 50%);
-        cursor: pointer;
-      }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-.edit-box {
-  height: calc(100vh - 90px);
-}
-.edit-box,
-.model-choose {
-  .header {
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 35px;
-    padding: 0 20px;
-    color: #cccccc;
-    background-color: #33343f;
-    border-top: 1px solid #1b1c23;
-    border-bottom: 1px solid #1b1c23;
-  }
-  .disabled {
-    pointer-events: none;
-    opacity: 0.3;
-  }
-  .options {
-    box-sizing: border-box;
-    max-width: 380px;
-    background-color: #1b1c23;
-    .option-active {
-      background-color: #27282f;
-    }
-    .space-between {
-      justify-content: space-between;
-    }
-    .option {
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      height: 33px;
-      padding: 0 18px;
-      font-size: 14px;
-      color: #cccccc;
-      cursor: pointer;
-      .icon-name {
-        display: flex;
-        align-items: center;
-      }
-    }
-  }
-}
-.el-input-number {
-  width: 90px !important;
-}
-</style>
