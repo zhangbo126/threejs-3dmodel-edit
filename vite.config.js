@@ -6,10 +6,12 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig(async mode => {
   const { VITE_APP_BASE_URL } = loadEnv(mode.mode, process.cwd());
-
-
   return {
-    plugins: [vue(), vueJsx(), tailwindcss()],
+    plugins: [
+      vue(),
+      vueJsx(),
+      tailwindcss()
+    ],
     css: {
       preprocessorOptions: {
         scss: {
@@ -23,12 +25,10 @@ export default defineConfig(async mode => {
         vue: "vue/dist/vue.esm-bundler.js"
       }
     },
-    assetsInclude: ["**/*.hdr", "**/*.glb"],
     esbuild: { loader: { ".js": ".jsx" } },
     base: VITE_APP_BASE_URL,
     server: {
       host: "0.0.0.0",
-      open: true,
       port: 9999
     },
     build: {
