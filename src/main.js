@@ -13,7 +13,6 @@ import Directive from "@/utils/directive.js";
 import "element-plus/theme-chalk/src/index.scss";
 // import 'default-passive-events'
 
-import "@/style/index.scss";
 import "@/style/tailwindcss.css";
 
 const app = createApp(App);
