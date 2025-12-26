@@ -2,7 +2,7 @@
   <div class="w-full bg-[#1b1c23]">
     <!-- 头部操作栏 -->
     <header class="box-border flex items-center justify-between w-full h-[35px] px-[10px] font-medium text-white text-center  bg-[#010c1d] shadow-[0_2px_8px_0_rgba(0,0,0,0.1)]">
-      <div class="text-[14px]">
+      <div class="text-[14px] text-[#fff]">
         <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
         <span>作者:answer </span>
         <span>当前Three.js版本:{{ THREE.REVISION }}</span>
