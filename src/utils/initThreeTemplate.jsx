@@ -856,7 +856,7 @@ class renderModel {
           return (
             <div>
               <div
-                className="element-tag"
+               className="text-center element-tag"
                 style={{
                   width: `${width}px`,
                   height: `${height}px`,
@@ -869,7 +869,7 @@ class renderModel {
                 <span className="tag-txt">{innerText}</span>
               </div>
               <div
-                className="tag-icon"
+                className="text-center text-[#fff] text-[12px] tag-icon"
                 style={{
                   fontSize: `${iconSize}px`,
                   color: iconColor
