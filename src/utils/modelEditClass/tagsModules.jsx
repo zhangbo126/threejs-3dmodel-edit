@@ -53,7 +53,7 @@ function create3dTags() {
         return (
           <div>
             <div
-              className="element-tag"
+              className="text-center"
               style={{
                 width: "60px",
                 height: "40px",
@@ -64,7 +64,7 @@ function create3dTags() {
             >
               <span className="tag-txt">{`标签-${tagIndex}`}</span>
             </div>
-            <div className="tag-icon">
+            <div className="text-center text-[#fff] text-[12px]">
               <ElIcon>{h(ElementPlusIconsVue[iconName])}</ElIcon>
             </div>
           </div>
