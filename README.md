@@ -19,6 +19,7 @@
 ### 🌐 安装/启动/打包(详见 package.json)
 
 ```
+
  yarn  / yarn serve  / yarn build(yarn build:pro)
 
  pnpm install / pnpm serve / pnpm build(pnpm build:pro)
@@ -32,8 +33,8 @@
 
 ### 项目地址
 
-- 1. github:[https://github.com/zhangbo126/threejs-3dmodel-edit](https://github.com/zhangbo126/threejs-3dmodel-edit)
-- 2. gitee:[https://gitee.com/ZHANG_6666/Three.js3D](https://gitee.com/ZHANG_6666/Three.js3D)
+- github:[https://github.com/zhangbo126/threejs-3dmodel-edit](https://github.com/zhangbo126/threejs-3dmodel-edit)
+- gitee:[https://gitee.com/ZHANG_6666/Three.js3D](https://gitee.com/ZHANG_6666/Three.js3D)
 
 ### 🎵 主要技术栈
 
@@ -45,7 +46,7 @@
 | Vue3-Draggable-Resizable | 1.6.x   | Mitt         | 3.0.x |
 | 详见 `package.json`      | 😁      | 🥰           | 🤗    |
 
-### 🌺 开发环境:
+### 🌺 开发环境
 
 | 名称 | 版本    | 名称    | 版本   |
 | ---- | ------- | ------- | ------ |
