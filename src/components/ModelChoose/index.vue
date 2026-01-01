@@ -60,7 +60,7 @@
           </el-space>
         </div>
         <!-- 模型列表 -->
-        <el-scrollbar max-height="210px">
+        <el-scrollbar min-height="210px">
           <el-row>
             <el-col
               :draggable="modelEditMap[reactiveData.modeEditType].draggable"

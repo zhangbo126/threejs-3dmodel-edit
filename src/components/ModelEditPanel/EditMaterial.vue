@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100vh-90px)]" v-zLoading="loading">
+  <div class="h-[calc(100vh-70px)]" v-zLoading="loading">
     <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
       <span>材质类型</span>
       <el-button type="primary" icon="Refresh" @click="onInitialize"> 重置 </el-button>
@@ -131,7 +131,7 @@
     </div>
     <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">系统贴图</div>
     <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
-      <el-scrollbar max-height="230px">
+      <!-- <el-scrollbar > </el-scrollbar> -->
         <el-row>
           <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in mapImageList" :key="map.id">
             <div @click="onChangeSystemModelMap(map)" class="relative box-border flex items-center justify-center w-[90px] h-[90px] cursor-pointer opacity-60" :class="activeMapId == map.id ? 'border-[2px] border-[#18c174] opacity-100' : ''">
@@ -142,7 +142,7 @@
             </div>
           </el-col>
         </el-row>
-      </el-scrollbar>
+     
     </div>
   </div>
 </template>
