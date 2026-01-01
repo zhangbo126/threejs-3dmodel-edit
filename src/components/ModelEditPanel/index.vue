@@ -13,7 +13,7 @@
     </ul>
 
     <div class="panel-edit">
-      <el-scrollbar max-height="832px">
+      <el-scrollbar max-height="calc(100vh - 70px)">
         <!-- 背景 -->
         <div v-show="activeTab == 'EditBackground'">
           <edit-background ref="background"></edit-background>

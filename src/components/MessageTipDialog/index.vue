@@ -16,8 +16,8 @@
       </li>
       <li class="info-item">
         <span class="label">在线地址：</span>
-        <el-link class="link-content" type="primary" :underline="false" target="_blank" href="http://threeflowx.cn/edit/#/">
-          http://threeflowx.cn/edit/#/</el-link
+        <el-link class="link-content" type="primary" :underline="false" target="_blank" href="http://threeflowx.cn/edit/">
+          http://threeflowx.cn/edit/</el-link
         >
       </li>
     </ul>
