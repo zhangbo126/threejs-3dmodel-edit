@@ -49,9 +49,17 @@ const props = defineProps({
       width: 320px;
       height: 120px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      img{
+         width: 80px;
+         height: 80px;
+      }
     }
     .progress-txt {
       font-size: 18px;
+      width: 100%;
       color: #ffcb00;
       b {
         color: #f56c6c;
