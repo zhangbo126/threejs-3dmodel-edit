@@ -28,6 +28,13 @@
       width: 200px;
       height: 120px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      img{
+         width: 80px;
+         height: 80px;
+      }
     }
     .loading-txt {
       font-size: 14px;
