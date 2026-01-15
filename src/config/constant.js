@@ -208,7 +208,7 @@ export const MODEL_DEFAULT_CONFIG = {
 
 //  嵌入网站 iframe 网页地址
 export const IFRAME_PREVIEW =
-  "https://three3d-0gte3eg619c78ffd-1301256746.tcloudbaseapp.com/threejs-3dmodel-edit/modelIframe?modelIframe";
+  "http://threeflowx.cn/open/#/modelIframe?modelIframe";
 
 // 材质类型列表
 export const meshTypeList = [
