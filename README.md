@@ -96,7 +96,7 @@
 
 <!-- Start of Selection -->
 
-**[3D模型场景编辑器(Vue3/React18)](http://threeflowx.cn/docs/):** [获取授权](http://threeflowx.cn/docs/)
+**[ThreeFlowX(3D低代码场景编辑器))](http://threeflowx.cn/docs/):** [获取授权](http://threeflowx.cn/docs/)
 
 <!-- End of Selection -->
 
