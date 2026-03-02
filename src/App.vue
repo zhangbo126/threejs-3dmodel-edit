@@ -1,4 +1,4 @@
-<template>
+ <template>
   <el-config-provider>
     <router-view />
     <MessageTipDialog ref="messageTipDialog" />

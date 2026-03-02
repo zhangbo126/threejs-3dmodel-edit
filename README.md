@@ -33,8 +33,8 @@
 
 ### 项目地址
 
-- github:[https://github.com/zhangbo126/threejs-3dmodel-edit](https://github.com/zhangbo126/threejs-3dmodel-edit)
-- gitee:[https://gitee.com/ZHANG_6666/Three.js3D](https://gitee.com/ZHANG_6666/Three.js3D)
+- Github:[https://github.com/zhangbo126/threejs-3dmodel-edit](https://github.com/zhangbo126/threejs-3dmodel-edit)
+- Gitee:[https://gitee.com/ZHANG_6666/Three.js3D](https://gitee.com/ZHANG_6666/Three.js3D)
 
 ### 🎵 主要技术栈
 
@@ -96,7 +96,7 @@
 
 <!-- Start of Selection -->
 
-**[3D模型场景编辑器(Vue3/React18)](http://threeflowx.cn/docs/):** [获取授权](http://threeflowx.cn/docs/)
+**[ThreeFlowX(3D低代码场景编辑器)](http://threeflowx.cn/docs/):** [获取授权](http://threeflowx.cn/docs/)
 
 <!-- End of Selection -->
 
