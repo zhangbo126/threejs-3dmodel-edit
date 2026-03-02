@@ -1,2 +1,9 @@
+/* stylelint-disable scss/at-rule-no-unknown */
+@import "tailwindcss" source(none);
 
-@import "tailwindcss";
+/* stylelint-disable-next-line at-rule-empty-line-before */
+@source "../../index.html";
+@source "../../preview.html";
+@source "../../modelIframe.html";
+@source "../../vrPage.html";
+@source "../../src";
