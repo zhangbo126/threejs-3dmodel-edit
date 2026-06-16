@@ -36,6 +36,7 @@
 
 - Github:[https://github.com/zhangbo126/threejs-3dmodel-edit](https://github.com/zhangbo126/threejs-3dmodel-edit)
 - Gitee:[https://gitee.com/ZHANG_6666/Three.js3D](https://gitee.com/ZHANG_6666/Three.js3D)
+- GitCode:[https://atomgit.com/answer_6666/three-edit-view](https://atomgit.com/answer_6666/three-edit-view)
 
 ### 🎵 主要技术栈
 
