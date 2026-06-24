@@ -7,3 +7,313 @@
 @source "../../modelIframe.html";
 @source "../../vrPage.html";
 @source "../../src";
+:root {
+  --bg-main: #0a0b0e;
+  --bg-panel: #111218;
+  --bg-panel-header: #171822;
+  --bg-header: #06070a;
+  --border-color: #20222e;
+  --border-color-light: #2c2f42;
+  --accent-color: #6366f1;
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --accent-glow: 0 0 15px rgb(99 102 241 / 35%);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --success-color: #10b981;
+  --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* 1. 覆盖硬编码的 Tailwind 背景与边框类，实现一键全局换肤 */
+.bg-\[\#1b1c23\] {
+  background-color: var(--bg-panel) !important;
+}
+.bg-\[\#33343f\] {
+  background-color: var(--bg-panel-header) !important;
+  border-top: 1px solid var(--border-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+.bg-\[\#010c1d\] {
+  background-color: var(--bg-header) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+.border-\[\#1b1c23\] {
+  border-color: var(--border-color) !important;
+}
+.bg-\[\#18181c\] {
+  background-color: var(--bg-panel) !important;
+}
+.bg-\[\#232324\] {
+  background-color: var(--bg-panel-header) !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+.border-\[\#323332\] {
+  border-color: var(--border-color) !important;
+}
+
+/* 2. 极致优雅的自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(0 0 0 / 5%);
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 10%);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+/* 3. Element Plus 全局组件美化 */
+
+/* 按钮样式美化 */
+.el-button {
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.el-button--primary {
+  color: #ffffff !important;
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgb(99 102 241 / 20%) !important;
+}
+.el-button--primary:hover {
+  box-shadow: var(--accent-glow) !important;
+  opacity: 0.9 !important;
+  transform: translateY(-1px);
+}
+.el-button--primary:active {
+  transform: translateY(0);
+}
+.el-button--primary.is-link {
+  color: #818cf8 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.el-button--primary.is-link:hover {
+  color: #a5b4fc !important;
+  text-shadow: 0 0 8px rgb(129 140 248 / 40%);
+  transform: none !important;
+}
+
+/* 开关样式美化 */
+.el-switch {
+  --el-switch-on-color: #10b981 !important;
+  --el-switch-off-color: #2e303f !important;
+}
+.el-switch__core {
+  border: 1px solid rgb(255 255 255 / 5%) !important;
+  border-radius: 100px !important;
+}
+
+/* 滑块样式美化 */
+.el-slider {
+  --el-slider-main-bg-color: #6366f1 !important;
+  --el-slider-runway-bg-color: #1e2030 !important;
+  --el-slider-stop-bg-color: #1e2030 !important;
+}
+.el-slider__button {
+  width: 14px !important;
+  height: 14px !important;
+  background-color: #6366f1 !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 0 10px rgb(99 102 241 / 50%) !important;
+  transition: transform 0.15s ease !important;
+}
+.el-slider__button:hover {
+  transform: scale(1.2);
+}
+.el-slider__bar {
+  background: var(--accent-gradient) !important;
+}
+
+/* 下拉框与文本框美化 */
+.el-select {
+  --el-select-border-color-hover: #6366f1 !important;
+  --el-select-input-focus-border-color: #6366f1 !important;
+}
+.el-select .el-input__wrapper {
+  background-color: #161720 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 0 1px var(--border-color) inset !important;
+}
+.el-select .el-input__wrapper.is-focus {
+  box-shadow:
+    0 0 0 1px #6366f1 inset,
+    0 0 0 2px rgb(99 102 241 / 20%) !important;
+}
+.el-select__popper.el-popper {
+  background-color: #111218 !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 50%) !important;
+}
+.el-select-dropdown__item {
+  color: #9ca3af !important;
+}
+.el-select-dropdown__item.selected {
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background: var(--accent-gradient) !important;
+}
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover {
+  color: #ffffff !important;
+  background-color: rgb(255 255 255 / 5%) !important;
+}
+
+/* 颜色选择器美化 */
+.el-color-picker__trigger {
+  padding: 3px !important;
+  background-color: #161720 !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+.el-color-picker__trigger:hover {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 8px rgb(99 102 241 / 20%) !important;
+}
+
+/* 4. 专有卡片与模块样式 */
+
+/* 模型卡片 */
+.model-card {
+  overflow: hidden !important;
+  cursor: pointer;
+  border: 1px solid rgb(255 255 255 / 5%) !important;
+  border-radius: 10px !important;
+  opacity: 0.5 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.model-card:hover {
+  border-color: rgb(255 255 255 / 20%) !important;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 40%) !important;
+  opacity: 0.95 !important;
+  transform: translateY(-2px) scale(1.02);
+}
+.model-card.active-model {
+  border: 2px solid #6366f1 !important;
+  box-shadow:
+    var(--accent-glow),
+    0 8px 20px rgb(0 0 0 / 40%) !important;
+  opacity: 1 !important;
+}
+
+/* 几何体卡片 */
+.geometry-card {
+  color: #d1d5db !important;
+  background: rgb(255 255 255 / 2%) !important;
+  border: 1px solid rgb(255 255 255 / 8%) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.geometry-card:hover {
+  color: #ffffff !important;
+  background: rgb(255 255 255 / 6%) !important;
+  border-color: rgb(255 255 255 / 20%) !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%) !important;
+  transform: translateY(-1px);
+}
+.geometry-card.active-model {
+  color: #ffffff !important;
+  border-color: #6366f1 !important;
+  box-shadow: var(--accent-glow) !important;
+}
+
+/* 上传框美化 */
+.upload-box {
+  color: #9ca3af !important;
+  background: rgb(255 255 255 / 1%) !important;
+  border: 1px dashed rgb(255 255 255 / 12%) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.upload-box:hover {
+  color: #a5b4fc !important;
+  background: rgb(99 102 241 / 2%) !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 20px rgb(99 102 241 / 10%) !important;
+}
+
+/* 下拉菜单美化 */
+.premium-dropdown {
+  padding: 4px !important;
+  background-color: #111218 !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 50%) !important;
+}
+.premium-dropdown .el-dropdown-menu__item {
+  margin: 2px 0 !important;
+  color: #9ca3af !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+}
+.premium-dropdown .el-dropdown-menu__item:hover {
+  color: #ffffff !important;
+  background-color: rgb(255 255 255 / 5%) !important;
+}
+
+/* 5. 提示框美化 */
+.el-message-box {
+  background-color: #111218 !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 60%) !important;
+}
+.el-message-box__title {
+  color: #ffffff !important;
+}
+.el-message-box__content {
+  color: #9ca3af !important;
+}
+.el-message-box__btns .el-button--default {
+  color: #ffffff !important;
+  background-color: #1e2030 !important;
+  border: 1px solid var(--border-color) !important;
+}
+.el-message-box__btns .el-button--default:hover {
+  background-color: #27293d !important;
+  border-color: rgb(255 255 255 / 20%) !important;
+}
+
+/* 6. 高级面板细节美化 */
+
+/* 统一美化所有面板子标题 */
+.bg-\[\#33343f\] > span:first-child {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #a5b4fc !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* 统一美化列表选中状态 */
+.bg-\[\#27282f\] {
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  background-color: rgb(99 102 241 / 12%) !important;
+  border-left: 3px solid #6366f1 !important;
+}
+
+/* 统一美化列表项悬浮效果 */
+.bg-\[\#1b1c23\] .cursor-pointer {
+  transition: all 0.2s ease !important;
+}
+.bg-\[\#1b1c23\] .cursor-pointer:hover {
+  background-color: rgb(255 255 255 / 3%) !important;
+}
+
+/* 着色器节点美化 */
+.bg-\[\#2a2f45\] {
+  background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%) !important;
+  border: 1px solid rgb(255 255 255 / 10%) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 40%) !important;
+}

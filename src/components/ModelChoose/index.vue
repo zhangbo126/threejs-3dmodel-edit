@@ -1,33 +1,36 @@
 <template>
-  <div class="min-w-[305px] h-[calc(100vh-35px)] bg-[#1b1c23]">
-    <el-scrollbar max-height="calc(100vh - 72px)">
-      <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">
-        <span>当前场景编辑模式:{{ modelEditMap[reactiveData.modeEditType].text }}</span>
-        <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType].tooltip" placement="top">
-          <el-button
-            type="primary"
-            icon="Switch"
-            @click="
-              switchActiveModelEdit(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].switchType)
-            "
-          >
-            切换场景
-          </el-button>
-        </el-tooltip>
-      </div>
+  <div class="min-w-[305px] h-[calc(100vh-50px)] bg-[#111218] border-r border-[#20222e] flex flex-col select-none">
+    <!-- 固定场景编辑模式头部 -->
+    <div class="box-border flex items-center justify-between w-full h-[40px] px-[16px] text-[#9ca3af] bg-[#171822] border-b border-[#20222e] shrink-0">
+      <span class="text-[11px] font-bold tracking-wider uppercase text-[#a5b4fc]">模式: {{ modelEditMap[reactiveData.modeEditType].text }}</span>
+      <el-tooltip effect="dark" :content="modelEditMap[reactiveData.modeEditType].tooltip" placement="top">
+        <el-button
+          type="primary"
+          size="small"
+          icon="Switch"
+          class="!px-2.5 !py-1 !h-6 !text-[11px]"
+          @click="
+            switchActiveModelEdit(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].switchType)
+          "
+        >
+          切换场景
+        </el-button>
+      </el-tooltip>
+    </div>
+
+    <!-- 可滚动内容区 -->
+    <el-scrollbar class="flex-1">
       <!-- 普通模型 -->
-      <div class="box-border max-w-[380px] bg-[#1b1c23]">
-        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
-          <el-space>
-            <el-icon>
-              <Orange />
-            </el-icon>
+      <div class="box-border w-full bg-[#111218] py-2 border-b border-[#20222e]/50">
+        <div class="box-border flex items-center h-[30px] px-[16px] text-[11px] font-bold text-[#9ca3af] tracking-wider uppercase">
+          <el-space :size="6">
+            <el-icon class="text-[#6366f1]"><Orange /></el-icon>
             <span>普通模型</span>
           </el-space>
         </div>
         <!-- 模型列表 -->
-        <el-scrollbar max-height="210px">
-          <el-row>
+        <div class="px-2 max-h-[210px] overflow-y-auto">
+          <el-row :gutter="8">
             <el-col
               :draggable="(modelEditMap[reactiveData.modeEditType] && modelEditMap[reactiveData.modeEditType].draggable) || false"
               :style="modelTypeStyle"
@@ -36,32 +39,32 @@
               @dragstart="e => onDragModelStart(model)"
               @drag="e => onDrag(e)"
               :key="model.id"
+              class="p-1"
             >
               <el-image
                 draggable="false"
                 @click.prevent="onChangeModel(model)"
-                class="box-border w-[145px] h-[88px] mb-[4px] opacity-50"
-                :class="reactiveData.activeModelId == model.id ? 'border-[3px] border-[#18c174] opacity-100' : ''"
+                class="box-border w-full h-[76px] model-card"
+                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
                 :src="model.icon"
                 fit="cover"
               />
             </el-col>
           </el-row>
-        </el-scrollbar>
+        </div>
       </div>
+
       <!-- 动画模型 -->
-      <div class="box-border max-w-[380px] bg-[#1b1c23]">
-        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
-          <el-space>
-            <el-icon>
-              <Paperclip />
-            </el-icon>
+      <div class="box-border w-full bg-[#111218] py-2 border-b border-[#20222e]/50">
+        <div class="box-border flex items-center h-[30px] px-[16px] text-[11px] font-bold text-[#9ca3af] tracking-wider uppercase">
+          <el-space :size="6">
+            <el-icon class="text-[#a855f7]"><Paperclip /></el-icon>
             <span>动画模型</span>
           </el-space>
         </div>
         <!-- 模型列表 -->
-        <el-scrollbar min-height="210px">
-          <el-row>
+        <div class="px-2 max-h-[210px] overflow-y-auto">
+          <el-row :gutter="8">
             <el-col
               :draggable="modelEditMap[reactiveData.modeEditType].draggable"
               :style="modelTypeStyle"
@@ -70,96 +73,85 @@
               @dragstart="e => onDragModelStart(model)"
               @drag="e => onDrag(e)"
               :key="model.id"
+              class="p-1"
             >
               <el-image
                 draggable="false"
                 @click="onChangeModel(model)"
-                class="box-border w-[145px] h-[88px] mb-[4px] opacity-50"
-                :class="reactiveData.activeModelId == model.id ? 'border-[3px] border-[#18c174] opacity-100' : ''"
+                class="box-border w-full h-[76px] model-card"
+                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
                 :src="model.icon"
                 fit="cover"
               />
             </el-col>
           </el-row>
-        </el-scrollbar>
+        </div>
       </div>
+
       <!-- 几何体模型 -->
-      <div class="box-border max-w-[380px] bg-[#1b1c23]">
-        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
-          <el-space>
-            <el-icon>
-              <SwitchFilled />
-            </el-icon>
+      <div class="box-border w-full bg-[#111218] py-2 border-b border-[#20222e]/50">
+        <div class="box-border flex items-center h-[30px] px-[16px] text-[11px] font-bold text-[#9ca3af] tracking-wider uppercase justify-between">
+          <el-space :size="6">
+            <el-icon class="text-[#00f2fe]"><SwitchFilled /></el-icon>
             <span>几何体模型</span>
-            <span :style="{ color: '#18c174 ' }" v-if="reactiveData.geometryVisible">(可拖拽添加多个)</span>
           </el-space>
+          <span class="text-[10px] text-[#10b981] font-medium normal-case" v-if="reactiveData.geometryVisible">(可拖拽添加)</span>
         </div>
         <!-- 模型列表 -->
-        <el-scrollbar max-height="120px">
-          <el-row v-if="reactiveData.geometryVisible">
-            <el-col :style="{ textAlign: 'center' }" :span="8" v-for="model in geometryModelList" :key="model.type">
+        <div class="px-3">
+          <el-row :gutter="8" v-if="reactiveData.geometryVisible" class="py-1">
+            <el-col :span="8" v-for="model in geometryModelList" :key="model.type" class="p-1">
               <div
-                class="flex flex-col items-center justify-center h-[70px] m-[4px_2px] text-[12px] text-white text-center cursor-all-scroll border border-[#dcdfe6]"
-                :class="reactiveData.activeModelId == model.id ? 'border-[3px] border-[#18c174] opacity-100' : ''"
+                class="flex flex-col items-center justify-center h-[54px] text-[11px] text-[#d1d5db] text-center cursor-all-scroll geometry-card"
+                :class="reactiveData.activeModelId == model.id ? 'active-model' : ''"
                 draggable="true"
                 @dragstart="e => onDragstart(e, model)"
                 @drag="e => onDrag(e)"
               >
-                <div>
-                  <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
-                    <b> {{ model.name }}</b>
-                  </el-tooltip>
-                </div>
+                <el-tooltip effect="dark" :content="`${model.name}:${model.type}`" placement="top">
+                  <span class="font-semibold px-1 truncate w-full">{{ model.name }}</span>
+                </el-tooltip>
               </div>
             </el-col>
           </el-row>
-          <div class="relative box-border flex justify-center px-[20px] overflow-hidden text-[#8c939d] text-center" v-else>
-            <div class="flex items-center justify-center w-[228px] h-[108px] cursor-pointer border border-dashed border-[#dcdfe6] rounded-[6px] hover:text-[#409eff] hover:border-[#409eff]" @click="onAddGeometry">
-              <div class="icon">
-                <el-icon :size="44">
-                  <Plus />
-                </el-icon>
-                <div><span class="text-[14px]">添加几何体模型</span></div>
-              </div>
+          <div class="relative box-border flex justify-center py-2" v-else>
+            <div class="flex flex-col items-center justify-center w-full h-[76px] upload-box cursor-pointer" @click="onAddGeometry">
+              <el-icon :size="20" class="mb-1 text-[#9ca3af]"><Plus /></el-icon>
+              <span class="text-[11px] font-medium">添加几何体模型</span>
             </div>
           </div>
-        </el-scrollbar>
+        </div>
       </div>
+
       <!-- 外部模型 -->
-      <div class="box-border max-w-[380px] bg-[#1b1c23]">
-        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
-          <el-space>
-            <el-icon>
-              <UploadFilled />
-            </el-icon>
+      <div class="box-border w-full bg-[#111218] py-2">
+        <div class="box-border flex items-center h-[30px] px-[16px] text-[11px] font-bold text-[#9ca3af] tracking-wider uppercase">
+          <el-space :size="6">
+            <el-icon class="text-[#3b82f6]"><UploadFilled /></el-icon>
             <span>外部模型</span>
           </el-space>
         </div>
         <!-- 模型内容 -->
-        <div class="overflow-hidden text-[14px] text-white text-center text-ellipsis whitespace-nowrap">
-          <span>当前模型:</span>
+        <div class="px-[16px] pb-2 text-[11px] text-[#9ca3af] flex items-center space-x-1.5" v-if="reactiveData.localModelName">
+          <span class="shrink-0">当前模型:</span>
           <el-tooltip effect="dark" :content="reactiveData.localModelName" placement="top">
-            <b>{{ reactiveData.localModelName }}</b>
+            <b class="text-white font-semibold truncate max-w-[180px]">{{ reactiveData.localModelName }}</b>
           </el-tooltip>
         </div>
         <el-upload
           action=""
           accept=".glb,.obj,.gltf,.fbx,.stl"
-          class="relative box-border flex justify-center px-[20px] overflow-hidden text-[#8c939d] text-center cursor-pointer"
+          class="relative box-border flex justify-center px-[16px] pb-2 text-[#8c939d] text-center cursor-pointer"
           :show-file-list="false"
           :auto-upload="false"
           :on-change="onUpload"
         >
-          <div class="flex items-center justify-center w-[228px] h-[100px] border border-dashed border-[#dcdfe6] rounded-[6px] hover:text-[#409eff] hover:border-[#409eff]">
-            <div class="icon">
-              <el-icon :size="44">
-                <Plus />
-              </el-icon>
-              <div><span class="text-[14px]">请选择(目前仅支持.glb, .obj, .gltf, .fbx, .stl格式)</span></div>
-            </div>
+          <div class="flex flex-col items-center justify-center w-[273px] h-[80px] upload-box">
+            <el-icon :size="20" class="mb-1 text-[#9ca3af]"><Plus /></el-icon>
+            <span class="text-[11px] font-medium px-2 leading-tight">选择本地 3D 模型文件</span>
+            <span class="text-[9px] text-[#6b7280] mt-0.5">支持 .glb, .obj, .gltf, .fbx, .stl</span>
           </div>
         </el-upload>
-        
       </div>
     </el-scrollbar>
   </div>

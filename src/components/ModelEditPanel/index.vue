@@ -1,10 +1,10 @@
 <template>
-  <div class="model-panel">
+  <div class="model-panel select-none">
     <ul class="panel-tabs">
       <li v-for="tab in panelTabs" :key="tab.key" :class="activeTab == tab.key ? 'active' : ''" @click="activeTab = tab.key">
         <el-tooltip effect="light" :content="tab.name" placement="top">
           <div class="tab">
-            <el-icon size="20px" :color="activeTab == tab.key ? '#fff' : ''">
+            <el-icon size="18px" :color="activeTab == tab.key ? '#fff' : ''">
               <component :is="tab.icon"></component>
             </el-icon>
           </div>
@@ -13,7 +13,7 @@
     </ul>
 
     <div class="panel-edit">
-      <el-scrollbar max-height="calc(100vh - 70px)">
+      <el-scrollbar max-height="calc(100vh - 88px)">
         <!-- 背景 -->
         <div v-show="activeTab == 'EditBackground'">
           <edit-background ref="background"></edit-background>
@@ -161,26 +161,63 @@ defineExpose({
 <style lang="scss" scoped>
 .model-panel {
   min-width: 380px;
-  height: calc(100vh - 35px);
-  background-color: #1b1c23;
+  height: calc(100vh - 50px);
+  background-color: #111218;
+  border-left: 1px solid #20222e;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
   .panel-tabs {
     display: flex;
-    .active {
-      background-color: #4d57fd;
-    }
+    justify-content: space-between;
+    align-items: center;
+    background-color: #171822;
+    border-bottom: 1px solid #20222e;
+    padding: 4px 6px;
+    height: 38px;
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0;
+
     li {
       display: flex;
       align-items: center;
-      padding: 6px 8px;
+      justify-content: center;
+      width: 32px;
+      height: 30px;
       color: #888888;
       cursor: pointer;
-      background: #272830;
-      border-right: 1px solid #0a0a0a;
+      border-radius: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: transparent;
+
+      &:hover {
+        color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      &.active {
+        color: #ffffff;
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        transform: scale(1.05);
+      }
+
       .tab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         line-height: initial;
       }
     }
   }
+
+  .panel-edit {
+    flex: 1;
+    overflow: hidden;
+  }
+
   .many-model {
     box-sizing: border-box;
     display: flex;
