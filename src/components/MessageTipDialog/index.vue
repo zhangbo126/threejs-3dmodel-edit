@@ -23,7 +23,7 @@
     </ul>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" class="copy-button" @click="cloneDialog"> 关闭 </el-button>
+        <el-button type="primary"  @click="cloneDialog"> 关闭 </el-button>
       </span>
     </template>
   </el-dialog>

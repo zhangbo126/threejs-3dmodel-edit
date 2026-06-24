@@ -1,52 +1,54 @@
 <template>
-  <div>
+  <div class="h-screen flex flex-col overflow-hidden bg-[#0a0b0e]">
     <!-- 头部区域 -->
-    <header class="box-border flex items-center justify-between w-full h-[45px] px-[20px] font-medium text-white text-center bg-[#010c1d] shadow-[0_2px_8px_0_rgba(0,0,0,0.1)]">
+    <header class="box-border flex items-center justify-between w-full h-[50px] px-[20px] font-medium text-white bg-[#06070a]/85 border-b border-[#20222e] shadow-[0_4px_20px_0_rgba(0,0,0,0.3)] backdrop-blur-md z-50 shrink-0">
       <div>
-        <el-button type="primary" @click="$router.push({ path: '/' })" icon="DArrowLeft">返回编辑器</el-button>
+        <el-button class="header-btn" type="primary" @click="$router.push({ path: '/' })" icon="DArrowLeft">返回编辑器</el-button>
       </div>
-      <div class="flex items-center text-[22px]">
-        <el-space>
-          <el-icon>
+      <div class="flex items-center text-[16px] font-bold tracking-wider bg-gradient-to-r from-[#ffffff] to-[#a5b4fc] bg-clip-text text-transparent">
+        <el-space :size="8">
+          <el-icon class="text-[#6366f1]">
             <Film />
           </el-icon>
-          <p>3D组件模型库</p>
+          <span>3D 组件模型库</span>
         </el-space>
       </div>
       <div>
         <el-space>
-          <el-button type="primary" icon="Tickets" @click="onSavaDragData">保存数据</el-button>
+          <el-button class="header-btn" type="primary" icon="Tickets" @click="onSavaDragData">保存数据</el-button>
         </el-space>
       </div>
     </header>
     <!-- 内容区 -->
-    <div class="flex">
-      <el-scrollbar :max-height="'calc(100vh - 45px)'" class="box-border w-[230px] h-[calc(100vh-45px)] p-[10px] bg-[#18181c]">
-        <ul>
-          <li
-            v-for="model in modelBaseList"
-            :key="model.fileInfo.id"
-            draggable="true"
-            @dragstart="e => onDragStart(e, model)"
-            @drag="e => onDrag(e)"
-            @dragend="onDragEnd"
-            class="box-border mb-[10px] text-[14px] text-white cursor-all-scroll border border-[#323332] rounded-[3px] hover:border-[2px] hover:border-[#18c174]"
-          >
-            <div class="p-[10px_18px] text-[0]">
-              <el-image draggable="false" fit="scale-down" :src="model.fileInfo.icon"></el-image>
-            </div>
-            <div class="box-border flex items-center justify-center h-[30px] px-[8px] bg-[#232324]">
-              <div class="overflow-hidden text-center text-ellipsis whitespace-nowrap">
-                <el-tooltip effect="dark" :content="model.fileInfo.name" placement="top">
-                  <span>{{ model.fileInfo.name }}</span>
-                </el-tooltip>
+    <div class="flex flex-1 overflow-hidden">
+      <el-scrollbar class="box-border w-[230px] h-full bg-[#111218] border-r border-[#20222e] shrink-0">
+        <div class="p-[12px]">
+          <ul>
+            <li
+              v-for="model in modelBaseList"
+              :key="model.fileInfo.id"
+              draggable="true"
+              @dragstart="e => onDragStart(e, model)"
+              @drag="e => onDrag(e)"
+              @dragend="onDragEnd"
+              class="box-border mb-[12px] text-[13px] text-white cursor-all-scroll border border-[#20222e] rounded-[10px] bg-[#171822]/40 overflow-hidden hover:border-[#6366f1] hover:shadow-[0_0_15px_rgba(99,102,241,0.25)] transition-all duration-300"
+            >
+              <div class="p-[12px] text-[0] flex items-center justify-center bg-[#111218]/50">
+                <el-image draggable="false" fit="scale-down" class="h-[80px] w-full transition-transform duration-300 hover:scale-105" :src="model.fileInfo.icon"></el-image>
               </div>
-            </div>
-          </li>
-        </ul>
+              <div class="box-border flex items-center justify-center h-[32px] px-[8px] bg-[#171822] border-t border-[#20222e]">
+                <div class="overflow-hidden text-center text-ellipsis whitespace-nowrap text-xs text-[#9ca3af] font-medium">
+                  <el-tooltip effect="dark" :content="model.fileInfo.name" placement="top">
+                    <span>{{ model.fileInfo.name }}</span>
+                  </el-tooltip>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
       </el-scrollbar>
-      <div id="drag-content" class="box-border flex w-full h-[calc(100vh-45px)] border-[5px] border-black">
-        <div class="relative w-full overflow-hidden bg-[#18181c] bg-[linear-gradient(#18181c_14px,transparent_0),linear-gradient(90deg,transparent_14px,#86909c_0)] bg-[size:15px_15px,15px_15px]" @drop="onDrop" @dragover.prevent>
+      <div id="drag-content" class="box-border flex-1 h-full">
+        <div class="relative w-full h-full overflow-hidden bg-[#0d0e12] bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" @drop="onDrop" @dragover.prevent>
           <draggable-container :adsorb-parent="true" :disabled="true" v-if="dragModelList.length">
             <draggable-resizable-item
               @onDragActive="onDragActive"
@@ -57,7 +59,10 @@
               :config="drag"
             ></draggable-resizable-item>
           </draggable-container>
-          <div class="flex items-center justify-center w-full h-full text-[20px] text-[#18c174] tracking-[10px]" v-else>请拖拽添加多个!!!</div>
+          <div class="flex flex-col items-center justify-center w-full h-full text-[16px] text-[#6366f1] font-semibold tracking-[4px] space-y-2 select-none" v-else>
+            <el-icon :size="40" class="animate-bounce text-[#6366f1]/80"><Pointer /></el-icon>
+            <span>请从左侧拖拽模型组件到此处进行布局!!!</span>
+          </div>
           <!-- 右键菜单 -->
           <right-context-menu :right-menu-position="rightMenuPosition" @onDelete="onDeleteDrag"></right-context-menu>
         </div>

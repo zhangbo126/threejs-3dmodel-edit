@@ -1,21 +1,31 @@
 <template>
-  <div class="w-full bg-[#1b1c23]">
+  <div class="w-full bg-[#0a0b0e] overflow-hidden h-screen">
     <!-- 头部操作栏 -->
-    <header class="box-border flex items-center justify-between w-full h-[35px] px-[10px] font-medium text-white text-center  bg-[#010c1d] shadow-[0_2px_8px_0_rgba(0,0,0,0.1)]">
-      <div class="text-[14px] text-[#fff]">
-        <span> 基于Three.js+Vue3+Element-Plus开发的3d模型可视化编辑系统 </span>
-        <span>作者:answer </span>
-        <span>当前Three.js版本:{{ THREE.REVISION }}</span>
+    <header class="box-border flex items-center justify-between w-full h-[50px] px-[20px] font-medium text-white bg-[#06070a]/85 border-b border-[#20222e] shadow-[0_4px_20px_0_rgba(0,0,0,0.3)] backdrop-blur-md z-50 relative">
+      <div class="flex items-center space-x-3 text-[14px]">
+        <div class="flex items-center space-x-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#6366f1] to-[#a855f7] animate-pulse"></div>
+          <span class="font-extrabold tracking-wider bg-gradient-to-r from-[#ffffff] to-[#a5b4fc] bg-clip-text text-transparent text-[15px]">
+            ThreeD Studio
+          </span>
+          <span class="text-xs text-[#9ca3af] font-normal hidden lg:inline">| 3D模型可视化编辑系统</span>
+        </div>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#1e2030]/60 text-[#a855f7] border border-[#312e81]/40">
+          作者: answer
+        </span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#1e2030]/60 text-[#00f2fe] border border-[#0e7490]/40">
+          Three.js v{{ THREE.REVISION }}
+        </span>
       </div>
       <div>
-        <el-space>
-          <el-button type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })"> 模型库 </el-button>
-          <el-button type="primary" icon="Document" v-if="handleConfigBtn" @click="onSaveConfig">保存数据</el-button>
-          <el-button type="primary" icon="View" v-if="handleConfigBtn" @click="onPreview">效果预览</el-button>
+        <el-space :size="10">
+          <el-button class="header-btn" type="primary" icon="Film" @click="$router.push({ path: '/modelBase' })"> 模型库 </el-button>
+          <el-button class="header-btn" type="primary" icon="Document" v-if="handleConfigBtn" @click="onSaveConfig">保存数据</el-button>
+          <el-button class="header-btn" type="primary" icon="View" v-if="handleConfigBtn" @click="onPreview">效果预览</el-button>
           <el-dropdown trigger="click">
-            <el-button type="primary" icon="Download"> 下载/导出<el-icon class="el-icon--right"></el-icon> </el-button>
+            <el-button class="header-btn" type="primary" icon="Download"> 下载/导出<el-icon class="el-icon--right"></el-icon> </el-button>
             <template #dropdown>
-              <el-dropdown-menu>
+              <el-dropdown-menu class="premium-dropdown">
                 <el-dropdown-item @click="onDownloadCover">下载封面</el-dropdown-item>
                 <el-dropdown-item @click="onExportModelFile('glb')">导出模型(.glb)格式</el-dropdown-item>
                 <el-dropdown-item @click="onExportModelFile('gltf')">导出模型(.gltf)格式</el-dropdown-item>
@@ -23,8 +33,8 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-button type="primary" icon="HelpFilled" v-if="handleConfigBtn" @click="onImportantCode"> 嵌入代码 </el-button>
-          <el-button type="primary" icon="FullScreen" @click="onFullScreen">
+          <el-button class="header-btn" type="primary" icon="HelpFilled" v-if="handleConfigBtn" @click="onImportantCode"> 嵌入代码 </el-button>
+          <el-button class="header-btn" type="primary" icon="FullScreen" @click="onFullScreen">
             {{ fullscreenStatus ? "取消全屏" : "全屏" }}
           </el-button>
         </el-space>
@@ -34,18 +44,21 @@
       <!-- 模型列表 -->
       <model-choose ref="choosePanel"></model-choose>
       <!-- 模型视图 -->
-      <div id="model" @drop="onDragDrop" ref="model" @dragover.prevent class="relative w-[calc(100%-630px)] h-[calc(100vh-35px)]">
-        <div class="absolute top-[10px] left-[calc(100%-50%)] cursor-pointer">
-          <el-tooltip effect="dark" content="居中" placement="top">
-            <el-icon :size="18" color="#fff" @click="onResetCamera">
-              <Aim />
-            </el-icon>
+      <div id="model" @drop="onDragDrop" ref="model" @dragover.prevent class="relative w-[calc(100%-685px)] h-[calc(100vh-50px)] bg-[#0d0e12]">
+        <!-- 悬浮重置相机视角按钮 -->
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+          <el-tooltip effect="dark" content="重置相机视角" placement="bottom">
+            <button @click="onResetCamera" class="flex items-center justify-center w-10 h-10 rounded-full bg-[#111218]/80 backdrop-blur-md border border-[#2c2f42] text-[#9ca3af] hover:text-white hover:border-[#6366f1] hover:shadow-[0_0_15px_rgba(99,102,241,0.35)] transition-all duration-300">
+              <el-icon :size="20">
+                <Aim />
+              </el-icon>
+            </button>
           </el-tooltip>
         </div>
         <div id="mesh-txt"></div>
       </div>
       <!-- 右侧编辑栏 -->
-      <div class="min-w-[380px]">
+      <div class="min-w-[380px] h-[calc(100vh-50px)]">
         <model-edit-panel ref="editPanel" v-if="store.modelApi.model"></model-edit-panel>
       </div>
     </div>
