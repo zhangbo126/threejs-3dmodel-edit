@@ -97,9 +97,22 @@ export default class MaterialModules {
       store.modelApi.model.scale.setScalar(scale);
       store.modelApi.model.position.sub(center.multiplyScalar(scale));
 
-      store.modelApi.controls.maxDistance = size.length() * 10;
+      // 统一缩放范围，避免不同模型因原始尺寸差异导致可缩放区间不一致
       store.modelApi.camera.position.set(0, 2, 6);
+      store.modelApi.camera.up.set(0, 1, 0);
       store.modelApi.camera.updateProjectionMatrix();
+
+      // 记录页面初始加载时的相机与控制器状态，供重置恢复
+      if (store.modelApi.controls) {
+        store.modelApi.controls.target.set(0, 0, 0);
+        store.modelApi.controls.update();
+      }
+      if (store.modelApi.css3dControls) {
+        store.modelApi.css3dControls.target.set(0, 0, 0);
+        store.modelApi.css3dControls.update();
+      }
+      store.modelApi.initialCameraPosition = { x: 0, y: 2, z: 6 };
+      store.modelApi.initialControlsTarget = { x: 0, y: 0, z: 0 };
     } catch (error) {
       console.error("设置模型位置和大小失败:", error);
       throw error;

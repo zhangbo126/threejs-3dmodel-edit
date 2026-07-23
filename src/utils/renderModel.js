@@ -38,6 +38,9 @@ class renderModel {
     this.renderer;
     // 控制器
     this.controls;
+    // 页面初始加载时的相机/控制器状态（用于重置）
+    this.initialCameraPosition = { x: 0, y: 2, z: 6 };
+    this.initialControlsTarget = { x: 0, y: 0, z: 0 };
     // 模型
     this.model;
     // 几何体模型数组
@@ -247,8 +250,10 @@ class renderModel {
   // 创建控制器
   initControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enablePan = false;
+    this.controls.enablePan = true;
     this.controls.enableDamping = true;
+    this.controls.minDistance = 1;
+    this.controls.maxDistance = 50;
     this.controls.target.set(0, 0, 0);
     this.controls.update();
 
@@ -256,6 +261,8 @@ class renderModel {
     this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement);
     this.css3dControls.enablePan = false;
     this.css3dControls.enableDamping = true;
+    this.css3dControls.minDistance = 1;
+    this.css3dControls.maxDistance = 50;
     this.css3dControls.target.set(0, 0, 0);
     this.css3dControls.update();
   }
@@ -402,10 +409,9 @@ class renderModel {
         this.glowMaterialList = this.modelMaterialList.map(v => v.name);
         this.setModelMeshDrag({ transformType: true });
         this.scene.add(this.model);
-        //计算控制器缩放大小
-        const box = new THREE.Box3().setFromObject(this.model);
-        const size = box.getSize(new THREE.Vector3());
-        this.controls.maxDistance = size.length() * 10;
+        // 统一控制器缩放范围
+        this.controls.minDistance = 1;
+        this.controls.maxDistance = 50;
         this.loadingStatus = true;
         resolve(true);
       } else {
@@ -571,7 +577,6 @@ class renderModel {
           this.modelAnimation = [];
           this.camera.fov = 80;
           this.camera.updateProjectionMatrix();
-          console.log(model);
           await this.setGeometryModel(model);
           this.outlinePass.renderScene = this.geometryGroup;
           resolve();

@@ -72,11 +72,24 @@ function onResultModelPosition({ positionX, positionY, positionZ }) {
 }
 
 /**
- * 重置相机位置和视角
+ * 重置相机位置和视角到页面初始加载时的状态
  */
 function onResetModelCamera() {
-  this.camera.position.set(0, 2, 6);
-  this.camera.lookAt(0, 0, 0);
+  const cameraPos = this.initialCameraPosition || { x: 0, y: 2, z: 6 };
+  const target = this.initialControlsTarget || { x: 0, y: 0, z: 0 };
+
+  this.camera.position.set(cameraPos.x, cameraPos.y, cameraPos.z);
+  this.camera.up.set(0, 1, 0);
+
+  if (this.controls) {
+    this.controls.target.set(target.x, target.y, target.z);
+    this.controls.update();
+  }
+
+  if (this.css3dControls) {
+    this.css3dControls.target.set(target.x, target.y, target.z);
+    this.css3dControls.update();
+  }
 }
 
 /**
