@@ -107,10 +107,6 @@ export default class MaterialModules {
         store.modelApi.controls.target.set(0, 0, 0);
         store.modelApi.controls.update();
       }
-      if (store.modelApi.css3dControls) {
-        store.modelApi.css3dControls.target.set(0, 0, 0);
-        store.modelApi.css3dControls.update();
-      }
       store.modelApi.initialCameraPosition = { x: 0, y: 2, z: 6 };
       store.modelApi.initialControlsTarget = { x: 0, y: 0, z: 0 };
     } catch (error) {

@@ -21,7 +21,6 @@ import modulesPrototype from "./modelEditClass/index";
 import TWEEN from "@tweenjs/tween.js";
 import { vertexShader, fragmentShader, MODEL_TYPE_ENUM } from "@/config/constant.js";
 import { findObjectInScene } from "@/utils/utilityFunction";
-import shaderModules from "./modelEditClass/shaderModules";
 import backgroundModules from "./modelEditClass/backgroundModules";
 import lightModules from "./modelEditClass/lightModules";
 import materialModules from "./modelEditClass/materialModules";
@@ -133,8 +132,6 @@ class renderModel {
     this.loadingStatus = true;
     // 3d文字渲染器
     this.css3DRenderer = null;
-    // 3d文字控制器
-    this.css3dControls = null;
     // 当前拖拽标签信息
     this.dragTag = {};
     //当前标签列表
@@ -143,8 +140,6 @@ class renderModel {
     this.activeDragManyModel = {};
     // 背景模块实例
     this.backgroundModules = new backgroundModules();
-    // 着色器模块实例
-    this.shaderModules = new shaderModules();
     // 灯光模块实例
     this.lightModules = new lightModules();
     // 材质模块实例
@@ -230,11 +225,9 @@ class renderModel {
         this.controls.update();
       }
       TWEEN.update();
-      this.shaderModules.updateAllShaderTime();
       // 3d标签渲染器
       if (this.dragTagList.length) {
         this.css3DRenderer.render(this.scene, this.camera);
-        this.css3dControls.update();
       }
     }
   }
@@ -256,15 +249,6 @@ class renderModel {
     this.controls.maxDistance = 50;
     this.controls.target.set(0, 0, 0);
     this.controls.update();
-
-    //标签控制器
-    this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement);
-    this.css3dControls.enablePan = false;
-    this.css3dControls.enableDamping = true;
-    this.css3dControls.minDistance = 1;
-    this.css3dControls.maxDistance = 50;
-    this.css3dControls.target.set(0, 0, 0);
-    this.css3dControls.update();
   }
   // 加载模型
   loadModel({ filePath, fileType, decomposeName }) {
@@ -785,8 +769,6 @@ class renderModel {
     this.glowUnrealBloomPass = false;
     // 3d文字渲染器
     this.css3DRenderer = null;
-    // 3d文字控制器
-    this.css3dControls = null;
     // 当前拖拽标签信息
     this.dragTag = {};
     //当前标签列表

@@ -309,11 +309,3 @@
 .bg-\[\#1b1c23\] .cursor-pointer:hover {
   background-color: rgb(255 255 255 / 3%) !important;
 }
-
-/* 着色器节点美化 */
-.bg-\[\#2a2f45\] {
-  background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%) !important;
-  border: 1px solid rgb(255 255 255 / 10%) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 40%) !important;
-}

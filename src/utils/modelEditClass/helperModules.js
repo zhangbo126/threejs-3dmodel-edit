@@ -85,11 +85,6 @@ function onResetModelCamera() {
     this.controls.target.set(target.x, target.y, target.z);
     this.controls.update();
   }
-
-  if (this.css3dControls) {
-    this.css3dControls.target.set(target.x, target.y, target.z);
-    this.css3dControls.update();
-  }
 }
 
 /**

@@ -1,6 +1,5 @@
 import { getAssetsFile } from "@/utils/utilityFunction";
-import * as THREE from "three";
-import { SHADER_METHOD_ENUM, MODEL_TYPE_ENUM } from "./constant";
+import { MODEL_TYPE_ENUM } from "./constant";
 const modelList = [
   {
     name: "人物(女)",
@@ -439,40 +438,4 @@ const tagList = [
   }
 ];
 
-const shaderConfigList = [
-  {
-    name: "警告标记",
-    id: THREE.MathUtils.generateUUID(),
-    shaderMethod: SHADER_METHOD_ENUM.CreateWarningShader
-  },
-
-  {
-    name: "扫描雷达",
-    id: THREE.MathUtils.generateUUID(),
-    shaderMethod: SHADER_METHOD_ENUM.CreateRadarShader
-  },
-
-  {
-    name: "流动墙体",
-    id: THREE.MathUtils.generateUUID(),
-    shaderMethod: SHADER_METHOD_ENUM.CreateWallShader
-  },
-
-  {
-    name: "收缩光环",
-    id: THREE.MathUtils.generateUUID(),
-    shaderMethod: SHADER_METHOD_ENUM.CreateApertureShader
-  },
-  {
-    name: "异常点闪烁",
-    id: THREE.MathUtils.generateUUID(),
-    shaderMethod: SHADER_METHOD_ENUM.CreateFlickerWarning
-  },
-  {
-    name: "警告光圈",
-    id: THREE.MathUtils.generateUUID(),
-    shaderMethod: SHADER_METHOD_ENUM.CreateWarningApertureShader
-  }
-];
-
-export { shaderConfigList, modelList, backgroundList, viewImageList, mapImageList, geometryModelList, tagList };
+export { modelList, backgroundList, viewImageList, mapImageList, geometryModelList, tagList };

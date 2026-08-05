@@ -50,10 +50,6 @@
         <div v-show="activeTab == 'EditMoreModel'">
           <edit-more-model ref="more"></edit-more-model>
         </div>
-        <!-- 着色器 -->
-        <div v-show="activeTab == 'EditShader'">
-          <edit-shader ref="shader"></edit-shader>
-        </div>
       </el-scrollbar>
     </div>
   </div>
@@ -69,7 +65,6 @@ import EditLaterStage from "./EditLaterStage.vue";
 import EditGeometry from "./EditGeometry.vue";
 import EditMoreModel from "./EditMoreModel.vue";
 import EditTags from "./EditTags.vue";
-import EditShader from "./EditShader.vue";
 const { $bus } = getCurrentInstance().proxy;
 
 const panelTabs = [
@@ -118,11 +113,6 @@ const panelTabs = [
     key: "EditMoreModel",
     icon: "Money"
   },
-  {
-    name: "着色器",
-    key: "EditShader",
-    icon: "Loading"
-  },
 ];
 
 const activeTab = ref("EditMaterial");
@@ -135,7 +125,6 @@ const stage = ref(null);
 const geometry = ref(null);
 const tags = ref(null);
 const more = ref(null);
-const shader = ref(null);
 onMounted(() => {
   $bus.on("update-tab", chooseTab => {
     activeTab.value = chooseTab;

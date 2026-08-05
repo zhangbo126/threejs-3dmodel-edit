@@ -96,7 +96,6 @@ class renderModel {
     this.onMouseMoveListener = null;
 
     // CSS3D渲染
-    this.css3dControls = null;
     this.css3DRenderer = null;
   }
 
@@ -189,14 +188,6 @@ class renderModel {
     this.controls.enablePan = true;
     this.controls.enableDamping = true;
     this.controls.target.set(0, 0, 0);
-
-    //标签控制器
-    this.css3dControls = new OrbitControls(this.camera, this.css3DRenderer.domElement);
-    this.css3dControls.enablePan = false;
-    this.css3dControls.enabled = false;
-    this.css3dControls.enableDamping = false;
-    this.css3dControls.target.set(0, 0, 0);
-    this.css3dControls.update();
   }
   // 更新场景
   sceneAnimation() {
@@ -214,7 +205,6 @@ class renderModel {
     // 3d标签渲染器
     if (tags && tags.dragTagList.length) {
       this.css3DRenderer.render(this.scene, this.camera);
-      this.css3dControls.update();
     }
   }
   // 设置材质辉光
@@ -495,7 +485,6 @@ class renderModel {
       "shaderPass",
       "glowMaterialList",
       "materials",
-      "css3dControls",
       "css3DRenderer"
     ];
 

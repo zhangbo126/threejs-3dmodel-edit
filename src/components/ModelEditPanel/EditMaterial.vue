@@ -57,93 +57,96 @@
         </div>
       </el-scrollbar>
     </div>
-    <!-- 材质属性 -->
-    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">材质属性</div>
-    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
-      <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
-        <el-space>
-          <el-button type="primary" link>材质颜色</el-button>
-          <el-color-picker color-format="rgb" :predefine="PREDEFINE_COLORS" @change="onChangeMaterial" v-model="config.color" />
-        </el-space>
-        <el-space>
-          <el-tooltip effect="dark" content="注意：深度写入属性不支持模型“导出” " placement="top">
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
-          <el-button type="primary" link>深度写入</el-button>
-          <el-switch @change="onChangeMaterial" v-model="config.depthWrite"></el-switch>
-        </el-space>
-        <el-space>
-          <el-tooltip effect="dark" content="注意：网格属性不支持模型“导出” " placement="top">
-            <el-icon>
-              <WarnTriangleFilled :size="20" color="#ffb940" />
-            </el-icon>
-          </el-tooltip>
-          <el-button type="primary" link>网格</el-button>
-          <el-switch @change="onChangeMaterial" v-model="config.wireframe"></el-switch>
-        </el-space>
+    <template v-if="hasSelectedMaterial">
+      <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">材质属性</div>
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <div class="box-border flex items-center justify-between h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+          <el-space>
+            <el-button type="primary" link>材质颜色</el-button>
+            <el-color-picker color-format="rgb" :predefine="PREDEFINE_COLORS" @change="onChangeMaterial" v-model="config.color" />
+          </el-space>
+          <el-space>
+            <el-tooltip effect="dark" content="注意：深度写入属性不支持模型“导出” " placement="top">
+              <el-icon>
+                <WarnTriangleFilled :size="20" color="#ffb940" />
+              </el-icon>
+            </el-tooltip>
+            <el-button type="primary" link>深度写入</el-button>
+            <el-switch @change="onChangeMaterial" v-model="config.depthWrite"></el-switch>
+          </el-space>
+          <el-space>
+            <el-tooltip effect="dark" content="注意：网格属性不支持模型“导出” " placement="top">
+              <el-icon>
+                <WarnTriangleFilled :size="20" color="#ffb940" />
+              </el-icon>
+            </el-tooltip>
+            <el-button type="primary" link>网格</el-button>
+            <el-switch @change="onChangeMaterial" v-model="config.wireframe"></el-switch>
+          </el-space>
+        </div>
+        <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
+          <el-button type="primary" link>透明度 </el-button>
+            <el-slider
+              show-input
+              @input="onChangeMaterial"
+              @change="onChangeMaterial"
+              v-model="config.opacity"
+              :min="0"
+              :max="1"
+              :step="0.01"
+            />
+        </div>
       </div>
-      <div class="box-border flex items-center h-[33px] px-[18px] text-[14px] text-[#cccccc] cursor-pointer">
-        <el-button type="primary" link>透明度 </el-button>
-          <el-slider
-            show-input
-            @input="onChangeMaterial"
-            @change="onChangeMaterial"
-            v-model="config.opacity"
-            :min="0"
-            :max="1"
-            :step="0.01"
-          />
+      <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">当前材质自带贴图</div>
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+        <el-scrollbar max-height="140px">
+          <el-row justify="center" align="middle" :style="{ minHeight: '120px' }">
+            <el-col :span="10" :offse="4" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
+              <div
+                @click="onChangeModelMap(activeMeshMap)"
+                class="relative box-border max-w-[140px] text-[0] cursor-pointer opacity-60"
+                :class="activeMapId == activeMeshMap.mapId ? 'border-[2px] border-[#18c174] opacity-100' : ''"
+              >
+                <el-image :src="activeMeshMap.url" class="relative h-[100px] max-h-[100px] m-[8px_9px]" fit="cover"> </el-image>
+                <div class="absolute inset-0 flex items-center justify-center w-[40px] h-[40px] m-auto" v-if="activeMapId == activeMeshMap.mapId">
+                  <el-icon color="#18c174" :size="26"><Select /></el-icon>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="8" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
+              <el-upload
+                action=""
+                accept=".jpg,.png,.hdr"
+                :show-file-list="false"
+                :auto-upload="false"
+                :on-change="onUploadTexture"
+              >
+                <el-tooltip effect="dark" content="该功能仅仅作预览，数据无法保存 " placement="top">
+                  <el-button type="primary" icon="UploadFilled">加载外部贴图</el-button>
+                </el-tooltip>
+              </el-upload>
+            </el-col>
+          </el-row>
+        </el-scrollbar>
       </div>
-    </div>
-    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">当前材质自带贴图</div>
-    <div class="box-border max-w-[380px] bg-[#1b1c23]">
-      <el-scrollbar max-height="140px">
-        <el-row justify="center" align="middle" :style="{ minHeight: '120px' }">
-          <el-col :span="10" :offse="4" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
-            <div
-              @click="onChangeModelMap(activeMeshMap)"
-              class="relative box-border max-w-[140px] text-[0] cursor-pointer opacity-60"
-              :class="activeMapId == activeMeshMap.mapId ? 'border-[2px] border-[#18c174] opacity-100' : ''"
-            >
-              <el-image :src="activeMeshMap.url" class="relative h-[100px] max-h-[100px] m-[8px_9px]" fit="cover"> </el-image>
-              <div class="absolute inset-0 flex items-center justify-center w-[40px] h-[40px] m-auto" v-if="activeMapId == activeMeshMap.mapId">
-                <el-icon color="#18c174" :size="26"><Select /></el-icon>
+      <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">系统贴图</div>
+      <div class="box-border max-w-[380px] bg-[#1b1c23]">
+          <el-row>
+            <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in mapImageList" :key="map.id">
+              <div @click="onChangeSystemModelMap(map)" class="relative box-border flex items-center justify-center w-[90px] h-[90px] cursor-pointer opacity-60" :class="activeMapId == map.id ? 'border-[2px] border-[#18c174] opacity-100' : ''">
+                <el-image :src="map.url" class="max-h-[70px] p-[6px]" fit="cover" />
+                <div class="absolute inset-0 flex items-center justify-center w-[40px] h-[40px] m-auto" v-if="activeMapId == map.id">
+                  <el-icon color="#18c174" :size="26"><Select /></el-icon>
+                </div>
               </div>
-            </div>
-          </el-col>
-          <el-col :span="8" :style="{ textAlign: 'center' }" v-if="activeMeshMap">
-            <el-upload
-              action=""
-              accept=".jpg,.png,.hdr"
-              :show-file-list="false"
-              :auto-upload="false"
-              :on-change="onUploadTexture"
-            >
-              <el-tooltip effect="dark" content="该功能仅仅作预览，数据无法保存 " placement="top">
-                <el-button type="primary" icon="UploadFilled">加载外部贴图</el-button>
-              </el-tooltip>
-            </el-upload>
-          </el-col>
-        </el-row>
-      </el-scrollbar>
-    </div>
-    <div class="box-border flex items-center justify-between w-full h-[35px] px-[20px] text-[#cccccc] bg-[#33343f] border-t border-b border-[#1b1c23]">系统贴图</div>
-    <div class="box-border max-w-[380px] bg-[#1b1c23]" :class="optionDisabled">
-      <!-- <el-scrollbar > </el-scrollbar> -->
-        <el-row>
-          <el-col :span="6" :style="{ textAlign: 'center' }" v-for="map in mapImageList" :key="map.id">
-            <div @click="onChangeSystemModelMap(map)" class="relative box-border flex items-center justify-center w-[90px] h-[90px] cursor-pointer opacity-60" :class="activeMapId == map.id ? 'border-[2px] border-[#18c174] opacity-100' : ''">
-              <el-image :src="map.url" class="max-h-[70px] p-[6px]" fit="cover" />
-              <div class="absolute inset-0 flex items-center justify-center w-[40px] h-[40px] m-auto" v-if="activeMapId == map.id">
-                <el-icon color="#18c174" :size="26"><Select /></el-icon>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-     
-    </div>
+            </el-col>
+          </el-row>
+      </div>
+    </template>
+    <template v-else>
+      <div class="box-border w-full h-[35px] bg-[#33343f] border-t border-b border-[#1b1c23]"></div>
+      <el-empty description="请选择材质" :image-size="100" />
+    </template>
   </div>
 </template>
 <script setup>
@@ -169,16 +172,15 @@ const activeMeshType = ref("");
 const activeMeshMap = ref(null);
 const activeMapId = ref(null);
 
-const optionDisabled = computed(() => {
-  const activeMesh = state.modelMaterialList.find(v => v.uuid == state.selectMeshUuid) || {};
-  return activeMesh.uuid ? "" : "disabled";
-});
-
 const state = reactive({
   modelMaterialList: computed(() => store.modelApi.modelMaterialList),
   originalMaterials: computed(() => store.modelApi.originalMaterials),
   modelApi: computed(() => store.modelApi),
   selectMeshUuid: computed(() => store.selectMeshUuid)
+});
+
+const hasSelectedMaterial = computed(() => {
+  return state.modelMaterialList.some(v => v.uuid == state.selectMeshUuid);
 });
 
 onMounted(() => {
