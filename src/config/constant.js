@@ -278,21 +278,10 @@ export const meshTypeList = [
   }
 ];
 
-export const SHADER_METHOD_ENUM = {
-  CreateWarningShader: "CreateWarningShader",
-  CreateCompassShader: "CreateCompassShader",
-  CreateRadarShader: "CreateRadarShader",
-  CreateWallShader: "CreateWallShader",
-  CreateApertureShader: "CreateApertureShader",
-  CreateFlickerWarning: "CreateFlickerWarning",
-  CreateWarningApertureShader: "CreateWarningApertureShader"
-};
-
 // 模型类型枚举
 export const MODEL_TYPE_ENUM = {
   OneModel: "oneModel",
   ManyModel: "manyModel",
   Geometry: "geometry",
-  Tags: "tags",
-  Shader: "shader"
+  Tags: "tags"
 };

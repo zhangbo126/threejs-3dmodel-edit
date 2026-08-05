@@ -165,11 +165,6 @@ const onDragDrop = async e => {
       $bus.emit(PAGE_LOADING, false);
     }
   }
-
-  // 处理着色器
-  if (store.modelType === MODEL_TYPE_ENUM.Shader) {
-    store.modelApi.shaderModules.createShader({ clientX, clientY });
-  }
 };
 // 预览
 const onPreview = () => {
